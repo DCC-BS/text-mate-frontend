@@ -1,0 +1,40 @@
+{
+    "editor.renderWhitespace": "all",
+    "editor.rulers": [
+        100
+    ],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "files.exclude": {
+        ".nuxt": true,
+        "dist": true,
+        "node_modules": true,
+        ".output": true,
+    },
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "tailwindCSS.experimental.configFile": "tailwind.config.ts",
+    "tailwindCSS.experimental.classRegex": [
+        [
+            "ui:\\s*{([^)]*)\\s*}",
+            "[\"'`]([^\"'`]*).*?[\"'`]"
+        ],
+        [
+            "/\\*\\s?ui\\s?\\*/\\s*{([^;]*)}",
+            ":\\s*[\"'`]([^\"'`]*).*?[\"'`]"
+        ]
+    ],
+    "tailwindCSS.classAttributes": [
+        "class",
+        "className",
+        "ngClass",
+        "ui"
+    ],
+}
