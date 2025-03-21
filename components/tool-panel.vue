@@ -42,14 +42,15 @@ const items = [{
     icon: 'i-heroicons-light-bulb',
 }];
 
-async function handleRewriteText(command: RewriteTextCommand): Promise<void> {
+async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
     selectedTab.value = 1;
 }
 </script>
 
 <template>
     <div class="h-full p-2">
-        <UTabs :items="items" v-model="selectedTab" class="h-full"
+        <UTabs
+v-model="selectedTab" :items="items" class="h-full"
             :ui="{ container: 'h-[30vh] md:h-[90vh] overflow-y-auto scrollable-container', wrapper: 'h-[30vh] md:h-[90vh]' }">
             <template #problems>
                 <ProblemsPanel :blocks="props.blocks" />
@@ -58,11 +59,13 @@ async function handleRewriteText(command: RewriteTextCommand): Promise<void> {
                 <div class="h-full">
                     <div class="grid grid-cols-2 mb-3 gap-2">
                         <span>{{ t('rewrite.formalityLabel') }}</span>
-                        <SelectMenuLocalized v-model="formality" :options="['neutral', 'formal', 'informal']"
+                        <SelectMenuLocalized
+v-model="formality" :options="['neutral', 'formal', 'informal']"
                             local-parent="rewrite.formality" />
 
                         <span>{{ t('rewrite.domainLabel') }}</span>
-                        <SelectMenuLocalized v-model="domain"
+                        <SelectMenuLocalized
+v-model="domain"
                             :options="['general', 'report', 'email', 'socialMedia', 'technical']"
                             local-parent="rewrite.domain" />
                     </div>
@@ -73,11 +76,13 @@ async function handleRewriteText(command: RewriteTextCommand): Promise<void> {
             <template #advisor>
                 <div class="grid grid-cols-2 mb-3 gap-2">
                     <span>{{ t('rewrite.formalityLabel') }}</span>
-                    <SelectMenuLocalized v-model="formality" :options="['neutral', 'formal', 'informal']"
+                    <SelectMenuLocalized
+v-model="formality" :options="['neutral', 'formal', 'informal']"
                         local-parent="rewrite.formality" />
 
                     <span>{{ t('rewrite.domainLabel') }}</span>
-                    <SelectMenuLocalized v-model="domain"
+                    <SelectMenuLocalized
+v-model="domain"
                         :options="['general', 'report', 'email', 'socialMedia', 'technical']"
                         local-parent="rewrite.domain" />
                 </div>

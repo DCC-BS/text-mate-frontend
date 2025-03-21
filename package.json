@@ -7,12 +7,16 @@
         "dev": "nuxt dev",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
-        "postinstall": "nuxt prepare"
+        "postinstall": "nuxt prepare",
+        "lint:js": "eslint --ext \".ts,.js,.vue\" .",
+        "lint": "bun lint:js",
+        "lint:fix": "bun lint:js --fix",
+        "prettier": "prettier --write \"**/*.{js,ts,vue,json,css,scss,md}\""
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^0.1.2",
         "@dcc-bs/event-system.bs.js": "^1.0.2",
-        "@iconify-json/heroicons": "^1.2.2",
+        "@nuxt/eslint": "^1.2.0",
         "@nuxt/ui": "2.21.0",
         "@nuxtjs/i18n": "^9.1.5",
         "@nuxtjs/mdc": "0.13.5",
@@ -31,9 +35,14 @@
         "vue-router": "latest"
     },
     "devDependencies": {
+        "@nuxtjs/eslint-module": "4.1.0",
+        "eslint-plugin-prettier": "^5.2.3",
         "autoprefixer": "^10.4.20",
+        "jiti": "^2.4.2",
         "postcss": "^8.5.1",
         "sass": "^1.84.0",
+        "sass-loader": "^16.0.5",
+        "prettier": "^3.5.2",
         "tailwindcss": "3"
     }
 }

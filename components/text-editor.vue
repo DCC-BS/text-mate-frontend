@@ -31,8 +31,6 @@ const limit = ref(10_000);
 const currentPosition = computed(() => editor.value?.state.selection.from ?? -1);
 const currentBlock = computed(() => props.blocks.find(b => b.offset + 1 == currentPosition.value));
 const characterCountPercentage = computed(() => Math.round((100 / limit.value) * editor.value?.storage.characterCount.characters()));
-const viewport = useViewport();
-
 
 // composables
 const toast = useToast();
@@ -43,7 +41,7 @@ const editor = useEditor({
     content: model.value,
     extensions: [
         StarterKit,
-        // @ts-ignore
+        // @ts-expect-error
         BubbleMenu,
         CharacterCount.configure({
             limit: limit.value,
@@ -176,22 +174,25 @@ async function applyText(command: ApplyTextCommand) {
     <div v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container">
         <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }">
             <div class="bubble-menu">
-                <div class="flex flex-wrap gap-1 justify-center"
-                    v-if="editor.isActive('correction') && currentBlock && currentBlock.corrected.length > 0">
-                    <UButton v-for="correction in currentBlock.corrected.slice(0, 5)" :key="correction"
+                <div
+v-if="editor.isActive('correction') && currentBlock && currentBlock.corrected.length > 0"
+                    class="flex flex-wrap gap-1 justify-center">
+                    <UButton
+v-for="correction in currentBlock.corrected.slice(0, 5)" :key="correction"
                         @click="applyCorrection(new ApplyCorrectionCommand(currentBlock, correction))">
                         {{ correction }}
                     </UButton>
                 </div>
-                <UButton @click="rewriteText" variant="ghost" v-else>
+                <UButton v-else variant="ghost" @click="rewriteText">
                     {{ t('editor.rewrite') }}
                 </UButton>
             </div>
         </bubble-menu>
         <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
-            <editor-content :editor="editor" spellcheck="false" class="w-full h-full"></editor-content>
+            <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
         </div>
-        <div class="flex gap-2 items-start justify-between"
+        <div
+class="flex gap-2 items-start justify-between"
             :class="{ 'character-count--warning': editor.storage.characterCount.characters() === limit }">
             <DisclaimerLlm />
             <div class="data-bs-banner">
@@ -201,14 +202,15 @@ async function applyText(command: ApplyTextCommand) {
             <div class="flex items-center gap-2">
                 <svg height="20" width="20" viewBox="0 0 20 20">
                     <circle r="10" cx="10" cy="10" fill="#e9ecef" />
-                    <circle r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
+                    <circle
+r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
                         :stroke-dasharray="`calc(${characterCountPercentage} * 31.4 / 100) 31.4`"
                         transform="rotate(-90) translate(-20)" />
                     <circle r="6" cx="10" cy="10" fill="white" />
                 </svg>
 
                 {{ editor.storage.characterCount.characters() }} / {{ limit }} characters
-                <br class="hidden md:block" />
+                <br class="hidden md:block">
                 {{ editor.storage.characterCount.words() }} words
             </div>
         </div>
@@ -234,7 +236,7 @@ async function applyText(command: ApplyTextCommand) {
 }
 
 .data-bs-banner {
-    @apply hidden @md:inline max-md:hidden;
+    @apply hidden @md: inline max-md:hidden;
 }
 
 @media screen and (max-height: 600px) {

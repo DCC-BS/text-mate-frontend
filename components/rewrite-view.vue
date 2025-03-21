@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Range } from '@tiptap/vue-3';
-import { ApplyTextCommand, Cmds, RewriteTextCommand } from '~/assets/models/commands';
+import type { RewriteTextCommand } from '~/assets/models/commands';
+import { ApplyTextCommand, Cmds } from '~/assets/models/commands';
 import type { RewriteApplyOptions, TextRewriteResponse } from '~/assets/models/text-rewrite';
 
 interface RewriteViewProps {
@@ -71,8 +72,10 @@ async function rewriteText(text: string, range: Range) {
 
         const response = await $fetch<TextRewriteResponse>('/api/rewrite', { body, method: 'POST' });
         rewriteOptions.value = { from, to, options: response.options };
-    } catch (e: any) {
-        sendError(e.message);
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            sendError(e.message);
+        }
     } finally {
         removeProgress('rewriting');
     }
@@ -98,7 +101,7 @@ function applyRewrite(option: string) {
     <div v-else>
         <div v-if="rewriteOptions && rewriteOptions.options.length > 0">
             <div v-for="option in rewriteOptions.options">
-                <div v-html="option.replace(/\n/g, '<br>')"></div>
+                <div v-html="option.replace(/\n/g, '<br>')" />
                 <UButton @click="applyRewrite(option)">{{ t('rewrite.apply') }} </UButton>
             </div>
         </div>

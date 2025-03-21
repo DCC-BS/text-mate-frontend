@@ -12,8 +12,12 @@ export default defineNuxtConfig({
         '@nuxtjs/mdc',
         '@dcc-bs/event-system.bs.js',
         '@dcc-bs/common-ui.bs.js',
-        'nuxt-viewport'
+        'nuxt-viewport',
+        '@nuxt/eslint'
     ],
+    typescript: {
+        strict: true,
+    },
     css: ['~/assets/css/main.scss'],
     runtimeConfig: {
         public: {

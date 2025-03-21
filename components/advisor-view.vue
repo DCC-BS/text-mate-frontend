@@ -34,8 +34,10 @@ async function giveAdvice() {
         };
 
         advisorData.value = await $fetch<AdvisorResponse>('/api/advice', { body, method: 'POST' });
-    } catch (e: any) {
-        sendError(e.message);
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            sendError(e.message);
+        }
     } finally {
         removeProgress('advice');
         isLoading.value = false;

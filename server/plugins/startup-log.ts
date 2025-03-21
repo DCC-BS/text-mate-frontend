@@ -1,5 +1,5 @@
-export default defineNitroPlugin((nitroApp) => {
-    if (process.dev) {
+export default defineNitroPlugin(() => {
+    if (import.meta.dev) {
         return;
     }
 
