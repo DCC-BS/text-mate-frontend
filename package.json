@@ -17,7 +17,7 @@
         "@dcc-bs/common-ui.bs.js": "^0.1.2",
         "@dcc-bs/event-system.bs.js": "^1.0.2",
         "@nuxt/eslint": "^1.2.0",
-        "@nuxt/ui": "2.21.0",
+        "@nuxt/ui": "3.0.1",
         "@nuxtjs/i18n": "^9.1.5",
         "@nuxtjs/mdc": "0.13.5",
         "@tiptap/extension-bubble-menu": "^2.11.5",
