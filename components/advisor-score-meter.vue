@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-
 const props = defineProps<{ label: string }>();
 
-const model = defineModel<number>('modelValue', { required: true });
+const model = defineModel<number>("modelValue", { required: true });
 
 const colorVariant = computed(() => {
-    if (model.value < 0.3) return 'red';
-    if (model.value < 0.7) return 'yellow';
-    return 'green';
+    if (model.value < 0.3) return "red";
+    if (model.value < 0.7) return "yellow";
+    return "green";
 });
 </script>
 

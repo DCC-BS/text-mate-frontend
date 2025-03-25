@@ -4,8 +4,8 @@
  * @returns An object containing the method to send an error.
  */
 export const useUseErrorDialog = () => {
-    return { sendError }
-}
+    return { sendError };
+};
 
 /**
  * Sends an error message to be displayed in a toast notification.
@@ -15,12 +15,10 @@ export const useUseErrorDialog = () => {
 function sendError(error: string) {
     const toast = useToast();
 
-    toast.add(
-        {
-            title: 'Error',
-            description: error,
-            color: 'red',
-            icon: 'i-heroicons-exclamation-circle',
-        }
-    )
+    toast.add({
+        title: "Error",
+        description: error,
+        color: "red",
+        icon: "i-heroicons-exclamation-circle",
+    });
 }

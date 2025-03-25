@@ -1,19 +1,22 @@
-import { Mark, mergeAttributes } from '@tiptap/core'
-import type { Node as ProseMirrorNode, Mark as ProseMirrorMark } from '@tiptap/pm/model'
-import { Plugin } from '@tiptap/pm/state'
-import type { EditorView } from '@tiptap/pm/view'
+import { Mark, mergeAttributes } from "@tiptap/core";
+import type {
+    Mark as ProseMirrorMark,
+    Node as ProseMirrorNode,
+} from "@tiptap/pm/model";
+import { Plugin } from "@tiptap/pm/state";
+import type { EditorView } from "@tiptap/pm/view";
 
 type CorrectionMarkOptions = {
-    onClick: (event: MouseEvent, node: ProseMirrorNode) => void,
-    active: boolean,
-}
+    onClick: (event: MouseEvent, node: ProseMirrorNode) => void;
+    active: boolean;
+};
 
 /**
  * CorrectionMark is a custom mark for the Tiptap editor that highlights text corrections.
  * It provides options for handling click events and toggling active state.
  */
 export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
-    name: 'correction',
+    name: "correction",
 
     /**
      * Adds default options for the CorrectionMark.
@@ -21,9 +24,9 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
      */
     addOptions() {
         return {
-            onClick: () => { },
+            onClick: () => {},
             active: false,
-        }
+        };
     },
 
     /**
@@ -33,9 +36,9 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
     parseHTML() {
         return [
             {
-                tag: 'span.correction',
-            }
-        ]
+                tag: "span.correction",
+            },
+        ];
     },
 
     /**
@@ -44,8 +47,14 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
      * @returns {Array} The HTML rendering rules.
      */
     renderHTML({ HTMLAttributes }) {
-        const classNames = this.options.active ? 'correction active' : 'correction';
-        return ['span', mergeAttributes({ class: classNames }, HTMLAttributes), 0]
+        const classNames = this.options.active
+            ? "correction active"
+            : "correction";
+        return [
+            "span",
+            mergeAttributes({ class: classNames }, HTMLAttributes),
+            0,
+        ];
     },
 
     /**
@@ -54,17 +63,17 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
      */
     addAttributes() {
         return {
-            'data-block-id': {
+            "data-block-id": {
                 default: null,
-                parseHTML: (element) => element.getAttribute('data-block-id'),
+                parseHTML: (element) => element.getAttribute("data-block-id"),
                 renderHTML: (attributes) => {
-                    if (!attributes['data-block-id']) {
+                    if (!attributes["data-block-id"]) {
                         return {};
                     }
-                    return { 'data-block-id': attributes['data-block-id'] };
+                    return { "data-block-id": attributes["data-block-id"] };
                 },
             },
-        }
+        };
     },
 
     /**
@@ -82,7 +91,11 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
                      * @param {MouseEvent} event - The mouse event.
                      * @returns {boolean} Whether the click was handled.
                      */
-                    handleClick: (view: EditorView, pos: number, event: MouseEvent) => {
+                    handleClick: (
+                        view: EditorView,
+                        pos: number,
+                        event: MouseEvent,
+                    ) => {
                         const { state } = view;
                         const { doc, selection } = state;
                         const range = selection.$from.blockRange(selection.$to);
@@ -91,18 +104,23 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
 
                         const node = doc.nodeAt(pos);
 
-                        if (node?.marks.find((mark: ProseMirrorMark) => mark.type.name === 'correction')) {
+                        if (
+                            node?.marks.find(
+                                (mark: ProseMirrorMark) =>
+                                    mark.type.name === "correction",
+                            )
+                        ) {
                             this.options.onClick(event, node);
                             this.options.active = true;
-                            return true
+                            return true;
                         }
 
                         this.options.active = false;
 
-                        return false
+                        return false;
                     },
                 },
             }),
-        ]
+        ];
     },
 });

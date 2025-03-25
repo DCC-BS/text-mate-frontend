@@ -4,12 +4,12 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
 
     const response = await $fetch(`${config.public.apiUrl}/text-rewrite`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(body),
         headers: {
-            'Content-Type': 'application/json'
-        }
+            "Content-Type": "application/json",
+        },
     });
 
     return response;
-})
+});

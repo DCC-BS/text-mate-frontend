@@ -1,7 +1,6 @@
 .ProseMirror {
-
     /* Image Block */
-    figure[data-type='imageBlock'] {
+    figure[data-type="imageBlock"] {
         @apply m-0;
 
         img {
@@ -10,23 +9,23 @@
     }
 
     /* Block Quote */
-    figure[data-type='blockquoteFigure'] {
+    figure[data-type="blockquoteFigure"] {
         @apply my-14 text-black dark:text-white;
     }
 
-    &>blockquote,
-    [data-type='blockquoteFigure'] {
+    & > blockquote,
+    [data-type="blockquoteFigure"] {
         blockquote {
             @apply m-0;
 
-            &>* {
+            & > * {
                 @apply first:mt-0 last:mb-0;
             }
         }
     }
 
     /* Columns */
-    [data-type='columns'] {
+    [data-type="columns"] {
         @apply grid gap-4 mt-14 mb-12;
 
         &.layout-sidebar-left {
@@ -42,7 +41,7 @@
         }
     }
 
-    [data-type='column'] {
+    [data-type="column"] {
         @apply overflow-auto;
     }
 }

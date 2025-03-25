@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import GrammarEditor from './components/grammar-editor.vue';
+import GrammarEditor from "./components/grammar-editor.vue";
 </script>
 
 <template>
-    <div>
+    <UApp>
         <NuxtPwaManifest />
         <GrammarEditor />
-        <UNotifications />
-    </div>
+    </UApp>
 </template>

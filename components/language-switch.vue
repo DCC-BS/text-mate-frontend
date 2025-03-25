@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const switchLocalePath = useSwitchLocalePath()
+const switchLocalePath = useSwitchLocalePath();
 </script>
 
 <template>

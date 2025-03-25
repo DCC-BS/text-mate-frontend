@@ -4,7 +4,7 @@
 export type EditoreProgress = {
     icon: string;
     title: string;
-}
+};
 
 const activeProgresDict = ref<Record<string, EditoreProgress>>({});
 
@@ -17,9 +17,9 @@ export const useUseProgressIndication = () => {
     return {
         addProgress,
         removeProgress,
-        activeProgress: activeProgresDict
-    }
-}
+        activeProgress: activeProgresDict,
+    };
+};
 
 /**
  * Adds a progress indication.
@@ -33,8 +33,8 @@ const addProgress = (key: string, progress: EditoreProgress) => {
 
     return () => {
         removeProgress(key);
-    }
-}
+    };
+};
 
 /**
  * Removes a progress indication.
@@ -43,4 +43,4 @@ const addProgress = (key: string, progress: EditoreProgress) => {
  */
 const removeProgress = (key: string) => {
     delete activeProgresDict.value[key];
-}
+};

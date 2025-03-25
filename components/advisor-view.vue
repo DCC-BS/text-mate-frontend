@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import type { AdvisorResponse } from '~/assets/models/advisor';
-
+import type { AdvisorResponse } from "~/assets/models/advisor";
 
 interface AdvisorViewProps {
     text: string;
@@ -21,9 +20,9 @@ async function giveAdvice() {
     advisorData.value = undefined;
 
     try {
-        addProgress('advice', {
-            icon: 'i-heroicons-light-bulb',
-            title: t('status.advice')
+        addProgress("advice", {
+            icon: "i-heroicons-light-bulb",
+            title: t("status.advice"),
         });
         isLoading.value = true;
 
@@ -33,13 +32,16 @@ async function giveAdvice() {
             domain: props.domain,
         };
 
-        advisorData.value = await $fetch<AdvisorResponse>('/api/advice', { body, method: 'POST' });
+        advisorData.value = await $fetch<AdvisorResponse>("/api/advice", {
+            body,
+            method: "POST",
+        });
     } catch (e: unknown) {
         if (e instanceof Error) {
             sendError(e.message);
         }
     } finally {
-        removeProgress('advice');
+        removeProgress("advice");
         isLoading.value = false;
     }
 }

@@ -1,21 +1,18 @@
-import type { TextCorrectionBlock } from "./text-correction";
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
+import type { TextCorrectionBlock } from "./text-correction";
 
 export const Cmds = {
     JumpToBlockCommand: "JumpToBlockCommand",
     ApplyCorrectionCommand: "ApplyCorrectionCommand",
     ApplyTextCommand: "ApplyTextCommand",
     RewriteTextCommand: "RewriteTextCommand",
-}
-
+};
 
 export class JumpToBlockCommand implements ICommand {
     readonly $type = "JumpToBlockCommand";
 
-    constructor(
-        public block: TextCorrectionBlock) {
-    }
+    constructor(public block: TextCorrectionBlock) {}
 }
 
 export class ApplyCorrectionCommand implements ICommand {
@@ -23,8 +20,8 @@ export class ApplyCorrectionCommand implements ICommand {
 
     constructor(
         public block: TextCorrectionBlock,
-        public corrected: string) {
-    }
+        public corrected: string,
+    ) {}
 }
 
 export class ApplyTextCommand implements ICommand {
@@ -32,8 +29,8 @@ export class ApplyTextCommand implements ICommand {
 
     constructor(
         public text: string,
-        public range: Range) {
-    }
+        public range: Range,
+    ) {}
 }
 
 export class RewriteTextCommand implements ICommand {
@@ -41,6 +38,6 @@ export class RewriteTextCommand implements ICommand {
 
     constructor(
         public text: string,
-        public range: Range) {
-    }
+        public range: Range,
+    ) {}
 }

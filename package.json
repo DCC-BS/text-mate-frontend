@@ -8,17 +8,16 @@
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "lint:js": "eslint --ext \".ts,.js,.vue\" .",
-        "lint": "bun lint:js",
-        "lint:fix": "bun lint:js --fix",
-        "prettier": "prettier --write \"**/*.{js,ts,vue,json,css,scss,md}\""
+        "lint": "biome format --write",
+        "check": "biome check --fix"
     },
     "dependencies": {
-        "@dcc-bs/common-ui.bs.js": "^0.1.2",
+        "@dcc-bs/common-ui.bs.js": "latest",
+        "@dcc-bs/logger.bs.js": "latest",
         "@dcc-bs/event-system.bs.js": "^1.0.2",
-        "@nuxt/eslint": "^1.2.0",
-        "@nuxt/ui": "2.21.0",
-        "@nuxtjs/i18n": "^9.1.5",
+        "@iconify-json/heroicons": "latest",
+        "@nuxt/ui": "latest",
+        "@nuxtjs/i18n": "latest",
         "@nuxtjs/mdc": "0.13.5",
         "@tiptap/extension-bubble-menu": "^2.11.5",
         "@tiptap/extension-character-count": "^2.11.5",
@@ -29,20 +28,18 @@
         "@tiptap/starter-kit": "^2.11.5",
         "@tiptap/vue-3": "^2.11.5",
         "@vite-pwa/nuxt": "^0.10.6",
-        "nuxt": "^3.15.4",
+        "nuxt": "latest",
         "nuxt-viewport": "2.2.0",
         "vue": "latest",
         "vue-router": "latest"
     },
     "devDependencies": {
-        "@nuxtjs/eslint-module": "4.1.0",
-        "eslint-plugin-prettier": "^5.2.3",
+        "@biomejs/biome": "latest",
         "autoprefixer": "^10.4.20",
         "jiti": "^2.4.2",
         "postcss": "^8.5.1",
         "sass": "^1.84.0",
         "sass-loader": "^16.0.5",
-        "prettier": "^3.5.2",
         "tailwindcss": "3"
     }
 }

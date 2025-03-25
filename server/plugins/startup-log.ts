@@ -3,9 +3,9 @@ export default defineNitroPlugin(() => {
         return;
     }
 
-    console.log('App started');
+    console.log("App started");
 
     const config = useRuntimeConfig();
 
-    console.log('Runtime config', config);
+    console.log("Runtime config", config);
 });

@@ -1,70 +1,101 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    compatibilityDate: '2024-11-01',
+    compatibilityDate: "2024-11-01",
     devtools: { enabled: false },
-    colorMode: {
-        preference: 'light',
+    app: {
+        head: {
+            titleTemplate: "{{ cookiecutter.app_title }}",
+            htmlAttrs: {
+                lang: "de",
+            },
+            meta: [
+                { charset: "utf-8" },
+                {
+                    name: "viewport",
+                    content: "width=device-width, initial-scale=1",
+                },
+                {
+                    name: "apple-mobile-web-app-title",
+                    content: "{{ cookiecutter.app_title }}",
+                },
+                {
+                    name: "application-name",
+                    content: "{{ cookiecutter.app_title }}",
+                },
+                { name: "msapplication-config", content: "/browserconfig.xml" },
+            ],
+        },
+    },
+    ui: {
+        colorMode: false,
     },
     modules: [
-        '@nuxt/ui',
-        '@nuxtjs/i18n',
-        '@vite-pwa/nuxt',
-        '@nuxtjs/mdc',
-        '@dcc-bs/event-system.bs.js',
-        '@dcc-bs/common-ui.bs.js',
-        'nuxt-viewport',
-        '@nuxt/eslint'
+        "@nuxt/ui",
+        "@nuxtjs/i18n",
+        "@vite-pwa/nuxt",
+        "@nuxtjs/mdc",
+        "@dcc-bs/event-system.bs.js",
+        "@dcc-bs/common-ui.bs.js",
+        "nuxt-viewport",
     ],
     typescript: {
         strict: true,
     },
-    css: ['~/assets/css/main.scss'],
+    css: ["~/assets/css/main.scss"],
     runtimeConfig: {
         public: {
             apiUrl: process.env.API_URL,
-        }
+        },
     },
     // localization
     i18n: {
-        locales: ['en', 'de'],
-        defaultLocale: 'de',
-        vueI18n: './i18n.config.ts',
+        bundle: {
+            optimizeTranslationDirective: false,
+        },
+        locales: ["en", "de"],
+        defaultLocale: "de",
+        vueI18n: "./i18n.config.ts",
         lazy: true,
     },
     nitro: {
         node: true,
         prerender: {
-            routes: ['/']
-        }
+            routes: ["/"],
+        },
     },
     pwa: {
-        registerType: 'autoUpdate',
+        registerType: "autoUpdate",
         workbox: {
-            globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg}'],
-            globIgnores: ['dev-sw-dist/**/*'],
-            navigateFallback: '/',
+            globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
+            globIgnores: ["dev-sw-dist/**/*"],
+            navigateFallback: "/",
         },
         client: {
             periodicSyncForUpdates: 60 * 10, // 10 minutes
         },
         manifest: {
-            name: 'Grammar BS',
-            short_name: 'Grammar BS',
-            description: 'Grammar Editor',
-            theme_color: '#000000',
-            background_color: '#000000',
+            name: "Grammar BS",
+            short_name: "Grammar BS",
+            description: "Grammar Editor",
+            theme_color: "#000000",
+            background_color: "#000000",
             icons: [
                 {
-                    src: '/HeroiconsLanguage.png',
-                    sizes: '512x512',
+                    src: "/HeroiconsLanguage.png",
+                    sizes: "512x512",
                 },
             ],
 
             shortcuts: [
                 {
-                    name: 'From Clipboard',
-                    url: '/?clipboard=true',
-                    icons: [{ src: '/MaterialSymbolsContentPasteGo.png', sizes: '512x512' }],
+                    name: "From Clipboard",
+                    url: "/?clipboard=true",
+                    icons: [
+                        {
+                            src: "/MaterialSymbolsContentPasteGo.png",
+                            sizes: "512x512",
+                        },
+                    ],
                 },
             ],
         },
@@ -76,15 +107,15 @@ export default defineNuxtConfig({
             md: 768,
             lg: 1024,
             xl: 1280,
-            '2xl': 1536,
+            "2xl": 1536,
         },
         defaultBreakpoints: {
-            desktop: 'lg',
-            mobile: 'xs',
-            tablet: 'md',
+            desktop: "lg",
+            mobile: "xs",
+            tablet: "md",
         },
 
-        fallbackBreakpoint: 'lg'
+        fallbackBreakpoint: "lg",
     },
     $development: {
         pwa: {
@@ -93,5 +124,5 @@ export default defineNuxtConfig({
             },
         },
         devtools: { enabled: true },
-    }
-})
+    },
+});

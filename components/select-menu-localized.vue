@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 // definitions
 interface SelectMenuLocalizedProps {
     options: string[];
@@ -8,10 +7,10 @@ interface SelectMenuLocalizedProps {
 
 // input
 const props = withDefaults(defineProps<SelectMenuLocalizedProps>(), {
-    localParent: '',
+    localParent: "",
 });
 
-const modelValue = defineModel<string>('modelValue', { required: true });
+const modelValue = defineModel<string>("modelValue", { required: true });
 
 const { t } = useI18n();
 </script>

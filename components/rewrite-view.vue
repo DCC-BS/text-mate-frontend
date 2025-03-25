@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import type { Range } from '@tiptap/vue-3';
-import type { RewriteTextCommand } from '~/assets/models/commands';
-import { ApplyTextCommand, Cmds } from '~/assets/models/commands';
-import type { RewriteApplyOptions, TextRewriteResponse } from '~/assets/models/text-rewrite';
+import type { Range } from "@tiptap/vue-3";
+import type { RewriteTextCommand } from "~/assets/models/commands";
+import { ApplyTextCommand, Cmds } from "~/assets/models/commands";
+import type {
+    RewriteApplyOptions,
+    TextRewriteResponse,
+} from "~/assets/models/text-rewrite";
 
 interface RewriteViewProps {
     formality: string;
@@ -57,9 +60,9 @@ async function rewriteText(text: string, range: Range) {
     const context = `${text.slice(0, from)}<rewrite>${textToRewrite}</rewrite>${text.slice(to)}`;
 
     rewriteOptions.value = undefined;
-    addProgress('rewriting', {
-        icon: 'i-heroicons-pencil',
-        title: t('status.rewritingText')
+    addProgress("rewriting", {
+        icon: "i-heroicons-pencil",
+        title: t("status.rewritingText"),
     });
 
     try {
@@ -70,14 +73,17 @@ async function rewriteText(text: string, range: Range) {
             domain: props.domain,
         };
 
-        const response = await $fetch<TextRewriteResponse>('/api/rewrite', { body, method: 'POST' });
+        const response = await $fetch<TextRewriteResponse>("/api/rewrite", {
+            body,
+            method: "POST",
+        });
         rewriteOptions.value = { from, to, options: response.options };
     } catch (e: unknown) {
         if (e instanceof Error) {
             sendError(e.message);
         }
     } finally {
-        removeProgress('rewriting');
+        removeProgress("rewriting");
     }
 }
 

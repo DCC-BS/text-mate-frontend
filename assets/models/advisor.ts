@@ -1,6 +1,6 @@
 export type AdvisorResponse = {
-    formalityScore: number
-    domainScore: number
-    coherenceAndStructure: number
-    proposedChanges: string
-}
+    formalityScore: number;
+    domainScore: number;
+    coherenceAndStructure: number;
+    proposedChanges: string;
+};

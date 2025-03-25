@@ -2,17 +2,17 @@
  * Represents a task to be executed.
  */
 type Task = {
-    action: (signal: AbortSignal) => Promise<void>,
-    hasStarted: boolean,
-    promise?: Promise<void>,
-    queuedAt: Date,
-    abortController: AbortController,
-}
+    action: (signal: AbortSignal) => Promise<void>;
+    hasStarted: boolean;
+    promise?: Promise<void>;
+    queuedAt: Date;
+    abortController: AbortController;
+};
 
 /**
  * Represents a task action that takes an AbortSignal and returns a Promise.
  */
-type TaskAction = (signal: AbortSignal) => Promise<void>
+type TaskAction = (signal: AbortSignal) => Promise<void>;
 
 /**
  * TaskScheduler is responsible for scheduling and running tasks.
@@ -55,7 +55,7 @@ export class TaskScheduler {
         }
 
         if (this.startedTask) {
-            this.startedTask.abortController.abort('aborted');
+            this.startedTask.abortController.abort("aborted");
         }
 
         const abortController = new AbortController();

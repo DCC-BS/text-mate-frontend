@@ -4,10 +4,9 @@ export type TextCorrectionBlock = {
     explanation: string;
     offset: number;
     length: number;
-}
+};
 
 export type TextCorrectionResponse = {
     original: string;
     blocks: TextCorrectionBlock[];
-}
-
+};

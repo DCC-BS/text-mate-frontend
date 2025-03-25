@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 const { activeProgress } = useUseProgressIndication();
 
 const progressItems = computed(() => {
