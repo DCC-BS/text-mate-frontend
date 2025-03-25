@@ -12,13 +12,13 @@
         "check": "biome check --fix"
     },
     "dependencies": {
-        "@dcc-bs/common-ui.bs.js": "latest",
-        "@dcc-bs/logger.bs.js": "latest",
-        "@dcc-bs/event-system.bs.js": "^1.0.2",
-        "@iconify-json/heroicons": "latest",
-        "@nuxt/ui": "latest",
-        "@nuxtjs/i18n": "latest",
-        "@nuxtjs/mdc": "0.13.5",
+        "@dcc-bs/common-ui.bs.js": "^0.1.6",
+        "@dcc-bs/event-system.bs.js": "^1.1.1",
+        "@dcc-bs/logger.bs.js": "^1.0.0",
+        "@iconify-json/heroicons": "^1.2.2",
+        "@nuxt/ui": "^3.0.1",
+        "@nuxtjs/i18n": "^9.4.0",
+        "@nuxtjs/mdc": "0.16.1",
         "@tiptap/extension-bubble-menu": "^2.11.5",
         "@tiptap/extension-character-count": "^2.11.5",
         "@tiptap/extension-floating-menu": "^2.11.5",
@@ -28,18 +28,14 @@
         "@tiptap/starter-kit": "^2.11.5",
         "@tiptap/vue-3": "^2.11.5",
         "@vite-pwa/nuxt": "^0.10.6",
-        "nuxt": "latest",
+        "nuxt": "^3.16.1",
         "nuxt-viewport": "2.2.0",
-        "vue": "latest",
-        "vue-router": "latest"
+        "vue": "^3.5.13",
+        "vue-router": "^4.5.0"
     },
     "devDependencies": {
-        "@biomejs/biome": "latest",
-        "autoprefixer": "^10.4.20",
-        "jiti": "^2.4.2",
-        "postcss": "^8.5.1",
-        "sass": "^1.84.0",
-        "sass-loader": "^16.0.5",
-        "tailwindcss": "3"
+        "@biomejs/biome": "^1.9.4",
+        "autoprefixer": "^10.4.21",
+        "jiti": "^2.4.2"
     }
 }

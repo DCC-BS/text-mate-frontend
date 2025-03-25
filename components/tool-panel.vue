@@ -16,7 +16,7 @@ const { t } = useI18n();
 const { registerHandler, unregisterHandler } = useCommandBus();
 
 // refs
-const selectedTab = ref(0);
+const selectedTab = ref("0");
 const formality = ref<string>("neutral");
 const domain = ref<string>("general");
 
@@ -47,15 +47,16 @@ const items = [
 ];
 
 async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
-    selectedTab.value = 1;
+    selectedTab.value = "1";
 }
 </script>
 
 <template>
     <div class="h-full p-2">
+        <!-- wrapper: 'h-[30vh] md:h-[90vh]'             -->
         <UTabs
-v-model="selectedTab" :items="items" class="h-full"
-            :ui="{ container: 'h-[30vh] md:h-[90vh] overflow-y-auto scrollable-container', wrapper: 'h-[30vh] md:h-[90vh]' }">
+            v-model="selectedTab" :items="items" class="h-full"
+            :ui="{ content: 'h-[30vh] md:h-[90vh] overflow-y-auto scrollable-container' }"> 
             <template #problems>
                 <ProblemsPanel :blocks="props.blocks" />
             </template>
@@ -64,12 +65,12 @@ v-model="selectedTab" :items="items" class="h-full"
                     <div class="grid grid-cols-2 mb-3 gap-2">
                         <span>{{ t('rewrite.formalityLabel') }}</span>
                         <SelectMenuLocalized
-v-model="formality" :options="['neutral', 'formal', 'informal']"
+                            v-model="formality" :options="['neutral', 'formal', 'informal']"
                             local-parent="rewrite.formality" />
 
                         <span>{{ t('rewrite.domainLabel') }}</span>
                         <SelectMenuLocalized
-v-model="domain"
+                            v-model="domain"
                             :options="['general', 'report', 'email', 'socialMedia', 'technical']"
                             local-parent="rewrite.domain" />
                     </div>

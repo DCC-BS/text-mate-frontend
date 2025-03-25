@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@import "@nuxt/ui";
+
+@import './partials/animations.css';
+
+@import './partials/blocks.css';
+
+@import './partials/code.css';
+
+@import './partials/placeholder.css';
+
+@import './partials/typography.css';
+
+@source "../../node_modules/@dcc-bs/common-ui.bs.js/dist/runtime";
+
+.ProseMirror {
+  z-index: 0;
+  height: 100%;
+  padding: 0.25rem;
+  caret-color: black;
+  outline: 0;
+}
+
+.dark .ProseMirror {
+  caret-color: white;
+}
+
+.ProseMirror .selection {
+  display: inline;
+}
+
+.ProseMirror .selection,
+.ProseMirror *::selection {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark .ProseMirror .selection,
+.dark .ProseMirror *::selection {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.ProseMirror > .react-renderer {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.ProseMirror > .react-renderer:first-child {
+  margin-top: 0;
+}
+
+.ProseMirror > .react-renderer:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror.resize-cursor {
+  cursor: col-resize;
+}
+
+.ProseMirror .ProseMirror-gapcursor {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 42rem;
+}
+
+.ProseMirror .ProseMirror-gapcursor:after {
+  border-top-color: rgba(0, 0, 0, 0.4);
+  top: -1.5em;
+  right: 0;
+  left: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 42rem;
+}
+
+.dark .ProseMirror .ProseMirror-gapcursor:after {
+  border-top-color: rgba(255, 255, 255, 0.4);
+}

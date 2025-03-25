@@ -18,7 +18,7 @@ function sendError(error: string) {
     toast.add({
         title: "Error",
         description: error,
-        color: "red",
+        color: "error",
         icon: "i-heroicons-exclamation-circle",
     });
 }

@@ -249,9 +249,14 @@ r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
 </template>
 
 
-<style>
+<style scoped>
+@reference "../assets/css/main.css";
+
 .correction {
     @apply underline decoration-wavy decoration-red-500 cursor-pointer;
+
+    /* text-decoration-style: wavy;
+    text-decoration-color: var(--color-red-500); */
 }
 
 .correction:hover {
@@ -267,7 +272,7 @@ r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
 }
 
 .data-bs-banner {
-    @apply hidden @md: inline max-md:hidden;
+    @apply hidden @md:inline max-md:hidden;
 }
 
 @media screen and (max-height: 600px) {

@@ -1,0 +1,62 @@
+services:
+  languagetool:
+    hostname: languagetool
+    build:
+      context: https://github.com/DCC-BS/text-mate-backend.git#main:docker/languagetool
+      dockerfile: ./Dockerfile
+    ports:
+      - ${LANGUAGE_TOOL_PORT}:8010 # Using default port from the image
+    environment:
+      - langtool_languageModel=/ngrams # OPTIONAL: Using ngrams data
+      - Java_Xms=512m
+      - Java_Xmx=2g
+    volumes:
+      - ${LANGUAGE_TOOL_CACHE_DIR}:/ngrams
+
+  vllm_qwen25_32b:
+    hostname: vllm_qwen25_32b
+    image: vllm/vllm-openai:v0.7.0
+    ports:
+      - ${LLM_API_PORT}:8000
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+      - VLLM_ATTENTION_BACKEND=FLASHINFER
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    ipc: host
+    volumes:
+      - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
+    command: >
+      --port 8000 --model Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4 --quantization "gptq_marlin" --kv-cache-dtype "fp8_e5m2" --tool-call-parser "hermes" --max-model-len 16000 --max-num-batched-tokens 4096 --max-num-seqs 16 --enable-prefix-caching --enable-chunked-prefill --gpu-memory-utilization 0.9 --tensor-parallel-size 2
+
+  textmate-backend:
+    build:
+      context: https://github.com/DCC-BS/text-mate-backend.git
+      dockerfile: ./Dockerfile
+    ports:
+      - '${API_PORT}:8000'
+    environment:
+      - API_PORT=${API_PORT}
+      - OPENAI_API_BASE_URL=http://localhost:${LLM_API_PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LLM_MODEL=${LLM_MODEL}
+      - LANGUAGE_TOOL_PORT=${LANGUAGE_TOOL_PORT}
+      - LANGUAGE_TOOL_API_URL=${LANGUAGE_TOOL_API_URL}
+      - CLIENT_URL=${CLIENT_URL}
+
+  textmate-frontend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - textmate-backend
+    ports:
+      - '3000:3000'
+    profiles:
+      - frontend

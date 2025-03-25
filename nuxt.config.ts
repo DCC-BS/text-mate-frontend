@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     devtools: { enabled: false },
     app: {
         head: {
-            titleTemplate: "{{ cookiecutter.app_title }}",
+            titleTemplate: "Text Mate",
             htmlAttrs: {
                 lang: "de",
             },
@@ -16,11 +16,11 @@ export default defineNuxtConfig({
                 },
                 {
                     name: "apple-mobile-web-app-title",
-                    content: "{{ cookiecutter.app_title }}",
+                    content: "Text Mate",
                 },
                 {
                     name: "application-name",
-                    content: "{{ cookiecutter.app_title }}",
+                    content: "Text Mate",
                 },
                 { name: "msapplication-config", content: "/browserconfig.xml" },
             ],
@@ -41,7 +41,7 @@ export default defineNuxtConfig({
     typescript: {
         strict: true,
     },
-    css: ["~/assets/css/main.scss"],
+    css: ["~/assets/css/main.css"],
     runtimeConfig: {
         public: {
             apiUrl: process.env.API_URL,
@@ -74,9 +74,9 @@ export default defineNuxtConfig({
             periodicSyncForUpdates: 60 * 10, // 10 minutes
         },
         manifest: {
-            name: "Grammar BS",
-            short_name: "Grammar BS",
-            description: "Grammar Editor",
+            name: "Text Mate",
+            short_name: "Text Mate",
+            description: "Tool for text manipulation",
             theme_color: "#000000",
             background_color: "#000000",
             icons: [
