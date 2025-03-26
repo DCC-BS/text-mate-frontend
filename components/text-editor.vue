@@ -202,6 +202,9 @@ watch(
     (value) => {
         if (!editor.value) return;
 
+        hoverBlock.value = undefined;
+        hoverRect.value = undefined;
+
         const type = getMarkType("correction", editor.value.state.schema);
 
         editor.value.view.dispatch(

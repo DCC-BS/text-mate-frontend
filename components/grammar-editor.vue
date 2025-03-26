@@ -11,6 +11,7 @@ import type {
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
 import ToolPanel from "./tool-panel.vue";
+import { CorrectionService } from "~/assets/services/CorrectionService";
 
 // refs
 const userText = ref("");
@@ -19,7 +20,8 @@ const taskScheduler = new TaskScheduler();
 
 const rewriteRange = ref<Range>();
 
-let currentCorrectTextAbortController: AbortController | null = null;
+const sentenceBlocks = ref<TextCorrectionBlock[][]>([]);
+const oldSentence = ref<string[]>([]);
 
 // composables
 const router = useRouter();
@@ -28,6 +30,9 @@ const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { executeCommand } = useCommandBus();
 const { sendError } = useUseErrorDialog();
+
+// todo create a composable
+const correctionService = new CorrectionService(sendError);
 
 // check if the query param clipboard is true
 const clipboard = router.currentRoute.value.query.clipboard;
@@ -63,24 +68,8 @@ async function correctText(text: string, signal: AbortSignal) {
         title: t("status.correctingText"),
     });
     try {
-        const response = await $fetch<TextCorrectionResponse>("/api/correct", {
-            body: { text: text },
-            method: "POST",
-            signal: signal,
-        });
-        blocks.value = response.blocks;
-    } catch (e: unknown) {
-        if (!(e instanceof Error)) {
-            return;
-        }
-
-        if ("cause" in e && e.cause === "aborted") {
-            return;
-        }
-
-        sendError(e.message);
+        await correctionService.correctText(text, signal, blocks);
     } finally {
-        currentCorrectTextAbortController = null;
         removeProgress("correcting");
     }
 }
