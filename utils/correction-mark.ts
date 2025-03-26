@@ -8,6 +8,8 @@ import type { EditorView } from "@tiptap/pm/view";
 
 type CorrectionMarkOptions = {
     onClick: (event: MouseEvent, node: ProseMirrorNode) => void;
+    onMouseEnter: (event: MouseEvent, node: ProseMirrorNode) => void;
+    onMouseLeave: (event: MouseEvent, node: ProseMirrorNode) => void;
     active: boolean;
 };
 
@@ -25,6 +27,8 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
     addOptions() {
         return {
             onClick: () => {},
+            onMouseEnter: () => {},
+            onMouseLeave: () => {},
             active: false,
         };
     },
@@ -81,6 +85,7 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
      * @returns {Array} The ProseMirror plugins.
      */
     addProseMirrorPlugins() {
+        const correctionMark = this;
         return [
             new Plugin({
                 props: {
@@ -118,6 +123,74 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
                         this.options.active = false;
 
                         return false;
+                    },
+
+                    /**
+                     * Handle DOM events for mouse interactions with the CorrectionMark
+                     */
+                    handleDOMEvents: {
+                        /**
+                         * Handles mouse enter events on the CorrectionMark
+                         * @param {EditorView} view - The editor view
+                         * @param {MouseEvent} event - The mouse event
+                         * @returns {boolean} Whether the event was handled
+                         */
+                        mouseover(
+                            view: EditorView,
+                            event: MouseEvent,
+                        ): boolean {
+                            // Get the DOM element that triggered the event
+                            const target = event.target as HTMLElement;
+
+                            // Check if the target has the correction class
+                            if (target?.classList.contains("correction")) {
+                                // Find the position of the node in the document
+                                const pos = view.posAtDOM(target, 0);
+                                const { state } = view;
+                                const { doc } = state;
+                                const node = doc.nodeAt(pos);
+
+                                if (node) {
+                                    correctionMark.options.onMouseEnter(
+                                        event,
+                                        node,
+                                    );
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        },
+
+                        /**
+                         * Handles mouse leave events on the CorrectionMark
+                         * @param {EditorView} view - The editor view
+                         * @param {MouseEvent} event - The mouse event
+                         * @returns {boolean} Whether the event was handled
+                         */
+                        mouseout(view: EditorView, event: MouseEvent): boolean {
+                            // Get the DOM element that triggered the event
+                            const target = event.target as HTMLElement;
+
+                            // Check if the target has the correction class
+                            if (target?.classList.contains("correction")) {
+                                // Find the position of the node in the document
+                                const pos = view.posAtDOM(target, 0);
+                                const { state } = view;
+                                const { doc } = state;
+                                const node = doc.nodeAt(pos);
+
+                                if (node) {
+                                    correctionMark.options.onMouseLeave(
+                                        event,
+                                        node,
+                                    );
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        },
                     },
                 },
             }),

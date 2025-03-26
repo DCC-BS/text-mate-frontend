@@ -43,7 +43,7 @@ services:
       - '${API_PORT}:8000'
     environment:
       - API_PORT=${API_PORT}
-      - OPENAI_API_BASE_URL=http://localhost:${LLM_API_PORT}
+      - OPENAI_API_BASE_URL=http://vllm_qwen25_32b:8000/v1/
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - LLM_MODEL=${LLM_MODEL}
       - LANGUAGE_TOOL_PORT=${LANGUAGE_TOOL_PORT}

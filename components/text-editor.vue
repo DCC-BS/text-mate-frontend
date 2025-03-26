@@ -9,8 +9,9 @@ import {
     getMarkType,
     useEditor,
 } from "@tiptap/vue-3";
+// biome-ignore lint/style/useImportType: This is a bug in the biome plugin ApplyCorrectionCommand cannot be imported as a type
 import {
-    type ApplyCorrectionCommand,
+    ApplyCorrectionCommand,
     ApplyTextCommand,
     Cmds,
 } from "~/assets/models/commands";
@@ -41,14 +42,16 @@ const limit = ref(10_000);
 const currentPosition = computed(
     () => editor.value?.state.selection.from ?? -1,
 );
-const currentBlock = computed(() =>
-    props.blocks.find((b) => b.offset + 1 === currentPosition.value),
-);
+
 const characterCountPercentage = computed(() =>
     Math.round(
         (100 / limit.value) * editor.value?.storage.characterCount.characters(),
     ),
 );
+
+const container = ref<HTMLDivElement>();
+const hoverBlock = ref<TextCorrectionBlock>();
+const hoverRect = ref<DOMRect>();
 
 // composables
 const toast = useToast();
@@ -65,21 +68,30 @@ const editor = useEditor({
             limit: limit.value,
         }),
         CorrectionMark.configure({
-            onClick: (event: MouseEvent, node: Node) => {
+            onMouseEnter: (event: MouseEvent, node: Node) => {
                 const mark = node.marks.find((m) => m.attrs["data-block-id"]);
 
                 const id = mark?.attrs["data-block-id"];
                 const block = props.blocks.find((b) => b.offset === id);
 
-                if (!block) return;
+                if (!block || !editor.value) return;
 
-                editor.value
-                    ?.chain()
-                    .setTextSelection({
-                        from: block.offset + 1,
-                        to: block.offset + block.length + 1,
-                    })
-                    .run();
+                hoverBlock.value = block;
+                hoverRect.value = getRangeBoundingBox(
+                    editor.value,
+                    block.offset + 1,
+                    block.offset + block.length + 1,
+                );
+
+                console.log(hoverRect.value);
+
+                // editor.value
+                //     ?.chain()
+                //     .setTextSelection({
+                //         from: block.offset + 1,
+                //         to: block.offset + block.length + 1,
+                //     })
+                //     .run();
 
                 emit("blockClick", block);
             },
@@ -113,6 +125,32 @@ onMounted(() => {
     registerHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     registerHandler(Cmds.ApplyTextCommand, applyText);
 });
+
+// Wait for both the editor to be available and the container to be mounted
+watch(
+    [() => editor.value, () => container.value],
+    ([editorValue, containerValue]) => {
+        if (!editorValue || !containerValue) return;
+
+        containerValue.onmouseenter = (event) => {
+            if (!hoverRect.value) return;
+
+            const threshold = 50;
+
+            // check if the mouse is far away from the hover rect
+            if (
+                event.clientX < hoverRect.value.left - threshold ||
+                event.clientX > hoverRect.value.right + threshold ||
+                event.clientY < hoverRect.value.top - threshold ||
+                event.clientY > hoverRect.value.bottom + threshold
+            ) {
+                hoverBlock.value = undefined;
+                hoverRect.value = undefined;
+            }
+        };
+    },
+    { immediate: true },
+);
 
 onUnmounted(() => {
     editor.value?.destroy();
@@ -202,15 +240,36 @@ async function applyText(command: ApplyTextCommand) {
 </script>
 
 <template>
-    <div v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container">
+    <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
+        <UPopover :open="!!hoverBlock">
+            <div class="absolute" :style="{
+                top: hoverRect?.top + 'px', 
+                left: hoverRect?.left + 'px',
+                width: hoverRect?.width + 'px',
+                height: hoverRect?.height + 'px',}">
+            </div>
+
+            <template #content>
+                <div
+                    v-if="hoverBlock && hoverBlock.corrected.length > 0"
+                    class="flex flex-wrap gap-1 justify-center p-2">
+                    <UButton
+                        v-for="correction in hoverBlock.corrected.slice(0, 5)" :key="correction"
+                        @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
+                        {{ correction }}
+                    </UButton>
+                </div>
+            </template>
+        </UPopover>
+
         <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }">
             <div class="bubble-menu">
                 <div
-v-if="editor.isActive('correction') && currentBlock && currentBlock.corrected.length > 0"
+                    v-if="hoverBlock && hoverBlock.corrected.length > 0"
                     class="flex flex-wrap gap-1 justify-center">
                     <UButton
-v-for="correction in currentBlock.corrected.slice(0, 5)" :key="correction"
-                        @click="applyCorrection(new ApplyCorrectionCommand(currentBlock, correction))">
+                        v-for="correction in hoverBlock.corrected.slice(0, 5)" :key="correction"
+                        @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
                         {{ correction }}
                     </UButton>
                 </div>
@@ -223,7 +282,7 @@ v-for="correction in currentBlock.corrected.slice(0, 5)" :key="correction"
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
         </div>
         <div
-class="flex gap-2 items-start justify-between"
+            class="flex gap-2 items-start justify-between"
             :class="{ 'character-count--warning': editor.storage.characterCount.characters() === limit }">
             <DisclaimerLlm />
             <div class="data-bs-banner">
@@ -234,7 +293,7 @@ class="flex gap-2 items-start justify-between"
                 <svg height="20" width="20" viewBox="0 0 20 20">
                     <circle r="10" cx="10" cy="10" fill="#e9ecef" />
                     <circle
-r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
+                        r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
                         :stroke-dasharray="`calc(${characterCountPercentage} * 31.4 / 100) 31.4`"
                         transform="rotate(-90) translate(-20)" />
                     <circle r="6" cx="10" cy="10" fill="white" />
@@ -249,14 +308,16 @@ r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
 </template>
 
 
-<style scoped>
+<style>
 @reference "../assets/css/main.css";
 
 .correction {
     @apply underline decoration-wavy decoration-red-500 cursor-pointer;
 
-    /* text-decoration-style: wavy;
-    text-decoration-color: var(--color-red-500); */
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--color-red-500);
+    cursor: pointer;
 }
 
 .correction:hover {
