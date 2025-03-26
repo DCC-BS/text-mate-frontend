@@ -14,6 +14,25 @@ type CorrectionMarkOptions = {
 };
 
 /**
+ * Checks if an element is obstructed by another element at the event coordinates.
+ * @param {MouseEvent} event - The mouse event.
+ * @param {HTMLElement} element - The element to check.
+ * @returns {boolean} True if the element is not obstructed, false otherwise.
+ */
+function isElementNotObstructed(
+    event: MouseEvent,
+    element: HTMLElement,
+): boolean {
+    // Get the element at the event coordinates
+    const x = event.clientX;
+    const y = event.clientY;
+    const elementAtPoint = document.elementFromPoint(x, y);
+
+    // Check if the element or one of its descendants is at the point
+    return element === elementAtPoint || element.contains(elementAtPoint);
+}
+
+/**
  * CorrectionMark is a custom mark for the Tiptap editor that highlights text corrections.
  * It provides options for handling click events and toggling active state.
  */
@@ -144,6 +163,11 @@ export const CorrectionMark = Mark.create<CorrectionMarkOptions>({
 
                             // Check if the target has the correction class
                             if (target?.classList.contains("correction")) {
+                                // Check if the element is not obstructed
+                                if (!isElementNotObstructed(event, target)) {
+                                    return false;
+                                }
+
                                 // Find the position of the node in the document
                                 const pos = view.posAtDOM(target, 0);
                                 const { state } = view;

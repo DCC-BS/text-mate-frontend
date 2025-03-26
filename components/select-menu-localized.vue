@@ -16,12 +16,12 @@ const { t } = useI18n();
 </script>
 
 <template>
-    <USelectMenu v-model="modelValue" :options="props.options">
-        <template #option="{ option }">
-            {{ t(`${props.localParent}.${option}`) }}
-        </template>
-        <template #label>
+    <USelectMenu v-model="modelValue" :items="props.options">
+        <template #default="{ modelValue }">
             {{ t(`${props.localParent}.${modelValue}`) }}
+        </template>
+        <template #item="{ item }">
+            {{ t(`${props.localParent}.${item}`) }}
         </template>
     </USelectMenu>
 </template>

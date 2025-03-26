@@ -4,6 +4,11 @@ export default defineI18nConfig(() => ({
     locale: "de",
     messages: {
         en: {
+            navigation: {
+                languages: "Languages",
+                undo: "Undo",
+                redo: "Redo",
+            },
             tools: {
                 problems: "Problems",
                 rewrite: "Rewrite",
@@ -49,6 +54,11 @@ export default defineI18nConfig(() => ({
         },
 
         de: {
+            navigation: {
+                languages: "Sprachen",
+                undo: "Rückgängig",
+                redo: "Wiederholen",
+            },
             tools: {
                 problems: "Probleme",
                 rewrite: "Umschreiben",

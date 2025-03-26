@@ -7,6 +7,9 @@ export const Cmds = {
     ApplyCorrectionCommand: "ApplyCorrectionCommand",
     ApplyTextCommand: "ApplyTextCommand",
     RewriteTextCommand: "RewriteTextCommand",
+    UndoCommand: "UndoCommand",
+    RedoCommand: "RedoCommand",
+    UndoRedoStateChanged: "UndoRedoStateChanged",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -39,5 +42,22 @@ export class RewriteTextCommand implements ICommand {
     constructor(
         public text: string,
         public range: Range,
+    ) {}
+}
+
+export class UndoCommand implements ICommand {
+    readonly $type = "UndoCommand";
+}
+
+export class RedoCommand implements ICommand {
+    readonly $type = "RedoCommand";
+}
+
+export class UndoRedoStateChanged implements ICommand {
+    readonly $type = "UndoRedoStateChanged";
+
+    constructor(
+        public canUndo: boolean,
+        public canRedo: boolean,
     ) {}
 }

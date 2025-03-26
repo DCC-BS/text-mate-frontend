@@ -103,7 +103,7 @@ watch(viewport.breakpoint, (newBreakpoint, oldBreakpoint) => {
 </script>
 
 <template>
-    <div class="h-[100vh]">
+    <div class="h-[90vh]">
         <SplitView :is-horizontal="viewport.isLessThan('md')" a-pane-style="min-w-[250px] min-h-[200px]"
             b-pane-style="min-w-[300px] min-h-[200px]">
             <template #a>

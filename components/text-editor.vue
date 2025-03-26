@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ICommand } from "#build/types/commands";
 import CharacterCount from "@tiptap/extension-character-count";
 import type { Node } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
@@ -14,6 +15,7 @@ import {
     ApplyCorrectionCommand,
     ApplyTextCommand,
     Cmds,
+    UndoRedoStateChanged,
 } from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { CorrectionMark } from "~/utils/correction-mark";
@@ -37,26 +39,39 @@ const model = defineModel<string>("modelValue", { required: true });
 
 // refs
 const limit = ref(10_000);
+const container = ref<HTMLDivElement>();
+const hoverBlock = ref<TextCorrectionBlock>();
+const hoverRect = ref<DOMRect>();
+const relativeHoverRect = computed(() => {
+    if (!hoverRect.value) return;
+
+    const containerRect = container.value?.getBoundingClientRect();
+
+    if (!containerRect) return;
+
+    return {
+        top: hoverRect.value.top - containerRect.top,
+        left: hoverRect.value.left - containerRect.left,
+        width: hoverRect.value.width,
+        height: hoverRect.value.height,
+    };
+});
+const undoRedoState = ref({
+    canUndo: false,
+    canRedo: false,
+});
 
 // computed
-const currentPosition = computed(
-    () => editor.value?.state.selection.from ?? -1,
-);
-
 const characterCountPercentage = computed(() =>
     Math.round(
         (100 / limit.value) * editor.value?.storage.characterCount.characters(),
     ),
 );
 
-const container = ref<HTMLDivElement>();
-const hoverBlock = ref<TextCorrectionBlock>();
-const hoverRect = ref<DOMRect>();
-
 // composables
 const toast = useToast();
 const { t } = useI18n();
-const { registerHandler, unregisterHandler } = useCommandBus();
+const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
 
 const editor = useEditor({
     content: model.value,
@@ -69,12 +84,18 @@ const editor = useEditor({
         }),
         CorrectionMark.configure({
             onMouseEnter: (event: MouseEvent, node: Node) => {
+                if (hoverBlock.value) {
+                    return;
+                }
+
                 const mark = node.marks.find((m) => m.attrs["data-block-id"]);
 
                 const id = mark?.attrs["data-block-id"];
                 const block = props.blocks.find((b) => b.offset === id);
 
-                if (!block || !editor.value) return;
+                if (!block || !editor.value || block.corrected.length === 0) {
+                    return;
+                }
 
                 hoverBlock.value = block;
                 hoverRect.value = getRangeBoundingBox(
@@ -82,16 +103,6 @@ const editor = useEditor({
                     block.offset + 1,
                     block.offset + block.length + 1,
                 );
-
-                console.log(hoverRect.value);
-
-                // editor.value
-                //     ?.chain()
-                //     .setTextSelection({
-                //         from: block.offset + 1,
-                //         to: block.offset + block.length + 1,
-                //     })
-                //     .run();
 
                 emit("blockClick", block);
             },
@@ -117,6 +128,17 @@ const editor = useEditor({
     },
     onUpdate: ({ editor }) => {
         model.value = editor.getText();
+
+        const canUndo = editor.can().undo();
+        const canRedo = editor.can().redo();
+
+        if (
+            undoRedoState.value.canUndo !== canUndo ||
+            undoRedoState.value.canRedo !== canRedo
+        ) {
+            undoRedoState.value = { canUndo, canRedo };
+            executeCommand(new UndoRedoStateChanged(canUndo, canRedo));
+        }
     },
 });
 
@@ -124,6 +146,8 @@ const editor = useEditor({
 onMounted(() => {
     registerHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     registerHandler(Cmds.ApplyTextCommand, applyText);
+    registerHandler(Cmds.UndoCommand, applyUndo);
+    registerHandler(Cmds.RedoCommand, applyRedo);
 });
 
 // Wait for both the editor to be available and the container to be mounted
@@ -132,17 +156,18 @@ watch(
     ([editorValue, containerValue]) => {
         if (!editorValue || !containerValue) return;
 
-        containerValue.onmouseenter = (event) => {
+        containerValue.onmousemove = (event) => {
             if (!hoverRect.value) return;
 
-            const threshold = 50;
+            const bottomThreshold = 50;
+            const xThreshold = 2;
 
             // check if the mouse is far away from the hover rect
             if (
-                event.clientX < hoverRect.value.left - threshold ||
-                event.clientX > hoverRect.value.right + threshold ||
-                event.clientY < hoverRect.value.top - threshold ||
-                event.clientY > hoverRect.value.bottom + threshold
+                event.clientX < hoverRect.value.left - xThreshold ||
+                event.clientX > hoverRect.value.right + xThreshold ||
+                event.clientY < hoverRect.value.top ||
+                event.clientY > hoverRect.value.bottom + bottomThreshold
             ) {
                 hoverBlock.value = undefined;
                 hoverRect.value = undefined;
@@ -157,6 +182,8 @@ onUnmounted(() => {
 
     unregisterHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     unregisterHandler(Cmds.ApplyTextCommand, applyText);
+    unregisterHandler(Cmds.UndoCommand, applyUndo);
+    unregisterHandler(Cmds.RedoCommand, applyRedo);
 });
 
 // listeners
@@ -214,6 +241,9 @@ function rewriteText() {
 async function applyCorrection(command: ApplyCorrectionCommand) {
     if (!editor.value) return;
 
+    hoverBlock.value = undefined;
+    hoverRect.value = undefined;
+
     const block = command.block;
     const corrected = command.corrected;
 
@@ -237,16 +267,28 @@ async function applyText(command: ApplyTextCommand) {
         .focus(range.from)
         .run();
 }
+
+async function applyUndo(_: ICommand) {
+    if (!editor.value || !editor.value.can().undo()) return;
+
+    editor.value.commands.undo();
+}
+
+async function applyRedo(_: ICommand) {
+    if (!editor.value || !editor.value.can().redo()) return;
+
+    editor.value.commands.redo();
+}
 </script>
 
 <template>
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
-        <UPopover :open="!!hoverBlock">
-            <div class="absolute" :style="{
-                top: hoverRect?.top + 'px', 
-                left: hoverRect?.left + 'px',
-                width: hoverRect?.width + 'px',
-                height: hoverRect?.height + 'px',}">
+        <UPopover :open="!!hoverBlock" :content="{onOpenAutoFocus: (e) => e.preventDefault()}" class="absolute">
+            <div class="absolute pointer-events-none select-none touch-none" :style="{
+                top: relativeHoverRect?.top + 'px', 
+                left: relativeHoverRect?.left + 'px',
+                width: relativeHoverRect?.width + 'px',
+                height: relativeHoverRect?.height + 'px',}">
             </div>
 
             <template #content>
@@ -264,16 +306,7 @@ async function applyText(command: ApplyTextCommand) {
 
         <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }">
             <div class="bubble-menu">
-                <div
-                    v-if="hoverBlock && hoverBlock.corrected.length > 0"
-                    class="flex flex-wrap gap-1 justify-center">
-                    <UButton
-                        v-for="correction in hoverBlock.corrected.slice(0, 5)" :key="correction"
-                        @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
-                        {{ correction }}
-                    </UButton>
-                </div>
-                <UButton v-else variant="ghost" @click="rewriteText">
+                <UButton variant="ghost" @click="rewriteText">
                     {{ t('editor.rewrite') }}
                 </UButton>
             </div>

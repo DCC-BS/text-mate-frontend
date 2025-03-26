@@ -3,8 +3,9 @@ import GrammarEditor from "./components/grammar-editor.vue";
 </script>
 
 <template>
+    <NuxtPwaManifest />
     <UApp>
-        <NuxtPwaManifest />
-        <GrammarEditor />
+        <NavigationMenu />
+        <NuxtPage />
     </UApp>
 </template>

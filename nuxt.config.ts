@@ -52,10 +52,20 @@ export default defineNuxtConfig({
         bundle: {
             optimizeTranslationDirective: false,
         },
-        locales: ["en", "de"],
+        locales: [
+            {
+                code: "en",
+                name: "English",
+            },
+            {
+                code: "de",
+                name: "Deutsch",
+            },
+        ],
         defaultLocale: "de",
         vueI18n: "./i18n.config.ts",
         lazy: true,
+        strategy: "prefix_except_default",
     },
     nitro: {
         node: true,
