@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import type { NavigationMenuItem } from "#ui/components/NavigationMenu.vue";
 import {
     Cmds,
     RedoCommand,
     UndoCommand,
     type UndoRedoStateChanged,
 } from "~/assets/models/commands";
+import type { NavigationMenuItem } from "#ui/components/NavigationMenu.vue";
 
 // Add translation hook
 const { t } = useI18n();

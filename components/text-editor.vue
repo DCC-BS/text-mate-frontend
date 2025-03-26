@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ICommand } from "#build/types/commands";
 import CharacterCount from "@tiptap/extension-character-count";
 import type { Node } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
@@ -19,6 +18,7 @@ import {
 } from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { CorrectionMark } from "~/utils/correction-mark";
+import type { ICommand } from "#build/types/commands";
 
 // input
 const props = defineProps<{

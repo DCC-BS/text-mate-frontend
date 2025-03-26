@@ -8,10 +8,10 @@ import type {
     TextCorrectionBlock,
     TextCorrectionResponse,
 } from "~/assets/models/text-correction";
+import { CorrectionService } from "~/assets/services/CorrectionService";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
 import ToolPanel from "./tool-panel.vue";
-import { CorrectionService } from "~/assets/services/CorrectionService";
 
 // refs
 const userText = ref("");
