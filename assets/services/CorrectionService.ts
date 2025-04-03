@@ -1,9 +1,9 @@
+import { diffArrays } from "diff";
 import type {
     TextCorrectionBlock,
     TextCorrectionResponse,
 } from "../models/text-correction";
 import { Queue } from "./Queue";
-import { diffArrays } from "diff";
 
 type CorrectedSentence = {
     text: string;
