@@ -25,7 +25,7 @@ jobs:
         run: npm install -g bun
       - run: bun install
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DCC_BS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: bun generate
       - name: Run Biome
         run: biome ci .
