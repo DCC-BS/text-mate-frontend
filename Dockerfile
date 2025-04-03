@@ -2,7 +2,7 @@
 FROM node:23-alpine AS build
 
 # ARG DCC_BS_TOKEN
-RUN echo "The value is $DCC_BS_TOKEN"
+RUN --mount=type=secret,id=dcc_bs_token,env=DCC_BS_TOKEN echo "The value is $DCC_BS_TOKEN"
 # ENV DCC_BS_TOKEN=$DCC_BS_TOKEN
 
 # Set the environment variable based on which token is available
@@ -21,10 +21,11 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY ./package*.json ./
+COPY ./bun.lock ./
 COPY ./.npmrc /.
 
 # Install dependencies using bun
-RUN bun install
+RUN --mount=type=secret,id=dcc_bs_token,env=DCC_BS_TOKEN bun install
 
 # Copy the rest of the application code
 COPY . .

@@ -27,4 +27,4 @@ jobs:
           image-name: "textmate-client"
           vulnerability-scan: false
           push: false
-          build-args: "DCC_BS_TOKEN=${{ secrets.DCC_BS_TOKEN }}"
+          dcc-bs-token: ${{ secrets.DCC_BS_TOKEN }}

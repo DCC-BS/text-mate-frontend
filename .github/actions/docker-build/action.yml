@@ -59,6 +59,9 @@ inputs:
     description: 'Docker build arguments in the format ARG1=value1,ARG2=value2'
     required: false
     default: ''
+  dcc-bs-token:
+    description: 'DCC BS token for authentication'
+    required: false
 
 runs:
   using: "composite"
@@ -185,6 +188,8 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ inputs.build-args != '' && steps.parse-build-args.outputs.build_args || '' }}
+        secrets: |
+            "dcc_bs_token=${{ inputs.dcc-bs-token }}"
 
 branding:
   icon: 'package'
