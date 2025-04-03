@@ -6,6 +6,9 @@ on:
       - deploy
   workflow_dispatch:
 
+env:
+  DCC_BS_TOKEN: ${{ secrets.DCC_BS_TOKEN }}
+
 permissions:
   contents: read
   checks: write
@@ -22,4 +25,4 @@ jobs:
       vulnerability-scan: false
       push: false
       build-args: |
-        DCC_BS_TOKEN=${{ secrets.DCC_BS_TOKEN }}
+        DCC_BS_TOKEN=${{ DCC_BS_TOKEN }}
