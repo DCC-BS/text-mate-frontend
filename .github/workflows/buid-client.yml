@@ -12,16 +12,6 @@ permissions:
   packages: write
 
 jobs:
-  alter-docker-file:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Alter Dockerfile
-        run: |
-          sed -i 's/ENV DCC_BS_TOKEN=""/ENV DCC_BS_TOKEN="${{ secrets.DCC_BS_TOKEN }}"/' Dockerfile
-
   docker-build-client:
     runs-on: ubuntu-latest
     steps:

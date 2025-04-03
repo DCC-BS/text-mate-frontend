@@ -70,15 +70,16 @@ runs:
     - name: 'Download possible pre build artifacts'
       if: inputs.download-artifact == 'true'
       uses: actions/download-artifact@v4
-      shell: bash
 
     - name: 'Set SHORT_COMMIT_SHA'
-      run: echo "SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+      run: |
+        echo "SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
     - name: 'Set REPOSITORY_OWNER_LOWERCASE'
-      run: echo "REPOSITORY_OWNER_LOWERCASE=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+      run: |
+        echo "REPOSITORY_OWNER_LOWERCASE=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
