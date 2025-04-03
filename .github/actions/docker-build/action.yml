@@ -59,10 +59,6 @@ inputs:
     description: 'Docker build arguments in the format ARG1=value1,ARG2=value2'
     required: false
     default: ''
-  environment-variables:
-    description: 'Environment variables to pass to Docker build in the format KEY1=value1,KEY2=value2'
-    required: false
-    default: ''
 
 runs:
   using: "composite"
@@ -149,7 +145,6 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ steps.parse-build-args.outputs.build_args }}
-        secret-files: ${{ inputs.environment-variables != '' && 'env=env.txt' || '' }}
 
     - name: 'Run trivy vulnerability scanner'
       if: inputs.vulnerability-scan == 'true'
@@ -190,7 +185,6 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ inputs.build-args != '' && steps.parse-build-args.outputs.build_args || '' }}
-        secret-files: ${{ inputs.environment-variables != '' && 'env=env.txt' || '' }}
 
 branding:
   icon: 'package'
