@@ -1,0 +1,191 @@
+name: "Docker Build and Push"
+description: "Builds and optionally pushes a Docker image to various registries"
+author: "TextMate"
+
+inputs:
+  image-name:
+    description: 'Image name with optional path (e.g. devops/test-container)'
+    required: true
+  sha-tag:
+    default: 'true'
+    description: 'Output Git short commit (or long if specified) as Docker tag'
+    required: false
+  push:
+    description: 'Push image to registry. If false, only docker build is done.'
+    required: true
+  working-directory:
+    required: false
+    default: '.'
+  docker-filename:
+    default: 'Dockerfile'
+    required: false
+  vulnerability-scan:
+    default: 'false'
+    required: false
+  download-artifact:
+    default: 'false'
+    required: false
+  linkyard-enabled:
+    default: 'false'
+    description: 'Enable push to docker.nexus.itbs.linkyard-cloud.ch (will be removed in the future)'
+    required: false
+  quay-enabled:
+    default: 'false'
+    description: 'Enable push to quay.io'
+    required: false
+  quay-organization:
+    description: 'Organization name on quay.io'
+    required: false
+  quay-team:
+    description: 'Team within organization on quay.io'
+    required: false
+  ghcr-enabled:
+    default: 'true'
+    description: 'Enable push to ghcr.io (will be removed if ghcr.io is the main container repository)'
+    required: false
+  linkyard-registry-user:
+    description: 'Linkyard Container registry user (will be removed in the future)'
+    required: false
+  linkyard-registry-password:
+    description: 'Linkyard Container registry password (will be removed in the future)'
+    required: false
+  quay-registry-user:
+    description: 'Quay Container registry user'
+    required: false
+  quay-registry-password:
+    description: 'Quay Container registry password'
+    required: false
+  build-args:
+    description: 'Docker build arguments in the format ARG1=value1,ARG2=value2'
+    required: false
+    default: ''
+  environment-variables:
+    description: 'Environment variables to pass to Docker build in the format KEY1=value1,KEY2=value2'
+    required: false
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: 'Download possible pre build artifacts'
+      if: inputs.download-artifact == 'true'
+      uses: actions/download-artifact@v4
+      shell: bash
+
+    - name: 'Set SHORT_COMMIT_SHA'
+      run: echo "SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: 'Set REPOSITORY_OWNER_LOWERCASE'
+      run: echo "REPOSITORY_OWNER_LOWERCASE=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: 'Docker meta (prepare tags)'
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        # list of Docker images to use as base name for tags
+        images: |
+          name=ghcr.io/${{ env.REPOSITORY_OWNER_LOWERCASE }}/${{ inputs.image-name }},enable=${{ inputs.ghcr-enabled }}
+          name=docker.nexus.itbs.linkyard-cloud.ch/${{ inputs.image-name }},enable=${{ inputs.linkyard-enabled }}
+          name=quay.io/${{ inputs.image-name }},enable=${{ inputs.quay-enabled == 'true' && inputs.quay-organization == '' && inputs.quay-team == '' }}
+          name=quay.io/${{ inputs.quay-organization }}/${{ inputs.image-name }},enable=${{ inputs.quay-enabled == 'true' && inputs.quay-organization != '' && inputs.quay-team == '' }}
+          name=quay.io/${{ inputs.quay-organization }}/${{ inputs.quay-team }}/${{ inputs.image-name }},enable=${{ inputs.quay-enabled == 'true' && inputs.quay-organization != '' && inputs.quay-team != '' }}
+        # generate Docker tags based on the following events/attributes
+        tags: |
+          # set latest tag for default branch
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=ref,event=branch,enable=${{ contains(github.ref, 'release') }}
+          type=semver,pattern={{version}}
+          type=sha,enable=${{ inputs.sha-tag == 'true' }}
+
+    - name: 'Set up Docker Buildx'
+      uses: docker/setup-buildx-action@v3
+      with:
+        driver: docker
+
+    - name: 'Parse build arguments'
+      id: parse-build-args
+      if: inputs.build-args != ''
+      run: |
+        # Convert comma-separated build args to array and format for Docker
+        build_args=""
+        IFS=',' read -ra ARGS <<< "${{ inputs.build-args }}"
+        for arg in "${ARGS[@]}"; do
+          build_args="$build_args --build-arg $arg"
+        done
+        echo "build_args=$build_args" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: 'Parse environment variables'
+      id: parse-env-vars
+      if: inputs.environment-variables != ''
+      run: |
+        # Convert comma-separated env vars to array and format for Docker
+        env_vars=()
+        IFS=',' read -ra VARS <<< "${{ inputs.environment-variables }}"
+        for var in "${VARS[@]}"; do
+          env_vars+=("--env $var")
+        done
+        env_string="${env_vars[*]}"
+        echo "env_vars=$env_string" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: 'Build only and load into local docker (for vulnerability scanner)'
+      if: inputs.vulnerability-scan == 'true'
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{ inputs.working-directory }}
+        file: ${{ inputs.working-directory }}/${{ inputs.docker-filename }}
+        load: true
+        push: 'false'
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: ${{ steps.parse-build-args.outputs.build_args }}
+
+    - name: 'Run trivy vulnerability scanner'
+      if: inputs.vulnerability-scan == 'true'
+      uses: FD-ITBS/reusable-workflows/.github/actions/trivy-scan@main
+      with:
+        image-to-scan: ghcr.io/${{ env.REPOSITORY_OWNER_LOWERCASE }}/${{ inputs.image-name }}:sha-${{ env.SHORT_COMMIT_SHA }}
+
+    - name: Login to docker.nexus.itbs.linkyard-cloud.ch container registry
+      if: ${{ inputs.push == 'true' && inputs.linkyard-enabled == 'true' }}
+      uses: docker/login-action@v3
+      with:
+        registry: docker.nexus.itbs.linkyard-cloud.ch
+        username: ${{ inputs.linkyard-registry-user }}
+        password: ${{ inputs.linkyard-registry-password }}
+
+    - name: Login to quay.io container registry
+      if: ${{ inputs.push == 'true' && inputs.quay-enabled == 'true' }}
+      uses: docker/login-action@v3
+      with:
+        registry: quay.io
+        username: ${{ inputs.quay-registry-user }}
+        password: ${{ inputs.quay-registry-password }}
+
+    - name: 'Login to GitHub Container Registry'
+      uses: docker/login-action@v3
+      if: ${{ inputs.ghcr-enabled == 'true' }}
+      with:
+        registry: 'ghcr.io'
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+
+    - name: 'Build (and push if needed)'
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{ inputs.working-directory }}
+        file: ${{ inputs.working-directory }}/${{ inputs.docker-filename }}
+        push: ${{ inputs.push }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: ${{ inputs.build-args != '' && steps.parse-build-args.outputs.build_args || '' }}
+        build-contexts: ${{ inputs.environment-variables != '' && format('env={0}', steps.parse-env-vars.outputs.env_vars) || '' }}
+
+branding:
+  icon: 'package'
+  color: 'blue'

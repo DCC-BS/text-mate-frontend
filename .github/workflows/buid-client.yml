@@ -15,14 +15,29 @@ permissions:
   packages: write
 
 jobs:
+  alter-docker-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Alter Dockerfile
+        run: |
+          sed -i 's/ENV DCC_BS_TOKEN=""/ENV DCC_BS_TOKEN="${{ secrets.DCC_BS_TOKEN }}"/' Dockerfile
+
   docker-build-client:
-    uses: FD-ITBS/reusable-workflows/.github/workflows/docker-build.yml@main
-    with:
-      working-directory: ./
-      ghcr-enabled: true
-      quay-enabled: false
-      image-name: "textmate-client"
-      vulnerability-scan: false
-      push: false
-      build-args: |
-        DCC_BS_TOKEN=${{ env.DCC_BS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and push Docker image
+        uses: ./.github/actions/docker-build
+        with:
+          working-directory: ./
+          ghcr-enabled: true
+          quay-enabled: false
+          image-name: "textmate-client"
+          vulnerability-scan: false
+          push: false
+          environment-variables: "DCC_BS_TOKEN=${{ env.DCC_BS_TOKEN }}"
