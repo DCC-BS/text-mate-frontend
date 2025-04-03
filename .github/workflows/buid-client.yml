@@ -6,9 +6,6 @@ on:
       - deploy
   workflow_dispatch:
 
-env:
-  DCC_BS_TOKEN: ${{ secrets.DCC_BS_TOKEN }}
-
 permissions:
   contents: read
   checks: write
@@ -40,4 +37,4 @@ jobs:
           image-name: "textmate-client"
           vulnerability-scan: false
           push: false
-          environment-variables: "DCC_BS_TOKEN=${{ env.DCC_BS_TOKEN }}"
+          environment-variables: "DCC_BS_TOKEN=${{ secrets.DCC_BS_TOKEN }}"
