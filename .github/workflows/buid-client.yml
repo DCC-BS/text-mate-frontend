@@ -21,7 +21,7 @@ jobs:
       - name: Build and push Docker image
         uses: ./.github/actions/docker-build
         with:
-          working-directory: ./
+          working-directory: .
           ghcr-enabled: true
           quay-enabled: false
           image-name: "textmate-client"
