@@ -7,11 +7,7 @@
     },
     "files": {
         "ignoreUnknown": false,
-        "ignore": [
-            ".nuxt/",
-            ".output/",
-            "logs/"
-        ]
+        "ignore": [".nuxt/", ".output/", "logs/"]
     },
     "formatter": {
         "enabled": true,
