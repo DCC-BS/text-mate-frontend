@@ -124,15 +124,19 @@ runs:
       id: parse-env-vars
       if: inputs.environment-variables != ''
       run: |
-        # Convert comma-separated env vars to array and format for Docker
-        env_vars=()
+        # Convert comma-separated env vars to formatted string for Docker build context
+        env_vars=""
         IFS=',' read -ra VARS <<< "${{ inputs.environment-variables }}"
         for var in "${VARS[@]}"; do
-          env_vars+=("--env $var")
+          # Extract key and value from each env var
+          key=$(echo $var | cut -d= -f1)
+          value=$(echo $var | cut -d= -f2-)
+          # Add each var to the environment file
+          echo "$key=$value" >> env.txt
         done
-        env_string="${env_vars[*]}"
-        echo "env_vars=$env_string" >> $GITHUB_OUTPUT
+        echo "Created env.txt file with environment variables"
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
 
     - name: 'Build only and load into local docker (for vulnerability scanner)'
       if: inputs.vulnerability-scan == 'true'
@@ -145,6 +149,7 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ steps.parse-build-args.outputs.build_args }}
+        secret-files: ${{ inputs.environment-variables != '' && 'env=env.txt' || '' }}
 
     - name: 'Run trivy vulnerability scanner'
       if: inputs.vulnerability-scan == 'true'
@@ -185,7 +190,7 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ inputs.build-args != '' && steps.parse-build-args.outputs.build_args || '' }}
-        build-contexts: ${{ inputs.environment-variables != '' && format('env={0}', steps.parse-env-vars.outputs.env_vars) || '' }}
+        secret-files: ${{ inputs.environment-variables != '' && 'env=env.txt' || '' }}
 
 branding:
   icon: 'package'
