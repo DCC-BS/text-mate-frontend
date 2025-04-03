@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # Stage 1: Build the application
 FROM node:23-alpine AS build
 
