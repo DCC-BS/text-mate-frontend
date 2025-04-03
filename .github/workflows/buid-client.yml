@@ -1,0 +1,23 @@
+name: Build Client
+
+on:
+  pull_request:
+    branches:
+      - deploy
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  packages: write
+
+jobs:
+  docker-build-client:
+    uses: FD-ITBS/reusable-workflows/.github/workflows/docker-build.yml@main
+    with:
+      working-directory: ./
+      ghcr-enabled: true
+      quay-enabled: false
+      image-name: "textmate-client"
+      vulnerability-scan: false
+      push: false
