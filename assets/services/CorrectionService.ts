@@ -2,10 +2,27 @@ import type {
     TextCorrectionBlock,
     TextCorrectionResponse,
 } from "../models/text-correction";
+import { Queue } from "./Queue";
+import { diffArrays } from "diff";
+
+type CorrectedSentence = {
+    text: string;
+    start: number;
+    end: number;
+    relativeBlocks: TextCorrectionBlock[];
+    absoluteBlocks: TextCorrectionBlock[];
+};
+
+function moveBlocks(offset: number, blocks: TextCorrectionBlock[]) {
+    return blocks.map((block) => ({
+        ...block,
+        offset: block.offset + offset,
+    }));
+}
 
 export class CorrectionService {
     private readonly blocks: TextCorrectionBlock[][] = [];
-    private oldSentence: string[] = [];
+    private oldSentence: CorrectedSentence[] = [];
 
     constructor(private readonly onError: (message: string) => void) {}
 
@@ -37,93 +54,86 @@ export class CorrectionService {
         }
     }
 
-    // This should only send the alterd sentences to the server
-    // it should also update the position of the blocks when sentences before them are added, removed or edited
-    // remove blocks from changed sentences and return them
-    // afetwards make the api call to get the blocks of the altered senteces
-    // then insert the new blocks into the blocks array
-
+    /**
+     * Corrects the given text by fetching blocks of corrections and updating the
+     * provided blocks reference.
+     *
+     * @param {string} text - The text to correct.
+     * @param {AbortSignal} signal - The abort signal to cancel the request.
+     * @param {Ref<TextCorrectionBlock[]>} blocks - The reference to update with
+     * corrected blocks.
+     */
     async correctText(
         text: string,
         signal: AbortSignal,
         blocks: Ref<TextCorrectionBlock[]>,
     ): Promise<void> {
         try {
-            blocks.value = await this.fetchBlocks(text, signal);
+            const segmenter = new Intl.Segmenter("de", {
+                granularity: "sentence",
+            });
 
-            // Replace the existing find logic with a more comprehensive comparison
-            // that handles additions, removals, and modifications of sentences
-            const sentences = text.split(/(?<=[.!?])\s/);
+            const sentences = Array.from(segmenter.segment(text)).map(
+                (s) => s.segment,
+            );
 
-            // Store the changed sentence index and type of change
-            let changedSentenceInfo: {
-                index: number;
-                type: "added" | "removed" | "modified" | null;
-            } = {
-                index: -1,
-                type: null,
-            };
+            const diff = diffArrays(
+                this.oldSentence.map((s) => s.text),
+                sentences,
+            );
 
-            if (this.oldSentence.length !== sentences.length) {
-                // First check if length is different (addition or removal)
-                // Find first point of difference
-                for (
-                    let i = 0;
-                    i < Math.min(this.oldSentence.length, sentences.length);
-                    i++
-                ) {
-                    if (this.oldSentence[i] !== sentences[i]) {
-                        changedSentenceInfo = {
-                            index: i,
-                            type:
-                                sentences.length > this.oldSentence.length
-                                    ? "added"
-                                    : "removed",
-                        };
-                        break;
+            const inputQueue = new Queue(this.oldSentence);
+            const output: CorrectedSentence[] = [];
+            let currentPos = 0;
+
+            for (const part of diff) {
+                if (signal.aborted) {
+                    return;
+                }
+
+                if (part.removed) {
+                    for (let i = 0; part.value.length > i; i++) {
+                        inputQueue.dequeue();
                     }
-                }
+                } else if (part.added) {
+                    const newSentences = part.value;
 
-                // If no difference found earlier, the change is at the end
-                if (changedSentenceInfo.type === null) {
-                    changedSentenceInfo = {
-                        index: Math.min(
-                            this.oldSentence.length,
-                            sentences.length,
-                        ),
-                        type:
-                            sentences.length > this.oldSentence.length
-                                ? "added"
-                                : "removed",
-                    };
-                }
-            } else {
-                // Lengths are the same, look for modifications
-                for (let i = 0; i < sentences.length; i++) {
-                    if (this.oldSentence[i] !== sentences[i]) {
-                        changedSentenceInfo = {
-                            index: i,
-                            type: "modified",
-                        };
-                        break;
+                    for (const sentence of newSentences) {
+                        const newBlocks = await this.fetchBlocks(
+                            sentence,
+                            signal,
+                        );
+
+                        console.log("fetched ", sentence);
+
+                        output.push({
+                            text: sentence,
+                            start: currentPos,
+                            end: currentPos + sentence.length,
+                            relativeBlocks: newBlocks,
+                            absoluteBlocks: moveBlocks(currentPos, newBlocks),
+                        });
+
+                        currentPos += sentence.length;
+                    }
+                } else {
+                    // If the sentence is unchanged, we can just yield it
+                    const oldSentence = inputQueue.dequeue();
+                    if (oldSentence) {
+                        output.push({
+                            ...oldSentence,
+                            absoluteBlocks: moveBlocks(
+                                currentPos,
+                                oldSentence.relativeBlocks,
+                            ),
+                        });
+                        currentPos += oldSentence.text.length;
                     }
                 }
             }
 
-            // Update oldSentence reference for next comparison
-            this.oldSentence = [...sentences];
-
-            if (changedSentenceInfo.type) {
-                // Log the change information for debugging
-                console.log(
-                    `Sentence change detected: ${changedSentenceInfo.type} at index ${changedSentenceInfo.index}`,
-                );
-                // Here you could add additional logic to handle the specific type of change
-            }
-
-            const newBlocks = this.fetchBlocks(text, signal);
-
-            return;
+            blocks.value = output.flatMap((s) => s.absoluteBlocks);
+            this.oldSentence = output;
         } catch (e: unknown) {
             if (!(e instanceof Error)) {
                 return;

@@ -286,6 +286,19 @@ async function applyRedo(_: ICommand) {
 
 <template>
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
+        <div class="flex justify-center gap-2">
+            <UButton
+                variant="ghost"
+                :disabled="!undoRedoState.canUndo">
+                {{ t('editor.undo') }}
+            </UButton>
+            <UButton
+                variant="ghost"
+                :disabled="!undoRedoState.canRedo">
+                {{ t('editor.redo') }}
+            </UButton>
+        </div>
+
         <UPopover :open="!!hoverBlock" :content="{onOpenAutoFocus: (e) => e.preventDefault()}" class="absolute">
             <div class="absolute pointer-events-none select-none touch-none" :style="{
                 top: relativeHoverRect?.top + 'px', 

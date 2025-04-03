@@ -5,7 +5,7 @@ services:
       context: https://github.com/DCC-BS/text-mate-backend.git#main:docker/languagetool
       dockerfile: ./Dockerfile
     ports:
-      - ${LANGUAGE_TOOL_PORT}:8010 # Using default port from the image
+      - ${LANGUAGE_TOLO_PORT}:8010 # Using default port from the image
     environment:
       - langtool_languageModel=/ngrams # OPTIONAL: Using ngrams data
       - Java_Xms=512m
@@ -19,7 +19,7 @@ services:
     ports:
       - ${LLM_API_PORT}:8000
     environment:
-      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+      - HUGGING_FACE_HUB_TOKEN=${HF_AUTH_TOKEN}
       - VLLM_ATTENTION_BACKEND=FLASHINFER
     runtime: nvidia
     deploy:
