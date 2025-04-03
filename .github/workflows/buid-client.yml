@@ -6,6 +6,9 @@ on:
       - deploy
   workflow_dispatch:
 
+env:
+  DCC_BS_TOKEN: ${{ secrets.DCC_BS_TOKEN }}
+
 permissions:
   contents: read
   checks: write
