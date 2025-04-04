@@ -66,11 +66,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: 'Replace ARG DCC_BS_TOKEN=""'
-      run: |
-        sed -i 's/ARG DCC_BS_TOKEN=""/ARG DCC_BS_TOKEN=${{ inputs.dcc-bs-token }}/g' ${{ inputs.working-directory }}/${{ inputs.docker-filename }}
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
+    # - name: set env variable
+    #   run: |
+    #     export DCC_BS_TOKEN=${{ inputs.dcc-bs-token }}
+
+    # - name: 'Replace ARG DCC_BS_TOKEN=""'
+    #   run: sed -i 's/ARG DCC_BS_TOKEN=""/ARG DCC_BS_TOKEN=${{ inputs.dcc-bs-token }}/g' ${{ inputs.working-directory }}/${{ inputs.docker-filename }}
+    #   shell: bash
+    #   working-directory: ${{ inputs.working-directory }}
 
     - name: 'Download possible pre build artifacts'
       if: inputs.download-artifact == 'true'
@@ -170,6 +173,8 @@ runs:
 
     - name: 'Build (and push if needed)'
       uses: docker/build-push-action@v6
+      env:
+        DCC_BS_TOKEN: ${{ inputs.dcc-bs-token }}
       with:
         context: ${{ inputs.working-directory }}
         file: ${{ inputs.working-directory }}/${{ inputs.docker-filename }}
