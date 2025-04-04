@@ -4,10 +4,7 @@ import {
     JumpToBlockCommand,
     RewriteTextCommand,
 } from "~/assets/models/commands";
-import type {
-    TextCorrectionBlock,
-    TextCorrectionResponse,
-} from "~/assets/models/text-correction";
+import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { CorrectionService } from "~/assets/services/CorrectionService";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
@@ -19,9 +16,6 @@ const blocks = ref<TextCorrectionBlock[]>([]);
 const taskScheduler = new TaskScheduler();
 
 const rewriteRange = ref<Range>();
-
-const sentenceBlocks = ref<TextCorrectionBlock[][]>([]);
-const oldSentence = ref<string[]>([]);
 
 // composables
 const router = useRouter();
@@ -85,10 +79,6 @@ function onRewriteText(text: string, range: Range) {
 function onBlockClick(block: TextCorrectionBlock) {
     executeCommand(new JumpToBlockCommand(block));
 }
-
-watch(viewport.breakpoint, (newBreakpoint, oldBreakpoint) => {
-    console.log("Breakpoint updated:", oldBreakpoint, "->", newBreakpoint);
-});
 </script>
 
 <template>

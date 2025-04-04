@@ -7,13 +7,6 @@ import type {
     TextRewriteResponse,
 } from "~/assets/models/text-rewrite";
 
-interface RewriteViewProps {
-    formality: string;
-    domain: string;
-}
-
-const props = defineProps<RewriteViewProps>();
-
 // composables
 const { t } = useI18n();
 const { addProgress, removeProgress } = useUseProgressIndication();
@@ -23,6 +16,8 @@ const { sendError } = useUseErrorDialog();
 // refs
 const rewriteOptions = ref<RewriteApplyOptions>();
 
+const formality = ref<string>("neutral");
+const domain = ref<string>("general");
 const lastRange = ref<Range>();
 const lastText = ref<string>();
 
@@ -36,7 +31,7 @@ onUnmounted(() => {
 });
 
 // listeners
-watch([() => props.formality, () => props.domain], () => {
+watch([() => formality, () => domain], () => {
     if (!lastRange.value || !lastText.value) {
         return;
     }
@@ -69,8 +64,8 @@ async function rewriteText(text: string, range: Range) {
         const body = {
             text: textToRewrite,
             context,
-            formality: props.formality,
-            domain: props.domain,
+            formality: formality.value,
+            domain: domain.value,
         };
 
         const response = await $fetch<TextRewriteResponse>("/api/rewrite", {
@@ -101,6 +96,19 @@ function applyRewrite(option: string) {
 </script>
 
 <template>
+    <div class="grid grid-cols-2 mb-3 gap-2">
+        <span>{{ t('rewrite.formalityLabel') }}</span>
+        <SelectMenuLocalized
+            v-model="formality" :options="['neutral', 'formal', 'informal']"
+            local-parent="rewrite.formality" />
+
+        <span>{{ t('rewrite.domainLabel') }}</span>
+        <SelectMenuLocalized
+            v-model="domain"
+            :options="['general', 'report', 'email', 'socialMedia', 'technical']"
+            local-parent="rewrite.domain" />
+    </div>
+
     <div v-if="!lastRange">
         {{ t('rewrite.noRewrite') }}
     </div>

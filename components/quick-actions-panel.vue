@@ -15,21 +15,31 @@ type Actions =
 
 const props = defineProps<QuickActionsPanelProps>();
 
+// composables
 const { t } = useI18n();
 const toast = useToast();
 const { applyStreamToEditor } = useStreamWriter();
 
-async function simplify() {
-    applyAction("simplify");
-}
+// computed
+const actionsAreAvailable = computed(() => props.editor.getText().length > 3);
 
 async function applyAction(action: Actions) {
+    if (!actionsAreAvailable.value) {
+        toast.add({
+            title: "Error",
+            description: "No text to process",
+            color: "error",
+            icon: "i-heroicons-exclamation-circle",
+        });
+        return;
+    }
+
     const response = (await $fetch("/api/quick-action", {
         responseType: "stream",
         method: "POST",
         body: {
             action,
-            text: props.editor.getHTML(),
+            text: props.editor.getText(),
         },
     })) as ReadableStream;
 
@@ -53,26 +63,31 @@ async function applyAction(action: Actions) {
   <div class="flex justify-center gap-2">
     <UButton
         variant="soft"
+        :disabled="!actionsAreAvailable"
         @click="applyAction('simplify')">
         {{ t('editor.simplify') }}
     </UButton>
     <UButton
         variant="soft"
+        :disabled="!actionsAreAvailable"
         @click="applyAction('shorten')">
         {{ t('editor.shorten') }}
     </UButton>
     <UButton
         variant="soft"
+        :disabled="!actionsAreAvailable"
         @click="applyAction('bullet_points')">
         {{ t('editor.bullet_points') }}
     </UButton>
     <UButton
         variant="soft"
+        :disabled="!actionsAreAvailable"
         @click="applyAction('summarize')">
         {{ t('editor.summarize') }}
     </UButton>
     <UButton
         variant="soft"
+        :disabled="!actionsAreAvailable"
         @click="applyAction('social_mediafy')">
         {{ t('editor.social_mediafy') }}
     </UButton>

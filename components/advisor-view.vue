@@ -48,17 +48,13 @@ async function giveAdvice() {
 </script>
 
 <template>
-    <div v-if="advisorData" class="flex flex-col gap-2">
-        <AdvisorScoreMeter v-model="advisorData.coherenceAndStructure" :label="t('advisor.coherenceAndStructure')" />
-        <AdvisorScoreMeter v-model="advisorData.domainScore" :label="t('advisor.domainScore')" />
-        <AdvisorScoreMeter v-model="advisorData.formalityScore" :label="t('advisor.formalityScore')" />
-
-        <MDC :value="advisorData.proposedChanges" class="md-content" />
-    </div>
-    <div v-if="isLoading">
-        <USkeleton class="w-full h-[300px]" />
-    </div>
-    <UButton @click="giveAdvice">{{ t('advisor.giveAdvice') }}</UButton>
+    <UAlert 
+        :title="t('advisor.comingSoon.title')"
+        :icon="'i-heroicons-light-bulb'"
+        :type="'info'"
+        :class="['mt-4', 'mb-4']"
+        :description="t('advisor.comingSoon.description')"
+    />
 </template>
 
 <style>

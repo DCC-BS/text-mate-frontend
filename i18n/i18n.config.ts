@@ -12,7 +12,7 @@ export default defineI18nConfig(() => ({
             tools: {
                 problems: "Problems",
                 rewrite: "Rewrite",
-                advisor: "Advisor",
+                advisor: "Feedback",
             },
             status: {
                 rewritingText: "Rewriting text...",
@@ -55,6 +55,11 @@ export default defineI18nConfig(() => ({
                 coherenceAndStructure: "Coherence and Structure",
                 domainScore: "Domain Score",
                 formalityScore: "Formality Score",
+                comingSoon: {
+                    title: "Coming Soon",
+                    description:
+                        "The text advisor feature is currently in development and will be available soon.",
+                },
             },
         },
 
@@ -67,7 +72,7 @@ export default defineI18nConfig(() => ({
             tools: {
                 problems: "Probleme",
                 rewrite: "Umschreiben",
-                advisor: "Berater",
+                advisor: "Feedback",
             },
             status: {
                 rewritingText: "Text wird umgeschrieben...",
@@ -111,6 +116,11 @@ export default defineI18nConfig(() => ({
                 coherenceAndStructure: "Kohärenz und Struktur",
                 domainScore: "Domänenscore",
                 formalityScore: "Formalitätsscore",
+                comingSoon: {
+                    title: "Demnächst verfügbar",
+                    description:
+                        "Die Textberatungsfunktion befindet sich derzeit in der Entwicklung und wird in Kürze verfügbar sein.",
+                },
             },
         },
     },
