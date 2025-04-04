@@ -179,7 +179,7 @@ runs:
         push: ${{ inputs.push }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        build-args: DCC_BS_TOKEN=${{ inputs.dcc-bs-token }}
+        build-args: DCC_BS_TOKEN=${{ secrets.DCC_BS_TOKEN }}
 
 branding:
   icon: 'package'
