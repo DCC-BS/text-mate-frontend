@@ -26,5 +26,5 @@ jobs:
           quay-enabled: false
           image-name: "textmate-client"
           vulnerability-scan: false
-          push: ${{ contains(github.ref, 'tags/v') }}
+          push: true
           dcc-bs-token: ${{ secrets.DCC_BS_TOKEN }}
