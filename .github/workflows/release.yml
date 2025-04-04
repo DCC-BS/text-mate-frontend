@@ -13,12 +13,18 @@ permissions:
 
 jobs:
   build-client:
-    uses: FD-ITBS/reusable-workflows/.github/workflows/docker-build.yml@main
-    with:
-      working-directory: ./
-      ghcr-enabled: true
-      quay-enabled: false
-      image-name: "textmate-client"
-      vulnerability-scan: false
-      push: ${{ contains(github.ref, 'tags/v') }}
-      dcc-bs-token: ${{ secrets.DCC_BS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and push Docker image
+        uses: ./.github/actions/docker-build
+        with:
+          working-directory: .
+          ghcr-enabled: true
+          quay-enabled: false
+          image-name: "textmate-client"
+          vulnerability-scan: false
+          push: ${{ contains(github.ref, 'tags/v') }}
+          dcc-bs-token: ${{ secrets.DCC_BS_TOKEN }}
