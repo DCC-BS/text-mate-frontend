@@ -4,7 +4,6 @@
 FROM node:23-alpine AS build
 
 ARG DCC_BS_TOKEN
-# ENV DCC_BS_TOKEN=$DCC_BS_TOKEN
 
 # Install bun
 RUN npm install -g bun

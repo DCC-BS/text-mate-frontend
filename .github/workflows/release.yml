@@ -21,3 +21,4 @@ jobs:
       image-name: "textmate-client"
       vulnerability-scan: false
       push: ${{ contains(github.ref, 'tags/v') }}
+      dcc-bs-token: ${{ secrets.DCC_BS_TOKEN }}

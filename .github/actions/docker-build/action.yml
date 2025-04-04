@@ -55,10 +55,6 @@ inputs:
   quay-registry-password:
     description: 'Quay Container registry password'
     required: false
-  build-args:
-    description: 'Docker build arguments in the format ARG1=value1,ARG2=value2'
-    required: false
-    default: ''
   dcc-bs-token:
     description: 'DCC BS token for authentication'
     required: false
@@ -66,15 +62,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # - name: set env variable
-    #   run: |
-    #     export DCC_BS_TOKEN=${{ inputs.dcc-bs-token }}
-
-    # - name: 'Replace ARG DCC_BS_TOKEN=""'
-    #   run: sed -i 's/ARG DCC_BS_TOKEN=""/ARG DCC_BS_TOKEN=${{ inputs.dcc-bs-token }}/g' ${{ inputs.working-directory }}/${{ inputs.docker-filename }}
-    #   shell: bash
-    #   working-directory: ${{ inputs.working-directory }}
-
     - name: 'Download possible pre build artifacts'
       if: inputs.download-artifact == 'true'
       uses: actions/download-artifact@v4
