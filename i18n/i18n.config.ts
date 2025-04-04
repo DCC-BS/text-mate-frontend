@@ -26,6 +26,11 @@ export default defineI18nConfig(() => ({
             },
             editor: {
                 rewrite: "Rewrite",
+                simplify: "Simplify",
+                shorten: "Shorten",
+                bullet_points: "Bullet Points",
+                summarize: "Summarize",
+                social_mediafy: "Social Media Format",
             },
             rewrite: {
                 formality: {
@@ -76,6 +81,11 @@ export default defineI18nConfig(() => ({
             },
             editor: {
                 rewrite: "Umschreiben",
+                simplify: "Vereinfachen",
+                shorten: "Kürzen",
+                bullet_points: "Aufzählungspunkte",
+                summarize: "Zusammenfassen",
+                social_mediafy: "Social-Media-Format",
             },
             rewrite: {
                 formality: {

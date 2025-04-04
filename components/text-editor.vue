@@ -72,6 +72,7 @@ const characterCountPercentage = computed(() =>
 const toast = useToast();
 const { t } = useI18n();
 const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
+const { applyStreamToEditor } = useStreamWriter();
 
 const editor = useEditor({
     content: model.value,
@@ -286,18 +287,7 @@ async function applyRedo(_: ICommand) {
 
 <template>
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
-        <div class="flex justify-center gap-2">
-            <UButton
-                variant="ghost"
-                :disabled="!undoRedoState.canUndo">
-                {{ t('editor.undo') }}
-            </UButton>
-            <UButton
-                variant="ghost"
-                :disabled="!undoRedoState.canRedo">
-                {{ t('editor.redo') }}
-            </UButton>
-        </div>
+        <QuickActionsPanel :editor="editor" />
 
         <UPopover :open="!!hoverBlock" :content="{onOpenAutoFocus: (e) => e.preventDefault()}" class="absolute">
             <div class="absolute pointer-events-none select-none touch-none" :style="{
@@ -389,5 +379,20 @@ async function applyRedo(_: ICommand) {
     .data-bs-banner {
         @apply hidden;
     }
+}
+
+.fade-in {
+  opacity: 0; /* Start completely transparent */
+  animation: fadeIn 2s ease-in forwards; /* Apply the fadeIn animation */
+}
+
+/* Keyframes for the fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0; /* Start transparent */
+  }
+  to {
+    opacity: 1; /* End fully visible */
+  }
 }
 </style>

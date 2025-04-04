@@ -104,8 +104,6 @@ export class CorrectionService {
                             signal,
                         );
 
-                        console.log("fetched ", sentence);
-
                         output.push({
                             text: sentence,
                             start: currentPos,
