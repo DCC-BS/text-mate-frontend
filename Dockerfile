@@ -27,12 +27,14 @@ COPY ./package*.json ./
 COPY ./bun.lock ./
 COPY ./.npmrc /.
 
-# Install dependencies using bun
-# RUN --mount=type=secret,id=dcc_bs_token,env=DCC_BS_TOKEN bun install
-RUN bun install
-
 # Copy the rest of the application code
 COPY . .
+
+# Install dependencies using bun
+# RUN --mount=type=secret,id=dcc_bs_token,env=DCC_BS_TOKEN bun install
+RUN echo ${DCC_BS_TOKEN}
+RUN bun install --verbose
+
 
 # Build the application
 RUN bun x nuxi prepare
