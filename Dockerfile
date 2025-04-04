@@ -4,17 +4,7 @@
 FROM node:23-alpine AS build
 
 ARG DCC_BS_TOKEN
-ENV DCC_BS_TOKEN=$DCC_BS_TOKEN
-
-# Set the environment variable based on which token is available
-# First try DCC_BS_TOKEN, if not available use GITHUB_TOKEN
-# RUN if [ -n "$DCC_BS_TOKEN" ]; then \
-#     export DCC_BS_TOKEN=$DCC_BS_TOKEN; \
-#     elif [ -n "$GITHUB_TOKEN" ]; then \
-#     export DCC_BS_TOKEN=$GITHUB_TOKEN; \
-#     fi
-
-RUN echo "The value is $DCC_BS_TOKEN"
+# ENV DCC_BS_TOKEN=$DCC_BS_TOKEN
 
 # Install bun
 RUN npm install -g bun
@@ -22,19 +12,11 @@ RUN npm install -g bun
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY ./package*.json ./
-COPY ./bun.lock ./
-COPY ./.npmrc /.
-
 # Copy the rest of the application code
 COPY . .
 
 # Install dependencies using bun
-# RUN --mount=type=secret,id=dcc_bs_token,env=DCC_BS_TOKEN bun install
-RUN echo ${DCC_BS_TOKEN}
-RUN bun install --verbose
-
+RUN bun install
 
 # Build the application
 RUN bun x nuxi prepare
