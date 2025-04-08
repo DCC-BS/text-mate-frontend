@@ -16,8 +16,9 @@ const { sendError } = useUseErrorDialog();
 // refs
 const rewriteOptions = ref<RewriteApplyOptions>();
 
-const formality = ref<string>("neutral");
-const domain = ref<string>("general");
+const writing_style = ref<string>("general");
+const target_audience = ref<string>("general");
+const intend = ref<string>("general");
 const lastRange = ref<Range>();
 const lastText = ref<string>();
 
@@ -31,7 +32,7 @@ onUnmounted(() => {
 });
 
 // listeners
-watch([() => formality, () => domain], () => {
+watch([() => writing_style, () => target_audience, () => intend], () => {
     if (!lastRange.value || !lastText.value) {
         return;
     }
@@ -64,8 +65,9 @@ async function rewriteText(text: string, range: Range) {
         const body = {
             text: textToRewrite,
             context,
-            formality: formality.value,
-            domain: domain.value,
+            writing_style: writing_style.value,
+            target_audience: target_audience.value,
+            intend: intend.value,
         };
 
         const response = await $fetch<TextRewriteResponse>("/api/rewrite", {
@@ -97,16 +99,23 @@ function applyRewrite(option: string) {
 
 <template>
     <div class="grid grid-cols-2 mb-3 gap-2">
-        <span>{{ t('rewrite.formalityLabel') }}</span>
+        <span>{{ t('rewrite.writingStyleLabel') }}</span>
         <SelectMenuLocalized
-            v-model="formality" :options="['neutral', 'formal', 'informal']"
-            local-parent="rewrite.formality" />
+            v-model="writing_style" 
+            :options="['general', 'simple', 'professional', 'casual', 'academic', 'technical']"
+            local-parent="rewrite.writing_style" />
 
-        <span>{{ t('rewrite.domainLabel') }}</span>
+        <span>{{ t('rewrite.targetAudienceLabel') }}</span>
         <SelectMenuLocalized
-            v-model="domain"
-            :options="['general', 'report', 'email', 'socialMedia', 'technical']"
-            local-parent="rewrite.domain" />
+            v-model="target_audience"
+            :options="['general', 'young', 'adult', 'children']"
+            local-parent="rewrite.target_audience" />
+            
+        <span>{{ t('rewrite.intendLabel') }}</span>
+        <SelectMenuLocalized
+            v-model="intend"
+            :options="['general', 'persuasive', 'informative', 'descriptive', 'narrative', 'entertaining']"
+            local-parent="rewrite.intend" />
     </div>
 
     <div v-if="!lastRange">
