@@ -42,6 +42,8 @@ const limit = ref(10_000);
 const container = ref<HTMLDivElement>();
 const hoverBlock = ref<TextCorrectionBlock>();
 const hoverRect = ref<DOMRect>();
+const focusedWord = ref<string>();
+const focusedSentence = ref<string>();
 const relativeHoverRect = computed(() => {
     if (!hoverRect.value) return;
 
@@ -72,7 +74,6 @@ const characterCountPercentage = computed(() =>
 const toast = useToast();
 const { t } = useI18n();
 const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
-const { applyStreamToEditor } = useStreamWriter();
 
 const editor = useEditor({
     content: model.value,
@@ -127,6 +128,21 @@ const editor = useEditor({
             }
         },
     },
+    onSelectionUpdate: ({ editor }) => {
+        const doc = editor.state.doc;
+        const { from, to } = editor.state.selection;
+        const startOfWord = findStartOfWord(doc, from);
+        const endOfWord = findEndOfWord(doc, to);
+        const word = doc.textBetween(startOfWord, endOfWord);
+        const startOfSentence = findStartOfSentence(doc, from);
+        const endOfSentence = findEndOfSentence(doc, to);
+        const sentence = doc.textBetween(startOfSentence, endOfSentence);
+
+        console.log("word", word);
+
+        focusedWord.value = word;
+        focusedSentence.value = sentence;
+    },
     onUpdate: ({ editor }) => {
         model.value = editor.getText();
 
@@ -142,6 +158,50 @@ const editor = useEditor({
         }
     },
 });
+
+function findStartOfWord(doc: Node, pos: number) {
+    let current = pos;
+
+    while (current > 0 && /\S/.test(doc.textBetween(current - 1, current))) {
+        current--;
+    }
+    return current;
+}
+
+function findEndOfWord(doc: Node, pos: number) {
+    let current = pos;
+
+    while (
+        current < doc.content.size &&
+        /\S/.test(doc.textBetween(current, current + 1))
+    ) {
+        current++;
+    }
+    return current;
+}
+
+function findStartOfSentence(doc: Node, pos: number) {
+    let current = pos;
+
+    while (
+        current > 0 &&
+        !".!?".includes(doc.textBetween(current - 1, current))
+    ) {
+        current--;
+    }
+    return current;
+}
+
+function findEndOfSentence(doc: Node, pos: number) {
+    let current = pos;
+    while (
+        current < doc.content.size &&
+        !".!?".includes(doc.textBetween(current, current + 1))
+    ) {
+        current++;
+    }
+    return current;
+}
 
 // lifecycle
 onMounted(() => {
@@ -310,8 +370,28 @@ async function applyRedo(_: ICommand) {
             </template>
         </UPopover>
 
-        <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }">
+        <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }" :should-show="() => true">
             <div class="bubble-menu">
+                <div v-if="focusedSentence && focusedSentence.length > 0">
+                    <UButton variant="subtle">
+                        Satzt umformulieren
+                    </UButton>
+                    <span class="text-sm text-gray-500">
+
+                        {{ focusedSentence }}
+                    </span>
+                </div>
+
+                <div v-if="focusedSentence && focusedWord && focusedWord.length > 0">
+                        <UButton
+                            variant="subtle">
+                            Wort umformulieren
+                        </UButton>
+                    <span class="text-sm text-gray-500">
+                        {{ focusedWord }}
+                    </span>
+                </div>
+
                 <UButton variant="ghost" @click="rewriteText">
                     {{ t('editor.rewrite') }}
                 </UButton>
