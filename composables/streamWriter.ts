@@ -25,7 +25,12 @@ async function applyStreamToEditor(
 
             const chunk = new TextDecoder().decode(value);
 
-            editor.chain().focus("end").insertContent(chunk).run();
+            editor
+                .chain()
+                .setMeta("addToHistory", false)
+                .focus("end")
+                .insertContent(chunk)
+                .run();
         }
     } finally {
         editor.setEditable(true);

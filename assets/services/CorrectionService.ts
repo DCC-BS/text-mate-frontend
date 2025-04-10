@@ -4,6 +4,7 @@ import type {
     TextCorrectionResponse,
 } from "../models/text-correction";
 import { Queue } from "./Queue";
+import type { ILogger } from "@dcc-bs/logger.bs.js";
 
 type CorrectedSentence = {
     text: string;
@@ -24,12 +25,18 @@ export class CorrectionService {
     private readonly blocks: TextCorrectionBlock[][] = [];
     private oldSentence: CorrectedSentence[] = [];
 
-    constructor(private readonly onError: (message: string) => void) {}
+    constructor(
+        private readonly logger: ILogger,
+        private readonly onError: (message: string) => void,
+    ) {}
 
     private async fetchBlocks(
         text: string,
         signal: AbortSignal,
     ): Promise<TextCorrectionBlock[]> {
+        this.logger.info(
+            `Fetching correction blocks for text of length: ${text.length}`,
+        );
         try {
             const response = await $fetch<TextCorrectionResponse>(
                 "/api/correct",
@@ -43,6 +50,7 @@ export class CorrectionService {
             return response.blocks;
         } catch (e: unknown) {
             if (!(e instanceof Error)) {
+                this.logger.error("Unknown error in fetchBlocks");
                 throw new Error("Unknown error");
             }
 
@@ -50,6 +58,9 @@ export class CorrectionService {
                 throw new Error("Request aborted", { cause: "aborted" });
             }
 
+            this.logger.error(
+                `Error fetching blocks: ${e instanceof Error ? e.message : "Unknown error"}`,
+            );
             throw e;
         }
     }
@@ -115,17 +126,26 @@ export class CorrectionService {
                         currentPos += sentence.length;
                     }
                 } else {
-                    // If the sentence is unchanged, we can just yield it
-                    const oldSentence = inputQueue.dequeue();
-                    if (oldSentence) {
-                        output.push({
-                            ...oldSentence,
-                            absoluteBlocks: moveBlocks(
-                                currentPos,
-                                oldSentence.relativeBlocks,
-                            ),
-                        });
-                        currentPos += oldSentence.text.length;
+                    for (const sentence of part.value) {
+                        // If the sentence is unchanged, we can just yield it
+                        const oldSentence = inputQueue.dequeue();
+
+                        if (oldSentence?.text !== sentence) {
+                            this.logger.error(
+                                `Old sentence "${oldSentence?.text}" does not match new sentence "${sentence}"`,
+                            );
+                        }
+
+                        if (oldSentence) {
+                            output.push({
+                                ...oldSentence,
+                                absoluteBlocks: moveBlocks(
+                                    currentPos,
+                                    oldSentence.relativeBlocks,
+                                ),
+                            });
+                            currentPos += sentence.length;
+                        }
                     }
                 }
             }
@@ -134,13 +154,16 @@ export class CorrectionService {
             this.oldSentence = output;
         } catch (e: unknown) {
             if (!(e instanceof Error)) {
+                this.logger.error("Unknown error during text correction");
                 return;
             }
 
             if ("cause" in e && e.cause === "aborted") {
+                this.logger.debug("Text correction aborted due to signal");
                 return;
             }
 
+            this.logger.error(`Error during text correction: ${e.message}`);
             this.onError(e.message);
         }
     }

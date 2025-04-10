@@ -18,6 +18,8 @@ import {
 } from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { CorrectionMark } from "~/utils/correction-mark";
+import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
+import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
 
 // input
@@ -42,8 +44,9 @@ const limit = ref(10_000);
 const container = ref<HTMLDivElement>();
 const hoverBlock = ref<TextCorrectionBlock>();
 const hoverRect = ref<DOMRect>();
-const focusedWord = ref<string>();
-const focusedSentence = ref<string>();
+const wordSynonyms = ref<string[]>();
+const alternativeSentences = ref<string[]>();
+const alternativeText = ref<string[]>();
 const relativeHoverRect = computed(() => {
     if (!hoverRect.value) return;
 
@@ -74,6 +77,9 @@ const characterCountPercentage = computed(() =>
 const toast = useToast();
 const { t } = useI18n();
 const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
+const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
+    useTextFocus();
+const { addProgress, removeProgress } = useUseProgressIndication();
 
 const editor = useEditor({
     content: model.value,
@@ -81,6 +87,7 @@ const editor = useEditor({
         StarterKit,
         // @ts-expect-error
         BubbleMenu,
+        FocusExtension,
         CharacterCount.configure({
             limit: limit.value,
         }),
@@ -109,6 +116,8 @@ const editor = useEditor({
                 emit("blockClick", block);
             },
         }),
+        FocusedSentenceMark,
+        FocusedWordMark,
     ],
     editorProps: {
         handleKeyDown: (view, event) => {
@@ -128,21 +137,6 @@ const editor = useEditor({
             }
         },
     },
-    onSelectionUpdate: ({ editor }) => {
-        const doc = editor.state.doc;
-        const { from, to } = editor.state.selection;
-        const startOfWord = findStartOfWord(doc, from);
-        const endOfWord = findEndOfWord(doc, to);
-        const word = doc.textBetween(startOfWord, endOfWord);
-        const startOfSentence = findStartOfSentence(doc, from);
-        const endOfSentence = findEndOfSentence(doc, to);
-        const sentence = doc.textBetween(startOfSentence, endOfSentence);
-
-        console.log("word", word);
-
-        focusedWord.value = word;
-        focusedSentence.value = sentence;
-    },
     onUpdate: ({ editor }) => {
         model.value = editor.getText();
 
@@ -158,50 +152,6 @@ const editor = useEditor({
         }
     },
 });
-
-function findStartOfWord(doc: Node, pos: number) {
-    let current = pos;
-
-    while (current > 0 && /\S/.test(doc.textBetween(current - 1, current))) {
-        current--;
-    }
-    return current;
-}
-
-function findEndOfWord(doc: Node, pos: number) {
-    let current = pos;
-
-    while (
-        current < doc.content.size &&
-        /\S/.test(doc.textBetween(current, current + 1))
-    ) {
-        current++;
-    }
-    return current;
-}
-
-function findStartOfSentence(doc: Node, pos: number) {
-    let current = pos;
-
-    while (
-        current > 0 &&
-        !".!?".includes(doc.textBetween(current - 1, current))
-    ) {
-        current--;
-    }
-    return current;
-}
-
-function findEndOfSentence(doc: Node, pos: number) {
-    let current = pos;
-    while (
-        current < doc.content.size &&
-        !".!?".includes(doc.textBetween(current, current + 1))
-    ) {
-        current++;
-    }
-    return current;
-}
 
 // lifecycle
 onMounted(() => {
@@ -269,11 +219,9 @@ watch(
         const type = getMarkType("correction", editor.value.state.schema);
 
         editor.value.view.dispatch(
-            editor.value.state.tr.removeMark(
-                0,
-                editor.value.state.doc.content.size,
-                type,
-            ),
+            editor.value.state.tr
+                .setMeta("addToHistory", false)
+                .removeMark(0, editor.value.state.doc.content.size, type),
         );
 
         for (const block of value) {
@@ -281,7 +229,7 @@ watch(
             const end = start + block.length;
 
             editor.value.view.dispatch(
-                editor.value.state.tr.addMark(
+                editor.value.state.tr.setMeta("addToHistory", false).addMark(
                     start,
                     end,
                     type.create({
@@ -293,6 +241,18 @@ watch(
     },
 );
 
+watch(focusedWord, (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+        wordSynonyms.value = [];
+    }
+});
+
+watch(focusedSentence, (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+        alternativeSentences.value = [];
+    }
+});
+
 // functions
 function rewriteText() {
     if (!editor.value) {
@@ -300,6 +260,107 @@ function rewriteText() {
     }
 
     emit("rewriteText", editor.value.getText(), editor.value.state.selection);
+}
+
+async function findWordSynonym() {
+    if (
+        !focusedSentence.value ||
+        !focusedWord.value ||
+        focusedWord.value.text.length === 0 ||
+        focusedSentence.value.text.length === 0
+    ) {
+        return;
+    }
+
+    addProgress("finding-synonym", {
+        title: t("text-editor.finding-synonym"),
+        icon: "i-heroicons-magnifying-glass",
+    });
+
+    try {
+        const result = await getWordSynonym(
+            focusedWord.value.text,
+            focusedSentence.value.text,
+        );
+
+        wordSynonyms.value = result.synonyms;
+    } finally {
+        removeProgress("finding-synonym");
+    }
+}
+
+async function applyWordSynonym(synonym: string) {
+    if (!focusedWord.value || !focusedSentence.value) {
+        return;
+    }
+
+    await applyText(
+        new ApplyTextCommand(synonym, {
+            from: focusedWord.value.start,
+            to: focusedWord.value.end,
+        }),
+    );
+
+    wordSynonyms.value = [];
+}
+
+async function findAlternativeSentence() {
+    if (!focusedSentence.value) {
+        return;
+    }
+
+    addProgress("finding-alternative-sentence", {
+        title: t("text-editor.finding-alternative-sentence"),
+        icon: "i-heroicons-magnifying-glass",
+    });
+
+    try {
+        const result = await getAlternativeSentences(
+            focusedSentence.value.text,
+            model.value,
+        );
+
+        alternativeSentences.value = result.options;
+    } finally {
+        removeProgress("finding-alternative-sentence");
+    }
+}
+
+async function applyAlternativeSentence(sentence: string) {
+    if (!focusedSentence.value) {
+        return;
+    }
+
+    await applyText(
+        new ApplyTextCommand(sentence, {
+            from: focusedSentence.value.start,
+            to: focusedSentence.value.end,
+        }),
+    );
+
+    alternativeSentences.value = [];
+}
+
+async function findAlternativeText() {
+    if (!focusedSelection.value) {
+        return;
+    }
+
+    addProgress("finding-alternative-text", {
+        title: t("text-editor.finding-alternative-text"),
+        icon: "i-heroicons-magnifying-glass",
+    });
+
+    try {
+        const result = await getAlternativeSentences(
+            focusedSelection.value.text,
+            model.value,
+        );
+
+        alternativeText.value = result.options;
+        removeProgress("finding-alternative-text");
+    } finally {
+    }
 }
 
 async function applyCorrection(command: ApplyCorrectionCommand) {
@@ -370,32 +431,44 @@ async function applyRedo(_: ICommand) {
             </template>
         </UPopover>
 
-        <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }" :should-show="() => true"
-            v-if="!!focusedSentence && !!focusedWord && focusedSentence?.length > 0 && focusedWord?.length > 0">
-            <div class="bg-gray-100 p-2 rounded-lg flex gap-2 items-center border border-gray-300">
-                <div v-if="focusedSentence && focusedSentence.length > 0">
-                    <UButton variant="subtle">
-                        Satzt umformulieren
-                    </UButton>
-                    <!-- <span class="text-sm text-gray-500">
-
-                        {{ focusedSentence }}
-                    </span> -->
-                </div>
-
-                <div v-if="focusedSentence && focusedWord && focusedWord.length > 0">
+        <bubble-menu
+            :editor="editor" 
+            :tippy-options="{ duration: 100, placement: 'bottom', arrow: true, popperOptions: { placement: 'bottom'} }"
+            :should-show="() => true">
+            <div class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300"
+            v-if="focusedSentence || focusedWord">
+                <div v-if="focusedWord">
                         <UButton
+                            @click="findWordSynonym"
                             variant="subtle">
                             Wort umformulieren
                         </UButton>
-                    <!-- <span class="text-sm text-gray-500">
-                        {{ focusedWord }}
-                    </span> -->
-                </div>
 
-                <!-- <UButton variant="ghost" @click="rewriteText">
-                    {{ t('editor.rewrite') }}
-                </UButton> -->
+                        <div class="flex gap-1 flex-col pt-1">
+                            <UButton
+                                v-for="synonym in wordSynonyms"
+                                :key="synonym"
+                                @click="applyWordSynonym(synonym)">
+                                {{ synonym }}
+                            </UButton>
+                        </div>
+                </div>
+                <div v-if="focusedSentence">
+                    <UButton
+                        @click="findAlternativeSentence"
+                        variant="subtle">
+                        Satzt umformulieren
+                    </UButton>
+
+                    <div class="flex gap-1 flex-col pt-1">
+                        <UButton
+                            v-for="sentence in alternativeSentences"
+                            :key="sentence"
+                            @click="applyAlternativeSentence(sentence)">
+                            {{ sentence }}
+                        </UButton>
+                    </div>
+                </div>
             </div>
         </bubble-menu>
         <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
@@ -428,12 +501,10 @@ async function applyRedo(_: ICommand) {
 </template>
 
 
-<style>
+<style lang="css">
 @reference "../assets/css/main.css";
 
 .correction {
-    @apply underline decoration-wavy decoration-red-500 cursor-pointer;
-
     text-decoration-line: underline;
     text-decoration-style: wavy;
     text-decoration-color: var(--color-red-500);
@@ -446,6 +517,18 @@ async function applyRedo(_: ICommand) {
 
 .correction .active {
     @apply bg-blue-100;
+}
+
+.focused-sentence {
+    @apply bg-blue-100;
+
+    background-color: var(--color-blue-100);
+    border-radius: 2px;
+    padding: 1px 0;
+}
+
+.focused-word {
+    color: var(--color-blue-500);
 }
 
 .character-count--warning {

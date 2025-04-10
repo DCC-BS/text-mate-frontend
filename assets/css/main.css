@@ -20,6 +20,7 @@
     padding: 0.25rem;
     caret-color: black;
     outline: 0;
+    font-size: large;
 }
 
 .dark .ProseMirror {

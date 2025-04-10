@@ -24,9 +24,10 @@ const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { executeCommand } = useCommandBus();
 const { sendError } = useUseErrorDialog();
+const logger = useLogger();
 
 // todo create a composable
-const correctionService = new CorrectionService(sendError);
+const correctionService = new CorrectionService(logger, sendError);
 
 // check if the query param clipboard is true
 const clipboard = router.currentRoute.value.query.clipboard;

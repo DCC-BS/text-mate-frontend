@@ -12,7 +12,7 @@ export default defineNuxtConfig({
                 { charset: "utf-8" },
                 {
                     name: "viewport",
-                    content: "width=device-width, initial-scale=1",
+                    content: "width-device-width, initial-scale=1",
                 },
                 {
                     name: "apple-mobile-web-app-title",
@@ -36,15 +36,26 @@ export default defineNuxtConfig({
         "@nuxtjs/mdc",
         "@dcc-bs/event-system.bs.js",
         "@dcc-bs/common-ui.bs.js",
+        "@dcc-bs/logger.bs.js",
         "nuxt-viewport",
     ],
     typescript: {
         strict: true,
     },
     css: ["~/assets/css/main.css"],
+    vite: {
+        build: {
+            // Disable sourcemaps in production to avoid warnings
+            sourcemap: process.env.NODE_ENV !== "production",
+            cssMinify: "lightningcss",
+        },
+    },
     runtimeConfig: {
         public: {
             apiUrl: process.env.API_URL,
+            logger_bs: {
+                loglevel: process.env.LOG_LEVEL || "debug",
+            },
         },
     },
     // localization
@@ -134,5 +145,8 @@ export default defineNuxtConfig({
             },
         },
         devtools: { enabled: true },
+        "logger.bs.js": {
+            loglevel: "debug",
+        },
     },
 });
