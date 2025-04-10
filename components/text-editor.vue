@@ -370,16 +370,17 @@ async function applyRedo(_: ICommand) {
             </template>
         </UPopover>
 
-        <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }" :should-show="() => true">
-            <div class="bubble-menu">
+        <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }" :should-show="() => true"
+            v-if="!!focusedSentence && !!focusedWord && focusedSentence?.length > 0 && focusedWord?.length > 0">
+            <div class="bg-gray-100 p-2 rounded-lg flex gap-2 items-center border border-gray-300">
                 <div v-if="focusedSentence && focusedSentence.length > 0">
                     <UButton variant="subtle">
                         Satzt umformulieren
                     </UButton>
-                    <span class="text-sm text-gray-500">
+                    <!-- <span class="text-sm text-gray-500">
 
                         {{ focusedSentence }}
-                    </span>
+                    </span> -->
                 </div>
 
                 <div v-if="focusedSentence && focusedWord && focusedWord.length > 0">
@@ -387,14 +388,14 @@ async function applyRedo(_: ICommand) {
                             variant="subtle">
                             Wort umformulieren
                         </UButton>
-                    <span class="text-sm text-gray-500">
+                    <!-- <span class="text-sm text-gray-500">
                         {{ focusedWord }}
-                    </span>
+                    </span> -->
                 </div>
 
-                <UButton variant="ghost" @click="rewriteText">
+                <!-- <UButton variant="ghost" @click="rewriteText">
                     {{ t('editor.rewrite') }}
-                </UButton>
+                </UButton> -->
             </div>
         </bubble-menu>
         <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
