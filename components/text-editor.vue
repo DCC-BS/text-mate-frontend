@@ -38,6 +38,7 @@ const emit = defineEmits<{
 
 // model
 const model = defineModel<string>("modelValue", { required: true });
+const selectedText = defineModel<TextFocus>("selectedText");
 
 // refs
 const limit = ref(10_000);
@@ -140,7 +141,7 @@ const editor = useEditor({
     onUpdate: ({ editor }) => {
         if (!editor.isEditable) return;
 
-        model.value = editor.getHTML();
+        model.value = getContent();
 
         const canUndo = editor.can().undo();
         const canRedo = editor.can().redo();
@@ -190,6 +191,10 @@ watch(
     { immediate: true },
 );
 
+watch(focusedSelection, (value) => {
+    selectedText.value = value;
+});
+
 onUnmounted(() => {
     editor.value?.destroy();
 
@@ -203,7 +208,7 @@ onUnmounted(() => {
 watch(model, (value) => {
     if (!editor.value) return;
 
-    if (editor.value.getHTML() === value) {
+    if (getContent() === value) {
         return;
     }
 
@@ -255,13 +260,21 @@ watch(focusedSentence, (newValue, oldValue) => {
     }
 });
 
+function getContent() {
+    if (!editor.value) {
+        return "";
+    }
+
+    return editor.value.getText();
+}
+
 // functions
 function rewriteText() {
     if (!editor.value) {
         return;
     }
 
-    emit("rewriteText", editor.value.getHTML(), editor.value.state.selection);
+    emit("rewriteText", getContent(), editor.value.state.selection);
 }
 
 async function findWordSynonym() {

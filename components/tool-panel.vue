@@ -7,6 +7,7 @@ import { UTabs } from "#components";
 interface ToolPanelProps {
     text: string;
     blocks: TextCorrectionBlock[];
+    selectedText?: TextFocus;
 }
 
 const props = defineProps<ToolPanelProps>();
@@ -62,7 +63,9 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
             </template>
             <template #rewrite>
                 <div class="h-full">
-                    <RewriteView :formality="formality" :domain="domain" />
+                    <RewriteView 
+                        :text="props.text"
+                        :selectedText="props.selectedText" />
                 </div>
             </template>
             <template #advisor>

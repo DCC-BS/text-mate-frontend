@@ -14,6 +14,7 @@ import ToolPanel from "./tool-panel.vue";
 const userText = ref("");
 const blocks = ref<TextCorrectionBlock[]>([]);
 const taskScheduler = new TaskScheduler();
+const selectedText = ref<TextFocus>();
 
 // composables
 const router = useRouter();
@@ -86,14 +87,14 @@ function onBlockClick(block: TextCorrectionBlock) {
             <template #a>
                 <client-only>
                     <div class="w-full h-full relative">
-                        <TextEditor v-model="userText" :blocks="blocks" @block-click="onBlockClick"
+                        <TextEditor v-model="userText" v-model:selectedText="selectedText" :blocks="blocks" @block-click="onBlockClick"
                             @rewrite-text="onRewriteText" @correction-applied="onCorrectionApplied" />
                     </div>
                 </client-only>
             </template>
             <template #b>
                 <div>
-                    <ToolPanel :blocks="blocks" :text="userText" />
+                    <ToolPanel :blocks="blocks" :text="userText" :selectedText="selectedText" />
                 </div>
             </template>
         </SplitView>
