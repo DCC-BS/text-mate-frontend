@@ -25,27 +25,27 @@ export class TaskScheduler {
     private lateStartTimeout: NodeJS.Timeout | undefined;
 
     /**
-     * Enqueues a new task action to be executed after a delay.
+     * Stores a new task action to be executed after a delay.
      * Cancels any previously scheduled tasks.
      *
      * @param action - The task action to be executed.
      */
-    public enqueue(action: (signal: AbortSignal) => Promise<void>): void {
+    public schedule(action: (signal: AbortSignal) => Promise<void>): void {
         this.lastAction = action;
         if (this.lateStartTimeout) {
             clearTimeout(this.lateStartTimeout);
         }
 
         this.lateStartTimeout = setTimeout(() => {
-            this.runLast();
+            this.executeImmediately();
         }, 1000);
     }
 
     /**
-     * Runs the last enqueued task action immediately.
+     * Runs the task action immediately.
      * Cancels any previously scheduled tasks.
      */
-    public runLast() {
+    public executeImmediately() {
         if (!this.lastAction) {
             return;
         }

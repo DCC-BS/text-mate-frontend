@@ -15,8 +15,6 @@ const userText = ref("");
 const blocks = ref<TextCorrectionBlock[]>([]);
 const taskScheduler = new TaskScheduler();
 
-const rewriteRange = ref<Range>();
-
 // composables
 const router = useRouter();
 const viewport = useViewport();
@@ -45,14 +43,13 @@ onMounted(async () => {
 
 // listeners
 watch(userText, (newText) => {
-    taskScheduler.enqueue((signal: AbortSignal) =>
+    taskScheduler.schedule((signal: AbortSignal) =>
         correctText(newText, signal),
     );
-    rewriteRange.value = undefined;
 
     // ends with any whitespace
     if (newText.endsWith(" ") || newText.endsWith("\n")) {
-        taskScheduler.runLast();
+        taskScheduler.executeImmediately();
     }
 });
 

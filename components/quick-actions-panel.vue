@@ -34,12 +34,22 @@ async function applyAction(action: Actions) {
         return;
     }
 
+    let { from, to } = props.editor.state.selection;
+    let text = props.editor.getText();
+
+    if (from !== to) {
+        text = props.editor.state.doc.textBetween(from, to);
+    } else {
+        from = 0;
+        to = text.length + 1;
+    }
+
     const response = (await $fetch("/api/quick-action", {
         responseType: "stream",
         method: "POST",
         body: {
             action,
-            text: props.editor.getText(),
+            text,
         },
     })) as ReadableStream;
 
@@ -55,7 +65,7 @@ async function applyAction(action: Actions) {
 
     const reader = response.getReader();
 
-    await applyStreamToEditor(reader, props.editor);
+    await applyStreamToEditor(reader, props.editor, from, to);
 }
 </script>
 

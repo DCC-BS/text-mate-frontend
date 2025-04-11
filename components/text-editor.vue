@@ -138,7 +138,9 @@ const editor = useEditor({
         },
     },
     onUpdate: ({ editor }) => {
-        model.value = editor.getText();
+        if (!editor.isEditable) return;
+
+        model.value = editor.getHTML();
 
         const canUndo = editor.can().undo();
         const canRedo = editor.can().redo();
@@ -201,7 +203,7 @@ onUnmounted(() => {
 watch(model, (value) => {
     if (!editor.value) return;
 
-    if (editor.value.getText() === value) {
+    if (editor.value.getHTML() === value) {
         return;
     }
 
@@ -259,7 +261,7 @@ function rewriteText() {
         return;
     }
 
-    emit("rewriteText", editor.value.getText(), editor.value.state.selection);
+    emit("rewriteText", editor.value.getHTML(), editor.value.state.selection);
 }
 
 async function findWordSynonym() {
@@ -339,28 +341,6 @@ async function applyAlternativeSentence(sentence: string) {
     );
 
     alternativeSentences.value = [];
-}
-
-async function findAlternativeText() {
-    if (!focusedSelection.value) {
-        return;
-    }
-
-    addProgress("finding-alternative-text", {
-        title: t("text-editor.finding-alternative-text"),
-        icon: "i-heroicons-magnifying-glass",
-    });
-
-    try {
-        const result = await getAlternativeSentences(
-            focusedSelection.value.text,
-            model.value,
-        );
-
-        alternativeText.value = result.options;
-        removeProgress("finding-alternative-text");
-    } finally {
-    }
 }
 
 async function applyCorrection(command: ApplyCorrectionCommand) {

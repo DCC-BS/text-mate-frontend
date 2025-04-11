@@ -34,9 +34,6 @@ export class CorrectionService {
         text: string,
         signal: AbortSignal,
     ): Promise<TextCorrectionBlock[]> {
-        this.logger.info(
-            `Fetching correction blocks for text of length: ${text.length}`,
-        );
         try {
             const response = await $fetch<TextCorrectionResponse>(
                 "/api/correct",

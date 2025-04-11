@@ -208,7 +208,7 @@ function findStartOfSentence(doc: Node, pos: number) {
 
     while (
         current > 0 &&
-        !".!?".includes(doc.textBetween(current - 1, current))
+        !".!?\n".includes(doc.textBetween(current - 1, current))
     ) {
         current--;
     }
@@ -222,9 +222,15 @@ function findEndOfSentence(doc: Node, pos: number) {
     let current = pos;
     while (
         current < doc.content.size &&
-        !".!?".includes(doc.textBetween(current, current + 1))
+        !".!?\n".includes(doc.textBetween(current, current + 1))
     ) {
         current++;
     }
+
+    // Adjust to include the end of the sentence
+    if (current < doc.content.size) {
+        current++;
+    }
+
     return current;
 }
