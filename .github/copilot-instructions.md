@@ -139,6 +139,18 @@
       count.value++
     }
     ```
+10. **Use bun for package management**
+    Use bun for package management and scripts instead of npm or yarn.
+
+    ```bash
+    # Correct
+    bun add <package-name>
+    bun run <script-name>
+
+    # Incorrect
+    npm install <package-name>
+    npm run <script-name>
+    ```
 
 Remember to adhere to these guidelines while coding to maintain consistency and leverage the full power of TypeScript in your Nuxt project.
 Always add comments to your code.

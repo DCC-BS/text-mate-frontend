@@ -6,7 +6,7 @@ import { UTabs } from "#components";
 // definitions
 interface ToolPanelProps {
     text: string;
-    blocks: TextCorrectionBlock[];
+    selectedText?: TextFocus;
 }
 
 const props = defineProps<ToolPanelProps>();
@@ -56,42 +56,18 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
         <!-- wrapper: 'h-[30vh] md:h-[90vh]'             -->
         <UTabs
             v-model="selectedTab" :items="items" class="h-full"
-            :ui="{ content: 'h-[30vh] md:h-[90vh] overflow-y-auto scrollable-container' }"> 
+            :ui="{ content: 'h-[30vh] md:h-[80vh] overflow-y-auto scrollable-container' }"> 
             <template #problems>
-                <ProblemsPanel :blocks="props.blocks" />
+                <ProblemsPanel />
             </template>
             <template #rewrite>
                 <div class="h-full">
-                    <div class="grid grid-cols-2 mb-3 gap-2">
-                        <span>{{ t('rewrite.formalityLabel') }}</span>
-                        <SelectMenuLocalized
-                            v-model="formality" :options="['neutral', 'formal', 'informal']"
-                            local-parent="rewrite.formality" />
-
-                        <span>{{ t('rewrite.domainLabel') }}</span>
-                        <SelectMenuLocalized
-                            v-model="domain"
-                            :options="['general', 'report', 'email', 'socialMedia', 'technical']"
-                            local-parent="rewrite.domain" />
-                    </div>
-
-                    <RewriteView :formality="formality" :domain="domain" />
+                    <RewriteView 
+                        :text="props.text"
+                        :selectedText="props.selectedText" />
                 </div>
             </template>
             <template #advisor>
-                <div class="grid grid-cols-2 mb-3 gap-2">
-                    <span>{{ t('rewrite.formalityLabel') }}</span>
-                    <SelectMenuLocalized
-v-model="formality" :options="['neutral', 'formal', 'informal']"
-                        local-parent="rewrite.formality" />
-
-                    <span>{{ t('rewrite.domainLabel') }}</span>
-                    <SelectMenuLocalized
-v-model="domain"
-                        :options="['general', 'report', 'email', 'socialMedia', 'technical']"
-                        local-parent="rewrite.domain" />
-                </div>
-
                 <AdvisorView :domain="domain" :formality="formality" :text="props.text" />
             </template>
         </UTabs>

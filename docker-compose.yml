@@ -5,7 +5,7 @@ services:
       context: https://github.com/DCC-BS/text-mate-backend.git#main:docker/languagetool
       dockerfile: ./Dockerfile
     ports:
-      - ${LANGUAGE_TOLO_PORT}:8010 # Using default port from the image
+      - ${LANGUAGE_TOOL_PORT}:8010 # Using default port from the image
     environment:
       - langtool_languageModel=/ngrams # OPTIONAL: Using ngrams data
       - Java_Xms=512m

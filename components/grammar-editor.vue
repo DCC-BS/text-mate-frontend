@@ -4,10 +4,7 @@ import {
     JumpToBlockCommand,
     RewriteTextCommand,
 } from "~/assets/models/commands";
-import type {
-    TextCorrectionBlock,
-    TextCorrectionResponse,
-} from "~/assets/models/text-correction";
+import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { CorrectionService } from "~/assets/services/CorrectionService";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
@@ -15,13 +12,8 @@ import ToolPanel from "./tool-panel.vue";
 
 // refs
 const userText = ref("");
-const blocks = ref<TextCorrectionBlock[]>([]);
 const taskScheduler = new TaskScheduler();
-
-const rewriteRange = ref<Range>();
-
-const sentenceBlocks = ref<TextCorrectionBlock[][]>([]);
-const oldSentence = ref<string[]>([]);
+const selectedText = ref<TextFocus>();
 
 // composables
 const router = useRouter();
@@ -30,9 +22,14 @@ const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { executeCommand } = useCommandBus();
 const { sendError } = useUseErrorDialog();
+const logger = useLogger();
 
 // todo create a composable
-const correctionService = new CorrectionService(sendError);
+const correctionService = new CorrectionService(
+    logger,
+    executeCommand,
+    sendError,
+);
 
 // check if the query param clipboard is true
 const clipboard = router.currentRoute.value.query.clipboard;
@@ -50,14 +47,13 @@ onMounted(async () => {
 
 // listeners
 watch(userText, (newText) => {
-    taskScheduler.enqueue((signal: AbortSignal) =>
+    taskScheduler.schedule((signal: AbortSignal) =>
         correctText(newText, signal),
     );
-    rewriteRange.value = undefined;
 
     // ends with any whitespace
     if (newText.endsWith(" ") || newText.endsWith("\n")) {
-        taskScheduler.runLast();
+        taskScheduler.executeImmediately();
     }
 });
 
@@ -68,14 +64,10 @@ async function correctText(text: string, signal: AbortSignal) {
         title: t("status.correctingText"),
     });
     try {
-        await correctionService.correctText(text, signal, blocks);
+        await correctionService.correctText(text, signal);
     } finally {
         removeProgress("correcting");
     }
-}
-
-function onCorrectionApplied(block: TextCorrectionBlock, corrected: string) {
-    blocks.value = blocks.value.filter((b) => b.offset !== block.offset);
 }
 
 function onRewriteText(text: string, range: Range) {
@@ -85,10 +77,6 @@ function onRewriteText(text: string, range: Range) {
 function onBlockClick(block: TextCorrectionBlock) {
     executeCommand(new JumpToBlockCommand(block));
 }
-
-watch(viewport.breakpoint, (newBreakpoint, oldBreakpoint) => {
-    console.log("Breakpoint updated:", oldBreakpoint, "->", newBreakpoint);
-});
 </script>
 
 <template>
@@ -98,14 +86,14 @@ watch(viewport.breakpoint, (newBreakpoint, oldBreakpoint) => {
             <template #a>
                 <client-only>
                     <div class="w-full h-full relative">
-                        <TextEditor v-model="userText" :blocks="blocks" @block-click="onBlockClick"
-                            @rewrite-text="onRewriteText" @correction-applied="onCorrectionApplied" />
+                        <TextEditor v-model="userText" v-model:selectedText="selectedText" @block-click="onBlockClick"
+                            @rewrite-text="onRewriteText" />
                     </div>
                 </client-only>
             </template>
             <template #b>
                 <div>
-                    <ToolPanel :blocks="blocks" :text="userText" />
+                    <ToolPanel :text="userText" :selectedText="selectedText" />
                 </div>
             </template>
         </SplitView>

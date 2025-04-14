@@ -1,6 +1,6 @@
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
-import type { TextCorrectionBlock } from "./text-correction";
+import type { CorrectedSentence, TextCorrectionBlock } from "./text-correction";
 
 export const Cmds = {
     JumpToBlockCommand: "JumpToBlockCommand",
@@ -10,6 +10,7 @@ export const Cmds = {
     UndoCommand: "UndoCommand",
     RedoCommand: "RedoCommand",
     UndoRedoStateChanged: "UndoRedoStateChanged",
+    CorrectedSentenceChangedCommand: "CorrectedSentenceChangedCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -24,6 +25,14 @@ export class ApplyCorrectionCommand implements ICommand {
     constructor(
         public block: TextCorrectionBlock,
         public corrected: string,
+    ) {}
+}
+
+export class CorrectedSentenceChangedCommand implements ICommand {
+    readonly $type = "CorrectedSentenceChangedCommand";
+    constructor(
+        public correctedSentence: CorrectedSentence,
+        public change: "add" | "remove" | "update",
     ) {}
 }
 

@@ -14,16 +14,19 @@ import {
     ApplyCorrectionCommand,
     ApplyTextCommand,
     Cmds,
+    CorrectedSentenceChangedCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
-import type { TextCorrectionBlock } from "~/assets/models/text-correction";
+import type {
+    CorrectedSentence,
+    TextCorrectionBlock,
+} from "~/assets/models/text-correction";
 import { CorrectionMark } from "~/utils/correction-mark";
+import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
+import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
 
-// input
-const props = defineProps<{
-    blocks: TextCorrectionBlock[];
-}>();
+import { makeCorrectedSentenceAbsolute } from "~/assets/services/CorrectionService";
 
 // output
 const emit = defineEmits<{
@@ -36,12 +39,27 @@ const emit = defineEmits<{
 
 // model
 const model = defineModel<string>("modelValue", { required: true });
+const selectedText = defineModel<TextFocus>("selectedText");
 
 // refs
 const limit = ref(10_000);
 const container = ref<HTMLDivElement>();
 const hoverBlock = ref<TextCorrectionBlock>();
 const hoverRect = ref<DOMRect>();
+const wordSynonyms = ref<string[]>();
+const alternativeSentences = ref<string[]>();
+const correctedSentence = ref<Record<string, CorrectedSentence>>({});
+
+const blocks = computed(() => {
+    if (!correctedSentence.value) {
+        return [];
+    }
+
+    return Object.values(correctedSentence.value).flatMap((sentence) => {
+        return makeCorrectedSentenceAbsolute(sentence).blocks;
+    });
+});
+
 const relativeHoverRect = computed(() => {
     if (!hoverRect.value) return;
 
@@ -72,13 +90,18 @@ const characterCountPercentage = computed(() =>
 const toast = useToast();
 const { t } = useI18n();
 const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
+const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
+    useTextFocus();
+const { addProgress, removeProgress } = useUseProgressIndication();
 
 const editor = useEditor({
     content: model.value,
+    enablePasteRules: false,
     extensions: [
         StarterKit,
         // @ts-expect-error
         BubbleMenu,
+        FocusExtension,
         CharacterCount.configure({
             limit: limit.value,
         }),
@@ -91,7 +114,7 @@ const editor = useEditor({
                 const mark = node.marks.find((m) => m.attrs["data-block-id"]);
 
                 const id = mark?.attrs["data-block-id"];
-                const block = props.blocks.find((b) => b.offset === id);
+                const block = blocks.value.find((b) => b.offset === id);
 
                 if (!block || !editor.value || block.corrected.length === 0) {
                     return;
@@ -107,6 +130,8 @@ const editor = useEditor({
                 emit("blockClick", block);
             },
         }),
+        FocusedSentenceMark,
+        FocusedWordMark,
     ],
     editorProps: {
         handleKeyDown: (view, event) => {
@@ -127,7 +152,9 @@ const editor = useEditor({
         },
     },
     onUpdate: ({ editor }) => {
-        model.value = editor.getText();
+        if (!editor.isEditable) return;
+
+        model.value = getContent();
 
         const canUndo = editor.can().undo();
         const canRedo = editor.can().redo();
@@ -144,6 +171,10 @@ const editor = useEditor({
 
 // lifecycle
 onMounted(() => {
+    registerHandler(
+        Cmds.CorrectedSentenceChangedCommand,
+        handleCorrectedSentenceChanged,
+    );
     registerHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     registerHandler(Cmds.ApplyTextCommand, applyText);
     registerHandler(Cmds.UndoCommand, applyUndo);
@@ -177,9 +208,17 @@ watch(
     { immediate: true },
 );
 
+watch(focusedSelection, (value) => {
+    selectedText.value = value;
+});
+
 onUnmounted(() => {
     editor.value?.destroy();
 
+    unregisterHandler(
+        Cmds.CorrectedSentenceChangedCommand,
+        handleCorrectedSentenceChanged,
+    );
     unregisterHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     unregisterHandler(Cmds.ApplyTextCommand, applyText);
     unregisterHandler(Cmds.UndoCommand, applyUndo);
@@ -190,7 +229,7 @@ onUnmounted(() => {
 watch(model, (value) => {
     if (!editor.value) return;
 
-    if (editor.value.getText() === value) {
+    if (getContent() === value) {
         return;
     }
 
@@ -198,7 +237,7 @@ watch(model, (value) => {
 });
 
 watch(
-    () => props.blocks,
+    () => blocks.value,
     (value) => {
         if (!editor.value) return;
 
@@ -208,11 +247,9 @@ watch(
         const type = getMarkType("correction", editor.value.state.schema);
 
         editor.value.view.dispatch(
-            editor.value.state.tr.removeMark(
-                0,
-                editor.value.state.doc.content.size,
-                type,
-            ),
+            editor.value.state.tr
+                .setMeta("addToHistory", false)
+                .removeMark(0, editor.value.state.doc.content.size, type),
         );
 
         for (const block of value) {
@@ -220,7 +257,7 @@ watch(
             const end = start + block.length;
 
             editor.value.view.dispatch(
-                editor.value.state.tr.addMark(
+                editor.value.state.tr.setMeta("addToHistory", false).addMark(
                     start,
                     end,
                     type.create({
@@ -232,13 +269,163 @@ watch(
     },
 );
 
-// functions
-function rewriteText() {
+watch(focusedWord, (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+        wordSynonyms.value = [];
+    }
+});
+
+watch(focusedSentence, (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+        alternativeSentences.value = [];
+    }
+});
+
+function getContent() {
     if (!editor.value) {
+        return "";
+    }
+
+    return editor.value.getText();
+}
+
+// functions
+async function handleCorrectedSentenceChanged(
+    command: CorrectedSentenceChangedCommand,
+) {
+    if (!editor.value) return;
+
+    console.log(command);
+
+    hoverBlock.value = undefined;
+    hoverRect.value = undefined;
+
+    const type = getMarkType("correction", editor.value.state.schema);
+
+    function removeMarks(sentence: CorrectedSentence) {
+        if (!editor.value) return;
+
+        editor.value.view.dispatch(
+            editor.value.state.tr
+                .setMeta("addToHistory", false)
+                .removeMark(sentence.from, sentence.to, type),
+        );
+    }
+
+    function addMarks(sentence: CorrectedSentence) {
+        if (!editor.value) return;
+
+        for (const block of sentence.blocks) {
+            const start = block.offset + sentence.from;
+            const end = start + block.length;
+
+            editor.value.view.dispatch(
+                editor.value.state.tr.setMeta("addToHistory", false).addMark(
+                    start,
+                    end,
+                    type.create({
+                        "data-block-id": block.offset,
+                    }),
+                ),
+            );
+        }
+    }
+
+    if (command.change === "add") {
+        correctedSentence.value[command.correctedSentence.id] =
+            command.correctedSentence;
+
+        addMarks(command.correctedSentence);
+    } else if (command.change === "remove") {
+        delete correctedSentence.value[command.correctedSentence.id];
+
+        removeMarks(command.correctedSentence);
+    } else {
+        correctedSentence.value[command.correctedSentence.id] =
+            command.correctedSentence;
+
+        removeMarks(command.correctedSentence);
+        addMarks(command.correctedSentence);
+    }
+}
+
+async function findWordSynonym() {
+    if (
+        !focusedSentence.value ||
+        !focusedWord.value ||
+        focusedWord.value.text.length === 0 ||
+        focusedSentence.value.text.length === 0
+    ) {
         return;
     }
 
-    emit("rewriteText", editor.value.getText(), editor.value.state.selection);
+    addProgress("finding-synonym", {
+        title: t("text-editor.finding-synonym"),
+        icon: "i-heroicons-magnifying-glass",
+    });
+
+    try {
+        const result = await getWordSynonym(
+            focusedWord.value.text,
+            focusedSentence.value.text,
+        );
+
+        wordSynonyms.value = result.synonyms;
+    } finally {
+        removeProgress("finding-synonym");
+    }
+}
+
+async function applyWordSynonym(synonym: string) {
+    if (!focusedWord.value || !focusedSentence.value) {
+        return;
+    }
+
+    await applyText(
+        new ApplyTextCommand(synonym, {
+            from: focusedWord.value.start,
+            to: focusedWord.value.end,
+        }),
+    );
+
+    wordSynonyms.value = [];
+}
+
+async function findAlternativeSentence() {
+    if (!focusedSentence.value) {
+        return;
+    }
+
+    addProgress("finding-alternative-sentence", {
+        title: t("text-editor.finding-alternative-sentence"),
+        icon: "i-heroicons-magnifying-glass",
+    });
+
+    try {
+        const result = await getAlternativeSentences(
+            focusedSentence.value.text,
+            model.value,
+        );
+
+        alternativeSentences.value = result.options;
+    } finally {
+        removeProgress("finding-alternative-sentence");
+    }
+}
+
+async function applyAlternativeSentence(sentence: string) {
+    if (!focusedSentence.value) {
+        return;
+    }
+
+    await applyText(
+        new ApplyTextCommand(sentence, {
+            from: focusedSentence.value.start,
+            to: focusedSentence.value.end,
+        }),
+    );
+
+    alternativeSentences.value = [];
 }
 
 async function applyCorrection(command: ApplyCorrectionCommand) {
@@ -286,18 +473,7 @@ async function applyRedo(_: ICommand) {
 
 <template>
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
-        <div class="flex justify-center gap-2">
-            <UButton
-                variant="ghost"
-                :disabled="!undoRedoState.canUndo">
-                {{ t('editor.undo') }}
-            </UButton>
-            <UButton
-                variant="ghost"
-                :disabled="!undoRedoState.canRedo">
-                {{ t('editor.redo') }}
-            </UButton>
-        </div>
+        <QuickActionsPanel :editor="editor" />
 
         <UPopover :open="!!hoverBlock" :content="{onOpenAutoFocus: (e) => e.preventDefault()}" class="absolute">
             <div class="absolute pointer-events-none select-none touch-none" :style="{
@@ -320,11 +496,44 @@ async function applyRedo(_: ICommand) {
             </template>
         </UPopover>
 
-        <bubble-menu :editor="editor" :tippy-options="{ duration: 100 }">
-            <div class="bubble-menu">
-                <UButton variant="ghost" @click="rewriteText">
-                    {{ t('editor.rewrite') }}
-                </UButton>
+        <bubble-menu
+            :editor="editor" 
+            :tippy-options="{ duration: 100, placement: 'bottom', arrow: true, popperOptions: { placement: 'bottom'} }"
+            :should-show="() => true">
+            <div class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300"
+            v-if="focusedSentence || focusedWord">
+                <div v-if="focusedWord">
+                        <UButton
+                            @click="findWordSynonym"
+                            variant="subtle">
+                            Wort umformulieren
+                        </UButton>
+
+                        <div class="flex gap-1 flex-col pt-1">
+                            <UButton
+                                v-for="synonym in wordSynonyms"
+                                :key="synonym"
+                                @click="applyWordSynonym(synonym)">
+                                {{ synonym }}
+                            </UButton>
+                        </div>
+                </div>
+                <div v-if="focusedSentence">
+                    <UButton
+                        @click="findAlternativeSentence"
+                        variant="subtle">
+                        Satzt umformulieren
+                    </UButton>
+
+                    <div class="flex gap-1 flex-col pt-1">
+                        <UButton
+                            v-for="sentence in alternativeSentences"
+                            :key="sentence"
+                            @click="applyAlternativeSentence(sentence)">
+                            {{ sentence }}
+                        </UButton>
+                    </div>
+                </div>
             </div>
         </bubble-menu>
         <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
@@ -357,12 +566,10 @@ async function applyRedo(_: ICommand) {
 </template>
 
 
-<style>
+<style lang="css">
 @reference "../assets/css/main.css";
 
 .correction {
-    @apply underline decoration-wavy decoration-red-500 cursor-pointer;
-
     text-decoration-line: underline;
     text-decoration-style: wavy;
     text-decoration-color: var(--color-red-500);
@@ -377,6 +584,18 @@ async function applyRedo(_: ICommand) {
     @apply bg-blue-100;
 }
 
+.focused-sentence {
+    @apply bg-blue-100;
+
+    background-color: var(--color-blue-100);
+    border-radius: 2px;
+    padding: 1px 0;
+}
+
+.focused-word {
+    color: var(--color-blue-500);
+}
+
 .character-count--warning {
     @apply text-red-500;
 }
@@ -389,5 +608,20 @@ async function applyRedo(_: ICommand) {
     .data-bs-banner {
         @apply hidden;
     }
+}
+
+.fade-in {
+  opacity: 0; /* Start completely transparent */
+  animation: fadeIn 2s ease-in forwards; /* Apply the fadeIn animation */
+}
+
+/* Keyframes for the fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0; /* Start transparent */
+  }
+  to {
+    opacity: 1; /* End fully visible */
+  }
 }
 </style>

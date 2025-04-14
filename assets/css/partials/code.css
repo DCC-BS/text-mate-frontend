@@ -1,3 +1,16 @@
+/* Override for ProseMirror selection styles to fix :where() syntax errors */
+.ProseMirror ::-moz-selection:where(*) {
+  background-color: rgba(73, 155, 234, 0.3);
+}
+
+.ProseMirror ::selection:where(*) {
+  background-color: rgba(73, 155, 234, 0.3);
+}
+
+.ProseMirror-gapcursor:after:where(*) {
+  border-top-color: currentColor;
+}
+
 .ProseMirror {
     /* Image Block */
     figure[data-type="imageBlock"] {
