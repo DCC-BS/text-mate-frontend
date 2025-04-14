@@ -96,6 +96,7 @@ const { addProgress, removeProgress } = useUseProgressIndication();
 
 const editor = useEditor({
     content: model.value,
+    enablePasteRules: false,
     extensions: [
         StarterKit,
         // @ts-expect-error
@@ -293,6 +294,8 @@ async function handleCorrectedSentenceChanged(
     command: CorrectedSentenceChangedCommand,
 ) {
     if (!editor.value) return;
+
+    console.log(command);
 
     hoverBlock.value = undefined;
     hoverRect.value = undefined;

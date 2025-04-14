@@ -58,6 +58,8 @@ async function handleCorrectedSentenceChangedCommand(
         correctedSentence.value[command.correctedSentence.id] =
             command.correctedSentence;
     }
+
+    console.log(correctedSentence.value);
 }
 
 async function jumpToBlock(command: JumpToBlockCommand) {
@@ -72,8 +74,6 @@ async function jumpToBlock(command: JumpToBlockCommand) {
 }
 
 function selectBlock(block: TextCorrectionBlock) {
-    console.log("Selected block:", block);
-
     selectedBlock.value = block;
 }
 
@@ -119,7 +119,7 @@ function applyBlock(block: TextCorrectionBlock, corrected: string) {
                         {{ block.original.replace(/\s/g, '_') }} - {{ block.explanation }}
                     </div>
 
-                    <div v-if="selectedBlock == block">
+                    <div v-if="selectedBlock?.offset == block.offset">
                         <div class="flex gap-2 flex-wrap mt-1">
                             <UButton v-for="corrected in block.corrected" @click="applyBlock(block, corrected)">
                                 {{ corrected }}
