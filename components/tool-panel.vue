@@ -6,7 +6,6 @@ import { UTabs } from "#components";
 // definitions
 interface ToolPanelProps {
     text: string;
-    blocks: TextCorrectionBlock[];
     selectedText?: TextFocus;
 }
 
@@ -57,9 +56,9 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
         <!-- wrapper: 'h-[30vh] md:h-[90vh]'             -->
         <UTabs
             v-model="selectedTab" :items="items" class="h-full"
-            :ui="{ content: 'h-[30vh] md:h-[90vh] overflow-y-auto scrollable-container' }"> 
+            :ui="{ content: 'h-[30vh] md:h-[80vh] overflow-y-auto scrollable-container' }"> 
             <template #problems>
-                <ProblemsPanel :blocks="props.blocks" />
+                <ProblemsPanel />
             </template>
             <template #rewrite>
                 <div class="h-full">

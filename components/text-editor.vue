@@ -14,18 +14,19 @@ import {
     ApplyCorrectionCommand,
     ApplyTextCommand,
     Cmds,
+    CorrectedSentenceChangedCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
-import type { TextCorrectionBlock } from "~/assets/models/text-correction";
+import type {
+    CorrectedSentence,
+    TextCorrectionBlock,
+} from "~/assets/models/text-correction";
 import { CorrectionMark } from "~/utils/correction-mark";
 import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
 import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
 
-// input
-const props = defineProps<{
-    blocks: TextCorrectionBlock[];
-}>();
+import { makeCorrectedSentenceAbsolute } from "~/assets/services/CorrectionService";
 
 // output
 const emit = defineEmits<{
@@ -47,7 +48,18 @@ const hoverBlock = ref<TextCorrectionBlock>();
 const hoverRect = ref<DOMRect>();
 const wordSynonyms = ref<string[]>();
 const alternativeSentences = ref<string[]>();
-const alternativeText = ref<string[]>();
+const correctedSentence = ref<Record<string, CorrectedSentence>>({});
+
+const blocks = computed(() => {
+    if (!correctedSentence.value) {
+        return [];
+    }
+
+    return Object.values(correctedSentence.value).flatMap((sentence) => {
+        return makeCorrectedSentenceAbsolute(sentence).blocks;
+    });
+});
+
 const relativeHoverRect = computed(() => {
     if (!hoverRect.value) return;
 
@@ -101,7 +113,7 @@ const editor = useEditor({
                 const mark = node.marks.find((m) => m.attrs["data-block-id"]);
 
                 const id = mark?.attrs["data-block-id"];
-                const block = props.blocks.find((b) => b.offset === id);
+                const block = blocks.value.find((b) => b.offset === id);
 
                 if (!block || !editor.value || block.corrected.length === 0) {
                     return;
@@ -158,6 +170,10 @@ const editor = useEditor({
 
 // lifecycle
 onMounted(() => {
+    registerHandler(
+        Cmds.CorrectedSentenceChangedCommand,
+        handleCorrectedSentenceChanged,
+    );
     registerHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     registerHandler(Cmds.ApplyTextCommand, applyText);
     registerHandler(Cmds.UndoCommand, applyUndo);
@@ -198,6 +214,10 @@ watch(focusedSelection, (value) => {
 onUnmounted(() => {
     editor.value?.destroy();
 
+    unregisterHandler(
+        Cmds.CorrectedSentenceChangedCommand,
+        handleCorrectedSentenceChanged,
+    );
     unregisterHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     unregisterHandler(Cmds.ApplyTextCommand, applyText);
     unregisterHandler(Cmds.UndoCommand, applyUndo);
@@ -216,7 +236,7 @@ watch(model, (value) => {
 });
 
 watch(
-    () => props.blocks,
+    () => blocks.value,
     (value) => {
         if (!editor.value) return;
 
@@ -269,12 +289,61 @@ function getContent() {
 }
 
 // functions
-function rewriteText() {
-    if (!editor.value) {
-        return;
+async function handleCorrectedSentenceChanged(
+    command: CorrectedSentenceChangedCommand,
+) {
+    if (!editor.value) return;
+
+    hoverBlock.value = undefined;
+    hoverRect.value = undefined;
+
+    const type = getMarkType("correction", editor.value.state.schema);
+
+    function removeMarks(sentence: CorrectedSentence) {
+        if (!editor.value) return;
+
+        editor.value.view.dispatch(
+            editor.value.state.tr
+                .setMeta("addToHistory", false)
+                .removeMark(sentence.from, sentence.to, type),
+        );
     }
 
-    emit("rewriteText", getContent(), editor.value.state.selection);
+    function addMarks(sentence: CorrectedSentence) {
+        if (!editor.value) return;
+
+        for (const block of sentence.blocks) {
+            const start = block.offset + sentence.from;
+            const end = start + block.length;
+
+            editor.value.view.dispatch(
+                editor.value.state.tr.setMeta("addToHistory", false).addMark(
+                    start,
+                    end,
+                    type.create({
+                        "data-block-id": block.offset,
+                    }),
+                ),
+            );
+        }
+    }
+
+    if (command.change === "add") {
+        correctedSentence.value[command.correctedSentence.id] =
+            command.correctedSentence;
+
+        addMarks(command.correctedSentence);
+    } else if (command.change === "remove") {
+        delete correctedSentence.value[command.correctedSentence.id];
+
+        removeMarks(command.correctedSentence);
+    } else {
+        correctedSentence.value[command.correctedSentence.id] =
+            command.correctedSentence;
+
+        removeMarks(command.correctedSentence);
+        addMarks(command.correctedSentence);
+    }
 }
 
 async function findWordSynonym() {

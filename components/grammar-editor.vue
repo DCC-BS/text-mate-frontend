@@ -12,7 +12,6 @@ import ToolPanel from "./tool-panel.vue";
 
 // refs
 const userText = ref("");
-const blocks = ref<TextCorrectionBlock[]>([]);
 const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
 
@@ -26,7 +25,11 @@ const { sendError } = useUseErrorDialog();
 const logger = useLogger();
 
 // todo create a composable
-const correctionService = new CorrectionService(logger, sendError);
+const correctionService = new CorrectionService(
+    logger,
+    executeCommand,
+    sendError,
+);
 
 // check if the query param clipboard is true
 const clipboard = router.currentRoute.value.query.clipboard;
@@ -61,14 +64,10 @@ async function correctText(text: string, signal: AbortSignal) {
         title: t("status.correctingText"),
     });
     try {
-        await correctionService.correctText(text, signal, blocks);
+        await correctionService.correctText(text, signal);
     } finally {
         removeProgress("correcting");
     }
-}
-
-function onCorrectionApplied(block: TextCorrectionBlock, corrected: string) {
-    blocks.value = blocks.value.filter((b) => b.offset !== block.offset);
 }
 
 function onRewriteText(text: string, range: Range) {
@@ -87,14 +86,14 @@ function onBlockClick(block: TextCorrectionBlock) {
             <template #a>
                 <client-only>
                     <div class="w-full h-full relative">
-                        <TextEditor v-model="userText" v-model:selectedText="selectedText" :blocks="blocks" @block-click="onBlockClick"
-                            @rewrite-text="onRewriteText" @correction-applied="onCorrectionApplied" />
+                        <TextEditor v-model="userText" v-model:selectedText="selectedText" @block-click="onBlockClick"
+                            @rewrite-text="onRewriteText" />
                     </div>
                 </client-only>
             </template>
             <template #b>
                 <div>
-                    <ToolPanel :blocks="blocks" :text="userText" :selectedText="selectedText" />
+                    <ToolPanel :text="userText" :selectedText="selectedText" />
                 </div>
             </template>
         </SplitView>

@@ -2,17 +2,14 @@
 import {
     ApplyCorrectionCommand,
     Cmds,
+    type CorrectedSentenceChangedCommand,
     type JumpToBlockCommand,
 } from "~/assets/models/commands";
-import type { TextCorrectionBlock } from "~/assets/models/text-correction";
-
-// definitions
-interface CorrectionPanelProps {
-    blocks: TextCorrectionBlock[];
-}
-
-// input
-const props = defineProps<CorrectionPanelProps>();
+import type {
+    CorrectedSentence,
+    TextCorrectionBlock,
+} from "~/assets/models/text-correction";
+import { makeCorrectedSentenceAbsolute } from "~/assets/services/CorrectionService";
 
 // composables
 const { t } = useI18n();
@@ -22,18 +19,47 @@ const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
 const selectedBlock = ref<TextCorrectionBlock | null>(null);
 
 // computed
-const blocks = computed(() => props.blocks);
+const correctedSentence = ref<Record<string, CorrectedSentence>>({});
+const blocks = computed(() => {
+    return Object.values(correctedSentence.value)
+        .flatMap((sentence) => makeCorrectedSentenceAbsolute(sentence).blocks)
+        .sort((a, b) => {
+            return a.offset - b.offset;
+        });
+});
 
 // life cycle
 onMounted(() => {
+    registerHandler(
+        Cmds.CorrectedSentenceChangedCommand,
+        handleCorrectedSentenceChangedCommand,
+    );
     registerHandler(Cmds.JumpToBlockCommand, jumpToBlock);
 });
 
 onUnmounted(() => {
     unregisterHandler(Cmds.JumpToBlockCommand, jumpToBlock);
+    unregisterHandler(
+        Cmds.CorrectedSentenceChangedCommand,
+        handleCorrectedSentenceChangedCommand,
+    );
 });
 
 // functions
+async function handleCorrectedSentenceChangedCommand(
+    command: CorrectedSentenceChangedCommand,
+) {
+    if (command.change === "add") {
+        correctedSentence.value[command.correctedSentence.id] =
+            command.correctedSentence;
+    } else if (command.change === "remove") {
+        delete correctedSentence.value[command.correctedSentence.id];
+    } else if (command.change === "update") {
+        correctedSentence.value[command.correctedSentence.id] =
+            command.correctedSentence;
+    }
+}
+
 async function jumpToBlock(command: JumpToBlockCommand) {
     selectBlock(command.block);
 
@@ -46,6 +72,8 @@ async function jumpToBlock(command: JumpToBlockCommand) {
 }
 
 function selectBlock(block: TextCorrectionBlock) {
+    console.log("Selected block:", block);
+
     selectedBlock.value = block;
 }
 

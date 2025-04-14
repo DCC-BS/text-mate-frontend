@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { TextSelection } from "@tiptap/pm/state";
 import { ApplyTextCommand } from "~/assets/models/commands";
 import type {
     RewriteApplyOptions,
