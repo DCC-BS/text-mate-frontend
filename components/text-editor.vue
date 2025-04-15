@@ -20,6 +20,8 @@ const selectedText = defineModel<TextFocus>("selectedText");
 // refs
 const container = ref<HTMLElement>();
 const limit = ref(10_000);
+const isTextCorrectionActive = ref(true);
+const isInteractiableFocusActive = ref(false);
 
 const undoRedoState = ref({
     canUndo: false,
@@ -34,9 +36,6 @@ const characterCountPercentage = computed(() =>
 );
 
 // composables
-const isTextCorrectionActive = ref(true);
-const isInteractiableFocusActive = ref(false);
-
 const toast = useToast();
 const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
 const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
