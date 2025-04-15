@@ -12,11 +12,13 @@ import {
     ApplyTextCommand,
     Cmds,
     type CorrectedSentenceChangedCommand,
+    JumpToBlockCommand,
 } from "~/assets/models/commands";
 import { makeCorrectedSentenceAbsolute } from "~/assets/services/CorrectionService";
 
 export function useTextCorrectionMarks(
     container: Ref<HTMLElement | undefined>,
+    isActive: Ref<boolean>,
 ) {
     const { registerHandler, unregisterHandler, executeCommand } =
         useCommandBus();
@@ -24,7 +26,6 @@ export function useTextCorrectionMarks(
     const hoverRect = ref<DOMRect>();
     const hoverBlock = ref<TextCorrectionBlock>();
     const editor = ref<Editor>();
-    const isTextCorrectionActive = ref(false);
     const correctedSentence = ref<Record<string, CorrectedSentence>>({});
     const blocks = computed(() => {
         if (!correctedSentence.value) {
@@ -35,8 +36,6 @@ export function useTextCorrectionMarks(
             return makeCorrectedSentenceAbsolute(sentence).blocks;
         });
     });
-
-    const emit = getCurrentInstance()?.emit;
 
     const relativeHoverRect = computed(() => {
         if (!hoverRect.value) return;
@@ -61,7 +60,7 @@ export function useTextCorrectionMarks(
         addExtensions: () => [
             CorrectionMark.configure({
                 onMouseEnter: (event: MouseEvent, node: Node) => {
-                    if (hoverBlock.value || !isTextCorrectionActive.value) {
+                    if (hoverBlock.value || !isActive.value) {
                         return;
                     }
 
@@ -95,25 +94,17 @@ export function useTextCorrectionMarks(
                         block.offset + block.length + 1,
                     );
 
-                    console.log("hoverRect", hoverRect.value, "block", block);
-
-                    if (emit) {
-                        emit("blockClick", block);
-                    }
+                    executeCommand(new JumpToBlockCommand(block));
                 },
             }),
         ],
     });
 
+    // Wait for both the editor to be available and the container to be mounted
     watch(
         [() => editor.value, () => container.value],
         ([editorValue, containerValue]) => {
-            if (
-                !editorValue ||
-                !containerValue ||
-                !isTextCorrectionActive.value
-            )
-                return;
+            if (!editorValue || !containerValue || !isActive.value) return;
 
             containerValue.onmousemove = (event) => {
                 if (!hoverRect.value) return;
@@ -136,7 +127,7 @@ export function useTextCorrectionMarks(
         { immediate: true },
     );
 
-    watch(isTextCorrectionActive, (value) => {
+    watch(isActive, (value) => {
         hoverBlock.value = undefined;
         hoverRect.value = undefined;
 
@@ -238,7 +229,6 @@ export function useTextCorrectionMarks(
         CorrectionExtension,
         hoverBlock,
         relativeHoverRect,
-        isTextCorrectionActive,
     };
 }
 

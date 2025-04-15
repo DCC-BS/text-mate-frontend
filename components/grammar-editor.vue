@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import type { Range } from "@tiptap/vue-3";
-import {
-    JumpToBlockCommand,
-    RewriteTextCommand,
-} from "~/assets/models/commands";
-import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { CorrectionService } from "~/assets/services/CorrectionService";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
@@ -69,14 +63,6 @@ async function correctText(text: string, signal: AbortSignal) {
         removeProgress("correcting");
     }
 }
-
-function onRewriteText(text: string, range: Range) {
-    executeCommand(new RewriteTextCommand(text, range));
-}
-
-function onBlockClick(block: TextCorrectionBlock) {
-    executeCommand(new JumpToBlockCommand(block));
-}
 </script>
 
 <template>
@@ -86,8 +72,7 @@ function onBlockClick(block: TextCorrectionBlock) {
             <template #a>
                 <client-only>
                     <div class="w-full h-full relative">
-                        <TextEditor v-model="userText" v-model:selectedText="selectedText" @block-click="onBlockClick"
-                            @rewrite-text="onRewriteText" />
+                        <TextEditor v-model="userText" v-model:selectedText="selectedText" />
                     </div>
                 </client-only>
             </template>

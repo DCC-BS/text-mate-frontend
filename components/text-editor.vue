@@ -1,30 +1,17 @@
 <script setup lang="ts">
 import CharacterCount from "@tiptap/extension-character-count";
 import StarterKit from "@tiptap/starter-kit";
+import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
-    BubbleMenu,
-    EditorContent,
-    type Range,
-    useEditor,
-} from "@tiptap/vue-3";
-import {
-    ApplyTextCommand,
+    type ApplyTextCommand,
     Cmds,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
-import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
 import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
 import TextCorrection from "./text-editor/text-correction.vue";
-
-// output
-const emit = defineEmits<{
-    blockClick: [block: TextCorrectionBlock];
-    blockSelected: [block: TextCorrectionBlock];
-    completeText: [text: string, position: number];
-    rewriteText: [text: string, Range];
-}>();
+import TextRewrite from "./text-editor/text-rewrite.vue";
 
 // model
 const model = defineModel<string>("modelValue", { required: true });
@@ -33,8 +20,6 @@ const selectedText = defineModel<TextFocus>("selectedText");
 // refs
 const container = ref<HTMLElement>();
 const limit = ref(10_000);
-const wordSynonyms = ref<string[]>();
-const alternativeSentences = ref<string[]>();
 
 const undoRedoState = ref({
     canUndo: false,
@@ -49,20 +34,15 @@ const characterCountPercentage = computed(() =>
 );
 
 // composables
+const isTextCorrectionActive = ref(true);
+const isInteractiableFocusActive = ref(false);
+
 const toast = useToast();
-const { t } = useI18n();
 const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
 const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
-    useTextFocus();
-const { addProgress, removeProgress } = useUseProgressIndication();
-const {
-    CorrectionExtension,
-    hoverBlock,
-    relativeHoverRect,
-    isTextCorrectionActive,
-} = useTextCorrectionMarks(container);
-
-isTextCorrectionActive.value = true;
+    useTextFocus(isInteractiableFocusActive);
+const { CorrectionExtension, hoverBlock, relativeHoverRect } =
+    useTextCorrectionMarks(container, isTextCorrectionActive);
 
 const editor = useEditor({
     content: model.value,
@@ -122,8 +102,6 @@ onMounted(() => {
     registerHandler(Cmds.RedoCommand, applyRedo);
 });
 
-// Wait for both the editor to be available and the container to be mounted
-
 watch(focusedSelection, (value) => {
     selectedText.value = value;
 });
@@ -147,18 +125,6 @@ watch(model, (value) => {
     editor.value.commands.setContent(value);
 });
 
-watch(focusedWord, (newValue, oldValue) => {
-    if (newValue !== oldValue) {
-        wordSynonyms.value = [];
-    }
-});
-
-watch(focusedSentence, (newValue, oldValue) => {
-    if (newValue !== oldValue) {
-        alternativeSentences.value = [];
-    }
-});
-
 function getContent() {
     if (!editor.value) {
         return "";
@@ -168,85 +134,6 @@ function getContent() {
 }
 
 // functions
-
-async function findWordSynonym() {
-    if (
-        !focusedSentence.value ||
-        !focusedWord.value ||
-        focusedWord.value.text.length === 0 ||
-        focusedSentence.value.text.length === 0
-    ) {
-        return;
-    }
-
-    addProgress("finding-synonym", {
-        title: t("text-editor.finding-synonym"),
-        icon: "i-heroicons-magnifying-glass",
-    });
-
-    try {
-        const result = await getWordSynonym(
-            focusedWord.value.text,
-            focusedSentence.value.text,
-        );
-
-        wordSynonyms.value = result.synonyms;
-    } finally {
-        removeProgress("finding-synonym");
-    }
-}
-
-async function applyWordSynonym(synonym: string) {
-    if (!focusedWord.value || !focusedSentence.value) {
-        return;
-    }
-
-    await applyText(
-        new ApplyTextCommand(synonym, {
-            from: focusedWord.value.start,
-            to: focusedWord.value.end,
-        }),
-    );
-
-    wordSynonyms.value = [];
-}
-
-async function findAlternativeSentence() {
-    if (!focusedSentence.value) {
-        return;
-    }
-
-    addProgress("finding-alternative-sentence", {
-        title: t("text-editor.finding-alternative-sentence"),
-        icon: "i-heroicons-magnifying-glass",
-    });
-
-    try {
-        const result = await getAlternativeSentences(
-            focusedSentence.value.text,
-            model.value,
-        );
-
-        alternativeSentences.value = result.options;
-    } finally {
-        removeProgress("finding-alternative-sentence");
-    }
-}
-
-async function applyAlternativeSentence(sentence: string) {
-    if (!focusedSentence.value) {
-        return;
-    }
-
-    await applyText(
-        new ApplyTextCommand(sentence, {
-            from: focusedSentence.value.start,
-            to: focusedSentence.value.end,
-        }),
-    );
-
-    alternativeSentences.value = [];
-}
 
 async function applyText(command: ApplyTextCommand) {
     if (!editor.value) return;
@@ -279,50 +166,17 @@ async function applyRedo(_: ICommand) {
         <QuickActionsPanel :editor="editor" />
 
         <TextCorrection
+            v-if="isTextCorrectionActive"
             :hover-block="hoverBlock"
-            :relative-hover-rect="relativeHoverRect">
-        </TextCorrection>
+            :relative-hover-rect="relativeHoverRect" />
 
-        <bubble-menu
-            :editor="editor" 
-            :tippy-options="{ duration: 100, placement: 'bottom', arrow: true, popperOptions: { placement: 'bottom'} }"
-            :should-show="() => true">
-            <div class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300"
-            v-if="focusedSentence || focusedWord">
-                <div v-if="focusedWord">
-                        <UButton
-                            @click="findWordSynonym"
-                            variant="subtle">
-                            Wort umformulieren
-                        </UButton>
+        <TextRewrite
+            :focused-sentence="focusedSentence"
+            :focused-word="focusedWord"
+            :text="model"
+            :editor="editor"
+            :is-text-correction-active="isTextCorrectionActive" />
 
-                        <div class="flex gap-1 flex-col pt-1">
-                            <UButton
-                                v-for="synonym in wordSynonyms"
-                                :key="synonym"
-                                @click="applyWordSynonym(synonym)">
-                                {{ synonym }}
-                            </UButton>
-                        </div>
-                </div>
-                <div v-if="focusedSentence">
-                    <UButton
-                        @click="findAlternativeSentence"
-                        variant="subtle">
-                        Satzt umformulieren
-                    </UButton>
-
-                    <div class="flex gap-1 flex-col pt-1">
-                        <UButton
-                            v-for="sentence in alternativeSentences"
-                            :key="sentence"
-                            @click="applyAlternativeSentence(sentence)">
-                            {{ sentence }}
-                        </UButton>
-                    </div>
-                </div>
-            </div>
-        </bubble-menu>
         <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
         </div>

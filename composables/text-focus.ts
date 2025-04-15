@@ -8,13 +8,12 @@ export type TextFocus = {
     end: number;
 };
 
-export function useTextFocus() {
+export function useTextFocus(isActive: Ref<boolean>) {
     const focusedWord = ref<TextFocus>();
     const focusedSentence = ref<TextFocus>();
     const focusedSelection = ref<TextFocus>();
-    const isInteractiveFocusEnabled = ref(true);
 
-    watch(isInteractiveFocusEnabled, (newValue) => {
+    watch(isActive, (newValue) => {
         if (!newValue) {
             focusedWord.value = undefined;
             focusedSentence.value = undefined;
@@ -26,7 +25,7 @@ export function useTextFocus() {
      * Updates editor marks and focus state based on current selection
      */
     function handleSelectionUpdate(editor: Editor) {
-        if (!isInteractiveFocusEnabled.value) {
+        if (!isActive.value) {
             clearFocusMarks(editor);
             return;
         }
@@ -117,7 +116,6 @@ export function useTextFocus() {
     });
 
     return {
-        isInteractiveFocusEnabled,
         FocusExtension,
         focusedWord,
         focusedSentence,
