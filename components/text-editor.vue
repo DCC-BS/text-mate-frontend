@@ -1,32 +1,22 @@
 <script setup lang="ts">
 import CharacterCount from "@tiptap/extension-character-count";
-import type { Node } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
 import {
     BubbleMenu,
     EditorContent,
     type Range,
-    getMarkType,
     useEditor,
 } from "@tiptap/vue-3";
-// biome-ignore lint/style/useImportType: This is a bug in the biome plugin ApplyCorrectionCommand cannot be imported as a type
 import {
-    ApplyCorrectionCommand,
     ApplyTextCommand,
     Cmds,
-    CorrectedSentenceChangedCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
-import type {
-    CorrectedSentence,
-    TextCorrectionBlock,
-} from "~/assets/models/text-correction";
-import { CorrectionMark } from "~/utils/correction-mark";
+import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
 import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
-
-import { makeCorrectedSentenceAbsolute } from "~/assets/services/CorrectionService";
+import TextCorrection from "./text-editor/text-correction.vue";
 
 // output
 const emit = defineEmits<{
@@ -34,7 +24,6 @@ const emit = defineEmits<{
     blockSelected: [block: TextCorrectionBlock];
     completeText: [text: string, position: number];
     rewriteText: [text: string, Range];
-    correctionApplied: [block: TextCorrectionBlock, corrected: string];
 }>();
 
 // model
@@ -42,38 +31,11 @@ const model = defineModel<string>("modelValue", { required: true });
 const selectedText = defineModel<TextFocus>("selectedText");
 
 // refs
+const container = ref<HTMLElement>();
 const limit = ref(10_000);
-const container = ref<HTMLDivElement>();
-const hoverBlock = ref<TextCorrectionBlock>();
-const hoverRect = ref<DOMRect>();
 const wordSynonyms = ref<string[]>();
 const alternativeSentences = ref<string[]>();
-const correctedSentence = ref<Record<string, CorrectedSentence>>({});
 
-const blocks = computed(() => {
-    if (!correctedSentence.value) {
-        return [];
-    }
-
-    return Object.values(correctedSentence.value).flatMap((sentence) => {
-        return makeCorrectedSentenceAbsolute(sentence).blocks;
-    });
-});
-
-const relativeHoverRect = computed(() => {
-    if (!hoverRect.value) return;
-
-    const containerRect = container.value?.getBoundingClientRect();
-
-    if (!containerRect) return;
-
-    return {
-        top: hoverRect.value.top - containerRect.top,
-        left: hoverRect.value.left - containerRect.left,
-        width: hoverRect.value.width,
-        height: hoverRect.value.height,
-    };
-});
 const undoRedoState = ref({
     canUndo: false,
     canRedo: false,
@@ -93,6 +55,14 @@ const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
 const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
     useTextFocus();
 const { addProgress, removeProgress } = useUseProgressIndication();
+const {
+    CorrectionExtension,
+    hoverBlock,
+    relativeHoverRect,
+    isTextCorrectionActive,
+} = useTextCorrectionMarks(container);
+
+isTextCorrectionActive.value = true;
 
 const editor = useEditor({
     content: model.value,
@@ -102,33 +72,9 @@ const editor = useEditor({
         // @ts-expect-error
         BubbleMenu,
         FocusExtension,
+        CorrectionExtension,
         CharacterCount.configure({
             limit: limit.value,
-        }),
-        CorrectionMark.configure({
-            onMouseEnter: (event: MouseEvent, node: Node) => {
-                if (hoverBlock.value) {
-                    return;
-                }
-
-                const mark = node.marks.find((m) => m.attrs["data-block-id"]);
-
-                const id = mark?.attrs["data-block-id"];
-                const block = blocks.value.find((b) => b.offset === id);
-
-                if (!block || !editor.value || block.corrected.length === 0) {
-                    return;
-                }
-
-                hoverBlock.value = block;
-                hoverRect.value = getRangeBoundingBox(
-                    editor.value,
-                    block.offset + 1,
-                    block.offset + block.length + 1,
-                );
-
-                emit("blockClick", block);
-            },
         }),
         FocusedSentenceMark,
         FocusedWordMark,
@@ -171,42 +117,12 @@ const editor = useEditor({
 
 // lifecycle
 onMounted(() => {
-    registerHandler(
-        Cmds.CorrectedSentenceChangedCommand,
-        handleCorrectedSentenceChanged,
-    );
-    registerHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     registerHandler(Cmds.ApplyTextCommand, applyText);
     registerHandler(Cmds.UndoCommand, applyUndo);
     registerHandler(Cmds.RedoCommand, applyRedo);
 });
 
 // Wait for both the editor to be available and the container to be mounted
-watch(
-    [() => editor.value, () => container.value],
-    ([editorValue, containerValue]) => {
-        if (!editorValue || !containerValue) return;
-
-        containerValue.onmousemove = (event) => {
-            if (!hoverRect.value) return;
-
-            const bottomThreshold = 50;
-            const xThreshold = 2;
-
-            // check if the mouse is far away from the hover rect
-            if (
-                event.clientX < hoverRect.value.left - xThreshold ||
-                event.clientX > hoverRect.value.right + xThreshold ||
-                event.clientY < hoverRect.value.top ||
-                event.clientY > hoverRect.value.bottom + bottomThreshold
-            ) {
-                hoverBlock.value = undefined;
-                hoverRect.value = undefined;
-            }
-        };
-    },
-    { immediate: true },
-);
 
 watch(focusedSelection, (value) => {
     selectedText.value = value;
@@ -215,11 +131,6 @@ watch(focusedSelection, (value) => {
 onUnmounted(() => {
     editor.value?.destroy();
 
-    unregisterHandler(
-        Cmds.CorrectedSentenceChangedCommand,
-        handleCorrectedSentenceChanged,
-    );
-    unregisterHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
     unregisterHandler(Cmds.ApplyTextCommand, applyText);
     unregisterHandler(Cmds.UndoCommand, applyUndo);
     unregisterHandler(Cmds.RedoCommand, applyRedo);
@@ -235,39 +146,6 @@ watch(model, (value) => {
 
     editor.value.commands.setContent(value);
 });
-
-watch(
-    () => blocks.value,
-    (value) => {
-        if (!editor.value) return;
-
-        hoverBlock.value = undefined;
-        hoverRect.value = undefined;
-
-        const type = getMarkType("correction", editor.value.state.schema);
-
-        editor.value.view.dispatch(
-            editor.value.state.tr
-                .setMeta("addToHistory", false)
-                .removeMark(0, editor.value.state.doc.content.size, type),
-        );
-
-        for (const block of value) {
-            const start = block.offset + 1;
-            const end = start + block.length;
-
-            editor.value.view.dispatch(
-                editor.value.state.tr.setMeta("addToHistory", false).addMark(
-                    start,
-                    end,
-                    type.create({
-                        "data-block-id": block.offset,
-                    }),
-                ),
-            );
-        }
-    },
-);
 
 watch(focusedWord, (newValue, oldValue) => {
     if (newValue !== oldValue) {
@@ -290,64 +168,6 @@ function getContent() {
 }
 
 // functions
-async function handleCorrectedSentenceChanged(
-    command: CorrectedSentenceChangedCommand,
-) {
-    if (!editor.value) return;
-
-    console.log(command);
-
-    hoverBlock.value = undefined;
-    hoverRect.value = undefined;
-
-    const type = getMarkType("correction", editor.value.state.schema);
-
-    function removeMarks(sentence: CorrectedSentence) {
-        if (!editor.value) return;
-
-        editor.value.view.dispatch(
-            editor.value.state.tr
-                .setMeta("addToHistory", false)
-                .removeMark(sentence.from, sentence.to, type),
-        );
-    }
-
-    function addMarks(sentence: CorrectedSentence) {
-        if (!editor.value) return;
-
-        for (const block of sentence.blocks) {
-            const start = block.offset + sentence.from;
-            const end = start + block.length;
-
-            editor.value.view.dispatch(
-                editor.value.state.tr.setMeta("addToHistory", false).addMark(
-                    start,
-                    end,
-                    type.create({
-                        "data-block-id": block.offset,
-                    }),
-                ),
-            );
-        }
-    }
-
-    if (command.change === "add") {
-        correctedSentence.value[command.correctedSentence.id] =
-            command.correctedSentence;
-
-        addMarks(command.correctedSentence);
-    } else if (command.change === "remove") {
-        delete correctedSentence.value[command.correctedSentence.id];
-
-        removeMarks(command.correctedSentence);
-    } else {
-        correctedSentence.value[command.correctedSentence.id] =
-            command.correctedSentence;
-
-        removeMarks(command.correctedSentence);
-        addMarks(command.correctedSentence);
-    }
-}
 
 async function findWordSynonym() {
     if (
@@ -428,23 +248,6 @@ async function applyAlternativeSentence(sentence: string) {
     alternativeSentences.value = [];
 }
 
-async function applyCorrection(command: ApplyCorrectionCommand) {
-    if (!editor.value) return;
-
-    hoverBlock.value = undefined;
-    hoverRect.value = undefined;
-
-    const block = command.block;
-    const corrected = command.corrected;
-
-    const start = block.offset + 1;
-    const end = start + block.length;
-
-    applyText(new ApplyTextCommand(corrected, { from: start, to: end }));
-
-    emit("correctionApplied", block, corrected);
-}
-
 async function applyText(command: ApplyTextCommand) {
     if (!editor.value) return;
     const text = command.text;
@@ -475,26 +278,10 @@ async function applyRedo(_: ICommand) {
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
         <QuickActionsPanel :editor="editor" />
 
-        <UPopover :open="!!hoverBlock" :content="{onOpenAutoFocus: (e) => e.preventDefault()}" class="absolute">
-            <div class="absolute pointer-events-none select-none touch-none" :style="{
-                top: relativeHoverRect?.top + 'px', 
-                left: relativeHoverRect?.left + 'px',
-                width: relativeHoverRect?.width + 'px',
-                height: relativeHoverRect?.height + 'px',}">
-            </div>
-
-            <template #content>
-                <div
-                    v-if="hoverBlock && hoverBlock.corrected.length > 0"
-                    class="flex flex-wrap gap-1 justify-center p-2">
-                    <UButton
-                        v-for="correction in hoverBlock.corrected.slice(0, 5)" :key="correction"
-                        @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
-                        {{ correction }}
-                    </UButton>
-                </div>
-            </template>
-        </UPopover>
+        <TextCorrection
+            :hover-block="hoverBlock"
+            :relative-hover-rect="relativeHoverRect">
+        </TextCorrection>
 
         <bubble-menu
             :editor="editor" 

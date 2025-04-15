@@ -23,6 +23,11 @@ Start the development server on `http://localhost:3000`:
 bun run dev
 ```
 
+start the backend as docker container
+```bash
+sudo docker compose --env-file ./.env.backend up --build
+```
+
 ## Production
 
 Build the application for production:

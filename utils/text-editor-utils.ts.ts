@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/vue-3";
+import type { Editor } from "@tiptap/core";
 
 /**
  * Gets the bounding box for a text range in the Tiptap editor
