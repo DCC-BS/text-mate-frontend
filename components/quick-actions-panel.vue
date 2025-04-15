@@ -70,7 +70,7 @@ async function applyAction(action: Actions) {
 </script>
 
 <template>
-  <div class="flex justify-center gap-2">
+  <div class="flex justify-center gap-2 flex-wrap">
     <UButton
         variant="soft"
         :disabled="!actionsAreAvailable"
@@ -103,7 +103,3 @@ async function applyAction(action: Actions) {
     </UButton>
   </div>
 </template>
-
-<style>
-
-</style>
