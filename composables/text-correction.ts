@@ -23,6 +23,8 @@ export function useTextCorrectionMarks(
     const { registerHandler, unregisterHandler, executeCommand } =
         useCommandBus();
 
+    const logger = useLogger();
+
     const hoverRect = ref<DOMRect>();
     const hoverBlock = ref<TextCorrectionBlock>();
     const editor = ref<Editor>();
@@ -70,14 +72,6 @@ export function useTextCorrectionMarks(
 
                     const id = mark?.attrs["data-block-id"];
                     const block = blocks.value.find((b) => b.offset === id);
-
-                    console.log(
-                        id,
-                        blocks.value,
-                        block,
-                        editor.value,
-                        block?.corrected.length,
-                    );
 
                     if (
                         !block ||
@@ -159,7 +153,10 @@ export function useTextCorrectionMarks(
         const type = getCorrectionMarkType(editor.value);
 
         function removeMarks(sentence: CorrectedSentence) {
-            if (!editor.value) return;
+            if (!editor.value) {
+                logger.warn("Editor not available");
+                return;
+            }
 
             editor.value.view.dispatch(
                 editor.value.state.tr
@@ -169,7 +166,14 @@ export function useTextCorrectionMarks(
         }
 
         function addMarksForSentence(sentence: CorrectedSentence) {
-            if (!editor.value) return;
+            if (!editor.value) {
+                logger.warn("Editor not available");
+                return;
+            }
+
+            if (!isActive.value) {
+                return;
+            }
 
             addMarks(editor.value, sentence.blocks, sentence.from, type);
         }
@@ -180,7 +184,15 @@ export function useTextCorrectionMarks(
 
             addMarksForSentence(command.correctedSentence);
         } else if (command.change === "remove") {
-            delete correctedSentence.value[command.correctedSentence.id];
+            if (command.correctedSentence.id in correctedSentence.value) {
+                delete correctedSentence.value[command.correctedSentence.id];
+            } else {
+                logger.warn(
+                    `Corrected sentence not found in correctedSentence ${
+                        command.correctedSentence
+                    }`,
+                );
+            }
 
             removeMarks(command.correctedSentence);
         } else {

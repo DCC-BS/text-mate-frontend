@@ -9,7 +9,10 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "lint": "biome format --write",
-        "check": "biome check --fix"
+        "check": "biome check --fix",
+        "test": "vitest",
+        "test:watch": "vitest --watch",
+        "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^0.1.6",
@@ -19,6 +22,7 @@
         "@nuxt/ui": "^3.0.1",
         "@nuxtjs/i18n": "^9.4.0",
         "@nuxtjs/mdc": "0.16.1",
+        "@pinia/nuxt": "0.11.0",
         "@tiptap/extension-bubble-menu": "^2.11.5",
         "@tiptap/extension-character-count": "^2.11.5",
         "@tiptap/extension-floating-menu": "^2.11.5",
@@ -32,6 +36,7 @@
         "jsdiff": "^1.1.1",
         "nuxt": "^3.16.1",
         "nuxt-viewport": "2.2.0",
+        "pinia": "^3.0.2",
         "ts-pattern": "^5.7.0",
         "vue": "^3.5.13",
         "vue-router": "^4.5.0"
@@ -40,7 +45,13 @@
         "@biomejs/biome": "^1.9.4",
         "@iconify-json/flag": "^1.2.5",
         "@iconify-json/lucide": "^1.2.36",
+        "@vitejs/plugin-vue": "^5.2.3",
+        "@vitest/coverage-c8": "^0.33.0",
+        "@vue/test-utils": "^2.4.6",
         "autoprefixer": "^10.4.21",
-        "jiti": "^2.4.2"
+        "c8": "^10.1.3",
+        "happy-dom": "^17.4.4",
+        "jiti": "^2.4.2",
+        "vitest": "^3.1.1"
     }
 }

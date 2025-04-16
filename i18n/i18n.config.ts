@@ -32,6 +32,9 @@ export default defineI18nConfig(() => ({
                 title: "Problems",
                 noProblems: "No problems found",
             },
+            "text-editor": {
+                addWordToDictionary: "Add to Dictionary",
+            },
             editor: {
                 rewrite: "Rewrite",
                 simplify: "Simplify",
@@ -80,6 +83,12 @@ export default defineI18nConfig(() => ({
                         "The text advisor feature is currently in development and will be available soon.",
                 },
             },
+            "user-dictionary": {
+                title: "Dictionary",
+                empty: "No words in your dictionary",
+                add: "Add word",
+                placeholder: "Enter a word...",
+            },
         },
 
         de: {
@@ -110,6 +119,9 @@ export default defineI18nConfig(() => ({
             problems: {
                 title: "Probleme",
                 noProblems: "Keine Probleme gefunden",
+            },
+            "text-editor": {
+                addWordToDictionary: "Zum Wörterbuch hinzufügen",
             },
             editor: {
                 rewrite: "Umschreiben",
@@ -160,67 +172,11 @@ export default defineI18nConfig(() => ({
                         "Die Textberatungsfunktion befindet sich derzeit in der Entwicklung und wird in Kürze verfügbar sein.",
                 },
             },
-        },
-
-        fr: {
-            language: {
-                auto: "Détecter la langue",
-                "de-CH": "Allemand",
-                fr: "Français",
-                it: "Italien",
-                "en-US": "Anglais (US)",
-                "en-GB": "Anglais (GB)",
-            },
-            navigation: {
-                languages: "Langues",
-                undo: "Annuler",
-                redo: "Rétablir",
-            },
-            tools: {
-                problems: "Problèmes",
-                rewrite: "Réécrire",
-                advisor: "Conseils",
-            },
-            status: {
-                rewritingText: "Réécriture du texte...",
-                correctingText: "Correction du texte...",
-                advice: "Donner des conseils...",
-                ready: "Prêt",
-            },
-            problems: {
-                title: "Problèmes",
-                noProblems: "Aucun problème trouvé",
-            },
-        },
-
-        it: {
-            language: {
-                auto: "Rileva lingua",
-                "de-CH": "Tedesco",
-                fr: "Francese",
-                it: "Italiano",
-                "en-US": "Inglese (US)",
-                "en-GB": "Inglese (GB)",
-            },
-            navigation: {
-                languages: "Lingue",
-                undo: "Annulla",
-                redo: "Ripeti",
-            },
-            tools: {
-                problems: "Problemi",
-                rewrite: "Riscrivere",
-                advisor: "Feedback",
-            },
-            status: {
-                rewritingText: "Riscrittura del testo...",
-                correctingText: "Correzione del testo...",
-                advice: "Fornire consigli...",
-                ready: "Pronto",
-            },
-            problems: {
-                title: "Problemi",
-                noProblems: "Nessun problema trovato",
+            "user-dictionary": {
+                title: "Wörterbuch",
+                empty: "Keine Wörter in deinem Wörterbuch",
+                add: "Wort hinzufügen",
+                placeholder: "Gib ein Wort ein...",
             },
         },
     },

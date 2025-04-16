@@ -30,6 +30,9 @@ export class CorrectionService {
     constructor(
         private readonly logger: ILogger,
         private readonly executeCommand: (command: ICommand) => Promise<void>,
+        private readonly wordInUserDictionary: (
+            word: string,
+        ) => Promise<boolean>,
         private readonly onError: (message: string) => void,
         private language = "auto",
     ) {}
@@ -48,7 +51,16 @@ export class CorrectionService {
                 },
             );
 
-            return response.blocks;
+            const blocks = [];
+
+            for (const block of response.blocks) {
+                const inDict = await this.wordInUserDictionary(block.original);
+                if (!inDict) {
+                    blocks.push(block);
+                }
+            }
+
+            return blocks;
         } catch (e: unknown) {
             if (!(e instanceof Error)) {
                 this.logger.error("Unknown error in fetchBlocks");
@@ -73,9 +85,14 @@ export class CorrectionService {
      * @param {string} text - The text to correct.
      * @param {AbortSignal} signal - The abort signal to cancel the request.
      * @param {Ref<TextCorrectionBlock[]>} blocks - The reference to update with
+     * @param {boolean} invalidateAll - If true, all blocks will be invalidated.
      * corrected blocks.
      */
-    async correctText(text: string, signal: AbortSignal): Promise<void> {
+    async correctText(
+        text: string,
+        signal: AbortSignal,
+        invalidateAll: boolean,
+    ): Promise<void> {
         try {
             const segmenter = new Intl.Segmenter("de", {
                 granularity: "sentence",
@@ -85,10 +102,31 @@ export class CorrectionService {
                 (s) => s.segment,
             );
 
-            const diff = diffArrays(
-                this.oldSentences.map((s) => s.text),
-                sentences,
-            );
+            let diff: ArrayChange<string>[] = [];
+
+            if (invalidateAll) {
+                const removed = this.oldSentences.map((s) => s.text);
+
+                diff = [
+                    {
+                        value: removed,
+                        added: false,
+                        removed: true,
+                        count: removed.length,
+                    },
+                    {
+                        value: sentences,
+                        added: true,
+                        removed: false,
+                        count: sentences.length,
+                    },
+                ];
+            } else {
+                diff = diffArrays(
+                    this.oldSentences.map((s) => s.text),
+                    sentences,
+                );
+            }
 
             const inputQueue = new Queue(this.oldSentences);
             this.oldSentences = [];
@@ -109,10 +147,8 @@ export class CorrectionService {
                                 new CorrectedSentenceChangedCommand(
                                     {
                                         ...oldSentence,
-                                        from: currentPos,
-                                        to:
-                                            currentPos +
-                                            oldSentence.text.length,
+                                        from: currentPos + oldSentence.from,
+                                        to: currentPos + oldSentence.to,
                                     },
                                     "remove",
                                 ),
@@ -193,9 +229,6 @@ export class CorrectionService {
         }
 
         this.language = language;
-
-        // clear cache
-        this.oldSentences = [];
     }
 
     private async addCorrectedSentences(

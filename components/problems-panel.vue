@@ -49,6 +49,8 @@ onUnmounted(() => {
 async function handleCorrectedSentenceChangedCommand(
     command: CorrectedSentenceChangedCommand,
 ) {
+    console.log(command);
+
     if (command.change === "add") {
         correctedSentence.value[command.correctedSentence.id] =
             command.correctedSentence;
@@ -58,8 +60,6 @@ async function handleCorrectedSentenceChangedCommand(
         correctedSentence.value[command.correctedSentence.id] =
             command.correctedSentence;
     }
-
-    console.log(correctedSentence.value);
 }
 
 async function jumpToBlock(command: JumpToBlockCommand) {
@@ -100,8 +100,6 @@ function scrollToBlock(blockElement: HTMLElement) {
     if (!("scrollBehavior" in document.documentElement.style)) {
         container.scrollTop = targetScrollTop;
     }
-
-    console.log("Scrolling to:", targetScrollTop);
 }
 
 function applyBlock(block: TextCorrectionBlock, corrected: string) {
@@ -110,7 +108,10 @@ function applyBlock(block: TextCorrectionBlock, corrected: string) {
 </script>
 
 <template>
-    <ToolPanelLanguageSelect/>
+    <div class="flex justify-stretch items-stretch gap-2 flex-wrap w-full">
+        <ToolPanelLanguageSelect class="grow"/>
+        <ToolPanelUserDictionary class="grow"/>
+    </div>
 
     <div v-if="blocks.length > 0">
         <div class="text-lg">{{ t('problems.title') }}</div>

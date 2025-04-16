@@ -13,6 +13,7 @@ export const Cmds = {
     CorrectedSentenceChangedCommand: "CorrectedSentenceChangedCommand",
     ToolSwitchCommand: "ToolSwitchCommand",
     SwitchCorrectionLanguageCommand: "SwitchCorrectionLanguageCommand",
+    InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -83,4 +84,8 @@ export class SwitchCorrectionLanguageCommand implements ICommand {
     readonly $type = "SwitchCorrectionLanguageCommand";
 
     constructor(public language: string) {}
+}
+
+export class InvalidateCorrectionCommand implements ICommand {
+    readonly $type = "InvalidateCorrectionCommand";
 }

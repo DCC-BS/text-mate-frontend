@@ -5,8 +5,10 @@ import TextEditor from "./text-editor.vue";
 import ToolPanel from "./tool-panel.vue";
 import {
     Cmds,
+    InvalidateCorrectionCommand,
     type SwitchCorrectionLanguageCommand,
 } from "~/assets/models/commands";
+import { useUserDictionaryStore } from "~/stores/user_dictionary";
 
 // refs
 const userText = ref("");
@@ -21,11 +23,13 @@ const { t } = useI18n();
 const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
 const { sendError } = useUseErrorDialog();
 const logger = useLogger();
+const userDictStore = useUserDictionaryStore();
 
 // todo create a composable
 const correctionService = new CorrectionService(
     logger,
     executeCommand,
+    userDictStore.exists,
     sendError,
 );
 
@@ -35,6 +39,7 @@ const clipboard = router.currentRoute.value.query.clipboard;
 // life cycle
 onMounted(async () => {
     registerHandler(Cmds.SwitchCorrectionLanguageCommand, handleSwitchLanguage);
+    registerHandler(Cmds.InvalidateCorrectionCommand, handleInvalidate);
 
     // Wait for next tick to ensure text editor is fully mounted
     await nextTick();
@@ -50,6 +55,7 @@ onUnmounted(() => {
         Cmds.SwitchCorrectionLanguageCommand,
         handleSwitchLanguage,
     );
+    unregisterHandler(Cmds.InvalidateCorrectionCommand, handleInvalidate);
 });
 
 // listeners
@@ -65,13 +71,17 @@ watch(userText, (newText) => {
 });
 
 // functions
-async function correctText(text: string, signal: AbortSignal) {
+async function correctText(
+    text: string,
+    signal: AbortSignal,
+    invalidate = true,
+) {
     addProgress("correcting", {
         icon: "i-heroicons-pencil",
         title: t("status.correctingText"),
     });
     try {
-        await correctionService.correctText(text, signal);
+        await correctionService.correctText(text, signal, invalidate);
     } finally {
         removeProgress("correcting");
     }
@@ -80,8 +90,12 @@ async function correctText(text: string, signal: AbortSignal) {
 async function handleSwitchLanguage(command: SwitchCorrectionLanguageCommand) {
     correctionService.switchLanguage(command.language);
 
+    await handleInvalidate(new InvalidateCorrectionCommand());
+}
+
+async function handleInvalidate(command: InvalidateCorrectionCommand) {
     taskScheduler.schedule((signal: AbortSignal) =>
-        correctText(userText.value, signal),
+        correctText(userText.value, signal, true),
     );
 }
 </script>

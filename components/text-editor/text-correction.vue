@@ -18,9 +18,15 @@ interface InputProps {
 const props = defineProps<InputProps>();
 
 const { executeCommand } = useCommandBus();
+const { t } = useI18n();
+const userDictionary = useUserDictionaryStore();
 
 function applyCorrection(command: ApplyCorrectionCommand) {
     executeCommand(command);
+}
+
+function addWord(word: string) {
+    userDictionary.addWord(word);
 }
 </script>
 
@@ -42,6 +48,9 @@ function applyCorrection(command: ApplyCorrectionCommand) {
                   @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
                   {{ correction }}
               </UButton>
+            <UButton color="info" icon="i-heroicons-plus-circle" @click="addWord(hoverBlock?.original)">
+                {{ t("text-editor.addWordToDictionary") }}
+            </UButton>
           </div>
       </template>
   </UPopover>
