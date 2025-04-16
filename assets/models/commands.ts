@@ -11,6 +11,8 @@ export const Cmds = {
     RedoCommand: "RedoCommand",
     UndoRedoStateChanged: "UndoRedoStateChanged",
     CorrectedSentenceChangedCommand: "CorrectedSentenceChangedCommand",
+    ToolSwitchCommand: "ToolSwitchCommand",
+    SwitchCorrectionLanguageCommand: "SwitchCorrectionLanguageCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -69,4 +71,16 @@ export class UndoRedoStateChanged implements ICommand {
         public canUndo: boolean,
         public canRedo: boolean,
     ) {}
+}
+
+export class ToolSwitchCommand implements ICommand {
+    readonly $type = "ToolSwitchCommand";
+
+    constructor(public tool: "correction" | "rewrite" | "advisor") {}
+}
+
+export class SwitchCorrectionLanguageCommand implements ICommand {
+    readonly $type = "SwitchCorrectionLanguageCommand";
+
+    constructor(public language: string) {}
 }

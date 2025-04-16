@@ -110,6 +110,8 @@ function applyBlock(block: TextCorrectionBlock, corrected: string) {
 </script>
 
 <template>
+    <ToolPanelLanguageSelect/>
+
     <div v-if="blocks.length > 0">
         <div class="text-lg">{{ t('problems.title') }}</div>
         <div>

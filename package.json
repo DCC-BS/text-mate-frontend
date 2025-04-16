@@ -32,11 +32,13 @@
         "jsdiff": "^1.1.1",
         "nuxt": "^3.16.1",
         "nuxt-viewport": "2.2.0",
+        "ts-pattern": "^5.7.0",
         "vue": "^3.5.13",
         "vue-router": "^4.5.0"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
+        "@iconify-json/flag": "^1.2.5",
         "@iconify-json/lucide": "^1.2.36",
         "autoprefixer": "^10.4.21",
         "jiti": "^2.4.2"

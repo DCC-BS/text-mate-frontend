@@ -3,6 +3,10 @@ import { CorrectionService } from "~/assets/services/CorrectionService";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
 import ToolPanel from "./tool-panel.vue";
+import {
+    Cmds,
+    type SwitchCorrectionLanguageCommand,
+} from "~/assets/models/commands";
 
 // refs
 const userText = ref("");
@@ -14,7 +18,7 @@ const router = useRouter();
 const viewport = useViewport();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
-const { executeCommand } = useCommandBus();
+const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
 const { sendError } = useUseErrorDialog();
 const logger = useLogger();
 
@@ -30,6 +34,8 @@ const clipboard = router.currentRoute.value.query.clipboard;
 
 // life cycle
 onMounted(async () => {
+    registerHandler(Cmds.SwitchCorrectionLanguageCommand, handleSwitchLanguage);
+
     // Wait for next tick to ensure text editor is fully mounted
     await nextTick();
 
@@ -37,6 +43,13 @@ onMounted(async () => {
         const text = await navigator.clipboard.readText();
         userText.value = text;
     }
+});
+
+onUnmounted(() => {
+    unregisterHandler(
+        Cmds.SwitchCorrectionLanguageCommand,
+        handleSwitchLanguage,
+    );
 });
 
 // listeners
@@ -62,6 +75,14 @@ async function correctText(text: string, signal: AbortSignal) {
     } finally {
         removeProgress("correcting");
     }
+}
+
+async function handleSwitchLanguage(command: SwitchCorrectionLanguageCommand) {
+    correctionService.switchLanguage(command.language);
+
+    taskScheduler.schedule((signal: AbortSignal) =>
+        correctText(userText.value, signal),
+    );
 }
 </script>
 

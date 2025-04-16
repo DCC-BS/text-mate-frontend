@@ -4,6 +4,14 @@ export default defineI18nConfig(() => ({
     locale: "de",
     messages: {
         en: {
+            language: {
+                auto: "Detect Language",
+                "de-CH": "German",
+                fr: "French",
+                it: "Italian",
+                "en-US": "English (US)",
+                "en-GB": "English (UK)",
+            },
             navigation: {
                 languages: "Languages",
                 undo: "Undo",
@@ -75,6 +83,14 @@ export default defineI18nConfig(() => ({
         },
 
         de: {
+            language: {
+                auto: "Sprache erkennen",
+                "de-CH": "Deutsch",
+                fr: "Französisch",
+                it: "Italienisch",
+                "en-US": "Englisch (US)",
+                "en-GB": "Englisch (GB)",
+            },
             navigation: {
                 languages: "Sprachen",
                 undo: "Rückgängig",
@@ -143,6 +159,68 @@ export default defineI18nConfig(() => ({
                     description:
                         "Die Textberatungsfunktion befindet sich derzeit in der Entwicklung und wird in Kürze verfügbar sein.",
                 },
+            },
+        },
+
+        fr: {
+            language: {
+                auto: "Détecter la langue",
+                "de-CH": "Allemand",
+                fr: "Français",
+                it: "Italien",
+                "en-US": "Anglais (US)",
+                "en-GB": "Anglais (GB)",
+            },
+            navigation: {
+                languages: "Langues",
+                undo: "Annuler",
+                redo: "Rétablir",
+            },
+            tools: {
+                problems: "Problèmes",
+                rewrite: "Réécrire",
+                advisor: "Conseils",
+            },
+            status: {
+                rewritingText: "Réécriture du texte...",
+                correctingText: "Correction du texte...",
+                advice: "Donner des conseils...",
+                ready: "Prêt",
+            },
+            problems: {
+                title: "Problèmes",
+                noProblems: "Aucun problème trouvé",
+            },
+        },
+
+        it: {
+            language: {
+                auto: "Rileva lingua",
+                "de-CH": "Tedesco",
+                fr: "Francese",
+                it: "Italiano",
+                "en-US": "Inglese (US)",
+                "en-GB": "Inglese (GB)",
+            },
+            navigation: {
+                languages: "Lingue",
+                undo: "Annulla",
+                redo: "Ripeti",
+            },
+            tools: {
+                problems: "Problemi",
+                rewrite: "Riscrivere",
+                advisor: "Feedback",
+            },
+            status: {
+                rewritingText: "Riscrittura del testo...",
+                correctingText: "Correzione del testo...",
+                advice: "Fornire consigli...",
+                ready: "Pronto",
+            },
+            problems: {
+                title: "Problemi",
+                noProblems: "Nessun problema trovato",
             },
         },
     },

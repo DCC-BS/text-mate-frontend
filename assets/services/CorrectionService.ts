@@ -31,6 +31,7 @@ export class CorrectionService {
         private readonly logger: ILogger,
         private readonly executeCommand: (command: ICommand) => Promise<void>,
         private readonly onError: (message: string) => void,
+        private language = "auto",
     ) {}
 
     private async fetchBlocks(
@@ -41,7 +42,7 @@ export class CorrectionService {
             const response = await $fetch<TextCorrectionResponse>(
                 "/api/correct",
                 {
-                    body: { text: text },
+                    body: { text: text, language: this.language },
                     method: "POST",
                     signal: signal,
                 },
@@ -184,6 +185,17 @@ export class CorrectionService {
             this.logger.error(`Error during text correction: ${e.message}`);
             this.onError(e.message);
         }
+    }
+
+    public async switchLanguage(language: string): Promise<void> {
+        if (this.language === language) {
+            return;
+        }
+
+        this.language = language;
+
+        // clear cache
+        this.oldSentences = [];
     }
 
     private async addCorrectedSentences(

@@ -21,7 +21,28 @@ const toast = useToast();
 const { applyStreamToEditor } = useStreamWriter();
 
 // computed
-const actionsAreAvailable = computed(() => props.editor.getText().length > 3);
+const textSelectionRange = computed(() => {
+    const { from, to } = props.editor.state.selection;
+
+    if (from === to) {
+        return {
+            from: 0,
+            to: props.editor.getText().length + 1,
+        };
+    }
+
+    return {
+        from,
+        to,
+    };
+});
+
+const selectedText = computed(() => {
+    const { from, to } = textSelectionRange.value;
+    return props.editor.state.doc.textBetween(from, to);
+});
+
+const actionsAreAvailable = computed(() => selectedText.value.length > 3);
 
 async function applyAction(action: Actions) {
     if (!actionsAreAvailable.value) {
@@ -34,15 +55,8 @@ async function applyAction(action: Actions) {
         return;
     }
 
-    let { from, to } = props.editor.state.selection;
-    let text = props.editor.getText();
-
-    if (from !== to) {
-        text = props.editor.state.doc.textBetween(from, to);
-    } else {
-        from = 0;
-        to = text.length + 1;
-    }
+    const { from, to } = textSelectionRange.value;
+    const text = selectedText.value;
 
     const response = (await $fetch("/api/quick-action", {
         responseType: "stream",

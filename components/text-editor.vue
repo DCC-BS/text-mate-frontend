@@ -5,6 +5,7 @@ import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
     Cmds,
+    type ToolSwitchCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
 import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
@@ -99,6 +100,7 @@ onMounted(() => {
     registerHandler(Cmds.ApplyTextCommand, applyText);
     registerHandler(Cmds.UndoCommand, applyUndo);
     registerHandler(Cmds.RedoCommand, applyRedo);
+    registerHandler(Cmds.ToolSwitchCommand, handleToolSwitch);
 });
 
 watch(focusedSelection, (value) => {
@@ -111,6 +113,7 @@ onUnmounted(() => {
     unregisterHandler(Cmds.ApplyTextCommand, applyText);
     unregisterHandler(Cmds.UndoCommand, applyUndo);
     unregisterHandler(Cmds.RedoCommand, applyRedo);
+    unregisterHandler(Cmds.ToolSwitchCommand, handleToolSwitch);
 });
 
 // listeners
@@ -124,6 +127,7 @@ watch(model, (value) => {
     editor.value.commands.setContent(value);
 });
 
+// functions
 function getContent() {
     if (!editor.value) {
         return "";
@@ -131,8 +135,6 @@ function getContent() {
 
     return editor.value.getText();
 }
-
-// functions
 
 async function applyText(command: ApplyTextCommand) {
     if (!editor.value) return;
@@ -157,6 +159,20 @@ async function applyRedo(_: ICommand) {
     if (!editor.value || !editor.value.can().redo()) return;
 
     editor.value.commands.redo();
+}
+
+async function handleToolSwitch(command: ToolSwitchCommand) {
+    if (command.tool === "correction") {
+        isTextCorrectionActive.value = true;
+    } else {
+        isTextCorrectionActive.value = false;
+    }
+
+    if (command.tool === "rewrite") {
+        isInteractiableFocusActive.value = true;
+    } else {
+        isInteractiableFocusActive.value = false;
+    }
 }
 </script>
 

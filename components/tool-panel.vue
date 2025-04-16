@@ -1,7 +1,13 @@
 <script lang="ts" setup>
-import { Cmds, type RewriteTextCommand } from "~/assets/models/commands";
+import {
+    Cmds,
+    ToolSwitchCommand,
+    type RewriteTextCommand,
+} from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { UTabs } from "#components";
+import type { TabsItem } from "@nuxt/ui";
+import { match, P } from "ts-pattern";
 
 // definitions
 interface ToolPanelProps {
@@ -13,7 +19,7 @@ const props = defineProps<ToolPanelProps>();
 
 // composables
 const { t } = useI18n();
-const { registerHandler, unregisterHandler } = useCommandBus();
+const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
 
 // refs
 const selectedTab = ref("0");
@@ -27,6 +33,24 @@ onMounted(() => {
 onUnmounted(() => {
     unregisterHandler(Cmds.RewriteTextCommand, handleRewriteText);
 });
+
+watch(
+    () => selectedTab.value,
+    (tab) => {
+        switch (tab) {
+            case "0":
+                executeCommand(new ToolSwitchCommand("correction"));
+                break;
+            case "1":
+                executeCommand(new ToolSwitchCommand("rewrite"));
+                break;
+            case "2":
+                executeCommand(new ToolSwitchCommand("advisor"));
+                break;
+            default:
+        }
+    },
+);
 
 const items = [
     {
@@ -44,7 +68,7 @@ const items = [
         label: t("tools.advisor"),
         icon: "i-heroicons-light-bulb",
     },
-];
+] as TabsItem[];
 
 async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
     selectedTab.value = "1";
