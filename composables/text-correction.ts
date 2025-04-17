@@ -164,6 +164,16 @@ export function useTextCorrectionMarks(
                 return;
             }
 
+            if (
+                sentence.from > sentence.to ||
+                sentence.to > editor.value.state.doc.content.size
+            ) {
+                logger.warn(
+                    `Invalid range for removing marks: ${sentence.from} - ${sentence.to} doc size: ${editor.value.state.doc.content.size}`,
+                );
+                return;
+            }
+
             editor.value.view.dispatch(
                 editor.value.state.tr
                     .setMeta("addToHistory", false)
@@ -222,7 +232,7 @@ export function useTextCorrectionMarks(
         const start = block.offset + 1;
         const end = start + block.length;
 
-        executeCommand(
+        await executeCommand(
             new ApplyTextCommand(corrected, { from: start, to: end }),
         );
     }

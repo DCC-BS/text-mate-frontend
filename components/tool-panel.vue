@@ -89,7 +89,6 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
             v-model="selectedTab"
             :items="items"
             class="h-full"
-            variant="link"
             :ui="{ content: 'h-[30vh] md:h-[80vh] overflow-y-auto scrollable-container' }"> 
             <template #problems>
                 <ProblemsPanel />

@@ -135,6 +135,13 @@ export class CorrectionService {
 
             for (const part of diff) {
                 if (signal.aborted) {
+                    while (inputQueue.size() > 0) {
+                        const sentence = inputQueue.dequeue();
+                        if (sentence) {
+                            this.oldSentences.push(sentence);
+                        }
+                    }
+
                     return;
                 }
 

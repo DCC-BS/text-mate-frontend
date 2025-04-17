@@ -1,5 +1,5 @@
 export type TextRewriteResponse = {
-    options: string[];
+    rewritten_text: string;
 };
 
 export type RewriteApplyOptions = {

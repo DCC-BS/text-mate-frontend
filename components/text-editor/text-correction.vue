@@ -21,8 +21,8 @@ const { executeCommand } = useCommandBus();
 const { t } = useI18n();
 const userDictionary = useUserDictionaryStore();
 
-function applyCorrection(command: ApplyCorrectionCommand) {
-    executeCommand(command);
+async function applyCorrection(command: ApplyCorrectionCommand) {
+    await executeCommand(command);
 }
 
 function addWord(word: string) {

@@ -48,12 +48,16 @@ const changes = computed(() => {
     return text;
 });
 
-function applyChanges() {
-    executeCommand(new CompleteRequestChangeCommand(command.value, "accept"));
+async function applyChanges() {
+    await executeCommand(
+        new CompleteRequestChangeCommand(command.value, "accept"),
+    );
 }
 
-function rejectChanges() {
-    executeCommand(new CompleteRequestChangeCommand(command.value, "reject"));
+async function rejectChanges() {
+    await executeCommand(
+        new CompleteRequestChangeCommand(command.value, "reject"),
+    );
 }
 </script>
 

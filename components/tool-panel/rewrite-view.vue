@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { ApplyTextCommand } from "~/assets/models/commands";
-import type {
-    RewriteApplyOptions,
-    TextRewriteResponse,
-} from "~/assets/models/text-rewrite";
-
-import type { Range } from "@tiptap/vue-3";
+import App from "~/app.vue";
+import {
+    ApplyTextCommand,
+    RequestChangesCommand,
+} from "~/assets/models/commands";
+import type { TextRewriteResponse } from "~/assets/models/text-rewrite";
 
 interface RewriteViewProps {
     text: string;
@@ -21,22 +20,11 @@ const { executeCommand } = useCommandBus();
 const { sendError } = useUseErrorDialog();
 
 // refs
-const rewriteOptions = ref<RewriteApplyOptions>();
 const isRewriting = ref<boolean>(false);
 
 const writing_style = ref<string>("general");
 const target_audience = ref<string>("general");
 const intend = ref<string>("general");
-const lastSelection = ref<Range>();
-
-watch(
-    () => props.text,
-    () => {
-        if (props.text) {
-            rewriteOptions.value = undefined;
-        }
-    },
-);
 
 // functions
 async function rewriteText() {
@@ -49,7 +37,6 @@ async function rewriteText() {
 
     const context = `${props.text.slice(0, from)}<rewrite>${textToRewrite}</rewrite>${props.text.slice(to)}`;
 
-    rewriteOptions.value = undefined;
     isRewriting.value = true;
     addProgress("rewriting", {
         icon: "i-heroicons-pencil",
@@ -69,11 +56,22 @@ async function rewriteText() {
             body,
             method: "POST",
         });
-        rewriteOptions.value = { from, to, options: response.options };
-        lastSelection.value = {
-            from,
-            to,
-        };
+
+        await executeCommand(
+            new ApplyTextCommand(response.rewritten_text, {
+                from,
+                to,
+            }),
+        );
+
+        await executeCommand(
+            new RequestChangesCommand(
+                textToRewrite,
+                response.rewritten_text,
+                from,
+                from + response.rewritten_text.length + 1,
+            ),
+        );
     } catch (e: unknown) {
         if (e instanceof Error) {
             sendError(e.message);
@@ -82,21 +80,6 @@ async function rewriteText() {
         isRewriting.value = false;
         removeProgress("rewriting");
     }
-}
-
-function applyRewrite(option: string) {
-    if (!lastSelection.value) {
-        return;
-    }
-
-    executeCommand(
-        new ApplyTextCommand(option, {
-            from: lastSelection.value.from,
-            to: lastSelection.value.to,
-        }),
-    );
-
-    rewriteOptions.value = undefined;
 }
 </script>
 
@@ -134,11 +117,5 @@ function applyRewrite(option: string) {
         <p class="text-sm text-gray-500">
             {{ t('rewrite.noRewrite') }}
         </p>
-    </div>
-    <div v-if="rewriteOptions && rewriteOptions.options.length > 0">
-        <div v-for="option in rewriteOptions.options">
-            <div v-html="option.replace(/\n/g, '<br>')" />
-            <UButton @click="applyRewrite(option)">{{ t('rewrite.apply') }} </UButton>
-        </div>
     </div>
 </template>

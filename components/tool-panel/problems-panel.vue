@@ -104,8 +104,8 @@ function scrollToBlock(blockElement: HTMLElement) {
     }
 }
 
-function applyBlock(block: TextCorrectionBlock, corrected: string) {
-    executeCommand(new ApplyCorrectionCommand(block, corrected));
+async function applyBlock(block: TextCorrectionBlock, corrected: string) {
+    await executeCommand(new ApplyCorrectionCommand(block, corrected));
 }
 </script>
 
