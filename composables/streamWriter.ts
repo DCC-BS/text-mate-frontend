@@ -11,7 +11,7 @@ async function applyStreamToEditor(
     editor: Editor,
     from: number,
     to: number,
-): Promise<void> {
+): Promise<string> {
     const oldText = editor.getHTML();
 
     editor.setEditable(false, false);
@@ -47,14 +47,8 @@ async function applyStreamToEditor(
             buffer += chunk;
         }
 
-        console.log("Buffer:", buffer);
-
         // Finalize the stream
-        const end = editor.state.selection.to;
-
         editor.chain().setMeta("addToHistory", false).setContent(oldText).run();
-
-        console.log("replace form to:", from, to);
 
         editor
             .chain()
@@ -62,13 +56,7 @@ async function applyStreamToEditor(
             .insertContent(buffer)
             .run();
 
-        // editor
-        //     .chain()
-        //     .setMeta("addToHistory", true)
-        //     .deleteRange({ from, to: buffer.length + 1 })
-        //     .focus(from)
-        //     .insertContent(buffer)
-        //     .run();
+        return buffer;
     } finally {
         editor.setEditable(true);
     }

@@ -43,6 +43,7 @@ const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
     useTextFocus(isInteractiableFocusActive);
 const { CorrectionExtension, hoverBlock, relativeHoverRect } =
     useTextCorrectionMarks(container, isTextCorrectionActive);
+const { TrackChangesExtension } = useTrackChanges();
 
 const editor = useEditor({
     content: model.value,
@@ -53,6 +54,7 @@ const editor = useEditor({
         BubbleMenu,
         FocusExtension,
         CorrectionExtension,
+        TrackChangesExtension,
         CharacterCount.configure({
             limit: limit.value,
         }),
@@ -162,17 +164,8 @@ async function applyRedo(_: ICommand) {
 }
 
 async function handleToolSwitch(command: ToolSwitchCommand) {
-    if (command.tool === "correction") {
-        isTextCorrectionActive.value = true;
-    } else {
-        isTextCorrectionActive.value = false;
-    }
-
-    if (command.tool === "rewrite") {
-        isInteractiableFocusActive.value = true;
-    } else {
-        isInteractiableFocusActive.value = false;
-    }
+    isTextCorrectionActive.value = command.tool === "correction";
+    isInteractiableFocusActive.value = command.tool === "rewrite";
 }
 </script>
 
@@ -250,6 +243,16 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
 
 .focused-word {
     color: var(--color-blue-500);
+}
+
+.text-added {
+    @apply bg-green-100;
+    background-color: var(--color-green-100);
+}
+
+.text-removed {
+    @apply bg-red-100;
+    background-color: var(--color-red-100);
 }
 
 .character-count--warning {

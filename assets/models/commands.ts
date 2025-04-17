@@ -14,6 +14,8 @@ export const Cmds = {
     ToolSwitchCommand: "ToolSwitchCommand",
     SwitchCorrectionLanguageCommand: "SwitchCorrectionLanguageCommand",
     InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
+    RequestChangesCommand: "RequestChangesCommand",
+    CompleteRequestChangeCommand: "CompleteRequestChangeCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -88,4 +90,24 @@ export class SwitchCorrectionLanguageCommand implements ICommand {
 
 export class InvalidateCorrectionCommand implements ICommand {
     readonly $type = "InvalidateCorrectionCommand";
+}
+
+export class RequestChangesCommand implements ICommand {
+    readonly $type = "RequestChangesCommand";
+
+    constructor(
+        public oldText: string,
+        public newText: string,
+        public from: number,
+        public to: number,
+    ) {}
+}
+
+export class CompleteRequestChangeCommand implements ICommand {
+    readonly $type = "CompleteRequestChangeCommand";
+
+    constructor(
+        public requestCommand: RequestChangesCommand,
+        public mode: "accept" | "reject",
+    ) {}
 }

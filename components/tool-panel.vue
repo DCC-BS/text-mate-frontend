@@ -4,10 +4,12 @@ import {
     ToolSwitchCommand,
     type RewriteTextCommand,
 } from "~/assets/models/commands";
-import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { UTabs } from "#components";
 import type { TabsItem } from "@nuxt/ui";
-import { match, P } from "ts-pattern";
+import ProblemsPanel from "./tool-panel/problems-panel.vue";
+import AdvisorView from "./tool-panel/advisor-view.vue";
+import RewriteView from "./tool-panel/rewrite-view.vue";
+import ComparePanel from "./tool-panel/compare-panel.vue";
 
 // definitions
 interface ToolPanelProps {
@@ -68,6 +70,11 @@ const items = [
         label: t("tools.advisor"),
         icon: "i-heroicons-light-bulb",
     },
+    // {
+    //     slot: "compare",
+    //     label: t("tools.compare"),
+    //     icon: "i-lucide-git-compare-arrows",
+    // },
 ] as TabsItem[];
 
 async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
@@ -79,7 +86,10 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
     <div class="h-full p-2">
         <!-- wrapper: 'h-[30vh] md:h-[90vh]'             -->
         <UTabs
-            v-model="selectedTab" :items="items" class="h-full"
+            v-model="selectedTab"
+            :items="items"
+            class="h-full"
+            variant="link"
             :ui="{ content: 'h-[30vh] md:h-[80vh] overflow-y-auto scrollable-container' }"> 
             <template #problems>
                 <ProblemsPanel />
@@ -93,6 +103,9 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
             </template>
             <template #advisor>
                 <AdvisorView :domain="domain" :formality="formality" :text="props.text" />
+            </template>
+            <template #compare>
+                <ComparePanel :text="props.text" />
             </template>
         </UTabs>
     </div>

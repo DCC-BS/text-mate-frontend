@@ -210,6 +210,15 @@ function findStartOfSentence(doc: Node, pos: number) {
     ) {
         current--;
     }
+
+    // Adjust to not include whitespaces at the start of the sentence
+    while (
+        current < doc.content.size &&
+        /\s/.test(doc.textBetween(current, current + 1))
+    ) {
+        current++;
+    }
+
     return current;
 }
 

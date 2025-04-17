@@ -22,11 +22,21 @@ const { sendError } = useUseErrorDialog();
 
 // refs
 const rewriteOptions = ref<RewriteApplyOptions>();
+const isRewriting = ref<boolean>(false);
 
 const writing_style = ref<string>("general");
 const target_audience = ref<string>("general");
 const intend = ref<string>("general");
 const lastSelection = ref<Range>();
+
+watch(
+    () => props.text,
+    () => {
+        if (props.text) {
+            rewriteOptions.value = undefined;
+        }
+    },
+);
 
 // functions
 async function rewriteText() {
@@ -40,6 +50,7 @@ async function rewriteText() {
     const context = `${props.text.slice(0, from)}<rewrite>${textToRewrite}</rewrite>${props.text.slice(to)}`;
 
     rewriteOptions.value = undefined;
+    isRewriting.value = true;
     addProgress("rewriting", {
         icon: "i-heroicons-pencil",
         title: t("status.rewritingText"),
@@ -68,6 +79,7 @@ async function rewriteText() {
             sendError(e.message);
         }
     } finally {
+        isRewriting.value = false;
         removeProgress("rewriting");
     }
 }
@@ -109,18 +121,24 @@ function applyRewrite(option: string) {
             local-parent="rewrite.intend" />
     </div>
 
-    <div>
-        <UButton @click="rewriteText()" variant="soft">
+    <div v-if="props.selectedText">
+        <UButton 
+            @click="rewriteText()" 
+            variant="soft" 
+            :loading="isRewriting"
+            :disabled="isRewriting">
             {{ t('rewrite.rewrite') }}
         </UButton>
+    </div>
+    <div v-else>
+        <p class="text-sm text-gray-500">
+            {{ t('rewrite.noRewrite') }}
+        </p>
     </div>
     <div v-if="rewriteOptions && rewriteOptions.options.length > 0">
         <div v-for="option in rewriteOptions.options">
             <div v-html="option.replace(/\n/g, '<br>')" />
             <UButton @click="applyRewrite(option)">{{ t('rewrite.apply') }} </UButton>
         </div>
-    </div>
-    <div v-else>
-        <USkeleton class="w-full h-[300px]" />
     </div>
 </template>

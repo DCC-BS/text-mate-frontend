@@ -145,7 +145,9 @@ export function useTextCorrectionMarks(
     async function handleCorrectedSentenceChanged(
         command: CorrectedSentenceChangedCommand,
     ) {
-        if (!editor.value) return;
+        if (!editor.value || editor.value.getText().length === 0) {
+            return;
+        }
 
         hoverBlock.value = undefined;
         hoverRect.value = undefined;
@@ -155,6 +157,10 @@ export function useTextCorrectionMarks(
         function removeMarks(sentence: CorrectedSentence) {
             if (!editor.value) {
                 logger.warn("Editor not available");
+                return;
+            }
+
+            if (!editor.value.state.doc) {
                 return;
             }
 
@@ -254,6 +260,10 @@ function addMarks(
     offset: number,
     type: MarkType,
 ) {
+    if (editor.getText().length === 0) {
+        return;
+    }
+
     for (const block of blocks) {
         const start = block.offset + offset + 1;
         const end = start + block.length;

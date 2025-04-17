@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { match } from "ts-pattern";
 import {
     ApplyCorrectionCommand,
     Cmds,
@@ -49,17 +50,18 @@ onUnmounted(() => {
 async function handleCorrectedSentenceChangedCommand(
     command: CorrectedSentenceChangedCommand,
 ) {
-    console.log(command);
-
-    if (command.change === "add") {
-        correctedSentence.value[command.correctedSentence.id] =
-            command.correctedSentence;
-    } else if (command.change === "remove") {
-        delete correctedSentence.value[command.correctedSentence.id];
-    } else if (command.change === "update") {
-        correctedSentence.value[command.correctedSentence.id] =
-            command.correctedSentence;
-    }
+    match(command.change)
+        .with("add", () => {
+            correctedSentence.value[command.correctedSentence.id] =
+                command.correctedSentence;
+        })
+        .with("remove", () => {
+            delete correctedSentence.value[command.correctedSentence.id];
+        })
+        .with("update", () => {
+            correctedSentence.value[command.correctedSentence.id] =
+                command.correctedSentence;
+        });
 }
 
 async function jumpToBlock(command: JumpToBlockCommand) {

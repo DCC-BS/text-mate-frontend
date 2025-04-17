@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Editor } from "@tiptap/vue-3";
+import { RequestChangesCommand } from "~/assets/models/commands";
 
 interface QuickActionsPanelProps {
     editor: Editor;
@@ -11,7 +13,11 @@ type Actions =
     | "shorten"
     | "bullet_points"
     | "summarize"
-    | "social_mediafy";
+    | "social_mediafy"
+    | "translate_de-CH"
+    | "translate_en-US"
+    | "translate_fr"
+    | "translate_it";
 
 const props = defineProps<QuickActionsPanelProps>();
 
@@ -19,6 +25,41 @@ const props = defineProps<QuickActionsPanelProps>();
 const { t } = useI18n();
 const toast = useToast();
 const { applyStreamToEditor } = useStreamWriter();
+const { addProgress, removeProgress } = useUseProgressIndication();
+const { executeCommand } = useCommandBus();
+
+// refs
+const isRewriting = ref<boolean>(false);
+const items = ref<DropdownMenuItem[]>([
+    {
+        label: t("quick-actions.de-CH"),
+        icon: "i-flag-de-4x3",
+        onSelect: () => {
+            applyAction("translate_de-CH");
+        },
+    },
+    {
+        label: t("quick-actions.en-US"),
+        icon: "i-flag-us-4x3",
+        onSelect: () => {
+            applyAction("translate_en-US");
+        },
+    },
+    {
+        label: t("quick-actions.fr"),
+        icon: "i-flag-fr-4x3",
+        onSelect: () => {
+            applyAction("translate_fr");
+        },
+    },
+    {
+        label: t("quick-actions.it"),
+        icon: "i-flag-it-4x3",
+        onSelect: () => {
+            applyAction("translate_it");
+        },
+    },
+]);
 
 // computed
 const textSelectionRange = computed(() => {
@@ -42,7 +83,9 @@ const selectedText = computed(() => {
     return props.editor.state.doc.textBetween(from, to);
 });
 
-const actionsAreAvailable = computed(() => selectedText.value.length > 3);
+const actionsAreAvailable = computed(
+    () => selectedText.value.length > 3 && !isRewriting.value,
+);
 
 async function applyAction(action: Actions) {
     if (!actionsAreAvailable.value) {
@@ -55,31 +98,57 @@ async function applyAction(action: Actions) {
         return;
     }
 
-    const { from, to } = textSelectionRange.value;
-    const text = selectedText.value;
-
-    const response = (await $fetch("/api/quick-action", {
-        responseType: "stream",
-        method: "POST",
-        body: {
-            action,
-            text,
-        },
-    })) as ReadableStream;
-
-    if (!response) {
-        toast.add({
-            title: "Error",
-            description: "Failed to get response from server",
-            color: "error",
-            icon: "i-heroicons-exclamation-circle",
+    try {
+        addProgress("quick-action", {
+            icon: "i-lucide-text-search",
+            title: t("status.quickAction"),
         });
-        return;
+        isRewriting.value = true;
+
+        const { from, to } = textSelectionRange.value;
+        const text = selectedText.value;
+
+        const response = (await $fetch("/api/quick-action", {
+            responseType: "stream",
+            method: "POST",
+            body: {
+                action,
+                text,
+            },
+        })) as ReadableStream;
+
+        if (!response) {
+            toast.add({
+                title: "Error",
+                description: "Failed to get response from server",
+                color: "error",
+                icon: "i-heroicons-exclamation-circle",
+            });
+            return;
+        }
+
+        const reader = response.getReader();
+        const oldText = props.editor.state.doc.textBetween(from, to);
+
+        const newText = await applyStreamToEditor(
+            reader,
+            props.editor,
+            from,
+            to,
+        );
+
+        await executeCommand(
+            new RequestChangesCommand(
+                oldText,
+                newText,
+                from,
+                from + newText.length + 1,
+            ),
+        );
+    } finally {
+        removeProgress("quick-action");
+        isRewriting.value = false;
     }
-
-    const reader = response.getReader();
-
-    await applyStreamToEditor(reader, props.editor, from, to);
 }
 </script>
 
@@ -115,5 +184,8 @@ async function applyAction(action: Actions) {
         @click="applyAction('social_mediafy')">
         {{ t('editor.social_mediafy') }}
     </UButton>
+    <UDropdownMenu :items="items" variant="soft">
+        <UButton icon="i-lucide-languages" variant="soft" />
+    </UDropdownMenu>
   </div>
 </template>

@@ -18,6 +18,8 @@ const { executeCommand } = useCommandBus();
 
 const wordSynonyms = ref<string[]>();
 const alternativeSentences = ref<string[]>();
+const isRewritingWord = ref<boolean>(false);
+const isRewritingSentence = ref<boolean>(false);
 
 watch(
     () => props.focusedWord,
@@ -51,6 +53,7 @@ async function findWordSynonym() {
         title: t("text-editor.finding-synonym"),
         icon: "i-heroicons-magnifying-glass",
     });
+    isRewritingWord.value = true;
 
     try {
         const result = await getWordSynonym(
@@ -61,6 +64,7 @@ async function findWordSynonym() {
         wordSynonyms.value = result.synonyms;
     } finally {
         removeProgress("finding-synonym");
+        isRewritingWord.value = false;
     }
 }
 
@@ -88,6 +92,7 @@ async function findAlternativeSentence() {
         title: t("text-editor.finding-alternative-sentence"),
         icon: "i-heroicons-magnifying-glass",
     });
+    isRewritingSentence.value = true;
 
     try {
         const result = await getAlternativeSentences(
@@ -98,6 +103,7 @@ async function findAlternativeSentence() {
         alternativeSentences.value = result.options;
     } finally {
         removeProgress("finding-alternative-sentence");
+        isRewritingSentence.value = false;
     }
 }
 
@@ -122,11 +128,14 @@ async function applyAlternativeSentence(sentence: string) {
             :editor="editor" 
             :tippy-options="{ duration: 100, placement: 'bottom', arrow: true, popperOptions: { placement: 'bottom'} }"
             :should-show="() => true">
-            <div class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300"
-            v-if="focusedSentence || focusedWord">
+            <div
+                class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300"
+                v-if="focusedSentence || focusedWord">
                 <div v-if="focusedWord">
                         <UButton
                             @click="findWordSynonym"
+                            :loading="isRewritingWord"
+                            :disabled="isRewritingWord || isRewritingSentence"
                             variant="subtle">
                             Wort umformulieren
                         </UButton>
@@ -143,6 +152,8 @@ async function applyAlternativeSentence(sentence: string) {
                 <div v-if="focusedSentence">
                     <UButton
                         @click="findAlternativeSentence"
+                        :loading="isRewritingSentence"
+                        :disabled="isRewritingSentence || isRewritingWord"
                         variant="subtle">
                         Satzt umformulieren
                     </UButton>
