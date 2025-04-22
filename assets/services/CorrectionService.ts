@@ -9,20 +9,6 @@ import type {
 } from "../models/text-correction";
 import { Queue } from "./Queue";
 
-function moveBlocks(offset: number, blocks: TextCorrectionBlock[]) {
-    return blocks.map((block) => ({
-        ...block,
-        offset: block.offset + offset,
-    }));
-}
-
-export function makeCorrectedSentenceAbsolute(sentence: CorrectedSentence) {
-    return {
-        ...sentence,
-        blocks: moveBlocks(sentence.from, sentence.blocks),
-    };
-}
-
 export class CorrectionService {
     private readonly blocks: TextCorrectionBlock[][] = [];
     private oldSentences: CorrectedSentence[] = [];

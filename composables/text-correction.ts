@@ -3,43 +3,39 @@ import type { Editor } from "@tiptap/core";
 import type { MarkType, Node } from "@tiptap/pm/model";
 import { Extension } from "@tiptap/vue-3";
 import { getMarkType } from "@tiptap/vue-3";
-import { match } from "ts-pattern";
 import {
     type ApplyCorrectionCommand,
     ApplyTextCommand,
     Cmds,
-    type CorrectedSentenceChangedCommand,
     JumpToBlockCommand,
 } from "~/assets/models/commands";
 import type {
     CorrectedSentence,
     TextCorrectionBlock,
 } from "~/assets/models/text-correction";
-import { makeCorrectedSentenceAbsolute } from "~/assets/services/CorrectionService";
 import { CorrectionMark } from "~/utils/correction-mark";
+import { useCorrection } from "./correction";
 
 export function useTextCorrectionMarks(
     container: Ref<HTMLElement | undefined>,
     isActive: Ref<boolean>,
 ) {
-    const { registerHandler, unregisterHandler, executeCommand } =
+    const { executeCommand, registerHandler, unregisterHandler } =
         useCommandBus();
-
     const logger = useLogger();
+    const {
+        onCorrectedSenteceAdded,
+        onCorrectedSentenceRemoved,
+        onCorrectedSentenceUpdated,
+        blocks,
+    } = useCorrection();
 
     const hoverRect = ref<DOMRect>();
     const hoverBlock = ref<TextCorrectionBlock>();
     const editor = ref<Editor>();
-    const correctedSentence = ref<Record<string, CorrectedSentence>>({});
-    const blocks = computed(() => {
-        if (!correctedSentence.value) {
-            return [];
-        }
-
-        return Object.values(correctedSentence.value).flatMap((sentence) => {
-            return makeCorrectedSentenceAbsolute(sentence).blocks;
-        });
-    });
+    const markType = computed(() =>
+        editor.value ? getCorrectionMarkType(editor.value) : undefined,
+    );
 
     const relativeHoverRect = computed(() => {
         if (!hoverRect.value) return;
@@ -145,105 +141,77 @@ export function useTextCorrectionMarks(
         }
     });
 
-    async function handleCorrectedSentenceChanged(
-        command: CorrectedSentenceChangedCommand,
-    ) {
-        if (!editor.value || editor.value.getText().length === 0) {
+    function removeAllMarksFormSentence(sentence: CorrectedSentence) {
+        if (!editor.value || !markType.value) {
             logger.warn("Editor not available or empty");
+            return;
+        }
+
+        if (!editor.value.state.doc) {
+            logger.warn("Editor document not available or empty");
+            return;
+        }
+
+        if (
+            sentence.from > sentence.to ||
+            sentence.to > editor.value.state.doc.content.size
+        ) {
+            logger.warn(
+                `Invalid range for removing marks: ${sentence.from} - ${sentence.to} doc size: ${editor.value.state.doc.content.size}`,
+            );
             return;
         }
 
         hoverBlock.value = undefined;
         hoverRect.value = undefined;
 
-        const type = getCorrectionMarkType(editor.value);
-
-        function removeMarks(sentence: CorrectedSentence) {
-            if (!editor.value) {
-                logger.warn("Editor not available or empty");
-                return;
-            }
-
-            if (!editor.value.state.doc) {
-                logger.warn("Editor document not available or empty");
-                return;
-            }
-
-            if (
-                sentence.from > sentence.to ||
-                sentence.to > editor.value.state.doc.content.size
-            ) {
-                logger.warn(
-                    `Invalid range for removing marks: ${sentence.from} - ${sentence.to} doc size: ${editor.value.state.doc.content.size}`,
-                );
-                return;
-            }
-
-            editor.value.view.dispatch(
-                editor.value.state.tr
-                    .setMeta("addToHistory", false)
-                    .removeMark(sentence.from, sentence.to, type),
-            );
-        }
-
-        function addMarksForSentence(sentence: CorrectedSentence) {
-            if (!editor.value) {
-                logger.warn("Editor not available");
-                return;
-            }
-
-            if (!isActive.value) {
-                return;
-            }
-
-            addMarks(
-                editor.value,
-                sentence.blocks,
-                sentence.from,
-                type,
-                logger,
-            );
-        }
-
-        match(command.change)
-            .with("add", () => {
-                if (command.correctedSentence.id in correctedSentence.value) {
-                    logger.warn(
-                        `Corrected sentence already exists in correctedSentence ${
-                            command.correctedSentence
-                        }`,
-                    );
-                }
-
-                correctedSentence.value[command.correctedSentence.id] =
-                    command.correctedSentence;
-
-                addMarksForSentence(command.correctedSentence);
-            })
-            .with("remove", () => {
-                if (command.correctedSentence.id in correctedSentence.value) {
-                    delete correctedSentence.value[
-                        command.correctedSentence.id
-                    ];
-                } else {
-                    logger.warn(
-                        `Corrected sentence not found in correctedSentence ${
-                            command.correctedSentence
-                        }`,
-                    );
-                }
-
-                removeMarks(command.correctedSentence);
-            })
-            .with("update", () => {
-                correctedSentence.value[command.correctedSentence.id] =
-                    command.correctedSentence;
-
-                removeMarks(command.correctedSentence);
-                addMarksForSentence(command.correctedSentence);
-            })
-            .exhaustive();
+        editor.value.view.dispatch(
+            editor.value.state.tr
+                .setMeta("addToHistory", false)
+                .removeMark(sentence.from - 2, sentence.to + 2, markType.value),
+        );
     }
+
+    function addMarksToSentence(sentence: CorrectedSentence) {
+        if (!editor.value || !markType.value) {
+            logger.warn("Editor not available");
+            return;
+        }
+
+        if (!isActive.value) {
+            return;
+        }
+
+        addMarks(
+            editor.value,
+            sentence.blocks,
+            sentence.from,
+            markType.value,
+            logger,
+        );
+    }
+
+    onCorrectedSenteceAdded((sentence) => {
+        removeAllMarksFormSentence(sentence);
+        addMarksToSentence(sentence);
+    });
+
+    onCorrectedSentenceRemoved((sentence) => {
+        removeAllMarksFormSentence(sentence);
+    });
+
+    onCorrectedSentenceUpdated((sentence) => {
+        removeAllMarksFormSentence(sentence);
+        addMarksToSentence(sentence);
+    });
+
+    onMounted(() => {
+        registerHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
+    });
+
+    onUnmounted(() => {
+        unregisterHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
+    });
 
     async function applyCorrection(command: ApplyCorrectionCommand) {
         if (!editor.value) return;
@@ -261,22 +229,6 @@ export function useTextCorrectionMarks(
             new ApplyTextCommand(corrected, { from: start, to: end }),
         );
     }
-
-    onMounted(() => {
-        registerHandler(
-            Cmds.CorrectedSentenceChangedCommand,
-            handleCorrectedSentenceChanged,
-        );
-        registerHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
-    });
-
-    onUnmounted(() => {
-        unregisterHandler(
-            Cmds.CorrectedSentenceChangedCommand,
-            handleCorrectedSentenceChanged,
-        );
-        unregisterHandler(Cmds.ApplyCorrectionCommand, applyCorrection);
-    });
 
     return {
         CorrectionExtension,
