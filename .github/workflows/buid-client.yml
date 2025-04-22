@@ -1,9 +1,8 @@
 name: Build Client
 
 on:
-  pull_request:
-    branches:
-      - deploy
+  branches:
+    - deploy
   workflow_dispatch:
 
 permissions:
