@@ -1,12 +1,9 @@
-import { Extension } from "@tiptap/vue-3";
+import type { ILogger } from "@dcc-bs/logger.bs.js";
 import type { Editor } from "@tiptap/core";
-import { CorrectionMark } from "~/utils/correction-mark";
 import type { MarkType, Node } from "@tiptap/pm/model";
-import type {
-    CorrectedSentence,
-    TextCorrectionBlock,
-} from "~/assets/models/text-correction";
+import { Extension } from "@tiptap/vue-3";
 import { getMarkType } from "@tiptap/vue-3";
+import { match } from "ts-pattern";
 import {
     type ApplyCorrectionCommand,
     ApplyTextCommand,
@@ -14,7 +11,12 @@ import {
     type CorrectedSentenceChangedCommand,
     JumpToBlockCommand,
 } from "~/assets/models/commands";
+import type {
+    CorrectedSentence,
+    TextCorrectionBlock,
+} from "~/assets/models/text-correction";
 import { makeCorrectedSentenceAbsolute } from "~/assets/services/CorrectionService";
+import { CorrectionMark } from "~/utils/correction-mark";
 
 export function useTextCorrectionMarks(
     container: Ref<HTMLElement | undefined>,
@@ -71,13 +73,14 @@ export function useTextCorrectionMarks(
                     );
 
                     const id = mark?.attrs["data-block-id"];
-                    const block = blocks.value.find((b) => b.offset === id);
+                    const block = blocks.value.find((b) => b.id === id);
 
                     if (
                         !block ||
                         !editor.value ||
                         block.corrected.length === 0
                     ) {
+                        logger.warn(`Block not found or empty: ${id} ${block}`);
                         return;
                     }
 
@@ -132,7 +135,7 @@ export function useTextCorrectionMarks(
         const type = getCorrectionMarkType(editor.value);
 
         if (value) {
-            addMarks(editor.value, blocks.value, 0, type);
+            addMarks(editor.value, blocks.value, 0, type, logger);
         } else {
             editor.value.view.dispatch(
                 editor.value.state.tr
@@ -146,6 +149,7 @@ export function useTextCorrectionMarks(
         command: CorrectedSentenceChangedCommand,
     ) {
         if (!editor.value || editor.value.getText().length === 0) {
+            logger.warn("Editor not available or empty");
             return;
         }
 
@@ -156,11 +160,12 @@ export function useTextCorrectionMarks(
 
         function removeMarks(sentence: CorrectedSentence) {
             if (!editor.value) {
-                logger.warn("Editor not available");
+                logger.warn("Editor not available or empty");
                 return;
             }
 
             if (!editor.value.state.doc) {
+                logger.warn("Editor document not available or empty");
                 return;
             }
 
@@ -191,33 +196,53 @@ export function useTextCorrectionMarks(
                 return;
             }
 
-            addMarks(editor.value, sentence.blocks, sentence.from, type);
+            addMarks(
+                editor.value,
+                sentence.blocks,
+                sentence.from,
+                type,
+                logger,
+            );
         }
 
-        if (command.change === "add") {
-            correctedSentence.value[command.correctedSentence.id] =
-                command.correctedSentence;
+        match(command.change)
+            .with("add", () => {
+                if (command.correctedSentence.id in correctedSentence.value) {
+                    logger.warn(
+                        `Corrected sentence already exists in correctedSentence ${
+                            command.correctedSentence
+                        }`,
+                    );
+                }
 
-            addMarksForSentence(command.correctedSentence);
-        } else if (command.change === "remove") {
-            if (command.correctedSentence.id in correctedSentence.value) {
-                delete correctedSentence.value[command.correctedSentence.id];
-            } else {
-                logger.warn(
-                    `Corrected sentence not found in correctedSentence ${
-                        command.correctedSentence
-                    }`,
-                );
-            }
+                correctedSentence.value[command.correctedSentence.id] =
+                    command.correctedSentence;
 
-            removeMarks(command.correctedSentence);
-        } else {
-            correctedSentence.value[command.correctedSentence.id] =
-                command.correctedSentence;
+                addMarksForSentence(command.correctedSentence);
+            })
+            .with("remove", () => {
+                if (command.correctedSentence.id in correctedSentence.value) {
+                    delete correctedSentence.value[
+                        command.correctedSentence.id
+                    ];
+                } else {
+                    logger.warn(
+                        `Corrected sentence not found in correctedSentence ${
+                            command.correctedSentence
+                        }`,
+                    );
+                }
 
-            removeMarks(command.correctedSentence);
-            addMarksForSentence(command.correctedSentence);
-        }
+                removeMarks(command.correctedSentence);
+            })
+            .with("update", () => {
+                correctedSentence.value[command.correctedSentence.id] =
+                    command.correctedSentence;
+
+                removeMarks(command.correctedSentence);
+                addMarksForSentence(command.correctedSentence);
+            })
+            .exhaustive();
     }
 
     async function applyCorrection(command: ApplyCorrectionCommand) {
@@ -269,21 +294,23 @@ function addMarks(
     blocks: TextCorrectionBlock[],
     offset: number,
     type: MarkType,
+    logger: ILogger,
 ) {
-    if (editor.getText().length === 0) {
-        return;
-    }
-
     for (const block of blocks) {
         const start = block.offset + offset + 1;
         const end = start + block.length;
+
+        if (!editor.view.state.doc) {
+            logger.warn("Editor document not available");
+            return;
+        }
 
         editor.view.dispatch(
             editor.state.tr.setMeta("addToHistory", false).addMark(
                 start,
                 end,
                 type.create({
-                    "data-block-id": start - 1,
+                    "data-block-id": block.id,
                 }),
             ),
         );

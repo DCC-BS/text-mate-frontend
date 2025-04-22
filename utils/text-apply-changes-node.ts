@@ -1,4 +1,4 @@
-import { mergeAttributes, Node } from "@tiptap/core";
+import { Node, mergeAttributes } from "@tiptap/core";
 import { NodeViewContent, VueNodeViewRenderer } from "@tiptap/vue-3";
 import TextApplyChanges from "~/components/text-editor/text-apply-changes.vue";
 

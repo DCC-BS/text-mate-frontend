@@ -1,15 +1,15 @@
 <script lang="ts" setup>
+import type { TabsItem } from "@nuxt/ui";
 import {
     Cmds,
-    ToolSwitchCommand,
     type RewriteTextCommand,
+    ToolSwitchCommand,
 } from "~/assets/models/commands";
 import { UTabs } from "#components";
-import type { TabsItem } from "@nuxt/ui";
-import ProblemsPanel from "./tool-panel/problems-panel.vue";
 import AdvisorView from "./tool-panel/advisor-view.vue";
-import RewriteView from "./tool-panel/rewrite-view.vue";
 import ComparePanel from "./tool-panel/compare-panel.vue";
+import ProblemsPanel from "./tool-panel/problems-panel.vue";
+import RewriteView from "./tool-panel/rewrite-view.vue";
 
 // definitions
 interface ToolPanelProps {
@@ -89,6 +89,7 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
             v-model="selectedTab"
             :items="items"
             class="h-full"
+            :unmountOnHide="false"
             :ui="{ content: 'h-[30vh] md:h-[80vh] overflow-y-auto scrollable-container' }"> 
             <template #problems>
                 <ProblemsPanel />
@@ -109,8 +110,6 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
         </UTabs>
     </div>
 </template>
-
-
 
 <style lang="scss" scoped>
 .tool-item {

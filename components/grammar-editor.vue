@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { CorrectionService } from "~/assets/services/CorrectionService";
-import { TaskScheduler } from "~/assets/services/TaskScheduler";
-import TextEditor from "./text-editor.vue";
-import ToolPanel from "./tool-panel.vue";
 import {
     Cmds,
     InvalidateCorrectionCommand,
     type SwitchCorrectionLanguageCommand,
 } from "~/assets/models/commands";
+import { CorrectionService } from "~/assets/services/CorrectionService";
+import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import { useUserDictionaryStore } from "~/stores/user_dictionary";
+import TextEditor from "./text-editor.vue";
+import ToolPanel from "./tool-panel.vue";
 
 // refs
 const userText = ref("");
@@ -74,7 +74,7 @@ watch(userText, (newText) => {
 async function correctText(
     text: string,
     signal: AbortSignal,
-    invalidate = true,
+    invalidate = false,
 ) {
     addProgress("correcting", {
         icon: "i-heroicons-pencil",
@@ -97,6 +97,7 @@ async function handleInvalidate(command: InvalidateCorrectionCommand) {
     taskScheduler.schedule((signal: AbortSignal) =>
         correctText(userText.value, signal, true),
     );
+    taskScheduler.executeImmediately();
 }
 </script>
 

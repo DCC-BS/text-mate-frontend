@@ -1,13 +1,13 @@
-import { diffArrays, type ArrayChange } from "diff";
+import type { ILogger } from "@dcc-bs/logger.bs.js";
+import { type ArrayChange, diffArrays } from "diff";
+import type { ICommand } from "#build/types/commands";
+import { CorrectedSentenceChangedCommand } from "../models/commands";
 import type {
     CorrectedSentence,
     TextCorrectionBlock,
     TextCorrectionResponse,
 } from "../models/text-correction";
 import { Queue } from "./Queue";
-import type { ILogger } from "@dcc-bs/logger.bs.js";
-import type { ICommand } from "#build/types/commands";
-import { CorrectedSentenceChangedCommand } from "../models/commands";
 
 function moveBlocks(offset: number, blocks: TextCorrectionBlock[]) {
     return blocks.map((block) => ({
@@ -51,12 +51,12 @@ export class CorrectionService {
                 },
             );
 
-            const blocks = [];
+            const blocks: TextCorrectionBlock[] = [];
 
             for (const block of response.blocks) {
                 const inDict = await this.wordInUserDictionary(block.original);
                 if (!inDict) {
-                    blocks.push(block);
+                    blocks.push({ ...block, id: crypto.randomUUID() });
                 }
             }
 
@@ -169,18 +169,22 @@ export class CorrectionService {
                         hasChanges = true;
                     }
                 } else if (part.added) {
-                    const newSentences = await this.addCorrectedSentences(
-                        part,
-                        signal,
-                        currentPos,
-                    );
-                    this.oldSentences.push(...newSentences);
-                    hasChanges = true;
+                    for (const sentence of part.value) {
+                        const newSentence = await this.addCorrectedSentences(
+                            sentence,
+                            signal,
+                            currentPos,
+                        );
 
-                    currentPos += part.value.reduce(
-                        (acc, sentence) => acc + sentence.length,
-                        0,
-                    );
+                        if (!newSentence) {
+                            return;
+                        }
+
+                        this.oldSentences.push(newSentence);
+                        hasChanges = true;
+
+                        currentPos += sentence.length;
+                    }
                 } else {
                     for (const sentence of part.value) {
                         // If the sentence is unchanged, we can just yield it
@@ -239,50 +243,39 @@ export class CorrectionService {
     }
 
     private async addCorrectedSentences(
-        part: ArrayChange<string>,
+        sentence: string,
         signal: AbortSignal,
         startPos: number,
-    ): Promise<CorrectedSentence[]> {
-        const result = [] as CorrectedSentence[];
-
+    ): Promise<CorrectedSentence | undefined> {
         try {
-            const newSentences = part.value;
-            let currentPos = startPos;
+            const newBlocks = await this.fetchBlocks(sentence, signal);
 
-            for (const sentence of newSentences) {
-                const newBlocks = await this.fetchBlocks(sentence, signal);
+            const newSentence = {
+                id: crypto.randomUUID(),
+                text: sentence,
+                from: startPos,
+                to: startPos + sentence.length,
+                blocks: newBlocks,
+            } as CorrectedSentence;
 
-                const newSentence = {
-                    id: crypto.randomUUID(),
-                    text: sentence,
-                    from: currentPos,
-                    to: currentPos + sentence.length,
-                    blocks: newBlocks,
-                };
+            this.executeCommand(
+                new CorrectedSentenceChangedCommand(newSentence, "add"),
+            );
 
-                result.push(newSentence);
-
-                this.executeCommand(
-                    new CorrectedSentenceChangedCommand(newSentence, "add"),
-                );
-
-                currentPos += sentence.length;
-            }
+            return newSentence;
         } catch (e: unknown) {
             if (!(e instanceof Error)) {
                 this.logger.error("Unknown error during text correction");
-                return [];
+                return undefined;
             }
 
             if ("cause" in e && e.cause === "aborted") {
                 this.logger.debug("Text correction aborted due to signal");
-                return [];
+                return undefined;
             }
 
             this.logger.error(`Error during text correction: ${e.message}`);
             this.onError(e.message);
         }
-
-        return result;
     }
 }

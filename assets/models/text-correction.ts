@@ -1,4 +1,5 @@
 export type TextCorrectionBlock = {
+    id: string;
     original: string;
     corrected: string[];
     explanation: string;
@@ -8,7 +9,7 @@ export type TextCorrectionBlock = {
 
 export type TextCorrectionResponse = {
     original: string;
-    blocks: TextCorrectionBlock[];
+    blocks: Omit<TextCorrectionBlock, "id">[];
 };
 
 export type CorrectedSentence = {

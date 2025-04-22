@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { UButton, USwitch } from "#components";
 import { NodeViewWrapper } from "@tiptap/vue-3";
 import { nodeViewProps } from "@tiptap/vue-3";
 import { diffWords } from "diff";
@@ -7,6 +6,7 @@ import {
     CompleteRequestChangeCommand,
     RequestChangesCommand,
 } from "~/assets/models/commands";
+import { UButton, USwitch } from "#components";
 
 const props = defineProps({
     ...nodeViewProps,

@@ -1,7 +1,7 @@
-import { defineConfig } from "vitest/config";
 import { fileURLToPath } from "node:url";
-import { defineNuxtConfig } from "nuxt/config";
 import Vue from "@vitejs/plugin-vue";
+import { defineNuxtConfig } from "nuxt/config";
+import { defineConfig } from "vitest/config";
 
 /**
  * Vitest configuration for testing Nuxt components and utilities

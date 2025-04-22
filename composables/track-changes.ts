@@ -1,14 +1,13 @@
-import { Extension, getNodeType } from "@tiptap/vue-3";
 import type { Editor } from "@tiptap/core";
 import type { Node } from "@tiptap/pm/model";
+import { Extension } from "@tiptap/vue-3";
 import {
     Cmds,
-    CompleteRequestChangeCommand,
+    type CompleteRequestChangeCommand,
     type RequestChangesCommand,
 } from "~/assets/models/commands";
 import { TextAddedMark } from "~/utils/text-added-mark";
 import { TextApplyNode } from "~/utils/text-apply-changes-node";
-import { colorPicker } from "#build/ui";
 
 /**
  * Composable for tracking changes in the editor, showing added and removed text

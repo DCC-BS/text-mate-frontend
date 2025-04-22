@@ -27,6 +27,7 @@ export default defineI18nConfig(() => ({
                 correctingText: "Correcting text...",
                 advice: "giving advice...",
                 ready: "Ready",
+                quickAction: "Quick action in progress...",
             },
             problems: {
                 title: "Problems",
@@ -122,6 +123,7 @@ export default defineI18nConfig(() => ({
                 correctingText: "Text wird korrigiert...",
                 advice: "Ratschlag geben...",
                 ready: "Bereit",
+                quickAction: "Schnellaktion wird ausgeführt...",
             },
             problems: {
                 title: "Probleme",

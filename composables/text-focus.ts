@@ -1,6 +1,6 @@
-import { getMarkType } from "@tiptap/vue-3";
-import type { Node } from "@tiptap/pm/model";
 import { type Editor, Extension } from "@tiptap/core";
+import type { Node } from "@tiptap/pm/model";
+import { getMarkType } from "@tiptap/vue-3";
 
 export type TextFocus = {
     text: string;
