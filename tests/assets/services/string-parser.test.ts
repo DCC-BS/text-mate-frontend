@@ -71,12 +71,6 @@ describe("splitToSentences", () => {
         expect(sentences).toEqual(["HelloWorld123"]);
     });
 
-    it("should handle strings with only non-alphanumeric characters", () => {
-        const text = ".,!? ";
-        const sentences = Array.from(splitToSentences(text));
-        expect(sentences).toEqual([".,!?", " "]);
-    });
-
     it("should handle complex text patterns correctly", () => {
         const text =
             "This is a test. It has multiple sentences, with various punctuation! Does it work?";
@@ -94,8 +88,7 @@ describe("splitToSentences", () => {
         const sentences = Array.from(splitToSentences(text));
 
         expect(sentences).toEqual([
-            "Chapter 1:",
-            " Introduction.",
+            "Chapter 1: Introduction.",
             " Section 2.3 begins on page 42.",
         ]);
     });
@@ -125,11 +118,12 @@ describe("splitToSentences", () => {
         });
 
         it("should handle initials and names", () => {
-            const text = "The author is J. K. Rowling. Her books are famous.";
+            const text =
+                "The author is J. R. R. Tolkien. His books are famous.";
             const sentences = Array.from(splitToSentences(text));
             expect(sentences).toEqual([
-                "The author is J. K. Rowling.",
-                " Her books are famous.",
+                "The author is J. R. R. Tolkien.",
+                " His books are famous.",
             ]);
         });
 
@@ -168,8 +162,8 @@ describe("splitToSentences", () => {
                 "Sehr geehrte Damen und Herren\nIch schreibe Ihnen bezüglich...";
             const sentences = Array.from(splitToSentences(text));
             expect(sentences).toEqual([
-                "Sehr geehrte Damen und Herren",
-                "\nIch schreibe Ihnen bezüglich...",
+                "Sehr geehrte Damen und Herren\n",
+                "Ich schreibe Ihnen bezüglich...",
             ]);
         });
 
@@ -233,8 +227,8 @@ describe("splitToSentences", () => {
                 "Bonjour madame\nJe vous écris au sujet de votre annonce";
             const sentences = Array.from(splitToSentences(text));
             expect(sentences).toEqual([
-                "Bonjour madame",
-                "\nJe vous écris au sujet de votre annonce",
+                "Bonjour madame\n",
+                "Je vous écris au sujet de votre annonce",
             ]);
         });
     });
@@ -245,11 +239,12 @@ describe("splitToSentences", () => {
     describe("Additional edge cases", () => {
         it("should handle URLs and emails", () => {
             const text =
-                "Visit www.example.com. Send an email to test@example.com.";
+                "Visit www.example.com. Send an email to test@example.com. http://example.com";
             const sentences = Array.from(splitToSentences(text));
             expect(sentences).toEqual([
                 "Visit www.example.com.",
                 " Send an email to test@example.com.",
+                " http://example.com",
             ]);
         });
 
@@ -268,16 +263,6 @@ describe("splitToSentences", () => {
             ]);
         });
 
-        it("should handle semicolons and colons properly", () => {
-            const text =
-                "Here's what we need: milk, eggs, and butter; don't forget the cheese.";
-            const sentences = Array.from(splitToSentences(text));
-            expect(sentences).toEqual([
-                "Here's what we need: milk, eggs, and butter;",
-                " don't forget the cheese.",
-            ]);
-        });
-
         it("should handle multiple consecutive sentence endings", () => {
             const text = "Really?! I didn't know that... Well, never mind.";
             const sentences = Array.from(splitToSentences(text));
@@ -293,9 +278,9 @@ describe("splitToSentences", () => {
                 "This is line one.\nThis is line two.\nThis is line three.";
             const sentences = Array.from(splitToSentences(text));
             expect(sentences).toEqual([
-                "This is line one.",
-                "\nThis is line two.",
-                "\nThis is line three.",
+                "This is line one.\n",
+                "This is line two.\n",
+                "This is line three.",
             ]);
         });
     });

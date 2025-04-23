@@ -8,6 +8,7 @@ import type {
     TextCorrectionResponse,
 } from "../models/text-correction";
 import { Queue } from "./Queue";
+import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
     private readonly blocks: TextCorrectionBlock[][] = [];
@@ -80,13 +81,8 @@ export class CorrectionService {
         invalidateAll: boolean,
     ): Promise<void> {
         try {
-            const segmenter = new Intl.Segmenter("de", {
-                granularity: "sentence",
-            });
-
-            const sentences = Array.from(segmenter.segment(text)).map(
-                (s) => s.segment,
-            );
+            const sentences = Array.from(splitToSentences(text));
+            console.log(sentences);
 
             let diff: ArrayChange<string>[] = [];
 

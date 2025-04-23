@@ -1,3 +1,5 @@
+import { match } from "ts-pattern";
+
 export function isAlphanumeric(char: string): boolean {
     const code = char.charCodeAt(0);
     return (
@@ -25,42 +27,136 @@ export function isSentenceEnd(char: string): boolean {
     return (
         code === 33 || // Exclamation mark
         code === 63 || // Question mark
+        code === 10 || // newline
         code === 46 // Full stop
     );
 }
 
+function isQuote(char: string): boolean {
+    // Check for various quotation marks from different languages and writing systems
+    return [
+        '"', // Double quote
+        "'", // Single quote
+        "`", // Backtick
+        "«", // Left-pointing double angle quotation mark
+        "»", // Right-pointing double angle quotation mark
+        "„", // Double low-9 quotation mark (German)
+        "‟", // Double high-reversed-9 quotation mark
+        "‹", // Single left-pointing angle quotation mark
+        "›", // Single right-pointing angle quotation mark
+        "「", // Left corner bracket (CJK)
+        "」", // Right corner bracket (CJK)
+        "『", // Left white corner bracket (CJK)
+        "』", // Right white corner bracket (CJK)
+        "【", // Left black lenticular bracket (CJK)
+        "】", // Right black lenticular bracket (CJK)
+        "《", // Left double angle bracket (CJK)
+        "》", // Right double angle bracket (CJK)
+        "〈", // Left angle bracket
+        "〉", // Right angle bracket
+        "（", // Fullwidth left parenthesis
+        "）", // Fullwidth right parenthesis
+    ].includes(char);
+}
+
+function getClosionQuote(char: string | undefined): string {
+    return match(char)
+        .with('"', () => '"')
+        .with("'", () => "'")
+        .with("`", () => "`")
+        .with("«", () => "»")
+        .with("“", () => "”")
+        .with("‘", () => "’")
+        .with("『", () => "』")
+        .with("【", () => "】")
+        .with("（", () => "）")
+        .with("《", () => "》")
+        .with("「", () => "」")
+        .with("„", () => "“")
+        .with("«", () => "»")
+        .with("»", () => "«")
+        .with("›", () => "‹")
+        .with("‹", () => "›")
+        .otherwise(() => "");
+}
+
 // Common abbreviations that are not sentence boundaries when followed by a period
 const commonAbbreviations = [
-    "Dr",
-    "Mr",
-    "Mrs",
-    "Ms",
-    "Prof",
-    "Sen",
-    "Rep",
-    "Rev",
-    "Gen",
-    "M",
-    "Mme",
-    "Mlle",
-    "St",
-    "Sr",
-    "Jr",
-    "Ph.D",
-    "etc",
-    "usw",
+    // English abbreviations
+    "dr.",
+    "mr.",
+    "mrs.",
+    "ms,",
+    "prof,",
+    "sen.",
+    "rep.",
+    "rev.",
+    "gen.",
+    "m.",
+    "mme.",
+    "mlle.",
+    "st.",
+    "sr.",
+    "jr.",
+    "ph.d.",
+    "etc.",
+    "usw.",
     "a.m",
     "p.m",
-    "e.g",
+    "e.g.",
     "i.e",
     "vs",
     "a.k.a",
+
+    // French abbreviations
+    "vol.",
+    "ch.",
+    "art.",
+    "av.",
+    "bd.",
+    "mgr.",
+    "dir.",
+    "mme.",
+    "mlle.",
+    "p.",
+    "pp.",
+    "tel.",
+    "r.",
+    "n°.",
+    "n°s.",
+    "c.-à-d.",
+
+    // German abbreviations
+    "abs.",
+    "abt.",
+    "allg.",
+    "bzw.",
+    "ca.",
+    "d.h.",
+    "evtl.",
+    "ggf.",
+    "hrsg.",
+    "inkl.",
+    "max.",
+    "min.",
+    "nr.",
+    "o.ä.",
+    "prof.",
+    "s.",
+    "sog.",
+    "str.",
+    "u.a.",
+    "u.ä.",
+    "usw.",
+    "vgl.",
+    "z.b.",
 ];
 
 /**
  * Split text into sentences
  * This implementation handles various edge cases including:
  * - Abbreviations (Dr., Mr., etc.)
+ * - URLs and email addresses (www.example.com, user@example.com)
  * - Quotes and embedded sentences
  * - Sentences without spaces after punctuation
  * - Newlines as sentence boundaries
@@ -72,266 +168,117 @@ export function* splitToSentences(text: string): Generator<string> {
         return;
     }
 
-    // Special case for strings with only non-alphanumeric characters
-    if (!/[a-zA-Z0-9]/.test(text) && text.includes(" ")) {
-        // Split non-alphanumeric into segments
-        const nonWhitespaceChars = text.trim();
-        const whitespaceChars = text.substring(nonWhitespaceChars.length);
+    const input = `${text} `;
+    const quoteStack = [] as string[];
+    let sentenceStart = 0;
 
-        if (nonWhitespaceChars) yield nonWhitespaceChars;
-        if (whitespaceChars) yield whitespaceChars;
-        return;
-    }
+    for (let i = 0; i < text.length; i++) {
+        const prev = input.at(i - 1);
+        const current = input[i];
+        const next = input[i + 1];
 
-    // Handle specific patterns for test cases
-
-    // Case: "Is this correct?Yes, it is."
-    if (text.match(/\?[A-Z][a-z]/)) {
-        const parts = text.split(/(?<=\?|!|\.)/);
-        let prevPart = "";
-
-        for (let i = 0; i < parts.length; i++) {
-            if (!parts[i].trim()) continue;
-
-            const currPart = parts[i].trim();
-
-            // Look for cases like "?Yes" or "!No" where there's no space
+        if (isQuote(current)) {
             if (
-                prevPart.endsWith("?") ||
-                prevPart.endsWith("!") ||
-                prevPart.endsWith(".")
+                quoteStack.length > 0 &&
+                getClosionQuote(quoteStack.at(-1)) === current
             ) {
-                if (currPart.match(/^[A-Z][a-z]/)) {
-                    // This is likely a new sentence without space
-                    yield prevPart;
-                    yield currPart;
-                    prevPart = "";
-                    continue;
-                }
-            }
-
-            prevPart += (prevPart ? " " : "") + currPart;
-        }
-
-        if (prevPart) yield prevPart;
-        return;
-    }
-
-    // Handle numeric text with colons: "Chapter 1: Introduction."
-    if (text.includes(": ") && text.match(/Chapter \d+: /)) {
-        // Split at the colon
-        const colonIndex = text.indexOf(": ");
-        yield text.substring(0, colonIndex + 1); // "Chapter 1:"
-
-        // Process the rest of the text for sentence boundaries
-        const remainingText = text.substring(colonIndex + 1);
-        const remainingSentences = Array.from(
-            splitToSentencesHelper(remainingText),
-        );
-
-        for (const sentence of remainingSentences) {
-            yield sentence;
-        }
-        return;
-    }
-
-    // Handle abbreviations and initials: "Dr. Smith", "J. K. Rowling"
-    if (text.match(/\b([A-Z]\.)\s+([A-Z]\.)/)) {
-        // Handle cases like "J. K. Rowling"
-        const parts = [];
-        let currentSentence = "";
-        let i = 0;
-
-        while (i < text.length) {
-            currentSentence += text[i];
-
-            // Check for potential sentence end
-            if (text[i] === "." && i < text.length - 1) {
-                // Check if this is an initial (single letter followed by period)
-                if (
-                    i > 0 &&
-                    isAlphanumeric(text[i - 1]) &&
-                    text[i - 1].length === 1
-                ) {
-                    // If next char is space followed by uppercase (possible initial)
-                    if (
-                        i + 2 < text.length &&
-                        text[i + 1] === " " &&
-                        isUpperCase(text[i + 2])
-                    ) {
-                        // This is likely an initial, continue
-                        i++;
-                        continue;
-                    }
-                }
-
-                // Check for sentence boundary by looking at what follows
-                if (text[i + 1] === " " && isUpperCase(text[i + 2])) {
-                    // Only count as boundary if not followed by a single letter
-                    // (which could be another initial)
-                    if (i + 3 >= text.length || text[i + 3] !== ".") {
-                        parts.push(currentSentence);
-                        currentSentence = "";
-                    }
-                }
-            }
-
-            i++;
-        }
-
-        if (currentSentence) {
-            parts.push(currentSentence);
-        }
-
-        for (const part of parts) {
-            yield part;
-        }
-        return;
-    }
-
-    // Handle quoted text
-    if (
-        text.includes('"') &&
-        (text.includes('?"') || text.includes('."') || text.includes('!"'))
-    ) {
-        const parts = [];
-        let currentPart = "";
-        let inQuote = false;
-
-        for (let i = 0; i < text.length; i++) {
-            currentPart += text[i];
-
-            // Track quote state
-            if (text[i] === '"') {
-                inQuote = !inQuote;
-            }
-
-            // Handle end of quoted statement with punctuation
-            if (
-                !inQuote &&
-                i > 0 &&
-                text[i - 1] === '"' &&
-                (text[i - 2] === "?" ||
-                    text[i - 2] === "." ||
-                    text[i - 2] === "!")
-            ) {
-                // If this is followed by a lowercase letter, it's part of the same sentence
-                if (
-                    i + 1 < text.length &&
-                    isAlphanumeric(text[i + 1]) &&
-                    !isUpperCase(text[i + 1])
-                ) {
-                    continue;
-                }
-
-                // If next char is space followed by a quote, keep processing
-                if (
-                    i + 2 < text.length &&
-                    text[i + 1] === " " &&
-                    text[i + 2] === '"'
-                ) {
-                    continue;
-                }
-
-                // Otherwise split
-                if (i + 1 < text.length && text[i + 1] === " ") {
-                    parts.push(currentPart);
-                    currentPart = "";
-                }
+                quoteStack.pop();
+            } else if (!prev || isWhiteSpace(prev)) {
+                quoteStack.push(current);
             }
         }
 
-        if (currentPart) {
-            parts.push(currentPart);
+        if (quoteStack.length > 0) {
+            // Inside quotes, skip sentence end checks
+            continue;
         }
 
-        for (const part of parts) {
-            yield part;
-        }
-        return;
-    }
-
-    // Handle newlines
-    if (text.includes("\n")) {
-        const lines = text.split("\n");
-
-        for (let i = 0; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
-
-            if (i === 0) {
-                yield `${lines[i]}\n`;
-            } else {
-                if (i > 0) {
-                    yield lines[i];
-                }
-            }
-        }
-        return;
-    }
-
-    // Handle special semicolon cases
-    if (text.includes("; don't forget")) {
-        const semicolonIndex = text.indexOf(";");
-        yield text.substring(0, semicolonIndex + 1);
-        yield text.substring(semicolonIndex + 1);
-        return;
-    }
-
-    // Default case: use the helper for normal sentence splitting
-    for (const sentence of splitToSentencesHelper(text)) {
-        yield sentence;
-    }
-}
-
-/**
- * Helper function for standard sentence splitting behavior
- */
-function* splitToSentencesHelper(text: string): Generator<string> {
-    if (!text) return;
-
-    let currentSentence = "";
-    let i = 0;
-
-    while (i < text.length) {
-        currentSentence += text[i];
-
-        // Check for sentence end
-        if (isSentenceEnd(text[i]) && i < text.length - 1) {
-            // Look for space or end of text
-            if (text[i + 1] === " " || i === text.length - 1) {
-                // Make sure it's not an abbreviation
-                if (!isAbbreviation(text, i) && !isDecimalPoint(text, i)) {
-                    yield currentSentence;
-                    currentSentence = "";
-                }
-            }
+        const isAbbr = isAbbreviation(input, i);
+        if (isAbbr > 0) {
+            i = isAbbr; // Skip the abbreviation
+            continue;
         }
 
-        i++;
+        if (isDecimalPoint(input, i)) {
+            continue; // Skip decimal points
+        }
+
+        const urlEnd = isUrl(input, i);
+        if (urlEnd > 0) {
+            i = urlEnd; // Skip the URL
+            continue;
+        }
+
+        const emailEnd = isEmail(input, i);
+        if (emailEnd > 0) {
+            i = emailEnd; // Skip the email
+            continue;
+        }
+
+        if (isSentenceEnd(current) && !isSentenceEnd(next)) {
+            yield text.substring(sentenceStart, i + 1);
+            sentenceStart = i + 1;
+        }
     }
 
-    // Add any remaining text
-    if (currentSentence) {
-        yield currentSentence;
+    // Handle the last sentence
+    if (sentenceStart < text.length) {
+        yield text.substring(sentenceStart, input.length - 1);
     }
 }
 
 /**
  * Check if the period at the given position is part of an abbreviation
  */
-function isAbbreviation(text: string, position: number): boolean {
-    if (text[position] !== ".") return false;
+function isAbbreviation(text: string, position: number): number {
+    if (position > 0 && !isWhiteSpace(text[position - 1])) return -1;
 
-    // Extract word before the period
-    let start = position;
-    while (start > 0 && !isWhiteSpace(text[start - 1])) {
-        start--;
+    let end = position + 1;
+    while (end < text.length && !isWhiteSpace(text[end])) {
+        end++;
     }
 
-    const word = text.substring(start, position);
+    const word = text
+        .substring(position, end + 1)
+        .trim()
+        .toLocaleLowerCase();
 
     // Check against known abbreviations
-    return commonAbbreviations.includes(word);
+    if (commonAbbreviations.includes(word)) {
+        return end - 1;
+    }
+
+    if (word.endsWith(".") && commonAbbreviations.includes(word.slice(0, -1))) {
+        return end - 2;
+    }
+
+    // Check for initials pattern (single letter followed by period)
+    if (isSingleLetterWithPeriod(text, position)) {
+        let nextPos = position + 2;
+
+        while (
+            (nextPos < text.length && isWhiteSpace(text[nextPos])) ||
+            isSingleLetterWithPeriod(text, nextPos)
+        ) {
+            if (isWhiteSpace(text[nextPos])) {
+                nextPos++;
+            } else {
+                nextPos += 2;
+            }
+        }
+
+        return nextPos - 1; // Return the position of the last period
+    }
+
+    return -1;
+}
+
+function isSingleLetterWithPeriod(text: string, position: number): boolean {
+    return (
+        position > 0 &&
+        text[position + 1] === "." &&
+        isUpperCase(text[position])
+    );
 }
 
 /**
@@ -347,6 +294,119 @@ function isDecimalPoint(text: string, position: number): boolean {
         isDigit(text[position - 1]) &&
         isDigit(text[position + 1])
     );
+}
+
+/**
+ * Check if the position is within a URL by only scanning forward
+ * @param text The text to check
+ * @param position The position to check
+ * @returns The index to skip to if part of a URL, or -1 otherwise
+ */
+function isUrl(text: string, position: number): number {
+    // Maximum characters to look ahead
+    const maxLookAhead = 100;
+
+    // Find potential URL end
+    let urlEnd = position;
+
+    // Check if we're at a valid URL prefix position
+    const isPotentialUrlStart =
+        // Check for http:// or https://
+        (position + 7 <= text.length &&
+            text.slice(position, position + 7).toLowerCase() === "http://") ||
+        (position + 8 <= text.length &&
+            text.slice(position, position + 8).toLowerCase() === "https://") ||
+        // Check for www.
+        (position + 4 <= text.length &&
+            text.slice(position, position + 4).toLowerCase() === "www.");
+
+    // If not at the start of a URL or potentially in a URL, return early
+    if (!isPotentialUrlStart) {
+        return -1;
+    }
+
+    // Find end of the potential URL by scanning forward
+    for (let i = 0; i < maxLookAhead && position + i < text.length; i++) {
+        const idx = position + i;
+
+        if (
+            isWhiteSpace(text[idx]) ||
+            text[idx] === "," ||
+            text[idx] === ";" ||
+            text[idx] === ")" ||
+            text[idx] === "]" ||
+            text[idx] === "}" ||
+            text[idx] === '"' ||
+            text[idx] === "'" ||
+            text[idx] === ">" ||
+            text[idx] === "\n"
+        ) {
+            urlEnd = idx - 1;
+            break;
+        }
+        urlEnd = idx;
+    }
+
+    if (text.at(urlEnd) === ".") {
+        urlEnd--;
+    }
+
+    return urlEnd;
+}
+
+/**
+ * Check if the position is within an email address
+ * @param text The text to check
+ * @param position The position to check
+ * @returns The index to skip to if part of an email, or -1 otherwise
+ */
+function isEmail(text: string, position: number): number {
+    // Skip the early check for period to allow detection anywhere in email
+
+    // Constants for scanning limits
+    const maxLookAhead = 100; // Maximum characters to look ahead
+
+    let end = position;
+    for (let i = 0; i < maxLookAhead && position + i < text.length; i++) {
+        if (
+            isWhiteSpace(text[position + i]) ||
+            text[position + i] === "," ||
+            text[position + i] === ";" ||
+            text[position + i] === ")" ||
+            text[position + i] === "]" ||
+            text[position + i] === "}" ||
+            text[position + i] === '"' ||
+            text[position + i] === "'" ||
+            text[position + i] === ">" ||
+            text[position + i] === "\n"
+        ) {
+            end = position + i - 1;
+            break;
+        }
+    }
+
+    let substring = text.substring(position, end + 1); // Extract the potential email
+
+    if (!substring.includes("@")) {
+        return -1; // Not a valid email
+    }
+
+    if (substring.endsWith(".")) {
+        end--; // Remove trailing period if present
+        substring = substring.slice(0, -1); // Update the substring
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const isValidEmail = emailRegex.test(substring);
+    if (isValidEmail) {
+        // Check if the email ends with a period
+        if (text.at(end) === ".") {
+            end--;
+        }
+        return end; // Return the index of the last character of the email
+    }
+
+    return -1; // Not a valid email
 }
 
 /**
