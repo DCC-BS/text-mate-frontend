@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
     isAlphanumeric,
-    isWhiteSpace,
     isSentenceEnd,
+    isWhiteSpace,
     splitToSentences,
 } from "../../../assets/services/string-parser";
 
