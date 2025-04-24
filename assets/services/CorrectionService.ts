@@ -82,7 +82,6 @@ export class CorrectionService {
     ): Promise<void> {
         try {
             const sentences = Array.from(splitToSentences(text));
-            console.log(sentences);
 
             let diff: ArrayChange<string>[] = [];
 
