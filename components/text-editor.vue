@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CharacterCount from "@tiptap/extension-character-count";
+import { NodeType, Slice } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
@@ -13,7 +14,6 @@ import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
-import { NodeType, Slice } from "@tiptap/pm/model";
 
 // model
 const model = defineModel<string>("modelValue", { required: true });
