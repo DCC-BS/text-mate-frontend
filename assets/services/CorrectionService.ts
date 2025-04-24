@@ -8,20 +8,7 @@ import type {
     TextCorrectionResponse,
 } from "../models/text-correction";
 import { Queue } from "./Queue";
-
-function moveBlocks(offset: number, blocks: TextCorrectionBlock[]) {
-    return blocks.map((block) => ({
-        ...block,
-        offset: block.offset + offset,
-    }));
-}
-
-export function makeCorrectedSentenceAbsolute(sentence: CorrectedSentence) {
-    return {
-        ...sentence,
-        blocks: moveBlocks(sentence.from, sentence.blocks),
-    };
-}
+import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
     private readonly blocks: TextCorrectionBlock[][] = [];
@@ -94,13 +81,7 @@ export class CorrectionService {
         invalidateAll: boolean,
     ): Promise<void> {
         try {
-            const segmenter = new Intl.Segmenter("de", {
-                granularity: "sentence",
-            });
-
-            const sentences = Array.from(segmenter.segment(text)).map(
-                (s) => s.segment,
-            );
+            const sentences = Array.from(splitToSentences(text));
 
             let diff: ArrayChange<string>[] = [];
 

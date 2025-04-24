@@ -4,9 +4,7 @@ import {
     InvalidateCorrectionCommand,
     type SwitchCorrectionLanguageCommand,
 } from "~/assets/models/commands";
-import { CorrectionService } from "~/assets/services/CorrectionService";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
-import { useUserDictionaryStore } from "~/stores/user_dictionary";
 import TextEditor from "./text-editor.vue";
 import ToolPanel from "./tool-panel.vue";
 
@@ -21,17 +19,8 @@ const viewport = useViewport();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
-const { sendError } = useUseErrorDialog();
-const logger = useLogger();
-const userDictStore = useUserDictionaryStore();
 
-// todo create a composable
-const correctionService = new CorrectionService(
-    logger,
-    executeCommand,
-    userDictStore.exists,
-    sendError,
-);
+const correctionService = useCorrectionService();
 
 // check if the query param clipboard is true
 const clipboard = router.currentRoute.value.query.clipboard;

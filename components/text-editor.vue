@@ -13,6 +13,7 @@ import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
+import { NodeType, Slice } from "@tiptap/pm/model";
 
 // model
 const model = defineModel<string>("modelValue", { required: true });
@@ -145,8 +146,8 @@ async function applyText(command: ApplyTextCommand) {
 
     editor.value
         .chain()
-        .deleteRange(range)
-        .insertContentAt(range.from, text)
+        .setTextSelection(range)
+        .insertContent(text)
         .focus(range.from)
         .run();
 }
