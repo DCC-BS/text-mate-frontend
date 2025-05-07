@@ -75,14 +75,23 @@ export default defineI18nConfig(() => ({
                 noRewrite: 'Select text and click "Rewrite" to rewrite it',
             },
             advisor: {
-                giveAdvice: "Give Advice",
-                coherenceAndStructure: "Coherence and Structure",
-                domainScore: "Domain Score",
-                formalityScore: "Formality Score",
-                comingSoon: {
-                    title: "Coming Soon",
-                    description:
-                        "The text advisor feature is currently in development and will be available soon.",
+                check: "Check Text",
+                reason: "Reason",
+                proposal: "Proposal",
+                page: "Page",
+                title: "Document Advisor",
+                description: "Check your text against selected documents",
+                results: "Results",
+                issues: "{n} issue |{n} issues",
+                noIssues: "No issues found!",
+                noResultsYet: "Run a check to see results",
+                checking: "Checking your text...",
+                error: "Error",
+                ruel: {
+                    title: "Rule Violation",
+                    source: "Source",
+                    example: "Example",
+                    fix: "Suggested Fix",
                 },
             },
             "user-dictionary": {
@@ -172,14 +181,25 @@ export default defineI18nConfig(() => ({
                     'Text auswählen und auf "Umschreiben" klicken, um ihn umzuschreiben',
             },
             advisor: {
-                giveAdvice: "Ratschlag geben",
-                coherenceAndStructure: "Kohärenz und Struktur",
-                domainScore: "Domänenscore",
-                formalityScore: "Formalitätsscore",
-                comingSoon: {
-                    title: "Demnächst verfügbar",
-                    description:
-                        "Die Textberatungsfunktion befindet sich derzeit in der Entwicklung und wird in Kürze verfügbar sein.",
+                check: "Text überprüfen",
+                reason: "Grund",
+                proposal: "Vorschlag",
+                page: "Seite",
+                title: "Dokumentenberater",
+                description:
+                    "Überprüfen Sie Ihren Text anhand ausgewählter Dokumente",
+                results: "Ergebnisse",
+                issues: "{n} Problem |{n} Probleme",
+                noIssues: "Keine Probleme gefunden!",
+                noResultsYet:
+                    "Führen Sie eine Überprüfung durch, um Ergebnisse zu sehen",
+                checking: "Überprüfe deinen Text...",
+                error: "Fehler",
+                ruel: {
+                    title: "Regelverletzung",
+                    source: "Quelle",
+                    example: "Beispiel",
+                    fix: "Vorgeschlagene Korrektur",
                 },
             },
             "user-dictionary": {

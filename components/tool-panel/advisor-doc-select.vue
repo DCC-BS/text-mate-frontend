@@ -1,0 +1,44 @@
+<script lang="ts" setup>
+import type { AdvidorDocumentDescription } from "~/assets/models/advisor";
+import type { AdivsorService } from "~/assets/services/AdvisorService";
+
+interface AdvisorDocSelectProps {
+    advisorService: AdivsorService;
+}
+
+const props = defineProps<AdvisorDocSelectProps>();
+
+const docs = props.advisorService.getDocs();
+const selectedDocs = defineModel<AdvidorDocumentDescription[]>({ default: [] });
+</script>
+
+<template>
+  <div class="w-full">
+    <USelectMenu :items="docs" v-model="selectedDocs" :filter-fields="['title', 'description', 'author', 'edition']" multiple class="w-full">
+      <template #default>
+        <div v-if="selectedDocs.length > 0">
+          {{ selectedDocs.map((doc) => doc.title).join(", ") }}
+        </div>
+        <div v-else>
+          <p class="text-gray-500">
+            {{ $t("advisor.select-docs") }}
+          </p>
+        </div>
+      </template>
+      <template #item-label="{ item }">
+        <div class="flex flex-col">
+          <p class="text-md font-bold">{{ item.title }}</p>
+          <p>{{ item.description }}</p>
+          <p>{{ item.author }}</p>
+          <p>{{ item.edition }}</p>
+        </div>
+      </template>
+    </USelectMenu>
+  </div>
+</template>
+
+
+
+<style>
+
+</style>

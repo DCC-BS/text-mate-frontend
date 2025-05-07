@@ -102,7 +102,7 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
                 </div>
             </template>
             <template #advisor>
-                <AdvisorView :domain="domain" :formality="formality" :text="props.text" />
+                <AdvisorView :text="props.text" />
             </template>
             <template #compare>
                 <ComparePanel :text="props.text" />

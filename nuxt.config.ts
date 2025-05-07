@@ -50,6 +50,10 @@ export default defineNuxtConfig({
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
         },
+        // Add optimizations for vue-pdf-embed
+        optimizeDeps: {
+            include: ["vue-pdf-embed"],
+        },
     },
     runtimeConfig: {
         public: {
