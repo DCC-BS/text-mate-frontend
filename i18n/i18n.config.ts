@@ -93,6 +93,7 @@ export default defineI18nConfig(() => ({
                     example: "Example",
                     fix: "Suggested Fix",
                 },
+                selectDocs: "select documents",
             },
             "user-dictionary": {
                 title: "Dictionary",
@@ -201,6 +202,7 @@ export default defineI18nConfig(() => ({
                     example: "Beispiel",
                     fix: "Vorgeschlagene Korrektur",
                 },
+                selectDocs: "Dokumente auswählen",
             },
             "user-dictionary": {
                 title: "Wörterbuch",

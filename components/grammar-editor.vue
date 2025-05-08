@@ -18,7 +18,7 @@ const router = useRouter();
 const viewport = useViewport();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
-const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
+const { registerHandler, unregisterHandler } = useCommandBus();
 
 const correctionService = useCorrectionService();
 
@@ -54,7 +54,7 @@ watch(userText, (newText) => {
     );
 
     // ends with any whitespace
-    if (newText.endsWith(" ") || newText.endsWith("\n")) {
+    if (newText.endsWith(".") || newText.endsWith("\n")) {
         taskScheduler.executeImmediately();
     }
 });

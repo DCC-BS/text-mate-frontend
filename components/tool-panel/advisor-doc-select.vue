@@ -21,7 +21,7 @@ const selectedDocs = defineModel<AdvidorDocumentDescription[]>({ default: [] });
         </div>
         <div v-else>
           <p class="text-gray-500">
-            {{ $t("advisor.select-docs") }}
+            {{ $t("advisor.selectDocs") }}
           </p>
         </div>
       </template>

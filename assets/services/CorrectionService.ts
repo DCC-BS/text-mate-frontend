@@ -11,7 +11,6 @@ import { Queue } from "./Queue";
 import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
-    private readonly blocks: TextCorrectionBlock[][] = [];
     private oldSentences: CorrectedSentence[] = [];
 
     constructor(
@@ -85,7 +84,15 @@ export class CorrectionService {
 
             let diff: ArrayChange<string>[] = [];
 
+            this.logger.debug(
+                "Old sentences",
+                this.oldSentences.map((s) => s.text),
+            );
+            this.logger.debug("New sentences", sentences);
+
             if (invalidateAll) {
+                this.logger.debug("Invalidating all sentences");
+
                 const removed = this.oldSentences.map((s) => s.text);
 
                 diff = [
@@ -110,19 +117,13 @@ export class CorrectionService {
             }
 
             const inputQueue = new Queue(this.oldSentences);
-            this.oldSentences = [];
+            const newSentences = [] as CorrectedSentence[];
+            const commands = [] as CorrectedSentenceChangedCommand[];
             let currentPos = 0;
             let hasChanges = false;
 
             for (const part of diff) {
                 if (signal.aborted) {
-                    while (inputQueue.size() > 0) {
-                        const sentence = inputQueue.dequeue();
-                        if (sentence) {
-                            this.oldSentences.push(sentence);
-                        }
-                    }
-
                     return;
                 }
 
@@ -131,7 +132,7 @@ export class CorrectionService {
                         const oldSentence = inputQueue.dequeue();
 
                         if (oldSentence) {
-                            this.executeCommand(
+                            commands.push(
                                 new CorrectedSentenceChangedCommand(
                                     {
                                         ...oldSentence,
@@ -141,6 +142,17 @@ export class CorrectionService {
                                     "remove",
                                 ),
                             );
+
+                            // this.executeCommand(
+                            //     new CorrectedSentenceChangedCommand(
+                            //         {
+                            //             ...oldSentence,
+                            //             from: currentPos + oldSentence.from,
+                            //             to: currentPos + oldSentence.to,
+                            //         },
+                            //         "remove",
+                            //     ),
+                            // );
                         } else {
                             this.logger.error(
                                 "No sentence found in input queue to remove",
@@ -151,17 +163,19 @@ export class CorrectionService {
                     }
                 } else if (part.added) {
                     for (const sentence of part.value) {
-                        const newSentence = await this.addCorrectedSentences(
+                        const command = await this.addCorrectedSentences(
                             sentence,
                             signal,
                             currentPos,
                         );
 
-                        if (!newSentence) {
+                        if (!command) {
                             return;
                         }
 
-                        this.oldSentences.push(newSentence);
+                        // this.oldSentences.push(newSentence);
+                        newSentences.push(command.correctedSentence);
+                        commands.push(command);
                         hasChanges = true;
 
                         currentPos += sentence.length;
@@ -183,10 +197,12 @@ export class CorrectionService {
                                 from: currentPos,
                                 to: currentPos + sentence.length,
                             };
-                            this.oldSentences.push(newSentence);
+
+                            newSentences.push(newSentence);
+                            // this.oldSentences.push(newSentence);
 
                             if (hasChanges) {
-                                this.executeCommand(
+                                commands.push(
                                     new CorrectedSentenceChangedCommand(
                                         newSentence,
                                         "update",
@@ -197,6 +213,25 @@ export class CorrectionService {
 
                         currentPos += sentence.length;
                     }
+                }
+            }
+
+            this.oldSentences = newSentences;
+            // this.logger.debug(commands);
+
+            for (const command of commands) {
+                try {
+                    await this.executeCommand(command);
+                } catch (e: unknown) {
+                    if (!(e instanceof Error)) {
+                        this.logger.error(
+                            "Unknown error during text correction",
+                        );
+                        return;
+                    }
+                    this.logger.error(
+                        `Error during text correction: ${e.message}`,
+                    );
                 }
             }
         } catch (e: unknown) {
@@ -227,7 +262,7 @@ export class CorrectionService {
         sentence: string,
         signal: AbortSignal,
         startPos: number,
-    ): Promise<CorrectedSentence | undefined> {
+    ): Promise<CorrectedSentenceChangedCommand | undefined> {
         try {
             const newBlocks = await this.fetchBlocks(sentence, signal);
 
@@ -239,11 +274,7 @@ export class CorrectionService {
                 blocks: newBlocks,
             } as CorrectedSentence;
 
-            this.executeCommand(
-                new CorrectedSentenceChangedCommand(newSentence, "add"),
-            );
-
-            return newSentence;
+            return new CorrectedSentenceChangedCommand(newSentence, "add");
         } catch (e: unknown) {
             if (!(e instanceof Error)) {
                 this.logger.error("Unknown error during text correction");

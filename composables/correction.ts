@@ -11,11 +11,11 @@ import { CorrectionService } from "~/assets/services/CorrectionService";
 
 export type CorrectionHandler = (correctedSentence: CorrectedSentence) => void;
 
-let correctionSerivce: CorrectionService | undefined = undefined;
+let correctionService: CorrectionService | undefined = undefined;
 
-const onAddHanlders = [] as CorrectionHandler[];
-const onRemoveHandlers = [] as CorrectionHandler[];
-const onUpdateHandlers = [] as CorrectionHandler[];
+const onAddHandlers = new Set<CorrectionHandler>();
+const onRemoveHandlers = new Set<CorrectionHandler>();
+const onUpdateHandlers = new Set<CorrectionHandler>();
 
 const correctedSentence = ref<Record<string, CorrectedSentence>>({});
 const blocks = computed(() => {
@@ -47,7 +47,7 @@ export function useCorrectionService() {
                 correctedSentence.value[command.correctedSentence.id] =
                     command.correctedSentence;
 
-                for (const handler of onAddHanlders) {
+                for (const handler of onAddHandlers) {
                     handler(command.correctedSentence);
                 }
             })
@@ -85,7 +85,7 @@ export function useCorrectionService() {
             .exhaustive();
     }
 
-    correctionSerivce = new CorrectionService(
+    correctionService = new CorrectionService(
         logger,
         executeCommand,
         userDictStore.exists,
@@ -106,7 +106,7 @@ export function useCorrectionService() {
         );
     });
 
-    return correctionSerivce;
+    return correctionService;
 }
 
 export function useCorrection() {
@@ -115,50 +115,41 @@ export function useCorrection() {
     const _onUpdateHandlers = [] as CorrectionHandler[];
 
     function onCorrectedSenteceAdded(handler: CorrectionHandler) {
-        if (onAddHanlders.includes(handler)) {
+        if (onAddHandlers.has(handler)) {
             throw new Error("Handler already registered");
         }
 
-        onAddHanlders.push(handler);
+        onAddHandlers.add(handler);
         _onAddHandlers.push(handler);
     }
 
     function onCorrectedSentenceRemoved(handler: CorrectionHandler) {
-        if (onRemoveHandlers.includes(handler)) {
+        if (onRemoveHandlers.has(handler)) {
             throw new Error("Handler already registered");
         }
-        onRemoveHandlers.push(handler);
+        onRemoveHandlers.add(handler);
         _onRemoveHandlers.push(handler);
     }
 
     function onCorrectedSentenceUpdated(handler: CorrectionHandler) {
-        if (onUpdateHandlers.includes(handler)) {
+        if (onUpdateHandlers.has(handler)) {
             throw new Error("Handler already registered");
         }
-        onUpdateHandlers.push(handler);
+        onUpdateHandlers.add(handler);
         _onUpdateHandlers.push(handler);
     }
 
     onUnmounted(() => {
         for (const handler of _onAddHandlers) {
-            const index = onAddHanlders.indexOf(handler);
-            if (index !== -1) {
-                onAddHanlders.splice(index, 1);
-            }
+            onAddHandlers.delete(handler);
         }
 
         for (const handler of _onRemoveHandlers) {
-            const index = onRemoveHandlers.indexOf(handler);
-            if (index !== -1) {
-                onRemoveHandlers.splice(index, 1);
-            }
+            onRemoveHandlers.delete(handler);
         }
 
         for (const handler of _onUpdateHandlers) {
-            const index = onUpdateHandlers.indexOf(handler);
-            if (index !== -1) {
-                onUpdateHandlers.splice(index, 1);
-            }
+            onUpdateHandlers.delete(handler);
         }
     });
 

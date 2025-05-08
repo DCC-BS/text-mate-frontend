@@ -1,5 +1,13 @@
 export class Queue<T> {
-    constructor(private readonly items: T[] = []) {}
+    private readonly items: T[];
+
+    constructor(items: T[] = [], copy = true) {
+        if (copy) {
+            this.items = [...items];
+        } else {
+            this.items = items;
+        }
+    }
 
     enqueue(item: T): void {
         this.items.push(item);

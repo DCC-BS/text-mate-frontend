@@ -37,9 +37,16 @@ export default defineNuxtConfig({
         "@dcc-bs/event-system.bs.js",
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/logger.bs.js",
+        "@dcc-bs/feedback-control.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
     ],
+    "feedback-control.bs.js": {
+        repo: "Feedback",
+        owner: "DCC-BS",
+        project: "text-mate",
+        githubToken: process.env.GITHUB_TOKEN,
+    },
     typescript: {
         strict: true,
     },
@@ -95,6 +102,7 @@ export default defineNuxtConfig({
             globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
             globIgnores: ["dev-sw-dist/**/*"],
             navigateFallback: "/",
+            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         },
         client: {
             periodicSyncForUpdates: 60 * 10, // 10 minutes

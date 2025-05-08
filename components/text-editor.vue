@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import CharacterCount from "@tiptap/extension-character-count";
-import { NodeType, Slice } from "@tiptap/pm/model";
-import StarterKit from "@tiptap/starter-kit";
+import Document from "@tiptap/extension-document";
+import BulletList from "@tiptap/extension-bullet-list";
+import ListItem from "@tiptap/extension-list-item";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Paragraph from "@tiptap/extension-paragraph";
+import Text from "@tiptap/extension-text";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Strike from "@tiptap/extension-strike";
+import History from "@tiptap/extension-history";
+import HardBreak from "@tiptap/extension-hard-break";
+import Heading from "@tiptap/extension-heading";
+
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
@@ -48,9 +59,19 @@ const { TrackChangesExtension } = useTrackChanges();
 
 const editor = useEditor({
     content: model.value,
-    enablePasteRules: false,
     extensions: [
-        StarterKit,
+        Text,
+        Document,
+        BulletList,
+        ListItem,
+        OrderedList,
+        Paragraph,
+        HardBreak,
+        Bold,
+        Italic,
+        Strike,
+        History,
+        Heading,
         // @ts-expect-error
         BubbleMenu,
         FocusExtension,
@@ -62,6 +83,8 @@ const editor = useEditor({
         FocusedSentenceMark,
         FocusedWordMark,
     ],
+    enablePasteRules: false,
+    enableInputRules: false,
     editorProps: {
         handleKeyDown: (view, event) => {
             // Check if Ctrl+C is pressed

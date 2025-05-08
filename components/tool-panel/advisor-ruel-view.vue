@@ -37,7 +37,7 @@ const { t } = useI18n();
       <div class="flex items-start space-x-2">
         <UIcon name="i-lucide-lightbulb" class="text-yellow-500 mt-1 flex-shrink-0" />
         <div>
-          <p class="text-xs font-semibold text-gray-600 dark:text-gray-300">{{ t('advisor.reason') || 'Reason' }}:</p>
+          <p class="text-xs font-semibold text-gray-600 dark:text-gray-300">{{ t('advisor.reason') }}:</p>
           <p class="text-sm">{{ props.ruel.reason }}</p>
         </div>
       </div>
