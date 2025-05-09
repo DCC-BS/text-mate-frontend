@@ -18,7 +18,7 @@ const router = useRouter();
 const viewport = useViewport();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
-const { registerHandler, unregisterHandler } = useCommandBus();
+const { onCommand } = useCommandBus();
 
 const correctionService = useCorrectionService();
 
@@ -27,9 +27,6 @@ const clipboard = router.currentRoute.value.query.clipboard;
 
 // life cycle
 onMounted(async () => {
-    registerHandler(Cmds.SwitchCorrectionLanguageCommand, handleSwitchLanguage);
-    registerHandler(Cmds.InvalidateCorrectionCommand, handleInvalidate);
-
     // Wait for next tick to ensure text editor is fully mounted
     await nextTick();
 
@@ -37,14 +34,6 @@ onMounted(async () => {
         const text = await navigator.clipboard.readText();
         userText.value = text;
     }
-});
-
-onUnmounted(() => {
-    unregisterHandler(
-        Cmds.SwitchCorrectionLanguageCommand,
-        handleSwitchLanguage,
-    );
-    unregisterHandler(Cmds.InvalidateCorrectionCommand, handleInvalidate);
 });
 
 // listeners
@@ -60,33 +49,33 @@ watch(userText, (newText) => {
 });
 
 // functions
-async function correctText(
-    text: string,
-    signal: AbortSignal,
-    invalidate = false,
-) {
+async function correctText(text: string, signal: AbortSignal) {
     addProgress("correcting", {
         icon: "i-heroicons-pencil",
         title: t("status.correctingText"),
     });
     try {
-        await correctionService.correctText(text, signal, invalidate);
+        await correctionService.correctText(text, signal);
     } finally {
         removeProgress("correcting");
     }
 }
 
-async function handleSwitchLanguage(command: SwitchCorrectionLanguageCommand) {
-    correctionService.switchLanguage(command.language);
+onCommand(
+    Cmds.SwitchCorrectionLanguageCommand,
+    async (command: SwitchCorrectionLanguageCommand) => {
+        correctionService.switchLanguage(command.language);
+        await handleInvalidate(new InvalidateCorrectionCommand());
+    },
+);
 
-    await handleInvalidate(new InvalidateCorrectionCommand());
-}
+onCommand(Cmds.InvalidateCorrectionCommand, handleInvalidate);
 
-async function handleInvalidate(command: InvalidateCorrectionCommand) {
+async function handleInvalidate(_: InvalidateCorrectionCommand) {
+    await correctionService.invalidateAll();
     taskScheduler.schedule((signal: AbortSignal) =>
-        correctText(userText.value, signal, true),
+        correctText(userText.value, signal),
     );
-    taskScheduler.executeImmediately();
 }
 </script>
 

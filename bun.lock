@@ -5,9 +5,9 @@
       "name": "nuxt-app",
       "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^0.1.6",
-        "@dcc-bs/event-system.bs.js": "^1.1.1",
+        "@dcc-bs/event-system.bs.js": "^1.1.2",
         "@dcc-bs/feedback-control.bs.js": "^0.0.5",
-        "@dcc-bs/logger.bs.js": "^1.1.2",
+        "@dcc-bs/logger.bs.js": "^1.2.0",
         "@iconify-json/heroicons": "^1.2.2",
         "@nuxt/ui": "^3.0.1",
         "@nuxtjs/i18n": "^9.4.0",
@@ -272,11 +272,11 @@
 
     "@dcc-bs/common-ui.bs.js": ["@dcc-bs/common-ui.bs.js@0.1.6", "https://npm.pkg.github.com/download/@dcc-bs/common-ui.bs.js/0.1.6/e0db96388e946cd69384730800606666a626f0c9", { "dependencies": { "@nuxt/kit": "^3.15.4", "tailwind-merge": "^3.0.1" } }, "sha512-1/xYwUY2fyPQqGgS/Vo3khuqDEbIAuleHu7ApWGa4oY8MTV5LKdZnMzucsoNsQKduXYn9kM/M9LEM4/Fv32/yA=="],
 
-    "@dcc-bs/event-system.bs.js": ["@dcc-bs/event-system.bs.js@1.1.1", "https://npm.pkg.github.com/download/@dcc-bs/event-system.bs.js/1.1.1/59d836425f00f3106b8c3b05dc640edd8bf483f6", { "dependencies": { "@nuxt/kit": "^3.15.4" } }, "sha512-mDo1sDBduJ4+uYmuEocEJOcS0eCw5zP3La69mLR5jvLacIa3PJVqX2VFVdZvL7OSbTQX8UG5jfO9LHXMt+gv+g=="],
+    "@dcc-bs/event-system.bs.js": ["@dcc-bs/event-system.bs.js@1.2.0", "https://npm.pkg.github.com/download/@dcc-bs/event-system.bs.js/1.2.0/02c593791b530e3a37c7c8ede3f8788bdb7616af", { "dependencies": { "@nuxt/kit": "^3.15.4" } }, "sha512-m0Vx6vZazsGzkYagjJLs3g3i3njmzyTkEvXZvLKgwrq5mD7ylNKHPEcf2dpHDv74WEEzwdAIFh43DL87kr+gMw=="],
 
     "@dcc-bs/feedback-control.bs.js": ["@dcc-bs/feedback-control.bs.js@0.0.5", "https://npm.pkg.github.com/download/@dcc-bs/feedback-control.bs.js/0.0.5/5dc503af5ccc5c166a13b889a60952276271e3aa", { "dependencies": { "@nuxt/kit": "^3.15.4", "reka-ui": "^2.2.0" } }, "sha512-VaC+3BCWv6vTM2ppG5qaHhLjMPyNcezCJswrZ0tJJr+jklwpgcdMwpNUmWPoI+ekZM11DV+KHS53QTZlrpEIOA=="],
 
-    "@dcc-bs/logger.bs.js": ["@dcc-bs/logger.bs.js@1.1.2", "https://npm.pkg.github.com/download/@dcc-bs/logger.bs.js/1.1.2/e863ecc6124fd1254e47cc45221ccd90417240cb", { "dependencies": { "@nuxt/kit": "^3.15.4", "winston": "^3.17.0" } }, "sha512-Kd7NvZxH5qma5OOh1f/qX6e0VhMysov3WY4nYBYNSiGOyX4F1YVJxPoKDudYDc4ji9fevm2hoSY50lsnnQVxHg=="],
+    "@dcc-bs/logger.bs.js": ["@dcc-bs/logger.bs.js@1.2.0", "https://npm.pkg.github.com/download/@dcc-bs/logger.bs.js/1.2.0/417e583796e51d920a1234d86009732a328c3ee9", { "dependencies": { "@nuxt/kit": "^3.15.4", "winston": "^3.17.0" } }, "sha512-pFa5KL6kUqiL2eRDwtSbT6SCWKYOqj+GCTIrAnRjiUHfmZNNhX0BcZiaIo9rXi8bIlb+jV3E8BE/LH+BGemiRA=="],
 
     "@emnapi/core": ["@emnapi/core@1.3.1", "", { "dependencies": { "@emnapi/wasi-threads": "1.0.1", "tslib": "^2.4.0" } }, "sha512-pVGjBIt1Y6gg3EJN8jTcfpP/+uuRksIo055oE/OBkDNcjZqVbfkWCksG1Jp4yZnj3iKWyWX8fdG/j6UDYPbFog=="],
 

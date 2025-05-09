@@ -104,6 +104,7 @@ export default defineI18nConfig(() => ({
             "quick-actions": {
                 "de-CH": "Translate to German",
                 "en-US": "Translate to English (US)",
+                "en-GB": "Translate to English (UK)",
                 fr: "Translate to French",
                 it: "Translate to Italian",
             },
@@ -213,6 +214,7 @@ export default defineI18nConfig(() => ({
             "quick-actions": {
                 "de-CH": "Auf Deutsch übersetzen",
                 "en-US": "Auf Englisch (US) übersetzen",
+                "en-GB": "Auf Englisch (GB) übersetzen",
                 fr: "Auf Französisch übersetzen",
                 it: "Auf Italienisch übersetzen",
             },

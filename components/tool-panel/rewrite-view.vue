@@ -33,7 +33,7 @@ async function rewriteText() {
     const { text: textToRewrite, start, end } = props.selectedText;
 
     const from = Math.max(0, start - 1);
-    const to = Math.min(props.text.length, end);
+    const to = Math.min(props.text.length, end) + 1;
 
     const context = `${props.text.slice(0, from)}<rewrite>${textToRewrite}</rewrite>${props.text.slice(to)}`;
 
@@ -57,8 +57,6 @@ async function rewriteText() {
             method: "POST",
         });
 
-        console.log("rewritten text", response);
-
         await executeCommand(
             new ApplyTextCommand(response.rewritten_text, {
                 from,
@@ -66,14 +64,14 @@ async function rewriteText() {
             }),
         );
 
-        // await executeCommand(
-        //     new RequestChangesCommand(
-        //         textToRewrite,
-        //         response.rewritten_text,
-        //         from,
-        //         from + response.rewritten_text.length + 1,
-        //     ),
-        // );
+        await executeCommand(
+            new RequestChangesCommand(
+                textToRewrite,
+                response.rewritten_text,
+                from,
+                from + response.rewritten_text.length + 1,
+            ),
+        );
     } catch (e: unknown) {
         if (e instanceof Error) {
             sendError(e.message);

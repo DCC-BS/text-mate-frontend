@@ -161,5 +161,9 @@ export default defineNuxtConfig({
         "logger.bs.js": {
             loglevel: "debug",
         },
+        sourcemap: {
+            server: true,
+            client: true,
+        },
     },
 });

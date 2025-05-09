@@ -16,6 +16,7 @@ type Actions =
     | "social_mediafy"
     | "translate_de-CH"
     | "translate_en-US"
+    | "translate_en-GB"
     | "translate_fr"
     | "translate_it";
 
@@ -43,6 +44,13 @@ const items = ref<DropdownMenuItem[]>([
         icon: "i-flag-us-4x3",
         onSelect: () => {
             applyAction("translate_en-US");
+        },
+    },
+    {
+        label: t("quick-actions.en-GB"),
+        icon: "i-flag-gb-4x3",
+        onSelect: () => {
+            applyAction("translate_en-GB");
         },
     },
     {

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch, onMounted, ref, defineAsyncComponent } from "vue";
+import { defineAsyncComponent, onMounted, ref, watch } from "vue";
 // Import will be handled client-side only
 const PdfEmbed = defineAsyncComponent(() =>
     import("vue-pdf-embed").then((module) => module.default),
@@ -198,7 +198,12 @@ watch(
             </div>
         </div>
         <div v-else class="flex items-center justify-center h-full w-full">
-          <div class="p-4 bg-black/5 rounded-md">Loading PDF...</div>
+          <div class="p-6 bg-black/5 rounded-md flex flex-col items-center">
+            <!-- Loading spinner animation with pulsing effect -->
+            <div class="spinner-container mb-3">
+              <div class="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin"></div>
+            </div>
+          </div>
         </div>
         
         <!-- Footer with page navigation and zoom controls -->
@@ -266,3 +271,27 @@ watch(
     </template>
   </UModal>
 </template>
+
+<style scoped>
+/* Loading spinner animation styles */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* PDF container styles */
+.pdf-container {
+  transition: transform 0.2s ease-in-out;
+  display: inline-block;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+</style>

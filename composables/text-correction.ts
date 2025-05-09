@@ -165,11 +165,19 @@ export function useTextCorrectionMarks(
         hoverBlock.value = undefined;
         hoverRect.value = undefined;
 
-        editor.value.view.dispatch(
-            editor.value.state.tr
-                .setMeta("addToHistory", false)
-                .removeMark(sentence.from - 2, sentence.to + 2, markType.value),
-        );
+        try {
+            editor.value.view.dispatch(
+                editor.value.state.tr
+                    .setMeta("addToHistory", false)
+                    .removeMark(
+                        sentence.from - 2,
+                        sentence.to + 2,
+                        markType.value,
+                    ),
+            );
+        } catch (e) {
+            // ignore
+        }
     }
 
     function addMarksToSentence(sentence: CorrectedSentence) {
@@ -182,13 +190,17 @@ export function useTextCorrectionMarks(
             return;
         }
 
-        addMarks(
-            editor.value,
-            sentence.blocks,
-            sentence.from,
-            markType.value,
-            logger,
-        );
+        try {
+            addMarks(
+                editor.value,
+                sentence.blocks,
+                sentence.from,
+                markType.value,
+                logger,
+            );
+        } catch (e) {
+            logger.error("Error adding marks to sentence", e);
+        }
     }
 
     onCorrectedSenteceAdded((sentence) => {

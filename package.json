@@ -5,6 +5,7 @@
     "scripts": {
         "build": "nuxt build",
         "dev": "nuxt dev",
+        "debug": "nuxt dev --inspect",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
@@ -16,9 +17,9 @@
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^0.1.6",
-        "@dcc-bs/event-system.bs.js": "^1.1.1",
+        "@dcc-bs/event-system.bs.js": "^1.1.2",
         "@dcc-bs/feedback-control.bs.js": "^0.0.5",
-        "@dcc-bs/logger.bs.js": "^1.1.2",
+        "@dcc-bs/logger.bs.js": "^1.2.0",
         "@iconify-json/heroicons": "^1.2.2",
         "@nuxt/ui": "^3.0.1",
         "@nuxtjs/i18n": "^9.4.0",

@@ -3,6 +3,7 @@ import type { Node } from "@tiptap/pm/model";
 import { Extension } from "@tiptap/vue-3";
 import {
     Cmds,
+    InvalidateCorrectionCommand,
     type CompleteRequestChangeCommand,
     type RequestChangesCommand,
 } from "~/assets/models/commands";
@@ -16,7 +17,8 @@ import { TextApplyNode } from "~/utils/text-apply-changes-node";
  * @returns {Object} TrackChangesExtension - Extension to be added to the editor
  */
 export const useTrackChanges = () => {
-    const { registerHandler, unregisterHandler } = useCommandBus();
+    const { registerHandler, unregisterHandler, executeCommand } =
+        useCommandBus();
 
     const logger = useLogger();
     const isActive = ref(false);
@@ -76,8 +78,6 @@ export const useTrackChanges = () => {
             return;
         }
 
-        console.log(command);
-
         let nodeFrom = 0;
         let nodeTo = 0;
         editor.value.state.doc.descendants((node, pos) => {
@@ -105,6 +105,7 @@ export const useTrackChanges = () => {
                 .run();
         }
 
+        await executeCommand(new InvalidateCorrectionCommand());
         editor.value.setEditable(true, true);
     }
 

@@ -9,8 +9,7 @@ import { useCorrection } from "~/composables/correction";
 
 // composables
 const { t } = useI18n();
-const { executeCommand } = useCommandBus();
-const { onCommand } = useCommandEvent();
+const { executeCommand, onCommand } = useCommandBus();
 
 // refs
 const selectedBlock = ref<TextCorrectionBlock | null>(null);

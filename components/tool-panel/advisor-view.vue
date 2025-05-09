@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type {
     AdvidorDocumentDescription,
-    ValidationResult,
     AdvisorRuleViolation,
+    ValidationResult,
 } from "~/assets/models/advisor";
 import {
     type AdivsorService,
