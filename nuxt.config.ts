@@ -1,3 +1,5 @@
+import { visualizer } from "rollup-plugin-visualizer";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
@@ -52,10 +54,36 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
+        plugins: [
+            visualizer({
+                filename: "stats.html",
+                gzipSize: true,
+                brotliSize: true,
+                open: true,
+                template: "treemap",
+            }),
+        ],
         build: {
             // Disable sourcemaps in production to avoid warnings
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
+            // Fix the chunk size warning by setting a higher limit
+            chunkSizeWarningLimit: 800,
+            rollupOptions: {
+                output: {
+                    // Use manual chunks to improve chunking
+                    manualChunks: {
+                        "vue-vendor": ["vue", "vue-router"],
+                        "tiptap-vendor": [
+                            "@tiptap/vue-3",
+                            "@tiptap/starter-kit",
+                            "@tiptap/extension-bubble-menu",
+                            "@tiptap/extension-character-count",
+                        ],
+                        "pdf-vendor": ["vue-pdf-embed"],
+                    },
+                },
+            },
         },
         // Add optimizations for vue-pdf-embed
         optimizeDeps: {
@@ -148,16 +176,18 @@ export default defineNuxtConfig({
             mobile: "xs",
             tablet: "md",
         },
-
         fallbackBreakpoint: "lg",
     },
     $development: {
+        debug: true,
         pwa: {
             devOptions: {
                 enabled: false,
             },
         },
-        devtools: { enabled: true },
+        devtools: {
+            enabled: true,
+        },
         "logger.bs.js": {
             loglevel: "debug",
         },

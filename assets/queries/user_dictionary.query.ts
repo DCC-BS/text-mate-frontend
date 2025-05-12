@@ -25,13 +25,6 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
             typeof window !== "undefined" &&
             window.indexedDB !== undefined &&
             window.indexedDB !== null;
-
-        // Initialize in-memory dictionary if IndexedDB is not available
-        if (!this.isIndexedDBAvailable) {
-            console.warn(
-                "IndexedDB is not available. Using in-memory dictionary instead.",
-            );
-        }
     }
 
     /**

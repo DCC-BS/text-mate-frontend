@@ -4,6 +4,7 @@ export default defineI18nConfig(() => ({
     locale: "de",
     messages: {
         en: {
+            loading: "Loading...",
             language: {
                 auto: "Detect Language",
                 "de-CH": "German",
@@ -28,6 +29,7 @@ export default defineI18nConfig(() => ({
                 advice: "giving advice...",
                 ready: "Ready",
                 quickAction: "Quick action in progress...",
+                loading: "Loading...",
             },
             problems: {
                 title: "Problems",
@@ -87,7 +89,7 @@ export default defineI18nConfig(() => ({
                 noResultsYet: "Run a check to see results",
                 checking: "Checking your text...",
                 error: "Error",
-                ruel: {
+                rule: {
                     title: "Rule Violation",
                     source: "Source",
                     example: "Example",
@@ -111,6 +113,7 @@ export default defineI18nConfig(() => ({
         },
 
         de: {
+            loading: "Wird geladen...",
             language: {
                 auto: "Sprache erkennen",
                 "de-CH": "Deutsch",
@@ -135,6 +138,7 @@ export default defineI18nConfig(() => ({
                 advice: "Ratschlag geben...",
                 ready: "Bereit",
                 quickAction: "Schnellaktion wird ausgeführt...",
+                loading: "Wird geladen...",
             },
             problems: {
                 title: "Probleme",
@@ -197,7 +201,7 @@ export default defineI18nConfig(() => ({
                     "Führen Sie eine Überprüfung durch, um Ergebnisse zu sehen",
                 checking: "Überprüfe deinen Text...",
                 error: "Fehler",
-                ruel: {
+                rule: {
                     title: "Regelverletzung",
                     source: "Quelle",
                     example: "Beispiel",

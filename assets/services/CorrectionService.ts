@@ -12,6 +12,7 @@ import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
     private oldSentences: CorrectedSentence[] = [];
+    private correction_lock = false;
 
     constructor(
         private readonly logger: ILogger,
@@ -46,6 +47,8 @@ export class CorrectionService {
      * corrected blocks.
      */
     async correctText(text: string, signal: AbortSignal): Promise<void> {
+        await this.lock();
+
         try {
             const diff = this.getDiff(text);
 
@@ -64,10 +67,11 @@ export class CorrectionService {
                         this.logger.error(
                             "Unknown error during text correction",
                         );
+                    } else {
+                        this.logger.error(
+                            `Error during text correction: ${e.message}`,
+                        );
                     }
-                    this.logger.error(
-                        `Error during text correction: ${e.message}`,
-                    );
                 }
             }
         } catch (e: unknown) {
@@ -83,6 +87,8 @@ export class CorrectionService {
 
             this.logger.error(`Error during text correction: ${e.message}`);
             this.onError(e.message);
+        } finally {
+            this.unlock();
         }
     }
 
@@ -245,6 +251,18 @@ export class CorrectionService {
             this.logger.error(`Error during text correction: ${e.message}`);
             this.onError(e.message);
         }
+    }
+
+    private async lock() {
+        while (this.correction_lock) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
+        this.correction_lock = true;
+    }
+
+    private unlock() {
+        this.correction_lock = false;
     }
 
     private async fetchBlocks(

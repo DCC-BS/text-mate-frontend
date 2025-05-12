@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import App from "~/app.vue";
 import {
     ApplyTextCommand,
     RequestChangesCommand,
+    ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 import type { TextRewriteResponse } from "~/assets/models/text-rewrite";
 
@@ -38,6 +38,8 @@ async function rewriteText() {
     const context = `${props.text.slice(0, from)}<rewrite>${textToRewrite}</rewrite>${props.text.slice(to)}`;
 
     isRewriting.value = true;
+
+    await executeCommand(new ToggleLockEditorCommand(true));
     addProgress("rewriting", {
         icon: "i-heroicons-pencil",
         title: t("status.rewritingText"),

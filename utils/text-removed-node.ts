@@ -1,4 +1,4 @@
-import { Node } from "@tiptap/core";
+import { Node, type NodeConfig, type NodeViewRenderer } from "@tiptap/core";
 import { VueNodeViewRenderer } from "@tiptap/vue-3";
 import TextRemovedComponent from "~/components/text-editor/text-removed.vue";
 
@@ -7,7 +7,7 @@ import TextRemovedComponent from "~/components/text-editor/text-removed.vue";
  * It renders removed text as non-selectable, making it easy to see what was deleted
  * without interfering with normal text editing.
  */
-export const TextRemovedNode = Node.create({
+export const TextRemovedNode: NodeConfig = Node.create({
     name: "textRemoved",
 
     /**
@@ -66,7 +66,7 @@ export const TextRemovedNode = Node.create({
      * Adds a custom Vue component as the node view.
      * @returns {Function} The node view renderer.
      */
-    addNodeView() {
+    addNodeView(): NodeViewRenderer {
         return VueNodeViewRenderer(TextRemovedComponent);
     },
 });

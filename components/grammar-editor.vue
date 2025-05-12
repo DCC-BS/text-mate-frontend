@@ -2,6 +2,7 @@
 import {
     Cmds,
     InvalidateCorrectionCommand,
+    ToggleLockEditorCommand,
     type SwitchCorrectionLanguageCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
@@ -12,6 +13,7 @@ import ToolPanel from "./tool-panel.vue";
 const userText = ref("");
 const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
+const isEditorLocked = ref(false);
 
 // composables
 const router = useRouter();
@@ -70,6 +72,19 @@ onCommand(
 );
 
 onCommand(Cmds.InvalidateCorrectionCommand, handleInvalidate);
+
+onCommand(
+    Cmds.ToggleLockEditorCommand,
+    async (command: ToggleLockEditorCommand) => {
+        isEditorLocked.value = command.locked;
+
+        if (!command.locked) {
+            taskScheduler.schedule((signal: AbortSignal) =>
+                correctText(userText.value, signal),
+            );
+        }
+    },
+);
 
 async function handleInvalidate(_: InvalidateCorrectionCommand) {
     await correctionService.invalidateAll();

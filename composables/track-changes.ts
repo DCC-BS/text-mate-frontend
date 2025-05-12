@@ -3,9 +3,10 @@ import type { Node } from "@tiptap/pm/model";
 import { Extension } from "@tiptap/vue-3";
 import {
     Cmds,
-    InvalidateCorrectionCommand,
     type CompleteRequestChangeCommand,
+    InvalidateCorrectionCommand,
     type RequestChangesCommand,
+    ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 import { TextAddedMark } from "~/utils/text-added-mark";
 import { TextApplyNode } from "~/utils/text-apply-changes-node";
@@ -66,13 +67,13 @@ export const useTrackChanges = () => {
             )
             .setTextSelection({ from: command.from, to: command.to })
             .run();
-
-        editor.value.setEditable(false, false);
     }
 
     async function handleCompleteRequestChangeCommand(
         command: CompleteRequestChangeCommand,
     ) {
+        await executeCommand(new ToggleLockEditorCommand(false));
+
         if (!editor.value) {
             logger.error("Editor is not initialized");
             return;
@@ -104,9 +105,6 @@ export const useTrackChanges = () => {
                 .insertContent(command.requestCommand.oldText)
                 .run();
         }
-
-        await executeCommand(new InvalidateCorrectionCommand());
-        editor.value.setEditable(true, true);
     }
 
     /**

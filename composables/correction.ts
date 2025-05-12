@@ -1,4 +1,3 @@
-import { LazyUForm } from "#components";
 import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { match } from "ts-pattern";
 import {
@@ -10,6 +9,7 @@ import type {
     TextCorrectionBlock,
 } from "~/assets/models/text-correction";
 import { CorrectionService } from "~/assets/services/CorrectionService";
+import { LazyUForm } from "#components";
 
 export type CorrectionHandler = (correctedSentence: CorrectedSentence) => void;
 

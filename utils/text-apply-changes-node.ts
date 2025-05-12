@@ -1,13 +1,18 @@
-import { Node, mergeAttributes } from "@tiptap/core";
+import {
+    Node,
+    type NodeConfig,
+    type NodeViewRenderer,
+    mergeAttributes,
+} from "@tiptap/core";
 import { NodeViewContent, VueNodeViewRenderer } from "@tiptap/vue-3";
 import TextApplyChanges from "~/components/text-editor/text-apply-changes.vue";
 
 /**
- * TextRemovedNode is a custom node for the Tiptap editor that displays removed text.
- * It renders removed text as non-selectable, making it easy to see what was deleted
+ * TextApplyNode is a custom node for the Tiptap editor that displays applied text changes.
+ * It renders applied text changes, making it easy to see what was changed
  * without interfering with normal text editing.
  */
-export const TextApplyNode = Node.create({
+export const TextApplyNode: NodeConfig = Node.create({
     name: "textApply",
 
     /**
@@ -68,7 +73,7 @@ export const TextApplyNode = Node.create({
      * Adds a custom Vue component as the node view.
      * @returns {Function} The node view renderer.
      */
-    addNodeView() {
+    addNodeView(): NodeViewRenderer {
         return VueNodeViewRenderer(TextApplyChanges);
     },
 });

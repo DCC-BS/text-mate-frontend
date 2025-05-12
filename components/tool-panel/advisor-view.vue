@@ -144,8 +144,8 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
       <!-- Issues list with scroll area now taking full height -->
       <div v-else class="space-y-2 overflow-y-auto pr-1 custom-scrollbar flex-grow">
         <div v-for="ruel in validationResult.rules" :key="ruel.name">
-          <ToolPanelAdvisorRuelView 
-            :ruel="ruel" 
+          <ToolPanelAdvisorRuleView 
+            :rule="ruel" 
             @open-pdf="openPdfView"
             class="w-full"
           />

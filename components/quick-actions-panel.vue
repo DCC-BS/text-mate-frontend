@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Editor } from "@tiptap/vue-3";
-import { RequestChangesCommand } from "~/assets/models/commands";
+import {
+    RequestChangesCommand,
+    ToggleLockEditorCommand,
+} from "~/assets/models/commands";
 
 interface QuickActionsPanelProps {
     editor: Editor;
@@ -107,6 +110,8 @@ async function applyAction(action: Actions) {
     }
 
     try {
+        await executeCommand(new ToggleLockEditorCommand(true));
+
         addProgress("quick-action", {
             icon: "i-lucide-text-search",
             title: t("status.quickAction"),
@@ -123,7 +128,7 @@ async function applyAction(action: Actions) {
                 action,
                 text,
             },
-        })) as ReadableStream;
+        })) as ReadableStream<Uint8Array>;
 
         if (!response) {
             toast.add({

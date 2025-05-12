@@ -17,6 +17,7 @@ import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
     Cmds,
+    ToggleLockEditorCommand,
     type ToolSwitchCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
@@ -50,7 +51,8 @@ const characterCountPercentage = computed(() =>
 
 // composables
 const toast = useToast();
-const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
+const { registerHandler, unregisterHandler, onCommand, executeCommand } =
+    useCommandBus();
 const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
     useTextFocus(isInteractiableFocusActive);
 const { CorrectionExtension, hoverBlock, relativeHoverRect } =
@@ -128,6 +130,15 @@ onMounted(() => {
     registerHandler(Cmds.RedoCommand, applyRedo);
     registerHandler(Cmds.ToolSwitchCommand, handleToolSwitch);
 });
+
+onCommand<ToggleLockEditorCommand>(
+    Cmds.ToggleLockEditorCommand,
+    async (command) => {
+        if (!editor.value) return;
+
+        editor.value.setEditable(!command.locked, !command.locked);
+    },
+);
 
 watch(focusedSelection, (value) => {
     selectedText.value = value;

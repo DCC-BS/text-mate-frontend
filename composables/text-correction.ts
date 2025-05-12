@@ -162,6 +162,13 @@ export function useTextCorrectionMarks(
             return;
         }
 
+        if (sentence.to > editor.value.state.doc.content.size) {
+            sentence.to = editor.value.state.doc.content.size;
+            logger.warn(
+                `Corrected sentence to is greater than document size. Adjusting to: ${editor.value.state.doc.content.size}`,
+            );
+        }
+
         hoverBlock.value = undefined;
         hoverRect.value = undefined;
 
@@ -209,7 +216,7 @@ export function useTextCorrectionMarks(
     });
 
     onCorrectedSentenceRemoved((sentence) => {
-        removeAllMarksFormSentence(sentence);
+        // removeAllMarksFormSentence(sentence);
     });
 
     onCorrectedSentenceUpdated((sentence) => {

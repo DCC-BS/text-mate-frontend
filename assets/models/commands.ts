@@ -16,6 +16,7 @@ export const Cmds = {
     InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
     RequestChangesCommand: "RequestChangesCommand",
     CompleteRequestChangeCommand: "CompleteRequestChangeCommand",
+    ToggleLockEditorCommand: "ToggleLockEditorCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -110,4 +111,10 @@ export class CompleteRequestChangeCommand implements ICommand {
         public requestCommand: RequestChangesCommand,
         public mode: "accept" | "reject",
     ) {}
+}
+
+export class ToggleLockEditorCommand implements ICommand {
+    readonly $type = "ToggleLockEditorCommand";
+
+    constructor(public locked: boolean) {}
 }
