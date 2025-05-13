@@ -2,7 +2,7 @@
 import {
     Cmds,
     InvalidateCorrectionCommand,
-    ToggleLockEditorCommand,
+    type ToggleLockEditorCommand,
     type SwitchCorrectionLanguageCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
@@ -39,7 +39,11 @@ onMounted(async () => {
 });
 
 // listeners
-watch(userText, (newText) => {
+watch(userText, (newText, oldText) => {
+    if (newText === oldText) {
+        return;
+    }
+
     taskScheduler.schedule((signal: AbortSignal) =>
         correctText(newText, signal),
     );
