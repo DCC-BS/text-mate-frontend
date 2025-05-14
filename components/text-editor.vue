@@ -17,7 +17,7 @@ import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
     Cmds,
-    ToggleLockEditorCommand,
+    type ToggleLockEditorCommand,
     type ToolSwitchCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";

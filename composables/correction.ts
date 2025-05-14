@@ -2,15 +2,18 @@ import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { match } from "ts-pattern";
 import {
     Cmds,
-    type CorrectedSentenceChangedCommand,
+    type CorrectionBlockChangedCommand,
 } from "~/assets/models/commands";
 import type {
-    CorrectedSentence,
+    CorrectedSegments,
     TextCorrectionBlock,
 } from "~/assets/models/text-correction";
+import { createCorrectionFetcher } from "~/assets/services/CorrectionFetcher";
 import { CorrectionService } from "~/assets/services/CorrectionService";
 
-export type CorrectionHandler = (correctedSentence: CorrectedSentence) => void;
+export type CorrectionHandler = (
+    correctedSentence: TextCorrectionBlock,
+) => void;
 
 let correctionService: CorrectionService | undefined = undefined;
 
@@ -18,13 +21,11 @@ const onAddHandlers = new Set<CorrectionHandler>();
 const onRemoveHandlers = new Set<CorrectionHandler>();
 const onUpdateHandlers = new Set<CorrectionHandler>();
 
-const correctedSentence = ref<Record<string, CorrectedSentence>>({});
+const correctedBlocks = ref<Record<string, TextCorrectionBlock>>({});
 const blocks = computed(() => {
-    return Object.values(correctedSentence.value)
-        .flatMap((sentence) => makeCorrectedSentenceAbsolute(sentence).blocks)
-        .sort((a, b) => {
-            return a.offset - b.offset;
-        });
+    return Object.values(correctedBlocks.value).sort((a, b) => {
+        return a.offset - b.offset;
+    });
 });
 
 export function useCorrectionService() {
@@ -33,49 +34,48 @@ export function useCorrectionService() {
         useCommandBus();
 
     const userDictStore = useUserDictionaryStore();
+    const fetcher = createCorrectionFetcher(
+        "auto",
+        logger,
+        userDictStore.exists.bind(userDictStore),
+    );
     const { sendError } = useUseErrorDialog();
 
     correctionService = new CorrectionService(
         logger,
         executeCommand,
-        userDictStore.exists.bind(userDictStore),
+        fetcher,
         sendError,
     );
 
-    const handleChanged = async (command: CorrectedSentenceChangedCommand) =>
+    const handleChanged = async (command: CorrectionBlockChangedCommand) =>
         handleCorrectedSentenceChangedCommand(command, logger);
 
     onMounted(() => {
-        registerHandler(Cmds.CorrectedSentenceChangedCommand, handleChanged);
+        registerHandler(Cmds.CorrectionBlockChangedCommand, handleChanged);
     });
 
     onUnmounted(() => {
-        unregisterHandler(Cmds.CorrectedSentenceChangedCommand, handleChanged);
+        unregisterHandler(Cmds.CorrectionBlockChangedCommand, handleChanged);
     });
 
     return correctionService;
 }
 
 async function handleCorrectedSentenceChangedCommand(
-    command: CorrectedSentenceChangedCommand,
+    command: CorrectionBlockChangedCommand,
     logger: ILogger,
 ) {
     try {
         match(command.change)
             .with("add", () => {
-                handleAddCorrectedSentence(command.correctedSentence, logger);
+                handleAddCorrectedSentence(command.block, logger);
             })
             .with("remove", () => {
-                handleRemoveCorrectedSentence(
-                    command.correctedSentence,
-                    logger,
-                );
+                handleRemoveCorrectedSentence(command.block, logger);
             })
             .with("update", () => {
-                handleUpdateCorrectedSentence(
-                    command.correctedSentence,
-                    logger,
-                );
+                handleUpdateCorrectedSentence(command.block, logger);
             })
             .exhaustive();
     } catch (e) {
@@ -92,100 +92,96 @@ async function handleCorrectedSentenceChangedCommand(
 
 /**
  * Handles adding a new corrected sentence
- * @param sentence - The sentence to be added
+ * @param block - The sentence to be added
  * @param logger - Logger instance to report warnings
  */
 function handleAddCorrectedSentence(
-    sentence: CorrectedSentence,
+    block: TextCorrectionBlock,
     logger: ILogger,
 ): void {
     // Check if sentence already exists
-    if (sentence.id in correctedSentence.value) {
-        logSentenceWarning(
-            `Corrected sentence with id ${sentence.id} already exists`,
+    if (block.id in correctedBlocks.value) {
+        logBlockWarning(
+            `Corrected sentence with id ${block.id} already exists`,
             logger,
         );
     }
 
     // Add to state and notify handlers
-    correctedSentence.value[sentence.id] = sentence;
-    notifyHandlers(onAddHandlers, sentence, logger);
+    correctedBlocks.value[block.id] = block;
+    notifyHandlers(onAddHandlers, block, logger);
 }
 
 /**
  * Handles removing a corrected sentence
- * @param sentence - The sentence to be removed
+ * @param block - The block to be removed
  * @param logger - Logger instance to report warnings
  */
 function handleRemoveCorrectedSentence(
-    sentence: CorrectedSentence,
+    block: TextCorrectionBlock,
     logger: ILogger,
 ): void {
-    // Check if sentence exists before removing
-    if (!(sentence.id in correctedSentence.value)) {
-        logSentenceWarning(
-            `On Remove: Corrected sentence with id ${sentence.id} does not exist`,
+    // Check if block exists before removing
+    if (!(block.id in correctedBlocks.value)) {
+        logBlockWarning(
+            `On Remove: Corrected block with id ${block.id} does not exist`,
             logger,
         );
         return;
     }
 
     // Remove from state and notify handlers
-    delete correctedSentence.value[sentence.id];
-    notifyHandlers(onRemoveHandlers, sentence, logger);
+    delete correctedBlocks.value[block.id];
+    notifyHandlers(onRemoveHandlers, block, logger);
 }
 
 /**
  * Handles updating an existing corrected sentence
- * @param sentence - The sentence with updated content
+ * @param block - The block with updated content
  * @param logger - Logger instance to report warnings
  */
 function handleUpdateCorrectedSentence(
-    sentence: CorrectedSentence,
+    block: TextCorrectionBlock,
     logger: ILogger,
 ): void {
-    // Check if sentence exists before updating
-    if (!(sentence.id in correctedSentence.value)) {
-        logSentenceWarning(
-            `On Update: Corrected sentence with id ${sentence.id} does not exist`,
+    // Check if block exists before updating
+    if (!(block.id in correctedBlocks.value)) {
+        logBlockWarning(
+            `On Update: Corrected block with id ${block.id} does not exist`,
             logger,
         );
     }
 
     // Update state and notify handlers
-    correctedSentence.value[sentence.id] = sentence;
-    notifyHandlers(onUpdateHandlers, sentence, logger);
+    correctedBlocks.value[block.id] = block;
+    notifyHandlers(onUpdateHandlers, block, logger);
 }
 
 /**
- * Logs warning and debug info for sentence operations
+ * Logs warning and debug info for block operations
  * @param message - Warning message to log
  * @param logger - Logger instance
  */
-function logSentenceWarning(message: string, logger: ILogger): void {
+function logBlockWarning(message: string, logger: ILogger): void {
     logger.warn(message);
     logger.debug(
-        `Corrected sentences: ${JSON.stringify(
-            correctedSentence.value,
-            null,
-            2,
-        )}`,
+        `Corrected blocks: ${JSON.stringify(correctedBlocks.value, null, 2)}`,
     );
 }
 
 /**
- * Notifies all registered handlers for a sentence event
+ * Notifies all registered handlers for a block event
  * @param handlers - Set of handlers to notify
- * @param sentence - The sentence that triggered the event
+ * @param block - The blockß that triggered the event
  */
 function notifyHandlers(
     handlers: Set<CorrectionHandler>,
-    sentence: CorrectedSentence,
+    block: TextCorrectionBlock,
     logger: ILogger,
 ): void {
     for (const handler of handlers) {
         try {
-            handler(sentence);
+            handler(block);
         } catch (e) {
             logger.error(`Error in handler ${e}`);
         }
@@ -197,7 +193,7 @@ export function useCorrection() {
     const _onRemoveHandlers = [] as CorrectionHandler[];
     const _onUpdateHandlers = [] as CorrectionHandler[];
 
-    function onCorrectedSenteceAdded(handler: CorrectionHandler) {
+    function onCorrectedBlockAdded(handler: CorrectionHandler) {
         if (onAddHandlers.has(handler)) {
             throw new Error("Handler already registered");
         }
@@ -206,7 +202,7 @@ export function useCorrection() {
         _onAddHandlers.push(handler);
     }
 
-    function onCorrectedSentenceRemoved(handler: CorrectionHandler) {
+    function onCorrectedBlockRemoved(handler: CorrectionHandler) {
         if (onRemoveHandlers.has(handler)) {
             throw new Error("Handler already registered");
         }
@@ -214,7 +210,7 @@ export function useCorrection() {
         _onRemoveHandlers.push(handler);
     }
 
-    function onCorrectedSentenceUpdated(handler: CorrectionHandler) {
+    function onCorrectedBlockUpdated(handler: CorrectionHandler) {
         if (onUpdateHandlers.has(handler)) {
             throw new Error("Handler already registered");
         }
@@ -237,10 +233,10 @@ export function useCorrection() {
     });
 
     return {
-        onCorrectedSenteceAdded,
-        onCorrectedSentenceRemoved,
-        onCorrectedSentenceUpdated,
-        correctedSentence,
+        onCorrectedBlockAdded,
+        onCorrectedBlockRemoved,
+        onCorrectedBlockUpdated,
+        correctedSentence: correctedBlocks,
         blocks,
     };
 }
@@ -252,7 +248,7 @@ function moveBlocks(offset: number, blocks: TextCorrectionBlock[]) {
     }));
 }
 
-export function makeCorrectedSentenceAbsolute(sentence: CorrectedSentence) {
+export function makeCorrectedSentenceAbsolute(sentence: CorrectedSegments) {
     return {
         ...sentence,
         blocks: moveBlocks(sentence.from, sentence.blocks),

@@ -17,8 +17,22 @@ export class Queue<T> {
         return this.items.shift();
     }
 
+    safeDequeue(): T {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+        return this.dequeue() as T;
+    }
+
     peek(): T | undefined {
         return this.items[0];
+    }
+
+    safePeek(): T {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+        return this.peek() as T;
     }
 
     isEmpty(): boolean {

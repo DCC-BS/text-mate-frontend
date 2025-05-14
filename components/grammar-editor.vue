@@ -2,8 +2,8 @@
 import {
     Cmds,
     InvalidateCorrectionCommand,
-    type ToggleLockEditorCommand,
     type SwitchCorrectionLanguageCommand,
+    type ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";

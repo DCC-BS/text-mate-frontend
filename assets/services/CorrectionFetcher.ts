@@ -1,0 +1,77 @@
+import type { ILogger } from "@dcc-bs/logger.bs.js";
+import type {
+    TextCorrectionBlock,
+    TextCorrectionResponse,
+} from "../models/text-correction";
+
+export interface ICorrectionFetcher {
+    language: string;
+
+    fetchBlocks(
+        text: string,
+        signal: AbortSignal,
+    ): Promise<TextCorrectionBlock[]>;
+}
+
+export function createCorrectionFetcher(
+    language: string,
+    logger: ILogger,
+    wordInUserDictionary: (word: string) => Promise<boolean>,
+): ICorrectionFetcher {
+    return new CorrectionFetcher(language, logger, wordInUserDictionary);
+}
+
+class CorrectionFetcher implements ICorrectionFetcher {
+    constructor(
+        public language: string,
+        private readonly logger: ILogger,
+        private readonly wordInUserDictionary: (
+            word: string,
+        ) => Promise<boolean>,
+    ) {}
+
+    public async fetchBlocks(
+        text: string,
+        signal: AbortSignal,
+    ): Promise<TextCorrectionBlock[]> {
+        try {
+            const response = await $fetch<TextCorrectionResponse>(
+                "/api/correct",
+                {
+                    body: { text: text, language: this.language },
+                    method: "POST",
+                    signal: signal,
+                },
+            );
+
+            const blocks: TextCorrectionBlock[] = [];
+
+            for (const block of response.blocks) {
+                console.log(block.original);
+
+                const inDict = await this.wordInUserDictionary(
+                    block.original.trim(),
+                );
+                if (!inDict) {
+                    blocks.push({ ...block, id: crypto.randomUUID() });
+                }
+            }
+
+            return blocks;
+        } catch (e: unknown) {
+            if (!(e instanceof Error)) {
+                this.logger.error("Unknown error in fetchBlocks");
+                throw new Error("Unknown error");
+            }
+
+            if ("cause" in e && e.cause === "aborted") {
+                throw new Error("Request aborted", { cause: "aborted" });
+            }
+
+            this.logger.error(
+                `Error fetching blocks: ${e instanceof Error ? e.message : "Unknown error"}`,
+            );
+            throw e;
+        }
+    }
+}

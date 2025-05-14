@@ -12,7 +12,7 @@ export type TextCorrectionResponse = {
     blocks: Omit<TextCorrectionBlock, "id">[];
 };
 
-export type CorrectedSentence = {
+export type CorrectedSegments = {
     id: string;
     text: string;
     from: number;
