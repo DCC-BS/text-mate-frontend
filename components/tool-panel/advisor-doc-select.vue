@@ -9,12 +9,14 @@ interface AdvisorDocSelectProps {
 const props = defineProps<AdvisorDocSelectProps>();
 
 const docs = props.advisorService.getDocs();
-const selectedDocs = defineModel<AdvidorDocumentDescription[]>({ default: [] });
+const selectedDocs = defineModel<AdvidorDocumentDescription[]>({
+    default: [],
+});
 </script>
 
 <template>
   <div class="w-full">
-    <USelectMenu :items="docs" v-model="selectedDocs" :filter-fields="['title', 'description', 'author', 'edition']" multiple class="w-full">
+    <USelectMenu :items="docs" v-model="selectedDocs[0]" :filter-fields="['title', 'description', 'author', 'edition']" class="w-full">
       <template #default>
         <div v-if="selectedDocs.length > 0">
           {{ selectedDocs.map((doc) => doc.title).join(", ") }}

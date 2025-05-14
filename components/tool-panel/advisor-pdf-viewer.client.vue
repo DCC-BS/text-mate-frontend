@@ -189,8 +189,8 @@ watch(
         >
             <div class="pdf-container" :style="{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }">
                 <PdfEmbed
-                  annotation-layer
                   :source="pdfSource" 
+                  :width="containerRef ? containerRef.clientWidth : 0"
                   :page="currentPage"
                   @loaded="handleDocumentLoaded"
                   @update:instance="pdfInstance = $event"

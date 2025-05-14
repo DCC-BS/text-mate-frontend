@@ -34,6 +34,15 @@ export class ApplyCorrectionCommand implements ICommand {
     ) {}
 }
 
+export class CorrectionBlockChangedCommand implements ICommand {
+    readonly $type = "CorrectionBlockChangedCommand";
+
+    constructor(
+        public block: TextCorrectionBlock,
+        public change: "add" | "remove" | "update",
+    ) {}
+}
+
 export class CorrectedSentenceChangedCommand implements ICommand {
     readonly $type = "CorrectedSentenceChangedCommand";
     constructor(

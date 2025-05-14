@@ -255,8 +255,9 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
 
 .correction {
     text-decoration-line: underline;
-    text-decoration-style: wavy;
-    text-decoration-color: var(--color-red-500);
+    text-decoration-style: solid;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--color-red-300);
     cursor: pointer;
 }
 

@@ -282,7 +282,11 @@ export class CorrectionService {
             const blocks: TextCorrectionBlock[] = [];
 
             for (const block of response.blocks) {
-                const inDict = await this.wordInUserDictionary(block.original);
+                console.log(block.original);
+
+                const inDict = await this.wordInUserDictionary(
+                    block.original.trim(),
+                );
                 if (!inDict) {
                     blocks.push({ ...block, id: crypto.randomUUID() });
                 }

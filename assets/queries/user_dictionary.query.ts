@@ -69,7 +69,7 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
      * @param word The word to add
      */
     async addWord(word: string): Promise<void> {
-        const normalizedWord = word.toLowerCase().trim();
+        const normalizedWord = word.trim();
 
         if (!this.isIndexedDBAvailable) {
             this.inMemoryDictionary.add(normalizedWord);
@@ -115,7 +115,7 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
      * @param word The word to remove
      */
     async removeWord(word: string): Promise<void> {
-        const normalizedWord = word.toLowerCase().trim();
+        const normalizedWord = word.trim();
 
         if (!this.isIndexedDBAvailable) {
             this.inMemoryDictionary.delete(normalizedWord);
@@ -296,6 +296,10 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
      */
     async exists(word: string): Promise<boolean> {
         const normalizedWord = word.trim();
+
+        console.log(
+            `Checking existence of word: ${normalizedWord} in IndexedDB: ${this.isIndexedDBAvailable}`,
+        );
 
         if (!this.isIndexedDBAvailable) {
             return this.inMemoryDictionary.has(normalizedWord);

@@ -9,7 +9,6 @@ import type {
     TextCorrectionBlock,
 } from "~/assets/models/text-correction";
 import { CorrectionService } from "~/assets/services/CorrectionService";
-import { LazyUForm } from "#components";
 
 export type CorrectionHandler = (correctedSentence: CorrectedSentence) => void;
 
@@ -32,13 +31,14 @@ export function useCorrectionService() {
     const logger = useLogger();
     const { executeCommand, registerHandler, unregisterHandler } =
         useCommandBus();
+
     const userDictStore = useUserDictionaryStore();
     const { sendError } = useUseErrorDialog();
 
     correctionService = new CorrectionService(
         logger,
         executeCommand,
-        userDictStore.exists,
+        userDictStore.exists.bind(userDictStore),
         sendError,
     );
 
