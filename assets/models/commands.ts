@@ -15,8 +15,9 @@ export const Cmds = {
     InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
     RequestChangesCommand: "RequestChangesCommand",
     CompleteRequestChangeCommand: "CompleteRequestChangeCommand",
-    ToggleLockEditorCommand: "ToggleLockEditorCommand",
+    ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
     CorrectionBlockChangedCommand: "CorrectionBlockChangedCommand",
+    ToggleLockEditorCommand: "ToggleLockEditorCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -114,6 +115,18 @@ export class CompleteRequestChangeCommand implements ICommand {
     ) {}
 }
 
+/**
+ * Prevent edits to the editor
+ */
+export class ToggleEditableEditorCommand implements ICommand {
+    readonly $type = "ToggleEditableEditorCommand";
+
+    constructor(public locked: boolean) {}
+}
+
+/**
+ * Prevent all actions to the editor (focus, quick actions, etc.)
+ */
 export class ToggleLockEditorCommand implements ICommand {
     readonly $type = "ToggleLockEditorCommand";
 

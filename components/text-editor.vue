@@ -17,6 +17,7 @@ import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
     Cmds,
+    type ToggleEditableEditorCommand,
     type ToggleLockEditorCommand,
     type ToolSwitchCommand,
     UndoRedoStateChanged,
@@ -33,9 +34,10 @@ const selectedText = defineModel<TextFocus>("selectedText");
 
 // refs
 const container = ref<HTMLElement>();
-const limit = ref(10_000);
+const limit = ref(5_000);
 const isTextCorrectionActive = ref(true);
 const isInteractiableFocusActive = ref(false);
+const lockEditor = ref(false);
 
 const undoRedoState = ref({
     canUndo: false,
@@ -131,12 +133,21 @@ onMounted(() => {
     registerHandler(Cmds.ToolSwitchCommand, handleToolSwitch);
 });
 
-onCommand<ToggleLockEditorCommand>(
-    Cmds.ToggleLockEditorCommand,
+onCommand<ToggleEditableEditorCommand>(
+    Cmds.ToggleEditableEditorCommand,
     async (command) => {
         if (!editor.value) return;
 
         editor.value.setEditable(!command.locked, !command.locked);
+        editor.value.isFocused = !command.locked;
+    },
+);
+
+onCommand<ToggleLockEditorCommand>(
+    Cmds.ToggleLockEditorCommand,
+    async (command) => {
+        lockEditor.value = command.locked;
+        if (!editor.value) return;
     },
 );
 
@@ -206,6 +217,9 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
 
 <template>
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
+        <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10">
+        </div>
+        
         <QuickActionsPanel :editor="editor" />
 
         <TextCorrection
@@ -220,7 +234,7 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
             :editor="editor"
             :is-text-correction-active="isTextCorrectionActive" />
 
-        <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
+        <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll relative">
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
         </div>
         <div

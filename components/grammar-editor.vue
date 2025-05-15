@@ -3,7 +3,7 @@ import {
     Cmds,
     InvalidateCorrectionCommand,
     type SwitchCorrectionLanguageCommand,
-    type ToggleLockEditorCommand,
+    type ToggleEditableEditorCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
@@ -78,8 +78,8 @@ onCommand(
 onCommand(Cmds.InvalidateCorrectionCommand, handleInvalidate);
 
 onCommand(
-    Cmds.ToggleLockEditorCommand,
-    async (command: ToggleLockEditorCommand) => {
+    Cmds.ToggleEditableEditorCommand,
+    async (command: ToggleEditableEditorCommand) => {
         isEditorLocked.value = command.locked;
 
         if (!command.locked) {

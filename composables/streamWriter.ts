@@ -44,9 +44,8 @@ async function applyStreamToEditor(
         buffer += chunk;
     }
 
-    // Finalize the stream
+    // revert changes and apply them again to create one history entry
     editor.chain().setMeta("addToHistory", false).setContent(oldText).run();
-
     editor.chain().setTextSelection({ from, to }).insertContent(buffer).run();
 
     return buffer;

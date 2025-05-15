@@ -2,10 +2,7 @@ import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { type ArrayChange, diffArrays } from "diff";
 import type { ICommand } from "#build/types/commands";
 import { CorrectionBlockChangedCommand } from "../models/commands";
-import type {
-    CorrectedSegments,
-    TextCorrectionBlock,
-} from "../models/text-correction";
+import type { TextCorrectionBlock } from "../models/text-correction";
 import type { ICorrectionFetcher } from "./CorrectionFetcher";
 import { Queue } from "./Queue";
 import { splitToSentences } from "./string-parser";
@@ -68,16 +65,6 @@ export class CorrectionService {
             // execute all the commands
             for (const command of commands) {
                 try {
-                    if (command.change === "remove") {
-                        this.logger.debug("Removing block", command.block);
-                    }
-                    if (command.change === "add") {
-                        this.logger.debug("Adding block", command.block);
-                    }
-                    if (command.change === "update") {
-                        this.logger.debug("Updating block", command.block);
-                    }
-
                     await this.executeCommand(command);
                 } catch (e: unknown) {
                     if (!(e instanceof Error)) {

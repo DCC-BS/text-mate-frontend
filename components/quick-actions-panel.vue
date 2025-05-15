@@ -3,6 +3,7 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Editor } from "@tiptap/vue-3";
 import {
     RequestChangesCommand,
+    ToggleEditableEditorCommand,
     ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 
@@ -110,6 +111,7 @@ async function applyAction(action: Actions) {
     }
 
     try {
+        await executeCommand(new ToggleEditableEditorCommand(true));
         await executeCommand(new ToggleLockEditorCommand(true));
 
         addProgress("quick-action", {
@@ -149,6 +151,8 @@ async function applyAction(action: Actions) {
             from,
             to,
         );
+
+        await executeCommand(new ToggleLockEditorCommand(false));
 
         await executeCommand(
             new RequestChangesCommand(

@@ -5,7 +5,7 @@ import {
     Cmds,
     type CompleteRequestChangeCommand,
     type RequestChangesCommand,
-    ToggleLockEditorCommand,
+    ToggleEditableEditorCommand,
 } from "~/assets/models/commands";
 import { TextAddedMark } from "~/utils/text-added-mark";
 import { TextApplyNode } from "~/utils/text-apply-changes-node";
@@ -71,7 +71,7 @@ export const useTrackChanges = () => {
     async function handleCompleteRequestChangeCommand(
         command: CompleteRequestChangeCommand,
     ) {
-        await executeCommand(new ToggleLockEditorCommand(false));
+        await executeCommand(new ToggleEditableEditorCommand(false));
 
         if (!editor.value) {
             logger.error("Editor is not initialized");

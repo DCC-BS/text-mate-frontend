@@ -2,7 +2,7 @@
 import {
     ApplyTextCommand,
     RequestChangesCommand,
-    ToggleLockEditorCommand,
+    ToggleEditableEditorCommand,
 } from "~/assets/models/commands";
 import type { TextRewriteResponse } from "~/assets/models/text-rewrite";
 
@@ -39,7 +39,7 @@ async function rewriteText() {
 
     isRewriting.value = true;
 
-    await executeCommand(new ToggleLockEditorCommand(true));
+    await executeCommand(new ToggleEditableEditorCommand(true));
     addProgress("rewriting", {
         icon: "i-heroicons-pencil",
         title: t("status.rewritingText"),
