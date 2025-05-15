@@ -4,7 +4,6 @@ import { Extension } from "@tiptap/vue-3";
 import {
     Cmds,
     type CompleteRequestChangeCommand,
-    InvalidateCorrectionCommand,
     type RequestChangesCommand,
     ToggleLockEditorCommand,
 } from "~/assets/models/commands";

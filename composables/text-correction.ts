@@ -169,17 +169,22 @@ export function useTextCorrectionMarks(
                 }
             });
 
-            if (!foundMark) {
-                logger.warn(`Mark with id ${block.id} not found`);
-                return;
+            // if mark was found, remove it
+            // when the node of the mark for example the word which was marked was completely removed the mark is also removed
+            // so we don't need to remove it
+            if (foundMark) {
+                editor.value.view.dispatch(
+                    editor.value.state.tr
+                        .setMeta("addToHistory", false)
+                        .removeMark(
+                            foundMark.from,
+                            foundMark.to,
+                            markType.value,
+                        ),
+                );
             }
-
-            editor.value.view.dispatch(
-                editor.value.state.tr
-                    .setMeta("addToHistory", false)
-                    .removeMark(foundMark.from, foundMark.to, markType.value),
-            );
         } catch (e) {
+            logger.error("Error removing mark", e);
             // ignore
         }
     }

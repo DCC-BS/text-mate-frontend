@@ -42,6 +42,7 @@ describe("CorrectionService", () => {
 
         // Mock the ICorrectionFetcher
         mockCorrectionFetcher = {
+            language: "en",
             fetchBlocks: vi.fn().mockResolvedValue([sampleBlock]),
         };
 
@@ -140,6 +141,177 @@ describe("CorrectionService", () => {
                 expect.objectContaining({
                     $type: "CorrectionBlockChangedCommand",
                     change: "update",
+                }),
+            );
+        });
+
+        it("should not call fetchBlocks if text is empty", async () => {
+            // Arrange
+            const text = "";
+            const signal = new AbortController().signal;
+
+            // Act
+            await correctionService.correctText(text, signal);
+
+            // Assert
+            expect(mockCorrectionFetcher.fetchBlocks).not.toHaveBeenCalled();
+        });
+
+        it("should not call fetchBlocks if text is the same", async () => {
+            // Arrange
+            const text = "teh quick brown fox";
+            const signal = new AbortController().signal;
+
+            // Act
+            await correctionService.correctText(text, signal);
+            await correctionService.correctText(text, signal);
+
+            // Assert
+            expect(mockCorrectionFetcher.fetchBlocks).toHaveBeenCalledOnce();
+        });
+
+        it.each`
+            prefix       | postfix
+            ${"prefix."} | ${"postfix"}
+            ${""}        | ${"postfix"}
+            ${"prefix."} | ${""}
+            ${""}        | ${""}
+        `("Replace char with new char", async ({ prefix, postfix }) => {
+            // Arrange
+            const text = "teh quick brown fox.";
+            const newText = "teh quiick brown fox.";
+            const signal = new AbortController().signal;
+
+            const blocks = [
+                {
+                    id: "test-id-2",
+                    original: "quiick",
+                    offset: 4,
+                    length: 6,
+                },
+            ] as TextCorrectionBlock[];
+
+            mockCorrectionFetcher.fetchBlocks = vi.fn().mockResolvedValue([]);
+
+            // Act
+            await correctionService.correctText(
+                `${prefix}${text}${postfix}`,
+                signal,
+            );
+            mockExecuteCommand.mockReset();
+            mockCorrectionFetcher.fetchBlocks = vi
+                .fn()
+                .mockResolvedValue([blocks]);
+            await correctionService.correctText(
+                `${prefix}${newText}${postfix}`,
+                signal,
+            );
+
+            // Assert
+            expect(mockCorrectionFetcher.fetchBlocks).toHaveBeenCalledWith(
+                `${newText}`,
+                signal,
+            );
+
+            expect(mockExecuteCommand).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    $type: "CorrectionBlockChangedCommand",
+                    change: "add",
+                }),
+            );
+        });
+
+        it("Speelling error was corrected", async () => {
+            // Arrange
+            const text = "Some prefix. teh quick brown fox. Some postfix.";
+            const newText = "Some prefix. The quick brown fox. Some postfix.";
+            const signal = new AbortController().signal;
+
+            const blocks = [
+                {
+                    id: "test-id-2",
+                    original: "teh",
+                    offset: 13,
+                    length: 3,
+                },
+            ] as TextCorrectionBlock[];
+
+            const expectedBlock = {
+                ...blocks[0],
+                offset: 14, // 1 based index
+            };
+
+            mockCorrectionFetcher.fetchBlocks = vi
+                .fn()
+                .mockImplementation(
+                    async (text: string, signal: AbortSignal) => {
+                        if (text.includes("teh")) {
+                            return blocks;
+                        }
+                        return [];
+                    },
+                );
+
+            // Act
+            await correctionService.correctText(`${text}`, signal);
+            mockExecuteCommand.mockReset();
+            mockCorrectionFetcher.fetchBlocks = vi.fn().mockResolvedValue([]);
+            await correctionService.correctText(`${newText}`, signal);
+
+            // Assert
+            expect(mockExecuteCommand).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    $type: "CorrectionBlockChangedCommand",
+                    change: "remove",
+                    block: expectedBlock,
+                }),
+            );
+        });
+
+        it("Offset is updated correctly on text move", async () => {
+            // Arrange
+            const text = "teh quick brown fox.";
+            const newText = "   .teh quick brown fox.";
+            const signal = new AbortController().signal;
+
+            const blocks = [
+                {
+                    id: "test-id-2",
+                    original: "teh",
+                    offset: 0,
+                    length: 3,
+                },
+            ] as TextCorrectionBlock[];
+
+            const expectedBlock = {
+                id: "test-id-2",
+                original: "teh",
+                offset: 5,
+                length: 3,
+            } as TextCorrectionBlock;
+
+            mockCorrectionFetcher.fetchBlocks = vi
+                .fn()
+                .mockImplementation(
+                    async (text: string, signal: AbortSignal) => {
+                        if (text.includes("teh")) {
+                            return blocks;
+                        }
+                        return [];
+                    },
+                );
+
+            // Act
+            await correctionService.correctText(`${text}`, signal);
+            mockCorrectionFetcher.fetchBlocks = vi.fn().mockResolvedValue([]);
+            await correctionService.correctText(`${newText}`, signal);
+
+            // Assert
+            expect(mockExecuteCommand).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    $type: "CorrectionBlockChangedCommand",
+                    change: "update",
+                    block: expectedBlock,
                 }),
             );
         });

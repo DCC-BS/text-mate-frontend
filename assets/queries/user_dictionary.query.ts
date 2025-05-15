@@ -297,10 +297,6 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
     async exists(word: string): Promise<boolean> {
         const normalizedWord = word.trim();
 
-        console.log(
-            `Checking existence of word: ${normalizedWord} in IndexedDB: ${this.isIndexedDBAvailable}`,
-        );
-
         if (!this.isIndexedDBAvailable) {
             return this.inMemoryDictionary.has(normalizedWord);
         }

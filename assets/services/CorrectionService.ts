@@ -2,13 +2,17 @@ import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { type ArrayChange, diffArrays } from "diff";
 import type { ICommand } from "#build/types/commands";
 import { CorrectionBlockChangedCommand } from "../models/commands";
-import type { CorrectedSegments } from "../models/text-correction";
+import type {
+    CorrectedSegments,
+    TextCorrectionBlock,
+} from "../models/text-correction";
 import type { ICorrectionFetcher } from "./CorrectionFetcher";
 import { Queue } from "./Queue";
 import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
-    private oldSegments: CorrectedSegments[] = [];
+    private lastSentences: string[] = [];
+    private lastBlocks: TextCorrectionBlock[] = [];
     private correction_lock = false;
 
     constructor(
@@ -20,21 +24,21 @@ export class CorrectionService {
     ) {}
 
     async invalidateAll(): Promise<void> {
-        for (const blocks of this.getAbsoulteBlocks()) {
-            const command = new CorrectionBlockChangedCommand(blocks, "remove");
-            await this.executeCommand(command);
+        await this.lock();
+        try {
+            for (const blocks of this.lastBlocks) {
+                const command = new CorrectionBlockChangedCommand(
+                    blocks,
+                    "remove",
+                );
+                await this.executeCommand(command);
+            }
+
+            this.lastSentences = [];
+            this.lastBlocks = [];
+        } finally {
+            this.unlock();
         }
-
-        this.oldSegments = [];
-    }
-
-    private getAbsoulteBlocks() {
-        return this.oldSegments.flatMap((s) =>
-            s.blocks.map((b) => ({
-                ...b,
-                offset: b.offset + s.from,
-            })),
-        );
     }
 
     /**
@@ -51,17 +55,29 @@ export class CorrectionService {
         await this.lock();
 
         try {
-            const diff = this.getDiff(text);
+            const sentences = Array.from(splitToSentences(text));
+            const diff = this.getDiff(sentences);
 
-            const { sentences, commands } = await this.processDiff(
-                diff,
-                signal,
-            );
+            // process the diffs this can be canceld with the signal
+            const { blocks, commands } = await this.processDiff(diff, signal);
 
-            this.oldSegments = sentences;
+            // update the cache of last processd sentences and blocks
+            this.lastSentences = sentences;
+            this.lastBlocks = blocks;
 
+            // execute all the commands
             for (const command of commands) {
                 try {
+                    if (command.change === "remove") {
+                        this.logger.debug("Removing block", command.block);
+                    }
+                    if (command.change === "add") {
+                        this.logger.debug("Adding block", command.block);
+                    }
+                    if (command.change === "update") {
+                        this.logger.debug("Updating block", command.block);
+                    }
+
                     await this.executeCommand(command);
                 } catch (e: unknown) {
                     if (!(e instanceof Error)) {
@@ -105,8 +121,7 @@ export class CorrectionService {
     /**
      * Compares the old sentences with the new text and returns the differences.
      *
-     * @param {string} text - The new text to compare against.
-     * @param {boolean} invalidateAll - If true, all sentences will be invalidated.
+     * @param {string[]} sentences - The new text split into sentences.
      * @returns {ArrayChange<string>[]} - An array of change parts where each part contains:
      *   - value: Array of sentences within this change part
      *   - added: True if these sentences were added in the new text
@@ -114,32 +129,35 @@ export class CorrectionService {
      *   - When both added and removed are false, it means the sentences are unchanged
      *   - count: Number of sentences in this change part
      */
-    private getDiff(text: string): ArrayChange<string>[] {
-        const sentences = Array.from(splitToSentences(text));
-        const oldSentences = Array.from(
-            splitToSentences(this.oldSegments.map((s) => s.text).join("")),
-        );
-
-        let diff: ArrayChange<string>[] = [];
-        diff = diffArrays(oldSentences, sentences);
-
-        return diff;
+    private getDiff(sentences: string[]): ArrayChange<string>[] {
+        return diffArrays(this.lastSentences, sentences);
     }
 
+    /**
+     * Processes the diff and updates the blocks accordingly.
+     * It fetches new blocks for added sentences and removes blocks for removed sentences.
+     * It also updates the position of blocks for unchanged sentences if needed.
+     * If the signal is aborted, it throws an error.
+     * It also returns commands for adding, removing, or updating blocks.
+     *
+     * @returns {{blocks: TextCorrectionBlock[], commands: CorrectionBlockChangedCommand[]}} - new blocks and commands to execute
+     */
     private async processDiff(
         diff: ArrayChange<string>[],
         signal: AbortSignal,
     ): Promise<{
-        sentences: CorrectedSegments[];
+        blocks: TextCorrectionBlock[];
         commands: CorrectionBlockChangedCommand[];
     }> {
-        const oldBlocks = new Queue(this.getAbsoulteBlocks());
-        const newSegments = [] as CorrectedSegments[];
+        const oldBlocks = new Queue(this.lastBlocks);
+        const newBlocks = [] as TextCorrectionBlock[];
+        // const newSegments = [] as CorrectedSegments[];
         const commands = [] as CorrectionBlockChangedCommand[];
         let hasChanges = false;
 
-        let oldPointer = 0;
-        let newPointer = 0;
+        // text editor is 1 based, so we start at 1
+        let oldPointer = 1;
+        let newPointer = 1;
 
         for (const part of diff) {
             if (signal.aborted) {
@@ -164,26 +182,18 @@ export class CorrectionService {
 
                 hasChanges = true;
             } else if (part.added) {
-                const newBlocks = await this.correctionFetcher.fetchBlocks(
+                const fetchedBlocks = await this.correctionFetcher.fetchBlocks(
                     newText,
                     signal,
                 );
 
-                const newSegment = {
-                    id: crypto.randomUUID(),
-                    text: newText,
-                    from: newPointer,
-                    to: newPointer + newText.length,
-                    blocks: newBlocks,
-                };
-
-                newSegments.push(newSegment);
-
-                for (const block of newBlocks) {
+                for (const block of fetchedBlocks) {
                     const absoluteBlock = {
                         ...block,
-                        offset: block.offset + newPointer + 1,
+                        offset: block.offset + newPointer,
                     };
+
+                    newBlocks.push(absoluteBlock);
 
                     commands.push(
                         new CorrectionBlockChangedCommand(absoluteBlock, "add"),
@@ -197,7 +207,7 @@ export class CorrectionService {
                         oldBlocks.size() > 0 &&
                         oldBlocks.safePeek().offset < oldTo
                     ) {
-                        oldBlocks.safeDequeue();
+                        newBlocks.push(oldBlocks.safeDequeue());
                     }
                 } else {
                     // if there are changes, we need to update the blocks
@@ -207,15 +217,18 @@ export class CorrectionService {
                     ) {
                         const block = oldBlocks.safeDequeue();
                         const difference = newPointer - oldPointer;
-                        commands.push(
-                            new CorrectionBlockChangedCommand(
-                                {
-                                    ...block,
-                                    offset: block.offset + difference + 1,
-                                },
-                                "update",
-                            ),
+                        const newBlock = {
+                            ...block,
+                            offset: block.offset + difference,
+                        };
+
+                        const newCommand = new CorrectionBlockChangedCommand(
+                            newBlock,
+                            "update",
                         );
+
+                        newBlocks.push(newBlock);
+                        commands.push(newCommand);
                     }
                 }
             }
@@ -235,7 +248,7 @@ export class CorrectionService {
             }
         }
 
-        return { sentences: newSegments, commands };
+        return { blocks: newBlocks, commands };
     }
 
     private async lock() {

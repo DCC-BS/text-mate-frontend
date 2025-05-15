@@ -47,8 +47,6 @@ class CorrectionFetcher implements ICorrectionFetcher {
             const blocks: TextCorrectionBlock[] = [];
 
             for (const block of response.blocks) {
-                console.log(block.original);
-
                 const inDict = await this.wordInUserDictionary(
                     block.original.trim(),
                 );
