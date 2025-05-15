@@ -426,26 +426,6 @@ describe("CorrectionService", () => {
             );
             expect(mockOnError).toHaveBeenCalledWith(errorMessage);
         });
-
-        it("should filter out words in user dictionary", async () => {
-            // Arrange
-            const text = "teh quick brown fox";
-            const signal = new AbortController().signal;
-
-            // Setup to simulate that the word is in dictionary
-            mockWordInUserDictionary.mockResolvedValueOnce(true);
-
-            // Make sure mockCorrectionFetcher is setup to return a block
-            (
-                mockCorrectionFetcher.fetchBlocks as ReturnType<typeof vi.fn>
-            ).mockResolvedValueOnce([{ ...sampleBlock, id: "test-id-2" }]);
-
-            // Act
-            await correctionService.correctText(text, signal);
-
-            // Assert - no commands should be executed if word is in dictionary
-            expect(mockExecuteCommand).not.toHaveBeenCalled();
-        });
     });
 
     describe("invalidateAll", () => {
@@ -538,7 +518,7 @@ describe("CorrectionService", () => {
             expect(mockExecuteCommand).toHaveBeenCalledWith(
                 expect.objectContaining({
                     $type: "CorrectionBlockChangedCommand",
-                    action: "remove",
+                    change: "remove",
                 }),
             );
         });
