@@ -1,6 +1,6 @@
-# Text Mate
+# Text Mate (Frontend)
 
-Text Mate is a modern web application for advanced text editing, correction, and document validation. Built with Nuxt.js and TypeScript, it provides a rich set of tools to enhance writing experiences.
+Text Mate is a modern web application for advanced text editing, correction, and document validation. Built with Nuxt.js and TypeScript, it provides a rich set of tools to enhance writing experiences. This repository contains only the frontend code; the backend is written in Python FastAPI and available at [https://github.com/DCC-BS/text-mate-backend](https://github.com/DCC-BS/text-mate-backend).
 
 ## Features
 
@@ -22,12 +22,6 @@ Text Mate is a modern web application for advanced text editing, correction, and
 
 ## Setup
 
-Make sure to install dependencies using Bun:
-
-```bash
-bun install
-```
-
 ### Environment Configuration
 
 Create a `.env` file in the project root with the required environment variables:
@@ -35,6 +29,17 @@ Create a `.env` file in the project root with the required environment variables
 ```
 API_URL=http://localhost:8000
 LOG_LEVEL=debug
+DCC_BS_TOKEN=your_github_personal_access_token
+```
+
+> **Important:** The `DCC_BS_TOKEN` is a GitHub Personal Access Token required to access custom npm packages hosted on GitHub. You must set this before installing dependencies.
+
+### Install Dependencies
+
+Make sure to install dependencies using Bun:
+
+```bash
+bun install
 ```
 
 ## Development
@@ -53,11 +58,36 @@ bun run debug
 
 ### Backend Setup
 
+Create a `.env.backend` file in the root directory with the required environment variables:
+
+```
+LLM_API_PORT=8001
+
+CLIENT_PORT=3000
+CLIENT_URL=http://localhost:${CLIENT_PORT}
+OPENAI_API_BASE_URL=http://vllm_qwen25_32b:${LLM_API_PORT}/v1
+OPENAI_API_KEY=none
+LLM_MODEL=Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4
+
+LANGUAGE_TOOL_PORT=8010
+LANGUAGE_TOOL_API_URL=http://languagetool:${LANGUAGE_TOOL_PORT}/v2
+LANGUAGE_TOOL_CACHE_DIR=~/.cache/languagetool
+
+HF_AUTH_TOKEN=your_hugging_face_token
+HUGGING_FACE_CACHE_DIR=~/.cache/huggingface
+```
+
+> **Note:** The `HF_AUTH_TOKEN` is required for Hugging Face API access. You can create a token [here](https://huggingface.co/settings/tokens).
+
 Start the backend as a Docker container:
 
 ```bash
 sudo docker compose --env-file ./.env.backend up --build
 ```
+
+Alternative clone the backend repository [text-mate-backend](https://github.com/DCC-BS/text-mate-backend) and run it locally.
+
+```bash
 
 ## Testing & Linting
 
