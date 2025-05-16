@@ -1,7 +1,11 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Editor } from "@tiptap/vue-3";
-import { RequestChangesCommand } from "~/assets/models/commands";
+import {
+    RequestChangesCommand,
+    ToggleEditableEditorCommand,
+    ToggleLockEditorCommand,
+} from "~/assets/models/commands";
 
 interface QuickActionsPanelProps {
     editor: Editor;
@@ -16,6 +20,7 @@ type Actions =
     | "social_mediafy"
     | "translate_de-CH"
     | "translate_en-US"
+    | "translate_en-GB"
     | "translate_fr"
     | "translate_it";
 
@@ -43,6 +48,13 @@ const items = ref<DropdownMenuItem[]>([
         icon: "i-flag-us-4x3",
         onSelect: () => {
             applyAction("translate_en-US");
+        },
+    },
+    {
+        label: t("quick-actions.en-GB"),
+        icon: "i-flag-gb-4x3",
+        onSelect: () => {
+            applyAction("translate_en-GB");
         },
     },
     {
@@ -99,6 +111,9 @@ async function applyAction(action: Actions) {
     }
 
     try {
+        await executeCommand(new ToggleEditableEditorCommand(true));
+        await executeCommand(new ToggleLockEditorCommand(true));
+
         addProgress("quick-action", {
             icon: "i-lucide-text-search",
             title: t("status.quickAction"),
@@ -115,7 +130,7 @@ async function applyAction(action: Actions) {
                 action,
                 text,
             },
-        })) as ReadableStream;
+        })) as ReadableStream<Uint8Array>;
 
         if (!response) {
             toast.add({
@@ -136,6 +151,8 @@ async function applyAction(action: Actions) {
             from,
             to,
         );
+
+        await executeCommand(new ToggleLockEditorCommand(false));
 
         await executeCommand(
             new RequestChangesCommand(

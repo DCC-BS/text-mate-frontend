@@ -9,10 +9,7 @@ import {
     Cmds,
     JumpToBlockCommand,
 } from "~/assets/models/commands";
-import type {
-    CorrectedSentence,
-    TextCorrectionBlock,
-} from "~/assets/models/text-correction";
+import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { CorrectionMark } from "~/utils/correction-mark";
 import { useCorrection } from "./correction";
 
@@ -24,9 +21,9 @@ export function useTextCorrectionMarks(
         useCommandBus();
     const logger = useLogger();
     const {
-        onCorrectedSenteceAdded,
-        onCorrectedSentenceRemoved,
-        onCorrectedSentenceUpdated,
+        onCorrectedBlockAdded,
+        onCorrectedBlockRemoved,
+        onCorrectedBlockUpdated,
         blocks,
     } = useCorrection();
 
@@ -141,38 +138,58 @@ export function useTextCorrectionMarks(
         }
     });
 
-    function removeAllMarksFormSentence(sentence: CorrectedSentence) {
+    function removeMark(block: TextCorrectionBlock) {
         if (!editor.value || !markType.value) {
-            logger.warn("Editor not available or empty");
-            return;
-        }
-
-        if (!editor.value.state.doc) {
-            logger.warn("Editor document not available or empty");
-            return;
-        }
-
-        if (
-            sentence.from > sentence.to ||
-            sentence.to > editor.value.state.doc.content.size
-        ) {
-            logger.warn(
-                `Invalid range for removing marks: ${sentence.from} - ${sentence.to} doc size: ${editor.value.state.doc.content.size}`,
-            );
+            logger.warn("Editor not available");
             return;
         }
 
         hoverBlock.value = undefined;
         hoverRect.value = undefined;
 
-        editor.value.view.dispatch(
-            editor.value.state.tr
-                .setMeta("addToHistory", false)
-                .removeMark(sentence.from - 2, sentence.to + 2, markType.value),
-        );
+        try {
+            let foundMark = undefined as
+                | {
+                      from: number;
+                      to: number;
+                  }
+                | undefined;
+
+            editor.value.state.doc.descendants((node, pos) => {
+                if (node.marks.length === 0) return true;
+                const mark = node.marks.find(
+                    (m) => m.attrs["data-block-id"] === block.id,
+                );
+
+                if (mark) {
+                    foundMark = {
+                        from: pos,
+                        to: pos + node.nodeSize,
+                    };
+                }
+            });
+
+            // if mark was found, remove it
+            // when the node of the mark for example the word which was marked was completely removed the mark is also removed
+            // so we don't need to remove it
+            if (foundMark) {
+                editor.value.view.dispatch(
+                    editor.value.state.tr
+                        .setMeta("addToHistory", false)
+                        .removeMark(
+                            foundMark.from,
+                            foundMark.to,
+                            markType.value,
+                        ),
+                );
+            }
+        } catch (e) {
+            logger.error("Error removing mark", e);
+            // ignore
+        }
     }
 
-    function addMarksToSentence(sentence: CorrectedSentence) {
+    function addMark(block: TextCorrectionBlock) {
         if (!editor.value || !markType.value) {
             logger.warn("Editor not available");
             return;
@@ -182,27 +199,29 @@ export function useTextCorrectionMarks(
             return;
         }
 
-        addMarks(
-            editor.value,
-            sentence.blocks,
-            sentence.from,
-            markType.value,
-            logger,
+        editor.value.view.dispatch(
+            editor.value.state.tr.setMeta("addToHistory", false).addMark(
+                block.offset,
+                block.offset + block.length,
+                markType.value.create({
+                    "data-block-id": block.id,
+                }),
+            ),
         );
     }
 
-    onCorrectedSenteceAdded((sentence) => {
-        removeAllMarksFormSentence(sentence);
-        addMarksToSentence(sentence);
+    onCorrectedBlockAdded((block) => {
+        removeMark(block);
+        addMark(block);
     });
 
-    onCorrectedSentenceRemoved((sentence) => {
-        removeAllMarksFormSentence(sentence);
+    onCorrectedBlockRemoved((block) => {
+        removeMark(block);
     });
 
-    onCorrectedSentenceUpdated((sentence) => {
-        removeAllMarksFormSentence(sentence);
-        addMarksToSentence(sentence);
+    onCorrectedBlockUpdated((block) => {
+        removeMark(block);
+        addMark(block);
     });
 
     onMounted(() => {
@@ -222,7 +241,7 @@ export function useTextCorrectionMarks(
         const block = command.block;
         const corrected = command.corrected;
 
-        const start = block.offset + 1;
+        const start = block.offset;
         const end = start + block.length;
 
         await executeCommand(

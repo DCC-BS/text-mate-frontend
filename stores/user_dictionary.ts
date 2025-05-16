@@ -14,21 +14,25 @@ export const useUserDictionaryStore = defineStore(
         });
 
         const addWord = async (word: string) => {
-            await userQuery.addWord(word);
-            words.value.push(word);
+            const word_trimmed = word.trim();
+            await userQuery.addWord(word_trimmed);
+            words.value.push(word_trimmed);
 
             await executeCommand(new InvalidateCorrectionCommand());
         };
 
         const removeWord = async (word: string) => {
-            await userQuery.removeWord(word);
-            words.value = words.value.filter((w) => w !== word);
+            const word_trimmed = word.trim();
+
+            await userQuery.removeWord(word_trimmed);
+            words.value = words.value.filter((w) => w !== word_trimmed);
 
             await executeCommand(new InvalidateCorrectionCommand());
         };
 
         const exists = async (word: string) => {
-            return await userQuery.exists(word);
+            const word_trimmed = word.trim();
+            return await userQuery.exists(word_trimmed);
         };
 
         return {

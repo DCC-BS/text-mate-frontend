@@ -3,6 +3,7 @@ import {
     Cmds,
     InvalidateCorrectionCommand,
     type SwitchCorrectionLanguageCommand,
+    type ToggleEditableEditorCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
@@ -12,13 +13,14 @@ import ToolPanel from "./tool-panel.vue";
 const userText = ref("");
 const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
+const isEditorLocked = ref(false);
 
 // composables
 const router = useRouter();
 const viewport = useViewport();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
-const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
+const { onCommand } = useCommandBus();
 
 const correctionService = useCorrectionService();
 
@@ -27,9 +29,6 @@ const clipboard = router.currentRoute.value.query.clipboard;
 
 // life cycle
 onMounted(async () => {
-    registerHandler(Cmds.SwitchCorrectionLanguageCommand, handleSwitchLanguage);
-    registerHandler(Cmds.InvalidateCorrectionCommand, handleInvalidate);
-
     // Wait for next tick to ensure text editor is fully mounted
     await nextTick();
 
@@ -39,54 +38,63 @@ onMounted(async () => {
     }
 });
 
-onUnmounted(() => {
-    unregisterHandler(
-        Cmds.SwitchCorrectionLanguageCommand,
-        handleSwitchLanguage,
-    );
-    unregisterHandler(Cmds.InvalidateCorrectionCommand, handleInvalidate);
-});
-
 // listeners
-watch(userText, (newText) => {
+watch(userText, (newText, oldText) => {
+    if (newText === oldText) {
+        return;
+    }
+
     taskScheduler.schedule((signal: AbortSignal) =>
         correctText(newText, signal),
     );
 
     // ends with any whitespace
-    if (newText.endsWith(" ") || newText.endsWith("\n")) {
+    if (newText.endsWith(".") || newText.endsWith("\n")) {
         taskScheduler.executeImmediately();
     }
 });
 
 // functions
-async function correctText(
-    text: string,
-    signal: AbortSignal,
-    invalidate = false,
-) {
+async function correctText(text: string, signal: AbortSignal) {
     addProgress("correcting", {
         icon: "i-heroicons-pencil",
         title: t("status.correctingText"),
     });
     try {
-        await correctionService.correctText(text, signal, invalidate);
+        await correctionService.correctText(text, signal);
     } finally {
         removeProgress("correcting");
     }
 }
 
-async function handleSwitchLanguage(command: SwitchCorrectionLanguageCommand) {
-    correctionService.switchLanguage(command.language);
+onCommand(
+    Cmds.SwitchCorrectionLanguageCommand,
+    async (command: SwitchCorrectionLanguageCommand) => {
+        correctionService.switchLanguage(command.language);
+        await handleInvalidate(new InvalidateCorrectionCommand());
+    },
+);
 
-    await handleInvalidate(new InvalidateCorrectionCommand());
-}
+onCommand(Cmds.InvalidateCorrectionCommand, handleInvalidate);
 
-async function handleInvalidate(command: InvalidateCorrectionCommand) {
+onCommand(
+    Cmds.ToggleEditableEditorCommand,
+    async (command: ToggleEditableEditorCommand) => {
+        isEditorLocked.value = command.locked;
+
+        if (!command.locked) {
+            taskScheduler.schedule((signal: AbortSignal) =>
+                correctText(userText.value, signal),
+            );
+        }
+    },
+);
+
+async function handleInvalidate(_: InvalidateCorrectionCommand) {
+    await correctionService.invalidateAll();
     taskScheduler.schedule((signal: AbortSignal) =>
-        correctText(userText.value, signal, true),
+        correctText(userText.value, signal),
     );
-    taskScheduler.executeImmediately();
 }
 </script>
 

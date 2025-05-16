@@ -1,5 +1,13 @@
 export class Queue<T> {
-    constructor(private readonly items: T[] = []) {}
+    private readonly items: T[];
+
+    constructor(items: T[] = [], copy = true) {
+        if (copy) {
+            this.items = [...items];
+        } else {
+            this.items = items;
+        }
+    }
 
     enqueue(item: T): void {
         this.items.push(item);
@@ -9,8 +17,22 @@ export class Queue<T> {
         return this.items.shift();
     }
 
+    safeDequeue(): T {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+        return this.dequeue() as T;
+    }
+
     peek(): T | undefined {
         return this.items[0];
+    }
+
+    safePeek(): T {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+        return this.peek() as T;
     }
 
     isEmpty(): boolean {

@@ -1,67 +1,40 @@
 import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { type ArrayChange, diffArrays } from "diff";
 import type { ICommand } from "#build/types/commands";
-import { CorrectedSentenceChangedCommand } from "../models/commands";
-import type {
-    CorrectedSentence,
-    TextCorrectionBlock,
-    TextCorrectionResponse,
-} from "../models/text-correction";
+import { CorrectionBlockChangedCommand } from "../models/commands";
+import type { TextCorrectionBlock } from "../models/text-correction";
+import type { ICorrectionFetcher } from "./CorrectionFetcher";
 import { Queue } from "./Queue";
 import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
-    private readonly blocks: TextCorrectionBlock[][] = [];
-    private oldSentences: CorrectedSentence[] = [];
+    private lastSentences: string[] = [];
+    private lastBlocks: TextCorrectionBlock[] = [];
+    private correction_lock = false;
 
     constructor(
         private readonly logger: ILogger,
         private readonly executeCommand: (command: ICommand) => Promise<void>,
-        private readonly wordInUserDictionary: (
-            word: string,
-        ) => Promise<boolean>,
+        private readonly correctionFetcher: ICorrectionFetcher,
         private readonly onError: (message: string) => void,
         private language = "auto",
     ) {}
 
-    private async fetchBlocks(
-        text: string,
-        signal: AbortSignal,
-    ): Promise<TextCorrectionBlock[]> {
+    async invalidateAll(): Promise<void> {
+        await this.lock();
         try {
-            const response = await $fetch<TextCorrectionResponse>(
-                "/api/correct",
-                {
-                    body: { text: text, language: this.language },
-                    method: "POST",
-                    signal: signal,
-                },
-            );
-
-            const blocks: TextCorrectionBlock[] = [];
-
-            for (const block of response.blocks) {
-                const inDict = await this.wordInUserDictionary(block.original);
-                if (!inDict) {
-                    blocks.push({ ...block, id: crypto.randomUUID() });
-                }
+            for (const blocks of this.lastBlocks) {
+                const command = new CorrectionBlockChangedCommand(
+                    blocks,
+                    "remove",
+                );
+                await this.executeCommand(command);
             }
 
-            return blocks;
-        } catch (e: unknown) {
-            if (!(e instanceof Error)) {
-                this.logger.error("Unknown error in fetchBlocks");
-                throw new Error("Unknown error");
-            }
-
-            if ("cause" in e && e.cause === "aborted") {
-                throw new Error("Request aborted", { cause: "aborted" });
-            }
-
-            this.logger.error(
-                `Error fetching blocks: ${e instanceof Error ? e.message : "Unknown error"}`,
-            );
-            throw e;
+            this.lastSentences = [];
+            this.lastBlocks = [];
+        } finally {
+            this.unlock();
         }
     }
 
@@ -75,127 +48,33 @@ export class CorrectionService {
      * @param {boolean} invalidateAll - If true, all blocks will be invalidated.
      * corrected blocks.
      */
-    async correctText(
-        text: string,
-        signal: AbortSignal,
-        invalidateAll: boolean,
-    ): Promise<void> {
+    async correctText(text: string, signal: AbortSignal): Promise<void> {
+        await this.lock();
+
         try {
             const sentences = Array.from(splitToSentences(text));
+            const diff = this.getDiff(sentences);
 
-            let diff: ArrayChange<string>[] = [];
+            // process the diffs this can be canceld with the signal
+            const { blocks, commands } = await this.processDiff(diff, signal);
 
-            if (invalidateAll) {
-                const removed = this.oldSentences.map((s) => s.text);
+            // update the cache of last processd sentences and blocks
+            this.lastSentences = sentences;
+            this.lastBlocks = blocks;
 
-                diff = [
-                    {
-                        value: removed,
-                        added: false,
-                        removed: true,
-                        count: removed.length,
-                    },
-                    {
-                        value: sentences,
-                        added: true,
-                        removed: false,
-                        count: sentences.length,
-                    },
-                ];
-            } else {
-                diff = diffArrays(
-                    this.oldSentences.map((s) => s.text),
-                    sentences,
-                );
-            }
-
-            const inputQueue = new Queue(this.oldSentences);
-            this.oldSentences = [];
-            let currentPos = 0;
-            let hasChanges = false;
-
-            for (const part of diff) {
-                if (signal.aborted) {
-                    while (inputQueue.size() > 0) {
-                        const sentence = inputQueue.dequeue();
-                        if (sentence) {
-                            this.oldSentences.push(sentence);
-                        }
-                    }
-
-                    return;
-                }
-
-                if (part.removed) {
-                    for (let i = 0; part.value.length > i; i++) {
-                        const oldSentence = inputQueue.dequeue();
-
-                        if (oldSentence) {
-                            this.executeCommand(
-                                new CorrectedSentenceChangedCommand(
-                                    {
-                                        ...oldSentence,
-                                        from: currentPos + oldSentence.from,
-                                        to: currentPos + oldSentence.to,
-                                    },
-                                    "remove",
-                                ),
-                            );
-                        } else {
-                            this.logger.error(
-                                "No sentence found in input queue to remove",
-                            );
-                        }
-
-                        hasChanges = true;
-                    }
-                } else if (part.added) {
-                    for (const sentence of part.value) {
-                        const newSentence = await this.addCorrectedSentences(
-                            sentence,
-                            signal,
-                            currentPos,
+            // execute all the commands
+            for (const command of commands) {
+                try {
+                    await this.executeCommand(command);
+                } catch (e: unknown) {
+                    if (!(e instanceof Error)) {
+                        this.logger.error(
+                            "Unknown error during text correction",
                         );
-
-                        if (!newSentence) {
-                            return;
-                        }
-
-                        this.oldSentences.push(newSentence);
-                        hasChanges = true;
-
-                        currentPos += sentence.length;
-                    }
-                } else {
-                    for (const sentence of part.value) {
-                        // If the sentence is unchanged, we can just yield it
-                        const oldSentence = inputQueue.dequeue();
-
-                        if (oldSentence?.text !== sentence) {
-                            this.logger.error(
-                                `Old sentence "${oldSentence?.text}" does not match new sentence "${sentence}"`,
-                            );
-                        }
-
-                        if (oldSentence) {
-                            const newSentence = {
-                                ...oldSentence,
-                                from: currentPos,
-                                to: currentPos + sentence.length,
-                            };
-                            this.oldSentences.push(newSentence);
-
-                            if (hasChanges) {
-                                this.executeCommand(
-                                    new CorrectedSentenceChangedCommand(
-                                        newSentence,
-                                        "update",
-                                    ),
-                                );
-                            }
-                        }
-
-                        currentPos += sentence.length;
+                    } else {
+                        this.logger.error(
+                            `Error during text correction: ${e.message}`,
+                        );
                     }
                 }
             }
@@ -212,6 +91,8 @@ export class CorrectionService {
 
             this.logger.error(`Error during text correction: ${e.message}`);
             this.onError(e.message);
+        } finally {
+            this.unlock();
         }
     }
 
@@ -220,43 +101,152 @@ export class CorrectionService {
             return;
         }
 
-        this.language = language;
+        this.correctionFetcher.language = language;
+        this.invalidateAll();
     }
 
-    private async addCorrectedSentences(
-        sentence: string,
+    /**
+     * Compares the old sentences with the new text and returns the differences.
+     *
+     * @param {string[]} sentences - The new text split into sentences.
+     * @returns {ArrayChange<string>[]} - An array of change parts where each part contains:
+     *   - value: Array of sentences within this change part
+     *   - added: True if these sentences were added in the new text
+     *   - removed: True if these sentences were removed from the old text
+     *   - When both added and removed are false, it means the sentences are unchanged
+     *   - count: Number of sentences in this change part
+     */
+    private getDiff(sentences: string[]): ArrayChange<string>[] {
+        return diffArrays(this.lastSentences, sentences);
+    }
+
+    /**
+     * Processes the diff and updates the blocks accordingly.
+     * It fetches new blocks for added sentences and removes blocks for removed sentences.
+     * It also updates the position of blocks for unchanged sentences if needed.
+     * If the signal is aborted, it throws an error.
+     * It also returns commands for adding, removing, or updating blocks.
+     *
+     * @returns {{blocks: TextCorrectionBlock[], commands: CorrectionBlockChangedCommand[]}} - new blocks and commands to execute
+     */
+    private async processDiff(
+        diff: ArrayChange<string>[],
         signal: AbortSignal,
-        startPos: number,
-    ): Promise<CorrectedSentence | undefined> {
-        try {
-            const newBlocks = await this.fetchBlocks(sentence, signal);
+    ): Promise<{
+        blocks: TextCorrectionBlock[];
+        commands: CorrectionBlockChangedCommand[];
+    }> {
+        const oldBlocks = new Queue(this.lastBlocks);
+        const newBlocks = [] as TextCorrectionBlock[];
+        // const newSegments = [] as CorrectedSegments[];
+        const commands = [] as CorrectionBlockChangedCommand[];
+        let hasChanges = false;
 
-            const newSentence = {
-                id: crypto.randomUUID(),
-                text: sentence,
-                from: startPos,
-                to: startPos + sentence.length,
-                blocks: newBlocks,
-            } as CorrectedSentence;
+        // text editor is 1 based, so we start at 1
+        let oldPointer = 1;
+        let newPointer = 1;
 
-            this.executeCommand(
-                new CorrectedSentenceChangedCommand(newSentence, "add"),
-            );
-
-            return newSentence;
-        } catch (e: unknown) {
-            if (!(e instanceof Error)) {
-                this.logger.error("Unknown error during text correction");
-                return undefined;
+        for (const part of diff) {
+            if (signal.aborted) {
+                throw new Error("Request aborted", { cause: "aborted" });
             }
 
-            if ("cause" in e && e.cause === "aborted") {
-                this.logger.debug("Text correction aborted due to signal");
-                return undefined;
+            const newText = part.value.join("");
+            const oldTo = oldPointer + newText.length;
+
+            if (part.removed) {
+                while (
+                    oldBlocks.size() > 0 &&
+                    oldBlocks.safePeek().offset < oldTo
+                ) {
+                    commands.push(
+                        new CorrectionBlockChangedCommand(
+                            oldBlocks.safeDequeue(),
+                            "remove",
+                        ),
+                    );
+                }
+
+                hasChanges = true;
+            } else if (part.added) {
+                const fetchedBlocks = await this.correctionFetcher.fetchBlocks(
+                    newText,
+                    signal,
+                );
+
+                for (const block of fetchedBlocks) {
+                    const absoluteBlock = {
+                        ...block,
+                        offset: block.offset + newPointer,
+                    };
+
+                    newBlocks.push(absoluteBlock);
+
+                    commands.push(
+                        new CorrectionBlockChangedCommand(absoluteBlock, "add"),
+                    );
+                }
+
+                hasChanges = true;
+            } else {
+                if (!hasChanges) {
+                    while (
+                        oldBlocks.size() > 0 &&
+                        oldBlocks.safePeek().offset < oldTo
+                    ) {
+                        newBlocks.push(oldBlocks.safeDequeue());
+                    }
+                } else {
+                    // if there are changes, we need to update the blocks
+                    while (
+                        oldBlocks.size() > 0 &&
+                        oldBlocks.safePeek().offset < oldTo
+                    ) {
+                        const block = oldBlocks.safeDequeue();
+                        const difference = newPointer - oldPointer;
+                        const newBlock = {
+                            ...block,
+                            offset: block.offset + difference,
+                        };
+
+                        const newCommand = new CorrectionBlockChangedCommand(
+                            newBlock,
+                            "update",
+                        );
+
+                        newBlocks.push(newBlock);
+                        commands.push(newCommand);
+                    }
+                }
             }
 
-            this.logger.error(`Error during text correction: ${e.message}`);
-            this.onError(e.message);
+            // advance the pointers
+
+            if (part.removed) {
+                // when a sentence was removed, we andvance the old pointer, new pointer stays the same
+                oldPointer += newText.length;
+            } else if (part.added) {
+                // when a sentence was added, we andvance the new pointer, old pointer stays the same
+                newPointer += newText.length;
+            } else {
+                // when a sentence was unchanged, we andvance both pointers
+                oldPointer += newText.length;
+                newPointer += newText.length;
+            }
         }
+
+        return { blocks: newBlocks, commands };
+    }
+
+    private async lock() {
+        while (this.correction_lock) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
+        this.correction_lock = true;
+    }
+
+    private unlock() {
+        this.correction_lock = false;
     }
 }

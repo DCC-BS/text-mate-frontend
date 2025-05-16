@@ -1,6 +1,6 @@
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
-import type { CorrectedSentence, TextCorrectionBlock } from "./text-correction";
+import type { CorrectedSegments, TextCorrectionBlock } from "./text-correction";
 
 export const Cmds = {
     JumpToBlockCommand: "JumpToBlockCommand",
@@ -10,12 +10,14 @@ export const Cmds = {
     UndoCommand: "UndoCommand",
     RedoCommand: "RedoCommand",
     UndoRedoStateChanged: "UndoRedoStateChanged",
-    CorrectedSentenceChangedCommand: "CorrectedSentenceChangedCommand",
     ToolSwitchCommand: "ToolSwitchCommand",
     SwitchCorrectionLanguageCommand: "SwitchCorrectionLanguageCommand",
     InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
     RequestChangesCommand: "RequestChangesCommand",
     CompleteRequestChangeCommand: "CompleteRequestChangeCommand",
+    ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
+    CorrectionBlockChangedCommand: "CorrectionBlockChangedCommand",
+    ToggleLockEditorCommand: "ToggleLockEditorCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -33,10 +35,11 @@ export class ApplyCorrectionCommand implements ICommand {
     ) {}
 }
 
-export class CorrectedSentenceChangedCommand implements ICommand {
-    readonly $type = "CorrectedSentenceChangedCommand";
+export class CorrectionBlockChangedCommand implements ICommand {
+    readonly $type = "CorrectionBlockChangedCommand";
+
     constructor(
-        public correctedSentence: CorrectedSentence,
+        public block: TextCorrectionBlock,
         public change: "add" | "remove" | "update",
     ) {}
 }
@@ -110,4 +113,22 @@ export class CompleteRequestChangeCommand implements ICommand {
         public requestCommand: RequestChangesCommand,
         public mode: "accept" | "reject",
     ) {}
+}
+
+/**
+ * Prevent edits to the editor
+ */
+export class ToggleEditableEditorCommand implements ICommand {
+    readonly $type = "ToggleEditableEditorCommand";
+
+    constructor(public locked: boolean) {}
+}
+
+/**
+ * Prevent all actions to the editor (focus, quick actions, etc.)
+ */
+export class ToggleLockEditorCommand implements ICommand {
+    readonly $type = "ToggleLockEditorCommand";
+
+    constructor(public locked: boolean) {}
 }

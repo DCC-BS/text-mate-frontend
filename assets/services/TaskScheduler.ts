@@ -7,6 +7,7 @@ type Task = {
     promise?: Promise<void>;
     queuedAt: Date;
     abortController: AbortController;
+    canBeAborted: boolean;
 };
 
 /**
@@ -45,7 +46,7 @@ export class TaskScheduler {
      * Runs the task action immediately.
      * Cancels any previously scheduled tasks.
      */
-    public executeImmediately() {
+    public executeImmediately(canBeAborted = true): void {
         if (!this.lastAction) {
             return;
         }
@@ -54,7 +55,7 @@ export class TaskScheduler {
             clearTimeout(this.lateStartTimeout);
         }
 
-        if (this.startedTask) {
+        if (this.startedTask?.canBeAborted) {
             this.startedTask.abortController.abort("aborted");
         }
 
@@ -66,6 +67,7 @@ export class TaskScheduler {
             queuedAt: new Date(),
             promise: this.lastAction(abortController.signal),
             abortController: abortController,
+            canBeAborted: canBeAborted,
         };
     }
 }

@@ -25,13 +25,6 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
             typeof window !== "undefined" &&
             window.indexedDB !== undefined &&
             window.indexedDB !== null;
-
-        // Initialize in-memory dictionary if IndexedDB is not available
-        if (!this.isIndexedDBAvailable) {
-            console.warn(
-                "IndexedDB is not available. Using in-memory dictionary instead.",
-            );
-        }
     }
 
     /**
@@ -76,7 +69,7 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
      * @param word The word to add
      */
     async addWord(word: string): Promise<void> {
-        const normalizedWord = word.toLowerCase().trim();
+        const normalizedWord = word.trim();
 
         if (!this.isIndexedDBAvailable) {
             this.inMemoryDictionary.add(normalizedWord);
@@ -122,7 +115,7 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
      * @param word The word to remove
      */
     async removeWord(word: string): Promise<void> {
-        const normalizedWord = word.toLowerCase().trim();
+        const normalizedWord = word.trim();
 
         if (!this.isIndexedDBAvailable) {
             this.inMemoryDictionary.delete(normalizedWord);

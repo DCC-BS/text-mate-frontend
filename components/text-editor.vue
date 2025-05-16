@@ -1,10 +1,24 @@
 <script setup lang="ts">
+import Bold from "@tiptap/extension-bold";
+import BulletList from "@tiptap/extension-bullet-list";
 import CharacterCount from "@tiptap/extension-character-count";
-import StarterKit from "@tiptap/starter-kit";
+import Document from "@tiptap/extension-document";
+import HardBreak from "@tiptap/extension-hard-break";
+import Heading from "@tiptap/extension-heading";
+import History from "@tiptap/extension-history";
+import Italic from "@tiptap/extension-italic";
+import ListItem from "@tiptap/extension-list-item";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Paragraph from "@tiptap/extension-paragraph";
+import Strike from "@tiptap/extension-strike";
+import Text from "@tiptap/extension-text";
+
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
     Cmds,
+    type ToggleEditableEditorCommand,
+    type ToggleLockEditorCommand,
     type ToolSwitchCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
@@ -13,7 +27,6 @@ import { FocusedWordMark } from "~/utils/focused-word-mark";
 import type { ICommand } from "#build/types/commands";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
-import { NodeType, Slice } from "@tiptap/pm/model";
 
 // model
 const model = defineModel<string>("modelValue", { required: true });
@@ -21,9 +34,10 @@ const selectedText = defineModel<TextFocus>("selectedText");
 
 // refs
 const container = ref<HTMLElement>();
-const limit = ref(10_000);
+const limit = ref(5_000);
 const isTextCorrectionActive = ref(true);
 const isInteractiableFocusActive = ref(false);
+const lockEditor = ref(false);
 
 const undoRedoState = ref({
     canUndo: false,
@@ -39,7 +53,8 @@ const characterCountPercentage = computed(() =>
 
 // composables
 const toast = useToast();
-const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
+const { registerHandler, unregisterHandler, onCommand, executeCommand } =
+    useCommandBus();
 const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
     useTextFocus(isInteractiableFocusActive);
 const { CorrectionExtension, hoverBlock, relativeHoverRect } =
@@ -48,9 +63,19 @@ const { TrackChangesExtension } = useTrackChanges();
 
 const editor = useEditor({
     content: model.value,
-    enablePasteRules: false,
     extensions: [
-        StarterKit,
+        Text,
+        Document,
+        BulletList,
+        ListItem,
+        OrderedList,
+        Paragraph,
+        HardBreak,
+        Bold,
+        Italic,
+        Strike,
+        History,
+        Heading,
         // @ts-expect-error
         BubbleMenu,
         FocusExtension,
@@ -62,6 +87,8 @@ const editor = useEditor({
         FocusedSentenceMark,
         FocusedWordMark,
     ],
+    enablePasteRules: false,
+    enableInputRules: false,
     editorProps: {
         handleKeyDown: (view, event) => {
             // Check if Ctrl+C is pressed
@@ -105,6 +132,24 @@ onMounted(() => {
     registerHandler(Cmds.RedoCommand, applyRedo);
     registerHandler(Cmds.ToolSwitchCommand, handleToolSwitch);
 });
+
+onCommand<ToggleEditableEditorCommand>(
+    Cmds.ToggleEditableEditorCommand,
+    async (command) => {
+        if (!editor.value) return;
+
+        editor.value.setEditable(!command.locked, !command.locked);
+        editor.value.isFocused = !command.locked;
+    },
+);
+
+onCommand<ToggleLockEditorCommand>(
+    Cmds.ToggleLockEditorCommand,
+    async (command) => {
+        lockEditor.value = command.locked;
+        if (!editor.value) return;
+    },
+);
 
 watch(focusedSelection, (value) => {
     selectedText.value = value;
@@ -172,6 +217,9 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
 
 <template>
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
+        <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10">
+        </div>
+        
         <QuickActionsPanel :editor="editor" />
 
         <TextCorrection
@@ -186,7 +234,7 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
             :editor="editor"
             :is-text-correction-active="isTextCorrectionActive" />
 
-        <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
+        <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll relative">
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
         </div>
         <div
@@ -221,8 +269,9 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
 
 .correction {
     text-decoration-line: underline;
-    text-decoration-style: wavy;
-    text-decoration-color: var(--color-red-500);
+    text-decoration-style: solid;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--color-red-300);
     cursor: pointer;
 }
 

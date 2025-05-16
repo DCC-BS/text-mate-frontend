@@ -1,7 +1,7 @@
 <template>
-  <node-view-wrapper class="text-removed" contenteditable="false">
-    {{ node.attrs.text }}
-  </node-view-wrapper>
+    <node-view-wrapper class="text-removed" contenteditable="false">
+        {{ node.attrs.text }}
+    </node-view-wrapper>
 </template>
 
 <script setup lang="ts">
@@ -17,11 +17,11 @@ defineProps({
 @reference "../../assets/css/main.css";
 
 .text-removed {
-  @apply bg-red-100;
-  background-color: var(--color-red-100);
-  text-decoration: line-through;
-  user-select: none;
-  pointer-events: none;
-  display: inline-block;
+    @apply bg-red-100;
+    background-color: var(--color-red-100);
+    text-decoration: line-through;
+    user-select: none;
+    pointer-events: none;
+    display: inline-block;
 }
 </style>

@@ -5,6 +5,7 @@ import {
     Cmds,
     type CompleteRequestChangeCommand,
     type RequestChangesCommand,
+    ToggleEditableEditorCommand,
 } from "~/assets/models/commands";
 import { TextAddedMark } from "~/utils/text-added-mark";
 import { TextApplyNode } from "~/utils/text-apply-changes-node";
@@ -16,7 +17,8 @@ import { TextApplyNode } from "~/utils/text-apply-changes-node";
  * @returns {Object} TrackChangesExtension - Extension to be added to the editor
  */
 export const useTrackChanges = () => {
-    const { registerHandler, unregisterHandler } = useCommandBus();
+    const { registerHandler, unregisterHandler, executeCommand } =
+        useCommandBus();
 
     const logger = useLogger();
     const isActive = ref(false);
@@ -64,19 +66,17 @@ export const useTrackChanges = () => {
             )
             .setTextSelection({ from: command.from, to: command.to })
             .run();
-
-        editor.value.setEditable(false, false);
     }
 
     async function handleCompleteRequestChangeCommand(
         command: CompleteRequestChangeCommand,
     ) {
+        await executeCommand(new ToggleEditableEditorCommand(false));
+
         if (!editor.value) {
             logger.error("Editor is not initialized");
             return;
         }
-
-        console.log(command);
 
         let nodeFrom = 0;
         let nodeTo = 0;
@@ -104,8 +104,6 @@ export const useTrackChanges = () => {
                 .insertContent(command.requestCommand.oldText)
                 .run();
         }
-
-        editor.value.setEditable(true, true);
     }
 
     /**
