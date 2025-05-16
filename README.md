@@ -33,7 +33,6 @@ Create a `.env` file in the project root with the required environment variables
 ```
 API_URL=http://localhost:8000
 LOG_LEVEL=debug
-DCC_BS_TOKEN=your_github_personal_access_token
 ```
 
 ### Install Dependencies
