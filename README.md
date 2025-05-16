@@ -1,6 +1,10 @@
 # Text Mate (Frontend)
 
+![Text Mate Screenshot](_imgs/preview_problems.png)
+
 Text Mate is a modern web application for advanced text editing, correction, and document validation. Built with Nuxt.js and TypeScript, it provides a rich set of tools to enhance writing experiences. This repository contains only the frontend code; the backend is written in Python FastAPI and available at [https://github.com/DCC-BS/text-mate-backend](https://github.com/DCC-BS/text-mate-backend).
+
+![GitHub License](https://img.shields.io/github/license/DCC-BS/text-mate-frontend) [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 
 ## Features
 
@@ -31,8 +35,6 @@ API_URL=http://localhost:8000
 LOG_LEVEL=debug
 DCC_BS_TOKEN=your_github_personal_access_token
 ```
-
-> **Important:** The `DCC_BS_TOKEN` is a GitHub Personal Access Token required to access custom npm packages hosted on GitHub. You must set this before installing dependencies.
 
 ### Install Dependencies
 
@@ -148,6 +150,7 @@ docker build -t text-mate-frontend .
 docker run -p 3000:3000 text-mate-frontend
 ```
 
+
 ## Project Architecture
 
 - `assets/`: CSS and TypeScript models/services
@@ -162,3 +165,8 @@ docker run -p 3000:3000 text-mate-frontend
 ## License
 
 [MIT](LICENSE) © Data Competence Center Basel-Stadt
+
+<a href="https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/datenwissenschaften-und-ki"><img src="https://raw.githubusercontent.com/DCC-BS/text-mate-backend/refs/heads/main/_imgs/databs_log.png" alt="DCC Logo" width="200" /></a>
+
+Datenwissenschaften und KI <br>
+Developed with ❤️ by Data Alchemy Team
