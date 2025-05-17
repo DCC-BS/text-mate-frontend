@@ -33,7 +33,7 @@
         "@tiptap/pm": "^2.11.5",
         "@tiptap/starter-kit": "^2.11.5",
         "@tiptap/vue-3": "^2.11.5",
-        "@types/diff": "^7.0.2",
+        "@types/diff": "^8.0.0",
         "@vite-pwa/nuxt": "^0.10.6",
         "jsdiff": "^1.1.1",
         "nuxt": "^3.16.1",
