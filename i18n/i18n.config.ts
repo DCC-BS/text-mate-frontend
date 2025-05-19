@@ -37,6 +37,8 @@ export default defineI18nConfig(() => ({
             },
             "text-editor": {
                 addWordToDictionary: "Add to Dictionary",
+                "finding-synonym": "Finding synonyms...",
+                "finding-alternative-sentence": "Finding alternatives...",
             },
             editor: {
                 rewrite: "Rewrite",
@@ -146,6 +148,8 @@ export default defineI18nConfig(() => ({
             },
             "text-editor": {
                 addWordToDictionary: "Zum Wörterbuch hinzufügen",
+                "finding-synonym": "Synonyme finden...",
+                "finding-alternative-sentence": "Alternativen finden...",
             },
             editor: {
                 rewrite: "Umschreiben",
