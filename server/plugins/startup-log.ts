@@ -1,6 +1,5 @@
 export default defineNitroPlugin(() => {
-    // Check if running in development environment
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.dev) {
         return;
     }
 

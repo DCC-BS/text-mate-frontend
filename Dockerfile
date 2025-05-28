@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # Stage 1: Build the application
 FROM node:23-alpine AS build
 
@@ -7,14 +9,11 @@ RUN npm install -g bun
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY ./package*.json ./
+# Copy the rest of the application code
+COPY . .
 
 # Install dependencies using bun
 RUN bun install
-
-# Copy the rest of the application code
-COPY . .
 
 # Build the application
 RUN bun x nuxi prepare

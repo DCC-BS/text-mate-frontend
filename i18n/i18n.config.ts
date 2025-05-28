@@ -4,291 +4,227 @@ export default defineI18nConfig(() => ({
     locale: "de",
     messages: {
         en: {
-            // Navigation menu translations
+            loading: "Loading...",
+            language: {
+                auto: "Detect Language",
+                "de-CH": "German",
+                fr: "French",
+                it: "Italian",
+                "en-US": "English (US)",
+                "en-GB": "English (UK)",
+            },
             navigation: {
-                back: "Back",
-                home: "Home",
                 languages: "Languages",
+                undo: "Undo",
+                redo: "Redo",
             },
-
-            // Reports table translations
-            reportsTable: {
-                title: "Reports",
-                reportName: "Report Name",
-                lastModified: "Last Modified",
-                complaints: "Complaints",
-                deleteSelected: "Delete Selected",
-                reportsSelected: "{0} of {1} report(s) selected.",
-                view: "View report",
-                delete: "Delete report",
-                noReports: "No reports found.",
+            tools: {
+                problems: "Problems",
+                rewrite: "Rewrite",
+                advisor: "Feedback",
             },
-
-            report: {
-                title: "Title",
-                customer: "Customer",
-                updateAt: "Updated at",
-                createdAt: "Created at",
-                notFound: "Report not found",
-                noComplaints: "No complaints added yet",
-                addComplaint: "Add complaint",
-                loading: "Loading report...",
-                saved: "Report saved",
-                export: "Export Report",
-                exported: "Report exported",
-                delete: "Delete report?",
-            },
-
-            // Email export translations
-            email: {
-                enterEmail: "Enter email address",
-                send: "Send Email",
-                validEmail: "Please enter a valid email address",
-                sent: "Email sent successfully",
-            },
-
-            // Camera component translations
-            camera: {
-                takePhoto: "Take Photo",
-                switching: "Switching...",
-                switchCamera: "Switch Camera ({0})",
-                front: "Front",
-                back: "Back",
-                takeAPhoto: "Take a Photo",
-                uploadAPhoto: "Upload a Photo",
-                retake: "Retake",
-                submit: "Submit",
-                switchingCamera: "Switching camera...",
-                capturedImageAlt: "Captured",
-            },
-
-            // Audio recorder component translations
-            audio: {
-                startRecording: "Start Recording",
-                stopRecording: "Stop Recording",
-                recordingInProgress: "Recording in progress...",
-                errors: {
-                    noMicrophoneDetected:
-                        "No microphone detected on your device.",
-                    noMicrophoneFound:
-                        "No microphone found. Please connect a microphone and try again.",
-                    accessDenied:
-                        "Microphone access denied. Please allow microphone access in your browser settings.",
-                    inUse: "Your microphone is in use by another application.",
-                    constraints: "Microphone constraints cannot be satisfied.",
-                    notCompatible:
-                        "No microphone found or it's not compatible with your browser.",
-                    troubleshooting: {
-                        properlyConnected:
-                            "Make sure your microphone is properly connected",
-                        checkPermissions:
-                            "Check browser permissions for microphone access",
-                        differentBrowser: "Try using a different browser",
-                        restart: "Restart your device if the issue persists",
-                    },
-                },
-            },
-
-            // Complaint view component translations
-            complaint: {
-                loading: "Loading ...",
-                action: "Action",
-                finding: "Finding",
-                removeMemo: "Remove Memo",
-                removeImage: "Remove Image",
-                noImages: "No images captured yet.",
-                capturedImages: "Captured Images:",
-                notFound: "Complaint not found",
-                addRecording: "Add Recording",
-                addText: "Add Text",
-                addImage: "Add Image",
-                noItems: "No items use to plus button to add items",
-                delete: "delete {type}?",
-            },
-            
-            // Complaint item component translations
-            complaintItem: {
-                addText: "Add Text",
-            },
-
-            // Speech to text component translations
-            speechToText: {
-                converting: "Converting speech to text...",
-            },
-
-            // Index page translations
-            home: {
-                createNewReport: "Create New report",
-                creatingReport: "Creating your report...",
-            },
-
-            // Common buttons
-            buttons: {
-                add: "Add",
-            },
-
-            // Loading states
-            loading: {
+            status: {
+                rewritingText: "Rewriting text...",
+                correctingText: "Correcting text...",
+                advice: "giving advice...",
+                ready: "Ready",
+                quickAction: "Quick action in progress...",
                 loading: "Loading...",
             },
-
-            // Confirm button component translations
-            confirmButton: {
-                confirmQuestion: "Are you sure?",
-                cancel: "Cancel",
-                confirm: "Confirm",
+            problems: {
+                title: "Problems",
+                noProblems: "No problems found",
             },
-
-            // Delete modal component translations
-            deleteModal: {
-                delete: "Delete",
-                cancel: "Cancel",
+            "text-editor": {
+                addWordToDictionary: "Add to Dictionary",
+                "finding-synonym": "Finding synonyms...",
+                "finding-alternative-sentence": "Finding alternatives...",
+            },
+            editor: {
+                rewrite: "Rewrite",
+                simplify: "Simplify",
+                shorten: "Shorten",
+                bullet_points: "Bullet Points",
+                summarize: "Summarize",
+                social_mediafy: "Social Media Format",
+            },
+            rewrite: {
+                writing_style: {
+                    general: "General",
+                    simple: "Simple",
+                    professional: "Professional",
+                    casual: "Casual",
+                    academic: "Academic",
+                    technical: "Technical",
+                },
+                target_audience: {
+                    general: "General",
+                    young: "Young Adults",
+                    adult: "Adults",
+                    children: "Children",
+                },
+                intend: {
+                    general: "General",
+                    persuasive: "Persuasive",
+                    informative: "Informative",
+                    descriptive: "Descriptive",
+                    narrative: "Narrative",
+                    entertaining: "Entertaining",
+                },
+                writingStyleLabel: "Writing Style",
+                targetAudienceLabel: "Target Audience",
+                intendLabel: "Intent",
+                apply: "Apply",
+                rewrite: "Rewrite",
+                noRewrite: 'Select text and click "Rewrite" to rewrite it',
+            },
+            advisor: {
+                check: "Check Text",
+                reason: "Reason",
+                proposal: "Proposal",
+                page: "Page",
+                title: "Document Advisor",
+                description: "Check your text against selected documents",
+                results: "Results",
+                issues: "{n} issue |{n} issues",
+                noIssues: "No issues found!",
+                noResultsYet: "Run a check to see results",
+                checking: "Checking your text...",
+                error: "Error",
+                rule: {
+                    title: "Rule Violation",
+                    source: "Source",
+                    example: "Example",
+                    fix: "Suggested Fix",
+                },
+                selectDocs: "select documents",
+            },
+            "user-dictionary": {
+                title: "Dictionary",
+                empty: "No words in your dictionary",
+                add: "Add word",
+                placeholder: "Enter a word...",
+            },
+            "quick-actions": {
+                "de-CH": "Translate to German",
+                "en-US": "Translate to English (US)",
+                "en-GB": "Translate to English (UK)",
+                fr: "Translate to French",
+                it: "Translate to Italian",
             },
         },
 
         de: {
-            // Navigation menu translations
+            loading: "Wird geladen...",
+            language: {
+                auto: "Sprache erkennen",
+                "de-CH": "Deutsch",
+                fr: "Französisch",
+                it: "Italienisch",
+                "en-US": "Englisch (US)",
+                "en-GB": "Englisch (GB)",
+            },
             navigation: {
-                back: "Zurück",
-                home: "Startseite",
                 languages: "Sprachen",
+                undo: "Rückgängig",
+                redo: "Wiederholen",
             },
-
-            // Reports table translations
-            reportsTable: {
-                title: "Berichte",
-                reportName: "Berichtname",
-                lastModified: "Zuletzt geändert",
-                complaints: "Beschwerden",
-                deleteSelected: "Ausgewählte löschen",
-                reportsSelected: "{0} von {1} Bericht(en) ausgewählt.",
-                view: "Bericht anzeigen",
-                delete: "Bericht löschen",
-                noReports: "Keine Berichte gefunden.",
+            tools: {
+                problems: "Probleme",
+                rewrite: "Umschreiben",
+                advisor: "Feedback",
             },
-
-            report: {
-                title: "Titel",
-                customer: "Kunde",
-                updateAt: "Aktualisiert am",
-                createdAt: "Erstellt am",
-                notFound: "Bericht nicht gefunden",
-                noComplaints: "Noch keine Beschwerden hinzugefügt",
-                addComplaint: "Beschwerde hinzufügen",
-                loading: "Bericht wird geladen...",
-                saved: "Bericht gespeichert",
-                export: "Bericht exportieren",
-                exported: "Bericht exportiert",
-                delete: "Bericht löschen?",
-            },
-
-            // Email export translations
-            email: {
-                enterEmail: "E-Mail-Adresse eingeben",
-                send: "E-Mail senden",
-                validEmail: "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-                sent: "E-Mail erfolgreich gesendet",
-            },
-
-            // Camera component translations
-            camera: {
-                takePhoto: "Foto aufnehmen",
-                switching: "Wechsle...",
-                switchCamera: "Kamera wechseln ({0})",
-                front: "Vorne",
-                back: "Hinten",
-                takeAPhoto: "Foto aufnehmen",
-                uploadAPhoto: "Foto hochladen",
-                retake: "Neu aufnehmen",
-                submit: "Bestätigen",
-                switchingCamera: "Kamera wird gewechselt...",
-                capturedImageAlt: "Aufgenommenes Bild",
-            },
-
-            // Audio recorder component translations
-            audio: {
-                startRecording: "Aufnahme starten",
-                stopRecording: "Aufnahme beenden",
-                recordingInProgress: "Aufnahme läuft...",
-                errors: {
-                    noMicrophoneDetected:
-                        "Kein Mikrofon an Ihrem Gerät erkannt.",
-                    noMicrophoneFound:
-                        "Kein Mikrofon gefunden. Bitte schließen Sie ein Mikrofon an und versuchen Sie es erneut.",
-                    accessDenied:
-                        "Mikrofonzugriff verweigert. Bitte erlauben Sie den Mikrofonzugriff in Ihren Browsereinstellungen.",
-                    inUse: "Ihr Mikrofon wird von einer anderen Anwendung verwendet.",
-                    constraints:
-                        "Mikrofoneinschränkungen können nicht erfüllt werden.",
-                    notCompatible:
-                        "Kein Mikrofon gefunden oder es ist nicht mit Ihrem Browser kompatibel.",
-                    troubleshooting: {
-                        properlyConnected:
-                            "Stellen Sie sicher, dass Ihr Mikrofon richtig angeschlossen ist",
-                        checkPermissions:
-                            "Überprüfen Sie die Browserberechtigungen für den Mikrofonzugriff",
-                        differentBrowser: "Versuchen Sie einen anderen Browser",
-                        restart:
-                            "Starten Sie Ihr Gerät neu, wenn das Problem weiterhin besteht",
-                    },
-                },
-            },
-
-            // Complaint view component translations
-            complaint: {
-                loading: "Lade ...",
-                action: "Masnahme",
-                finding: "Feststellung",
-                removeMemo: "Notiz entfernen",
-                removeImage: "Bild entfernen",
-                noImages: "Noch keine Bilder aufgenommen.",
-                capturedImages: "Aufgenommene Bilder:",
-                notFound: "Beschwerde nicht gefunden",
-                addRecording: "Aufnahme hinzufügen",
-                addText: "Text hinzufügen",
-                addImage: "Bild hinzufügen",
-                delete: "{type} löschen?",
-                noItems:
-                    "Keine Elemente, verwenden Sie die Plus-Schaltfläche, um Elemente hinzuzufügen",
-            },
-            
-            // Complaint item component translations
-            complaintItem: {
-                addText: "Text hinzufügen",
-            },
-
-            // Speech to text component translations
-            speechToText: {
-                converting: "Konvertiere Sprache zu Text...",
-            },
-
-            // Index page translations
-            home: {
-                createNewReport: "Neuen Bericht erstellen",
-                creatingReport: "Bericht wird erstellt...",
-            },
-
-            // Common buttons
-            buttons: {
-                add: "Hinzufügen",
-            },
-
-            // Loading states
-            loading: {
+            status: {
+                rewritingText: "Text wird umgeschrieben...",
+                correctingText: "Text wird korrigiert...",
+                advice: "Ratschlag geben...",
+                ready: "Bereit",
+                quickAction: "Schnellaktion wird ausgeführt...",
                 loading: "Wird geladen...",
             },
-
-            // Confirm button component translations
-            confirmButton: {
-                confirmQuestion: "Sind Sie sicher?",
-                cancel: "Abbrechen",
-                confirm: "Bestätigen",
+            problems: {
+                title: "Probleme",
+                noProblems: "Keine Probleme gefunden",
             },
-
-            // Delete modal component translations
-            deleteModal: {
-                delete: "Löschen",
-                cancel: "Abbrechen",
+            "text-editor": {
+                addWordToDictionary: "Zum Wörterbuch hinzufügen",
+                "finding-synonym": "Synonyme finden...",
+                "finding-alternative-sentence": "Alternativen finden...",
+            },
+            editor: {
+                rewrite: "Umschreiben",
+                simplify: "Vereinfachen",
+                shorten: "Kürzen",
+                bullet_points: "Aufzählungspunkte",
+                summarize: "Zusammenfassen",
+                social_mediafy: "Social-Media-Format",
+            },
+            rewrite: {
+                writing_style: {
+                    general: "Allgemein",
+                    simple: "Einfach",
+                    professional: "Professionell",
+                    casual: "Locker",
+                    academic: "Akademisch",
+                    technical: "Technisch",
+                },
+                target_audience: {
+                    general: "Allgemein",
+                    young: "Junge Erwachsene",
+                    adult: "Erwachsene",
+                    children: "Kinder",
+                },
+                intend: {
+                    general: "Allgemein",
+                    persuasive: "Überzeugend",
+                    informative: "Informativ",
+                    descriptive: "Beschreibend",
+                    narrative: "Erzählend",
+                    entertaining: "Unterhaltsam",
+                },
+                writingStyleLabel: "Schreibstil",
+                targetAudienceLabel: "Zielgruppe",
+                intendLabel: "Absicht",
+                apply: "Anwenden",
+                rewrite: "Umschreiben",
+                noRewrite:
+                    'Text auswählen und auf "Umschreiben" klicken, um ihn umzuschreiben',
+            },
+            advisor: {
+                check: "Text überprüfen",
+                reason: "Grund",
+                proposal: "Vorschlag",
+                page: "Seite",
+                title: "Dokumentenberater",
+                description:
+                    "Überprüfen Sie Ihren Text anhand ausgewählter Dokumente",
+                results: "Ergebnisse",
+                issues: "{n} Problem |{n} Probleme",
+                noIssues: "Keine Probleme gefunden!",
+                noResultsYet:
+                    "Führen Sie eine Überprüfung durch, um Ergebnisse zu sehen",
+                checking: "Überprüfe deinen Text...",
+                error: "Fehler",
+                rule: {
+                    title: "Regelverletzung",
+                    source: "Quelle",
+                    example: "Beispiel",
+                    fix: "Vorgeschlagene Korrektur",
+                },
+                selectDocs: "Dokumente auswählen",
+            },
+            "user-dictionary": {
+                title: "Wörterbuch",
+                empty: "Keine Wörter in deinem Wörterbuch",
+                add: "Wort hinzufügen",
+                placeholder: "Gib ein Wort ein...",
+            },
+            "quick-actions": {
+                "de-CH": "Auf Deutsch übersetzen",
+                "en-US": "Auf Englisch (US) übersetzen",
+                "en-GB": "Auf Englisch (GB) übersetzen",
+                fr: "Auf Französisch übersetzen",
+                it: "Auf Italienisch übersetzen",
             },
         },
     },

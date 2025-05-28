@@ -1,17 +1,12 @@
-import pwaIcons from "./public/icons.json";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
-    runtimeConfig: {
-        public: {
-            apiUrl: process.env.API_URL,
-        },
-    },
-    // Define app head configuration
+    devtools: { enabled: true },
     app: {
         head: {
-            titleTemplate: "%s | Berichtgenerator",
+            titleTemplate: "Text Mate",
             htmlAttrs: {
                 lang: "de",
             },
@@ -19,42 +14,95 @@ export default defineNuxtConfig({
                 { charset: "utf-8" },
                 {
                     name: "viewport",
-                    content: "width=device-width, initial-scale=1",
+                    content: "width-device-width, initial-scale=1",
                 },
                 {
                     name: "apple-mobile-web-app-title",
-                    content: "My Test App",
+                    content: "Text Mate",
                 },
-                { name: "application-name", content: "My Test App" },
+                {
+                    name: "application-name",
+                    content: "Text Mate",
+                },
                 { name: "msapplication-config", content: "/browserconfig.xml" },
             ],
         },
     },
+    ui: {
+        colorMode: false,
+    },
     modules: [
         "@nuxt/ui",
         "@nuxtjs/i18n",
+        "@vite-pwa/nuxt",
+        "@nuxtjs/mdc",
+        "@dcc-bs/event-system.bs.js",
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",
-        "@dcc-bs/event-system.bs.js",
-        "@dcc-bs/dependency-injection.bs.js",
-        "@vite-pwa/nuxt",
-        "@pinia/nuxt",
         "nuxt-viewport",
+        "@pinia/nuxt",
     ],
     "feedback-control.bs.js": {
         repo: "Feedback",
         owner: "DCC-BS",
-        project: "bericht-frontend",
+        project: "text-mate",
         githubToken: process.env.GITHUB_TOKEN,
     },
-    devtools: { enabled: true },
+    typescript: {
+        strict: true,
+    },
     css: ["~/assets/css/main.css"],
-    colorMode: {
-        preference: "light",
+    vite: {
+        plugins: [
+            visualizer({
+                filename: "stats.html",
+                gzipSize: true,
+                brotliSize: true,
+                open: true,
+                template: "treemap",
+            }),
+        ],
+        build: {
+            // Disable sourcemaps in production to avoid warnings
+            sourcemap: process.env.NODE_ENV !== "production",
+            cssMinify: "lightningcss",
+            // Fix the chunk size warning by setting a higher limit
+            chunkSizeWarningLimit: 800,
+            rollupOptions: {
+                output: {
+                    // Use manual chunks to improve chunking
+                    manualChunks: {
+                        "vue-vendor": ["vue", "vue-router"],
+                        "tiptap-vendor": [
+                            "@tiptap/vue-3",
+                            "@tiptap/starter-kit",
+                            "@tiptap/extension-bubble-menu",
+                            "@tiptap/extension-character-count",
+                        ],
+                        "pdf-vendor": ["vue-pdf-embed"],
+                    },
+                },
+            },
+        },
+        // Add optimizations for vue-pdf-embed
+        optimizeDeps: {
+            include: ["vue-pdf-embed"],
+        },
+    },
+    runtimeConfig: {
+        public: {
+            apiUrl: process.env.API_URL,
+            logger_bs: {
+                loglevel: process.env.LOG_LEVEL || "debug",
+            },
+        },
     },
     // localization
     i18n: {
+        bundle: {
+            optimizeTranslationDirective: false,
+        },
         locales: [
             {
                 code: "en",
@@ -70,61 +118,82 @@ export default defineNuxtConfig({
         lazy: true,
         strategy: "prefix_except_default",
     },
-    // routeRules: {
-    //     '**': { proxy: 'https://robust-nationally-lacewing.ngrok-free.app/' },
-    // },
-    vite: {
-        optimizeDeps: {
-            exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
-        },
-        server: {
-            allowedHosts: ["robust-nationally-lacewing.ngrok-free.app"],
-            headers: {
-                "Cross-Origin-Opener-Policy": "same-origin",
-                "Cross-Origin-Embedder-Policy": "require-corp",
-            },
-        },
-        build: {
-            minify: "terser",
-            terserOptions: {
-                keep_fnames: true,
-                keep_classnames: true,
-            },
+    nitro: {
+        node: true,
+        prerender: {
+            routes: ["/"],
         },
     },
     pwa: {
-        devOptions: {
-            enabled: false,
-        },
         registerType: "autoUpdate",
         workbox: {
             globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
             globIgnores: ["dev-sw-dist/**/*"],
             navigateFallback: "/",
-            clientsClaim: true,
-            skipWaiting: true,
+            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         },
         client: {
             periodicSyncForUpdates: 60 * 10, // 10 minutes
         },
         manifest: {
-            name: "Bericht Generator BS",
-            short_name: "Bericht Generator BS",
-            description: "Bericht Generator BS",
+            name: "Text Mate",
+            short_name: "Text Mate",
+            description: "Tool for text manipulation",
             theme_color: "#000000",
             background_color: "#000000",
-            icons: pwaIcons.icons,
+            icons: [
+                {
+                    src: "/HeroiconsLanguage.png",
+                    sizes: "512x512",
+                },
+            ],
+
+            shortcuts: [
+                {
+                    name: "From Clipboard",
+                    url: "/?clipboard=true",
+                    icons: [
+                        {
+                            src: "/MaterialSymbolsContentPasteGo.png",
+                            sizes: "512x512",
+                        },
+                    ],
+                },
+            ],
         },
     },
+    viewport: {
+        breakpoints: {
+            xs: 320,
+            sm: 640,
+            md: 768,
+            lg: 1024,
+            xl: 1280,
+            "2xl": 1536,
+        },
+        defaultBreakpoints: {
+            desktop: "lg",
+            mobile: "xs",
+            tablet: "md",
+        },
+        fallbackBreakpoint: "lg",
+    },
     $development: {
+        debug: true,
+        pwa: {
+            devOptions: {
+                enabled: false,
+            },
+        },
+        devtools: {
+            enabled: true,
+        },
         "logger.bs.js": {
             loglevel: "debug",
         },
-        vite: {
-            // Enable source maps for development
-            build: {
-                sourcemap: true,
-            },
+        sourcemap: {
+            server: true,
+            client: true,
         },
     },
 });

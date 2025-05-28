@@ -1,7 +1,11 @@
+<script setup lang="ts">
+</script>
+
 <template>
     <NuxtPwaManifest />
-    <!-- <FeedbackControl /> -->
+    <FeedbackControl />
     <UApp>
+        <NavigationMenu />
         <NuxtPage />
     </UApp>
 </template>

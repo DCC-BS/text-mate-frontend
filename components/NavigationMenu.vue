@@ -1,44 +1,49 @@
 <script lang="ts" setup>
+import {
+    Cmds,
+    RedoCommand,
+    UndoCommand,
+    type UndoRedoStateChanged,
+} from "~/assets/models/commands";
 import type { NavigationMenuItem } from "#ui/components/NavigationMenu.vue";
-
-interface InputProps {
-    backUrl: string;
-    items?: NavigationMenuItem[];
-}
-
-const props = withDefaults(defineProps<InputProps>(), {
-    items: () => [],
-});
 
 // Add translation hook
 const { t } = useI18n();
+const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
+
+const undoRedoState = reactive({
+    canUndo: false,
+    canRedo: false,
+});
 
 const { locale, locales } = useI18n();
 const switchLocalePath = useSwitchLocalePath();
-const router = useRouter();
 
 const availableLocales = computed(() => {
     return locales.value.filter((i) => i.code !== locale.value);
 });
 
-function goBack(): void {
-    router.back();
-}
-
 // Navigation menu items
 const items = computed<NavigationMenuItem[][]>(() => [
     [
         {
-            label: t("navigation.back"),
-            icon: "i-lucide-arrow-left",
-            to: props.backUrl,
+            label: t("navigation.undo"),
+            icon: "i-heroicons-arrow-uturn-left",
+            onSelect: () => handleUndo(),
+            disabled: !undoRedoState.canUndo,
+        },
+        {
+            label: t("navigation.redo"),
+            icon: "i-heroicons-arrow-uturn-right",
+            onSelect: handleRedo,
+            disabled: !undoRedoState.canRedo,
         },
     ],
     [],
     [
-        ...props.items,
         {
-            icon: "i-lucide-languages",
+            label: t("navigation.languages"),
+            icon: "i-heroicons-language",
             children: availableLocales.value.map((locale) => ({
                 label: locale.name,
                 to: switchLocalePath(locale.code),
@@ -46,15 +51,35 @@ const items = computed<NavigationMenuItem[][]>(() => [
         },
     ],
 ]);
+
+onMounted(() => {
+    registerHandler(Cmds.UndoRedoStateChanged, handleUndoRedoStateChanged);
+});
+
+onUnmounted(() => {
+    unregisterHandler(Cmds.UndoRedoStateChanged, handleUndoRedoStateChanged);
+});
+
+async function handleUndoRedoStateChanged(command: UndoRedoStateChanged) {
+    undoRedoState.canUndo = command.canUndo;
+    undoRedoState.canRedo = command.canRedo;
+}
+
+function handleUndo(): void {
+    executeCommand(new UndoCommand());
+}
+
+function handleRedo(): void {
+    executeCommand(new RedoCommand());
+}
 </script>
 
 <template>
-    <div class="fixed w-full z-50 bg-white shadow-md">
+    <div>
         <UNavigationMenu
             content-orientation="vertical"
             :items="items"
             class="w-full justify-between z-50"
         />
     </div>
-    <div class="h-[60px]" />
 </template>
