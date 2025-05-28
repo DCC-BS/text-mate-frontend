@@ -1,0 +1,30 @@
+name: Build Client
+
+on:
+  push:
+    branches:
+      - deploy
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  packages: write
+
+jobs:
+  docker-build-client:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and push Docker image
+        uses: ./.github/actions/docker-build
+        with:
+          working-directory: .
+          ghcr-enabled: true
+          quay-enabled: false
+          image-name: "textmate-client"
+          vulnerability-scan: false
+          push: false
+          dcc-bs-token: ${{ secrets.DCC_BS_TOKEN }}
