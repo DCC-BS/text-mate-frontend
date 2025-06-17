@@ -39,6 +39,8 @@ export default defineI18nConfig(() => ({
                 addWordToDictionary: "Add to Dictionary",
                 "finding-synonym": "Finding synonyms...",
                 "finding-alternative-sentence": "Finding alternatives...",
+                "rewrite-word": "Rewrite Word",
+                "rewrite-sentence": "Rewrite Sentence",
             },
             editor: {
                 rewrite: "Rewrite",
@@ -150,6 +152,8 @@ export default defineI18nConfig(() => ({
                 addWordToDictionary: "Zum Wörterbuch hinzufügen",
                 "finding-synonym": "Synonyme finden...",
                 "finding-alternative-sentence": "Alternativen finden...",
+                "rewrite-word": "Wort umformulieren",
+                "rewrite-sentence": "Satz umformulieren",
             },
             editor: {
                 rewrite: "Umschreiben",

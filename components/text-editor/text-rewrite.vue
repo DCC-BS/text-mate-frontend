@@ -137,7 +137,7 @@ async function applyAlternativeSentence(sentence: string) {
                             :loading="isRewritingWord"
                             :disabled="isRewritingWord || isRewritingSentence"
                             variant="subtle">
-                            Wort umformulieren
+                            {{ t("text-editor.rewrite-word") }}
                         </UButton>
 
                         <div class="flex gap-1 flex-col pt-1">
@@ -155,7 +155,7 @@ async function applyAlternativeSentence(sentence: string) {
                         :loading="isRewritingSentence"
                         :disabled="isRewritingSentence || isRewritingWord"
                         variant="subtle">
-                        Satzt umformulieren
+                        {{ t("text-editor.rewrite-sentence") }}
                     </UButton>
 
                     <div class="flex gap-1 flex-col pt-1">
