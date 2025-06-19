@@ -111,7 +111,7 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
     </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .tool-item {
     display: flex;
     flex-direction: row;
