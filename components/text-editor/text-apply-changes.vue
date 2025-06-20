@@ -13,6 +13,8 @@ const props = defineProps({
 });
 
 const { executeCommand } = useCommandBus();
+// Get access to translations
+const { t } = useI18n();
 const showChanges = ref(true);
 
 const command = computed(() => {
@@ -64,15 +66,15 @@ async function rejectChanges() {
 <template>
     <node-view-wrapper class="text-apply" contenteditable="false">
         <div class="flex justify-end mt-2 gap-1 items-center">
-                <USwitch v-model="showChanges" size="sm" color="primary" label="Show Changes">
+                <USwitch v-model="showChanges" size="sm" color="primary" :label="t('text-editor.show-changes')">
                 </USwitch>
                 <div class="grow"></div>
 
-                <UButton size="sm" color="success" @click="applyChanges">Apply Changes</UButton>
-                <UButton size="sm" class="ml-2" color="neutral" @click="rejectChanges"> Revert Changes</UButton>
+                <UButton size="sm" color="success" @click="applyChanges">{{ t('text-editor.apply-changes') }}</UButton>
+                <UButton size="sm" class="ml-2" color="neutral" @click="rejectChanges">{{ t('text-editor.revert-changes') }}</UButton>
             </div>
         <div class="m-2 p-1 border-2 border-gray-300 rounded-md">
-            <div class="font-bold text-lg">Original</div>
+            <div class="font-bold text-lg">{{ t('text-editor.original') }}</div>
             <span v-html="changes"></span>
         </div>
     </node-view-wrapper>

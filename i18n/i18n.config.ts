@@ -41,6 +41,10 @@ export default defineI18nConfig(() => ({
                 "finding-alternative-sentence": "Finding alternatives...",
                 "rewrite-word": "Rewrite Word",
                 "rewrite-sentence": "Rewrite Sentence",
+                "show-changes": "Show Changes",
+                "apply-changes": "Apply Changes",
+                "revert-changes": "Revert Changes",
+                original: "Original",
             },
             editor: {
                 rewrite: "Rewrite",
@@ -154,6 +158,10 @@ export default defineI18nConfig(() => ({
                 "finding-alternative-sentence": "Alternativen finden...",
                 "rewrite-word": "Wort umformulieren",
                 "rewrite-sentence": "Satz umformulieren",
+                "show-changes": "Änderungen anzeigen",
+                "apply-changes": "Änderungen anwenden",
+                "revert-changes": "Änderungen rückgängig",
+                original: "Original",
             },
             editor: {
                 rewrite: "Umschreiben",
