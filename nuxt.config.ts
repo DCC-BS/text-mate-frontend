@@ -91,6 +91,7 @@ export default defineNuxtConfig({
         },
     },
     runtimeConfig: {
+        githubToken: process.env.GITHUB_TOKEN,
         public: {
             apiUrl: process.env.API_URL,
             logger_bs: {
