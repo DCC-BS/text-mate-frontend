@@ -2,9 +2,17 @@ import { defineStore } from "pinia";
 import { InvalidateCorrectionCommand } from "~/assets/models/commands";
 import { createUserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 
+// Type definition for the user dictionary store
+export interface UserDictionaryStore {
+    words: Ref<string[]>;
+    addWord: (word: string) => Promise<void>;
+    removeWord: (word: string) => Promise<void>;
+    exists: (word: string) => Promise<boolean>;
+}
+
 export const useUserDictionaryStore = defineStore(
     "user_dictionary_store",
-    () => {
+    (): UserDictionaryStore => {
         const userQuery = createUserDictionaryQuery();
         const words = ref<string[]>([]);
         const { executeCommand } = useCommandBus();

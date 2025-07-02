@@ -1,18 +1,13 @@
 import type { IUserDictionaryQuery } from "./user_dictionary.query.interface";
 
 /**
- * Factory function that creates a new UserDictionaryQuery instance
- * @returns A new UserDictionaryQuery instance
- */
-export function createUserDictionaryQuery(): IUserDictionaryQuery {
-    return new UserDictionaryQuery();
-}
-
-/**
  * Implementation of UserDictionaryQuery using IndexedDB for persistence
  * with fallback to in-memory storage when IndexedDB is not available
  */
-class UserDictionaryQuery implements IUserDictionaryQuery {
+export class UserDictionaryQuery implements IUserDictionaryQuery {
+    static readonly $injectKey = "userDictionaryQuery";
+    static readonly $inject = [];
+
     private readonly dbName: string = "userDictionary";
     private readonly storeName: string = "words";
     private readonly dbVersion: number = 1;

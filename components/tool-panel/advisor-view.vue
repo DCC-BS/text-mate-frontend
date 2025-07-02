@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import type {
-    AdvidorDocumentDescription,
+    AdvisorDocumentDescription,
     AdvisorRuleViolation,
     ValidationResult,
 } from "~/assets/models/advisor";
 import {
-    type AdivsorService,
+    AdvisorService,
     getAdviorService,
 } from "~/assets/services/AdvisorService";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
@@ -22,12 +22,12 @@ const toast = useToast();
 const isLoading = ref(false);
 const overlay = useOverlay();
 
-const advisorService = ref<AdivsorService>();
-const selectedDocs = ref<AdvidorDocumentDescription[]>([]);
+const advisorService = ref<AdvisorService>();
+const selectedDocs = ref<AdvisorDocumentDescription[]>([]);
 const validationResult = ref<ValidationResult>();
 
 onMounted(() => {
-    getAdviorService().then((service) => {
+    useServiceAsync(AdvisorService).then((service) => {
         advisorService.value = service;
     });
 });

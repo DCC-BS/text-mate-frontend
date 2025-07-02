@@ -3,19 +3,25 @@ import { type ArrayChange, diffArrays } from "diff";
 import type { ICommand } from "#build/types/commands";
 import { CorrectionBlockChangedCommand } from "../models/commands";
 import type { TextCorrectionBlock } from "../models/text-correction";
-import type { ICorrectionFetcher } from "./CorrectionFetcher";
+import {
+    CorrectionFetcher,
+    type ICorrectionFetcher,
+} from "./CorrectionFetcher";
 import { Queue } from "./Queue";
 import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
+    static readonly $injectKey = "correctionService";
+    static readonly $inject = ["logger", CorrectionFetcher];
+
     private lastSentences: string[] = [];
     private lastBlocks: TextCorrectionBlock[] = [];
     private correction_lock = false;
 
     constructor(
         private readonly logger: ILogger,
-        private readonly executeCommand: (command: ICommand) => Promise<void>,
         private readonly correctionFetcher: ICorrectionFetcher,
+        private readonly executeCommand: (command: ICommand) => Promise<void>,
         private readonly onError: (message: string) => void,
         private language = "auto",
     ) {}

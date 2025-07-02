@@ -3,6 +3,7 @@ import type {
     TextCorrectionBlock,
     TextCorrectionResponse,
 } from "../models/text-correction";
+import { UserDictionaryQuery } from "../queries/user_dictionary.query";
 
 export interface ICorrectionFetcher {
     language: string;
@@ -18,16 +19,17 @@ export function createCorrectionFetcher(
     logger: ILogger,
     wordInUserDictionary: (word: string) => Promise<boolean>,
 ): ICorrectionFetcher {
-    return new CorrectionFetcher(language, logger, wordInUserDictionary);
+    return new CorrectionFetcher(logger, language, wordInUserDictionary);
 }
 
-class CorrectionFetcher implements ICorrectionFetcher {
+export class CorrectionFetcher implements ICorrectionFetcher {
+    static readonly $injectKey = "correctionFetcher";
+    static readonly $inject = ["logger", UserDictionaryQuery];
+
     constructor(
-        public language: string,
         private readonly logger: ILogger,
-        private readonly wordInUserDictionary: (
-            word: string,
-        ) => Promise<boolean>,
+        private readonly userDictionaryQuery: UserDictionaryQuery,
+        public language: string,
     ) {}
 
     public async fetchBlocks(
@@ -47,7 +49,7 @@ class CorrectionFetcher implements ICorrectionFetcher {
             const blocks: TextCorrectionBlock[] = [];
 
             for (const block of response.blocks) {
-                const inDict = await this.wordInUserDictionary(
+                const inDict = await this.userDictionaryQuery.exists(
                     block.original.trim(),
                 );
                 if (!inDict) {

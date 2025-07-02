@@ -1,4 +1,4 @@
-export type AdvidorDocumentDescription = {
+export type AdvisorDocumentDescription = {
     title: string;
     description: string;
     author: string;

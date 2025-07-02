@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import type { AdvidorDocumentDescription } from "~/assets/models/advisor";
-import type { AdivsorService } from "~/assets/services/AdvisorService";
+import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
+import type { AdvisorService } from "~/assets/services/AdvisorService";
 
 interface AdvisorDocSelectProps {
-    advisorService: AdivsorService;
+    advisorService: AdvisorService;
 }
 
 const props = defineProps<AdvisorDocSelectProps>();
 
 const docs = props.advisorService.getDocs();
-const selectedDocs = defineModel<AdvidorDocumentDescription[]>({
+const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
     default: [],
 });
 </script>
