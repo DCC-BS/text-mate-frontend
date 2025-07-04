@@ -1,19 +1,26 @@
-export function averageSentenceLength(text: string): number {
+export function calculateAverageSentenceLength(text: string): number {
     const sentences = text.split(/[.!?]+/).filter(Boolean);
     const totalWords = sentences.reduce(
         (acc, sentence) => acc + sentence.split(/\s+/).length,
         0,
     );
-    return totalWords / sentences.length || 0;
+
+    return round(totalWords / sentences.length || 0);
 }
 
-export function averageSyllablesPerWord(text: string): number {
+export function calculateAverageSyllablesPerWord(text: string): number {
     const words = text.split(/\s+/).filter(Boolean);
     const totalSyllables = words.reduce(
         (acc, word) => acc + countSyllables(word),
         0,
     );
-    return totalSyllables / words.length || 0;
+    return round(totalSyllables / words.length || 0);
+}
+
+export function countWords(text: string): number {
+    // Split the text by whitespace and filter out empty strings
+    const words = text.split(/\s+/).filter((word) => word.length > 0);
+    return words.length;
 }
 
 export function countSyllables(word: string): number {
@@ -64,9 +71,19 @@ export function countSyllables(word: string): number {
  * @param text - The input text to analyze.
  * @returns The Flesch Reading Ease score
  **/
-export function fleschScore(text: string): number {
-    const asl = averageSentenceLength(text); // Average Sentence Length
-    const asw = averageSyllablesPerWord(text); // Average Syllables per Word
-    const score = 206.835 - 1.015 * asl - 84.6 * asw;
-    return Math.round(score * 100) / 100; // Rounded to two decimals
+export function calculateFleschScore(text: string): number {
+    const asl = calculateAverageSentenceLength(text); // Average Sentence Length
+    const asw = calculateAverageSyllablesPerWord(text); // Average Syllables per Word
+    let score = 180 - asl - 58.5 * asw;
+    score = Math.max(Math.min(score, 100), 0); // Ensure the score is not negative
+    return round(score); // Rounded to two decimals
+}
+
+/**
+ * Rounds a number to two decimal places.
+ * @param value - The number to round.
+ * @returns The rounded number.
+ */
+function round(value: number): number {
+    return Math.round(value * 100) / 100;
 }

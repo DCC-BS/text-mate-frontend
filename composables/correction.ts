@@ -8,10 +8,6 @@ import type {
     CorrectedSegments,
     TextCorrectionBlock,
 } from "~/assets/models/text-correction";
-import {
-    CorrectionFetcher,
-    createCorrectionFetcher,
-} from "~/assets/services/CorrectionFetcher";
 import { CorrectionService } from "~/assets/services/CorrectionService";
 
 export type CorrectionHandler = (

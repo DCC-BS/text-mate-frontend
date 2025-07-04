@@ -2,6 +2,7 @@
 // biome-ignore lint/style/useImportType: <explanation>
 import { ApplyCorrectionCommand } from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
+import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 
 type Rect = {
     top: number;
@@ -19,14 +20,15 @@ const props = defineProps<InputProps>();
 
 const { executeCommand } = useCommandBus();
 const { t } = useI18n();
-const userDictionary = useUserDictionaryStore();
+
+const userDictionaryQuery = useService(UserDictionaryQuery);
 
 async function applyCorrection(command: ApplyCorrectionCommand) {
     await executeCommand(command);
 }
 
 function addWord(word: string) {
-    userDictionary.addWord(word);
+    userDictionaryQuery.addWord(word);
 }
 </script>
 

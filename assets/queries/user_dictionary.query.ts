@@ -14,6 +14,8 @@ export class UserDictionaryQuery implements IUserDictionaryQuery {
     private readonly isIndexedDBAvailable: boolean;
     private inMemoryDictionary: Set<string> = new Set<string>();
 
+    private wordsRef = ref<string[]>([]);
+
     constructor() {
         // Check if IndexedDB is available in the current environment
         this.isIndexedDBAvailable =
@@ -94,6 +96,8 @@ export class UserDictionaryQuery implements IUserDictionaryQuery {
                     db.close();
                     resolve();
                 };
+
+                this.wordsRef.value.push(normalizedWord);
             });
         } catch (error) {
             // Fallback to in-memory if IndexedDB operation fails
@@ -139,6 +143,10 @@ export class UserDictionaryQuery implements IUserDictionaryQuery {
                     db.close();
                     resolve();
                 };
+
+                this.wordsRef.value = this.wordsRef.value.filter(
+                    (w) => w !== normalizedWord,
+                );
             });
         } catch (error) {
             // Fallback to in-memory if IndexedDB operation fails
@@ -198,6 +206,13 @@ export class UserDictionaryQuery implements IUserDictionaryQuery {
             );
             return Array.from(this.inMemoryDictionary);
         }
+    }
+
+    getWordsRef(): Ref<string[]> {
+        this.getWords().then((words) => {
+            this.wordsRef.value = words;
+        });
+        return this.wordsRef;
     }
 
     /**
@@ -273,6 +288,8 @@ export class UserDictionaryQuery implements IUserDictionaryQuery {
                     db.close();
                     resolve();
                 };
+
+                this.wordsRef.value = [];
             });
         } catch (error) {
             // Fallback to in-memory if IndexedDB operation fails

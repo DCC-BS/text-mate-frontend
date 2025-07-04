@@ -13,8 +13,8 @@ interface QuickActionsPanelProps {
 
 // Updated to include social_mediafy action
 type Actions =
-    | "simplify"
-    | "shorten"
+    | "plain_language"
+    | "easy_language"
     | "bullet_points"
     | "summarize"
     | "social_mediafy"
@@ -174,14 +174,14 @@ async function applyAction(action: Actions) {
     <UButton
         variant="soft"
         :disabled="!actionsAreAvailable"
-        @click="applyAction('simplify')">
-        {{ t('editor.simplify') }}
+        @click="applyAction('plain_language')">
+        {{ t('editor.plain_language') }}
     </UButton>
     <UButton
         variant="soft"
         :disabled="!actionsAreAvailable"
-        @click="applyAction('shorten')">
-        {{ t('editor.shorten') }}
+        @click="applyAction('easy_language')">
+        {{ t('editor.easy_language') }}
     </UButton>
     <UButton
         variant="soft"

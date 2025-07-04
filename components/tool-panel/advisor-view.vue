@@ -4,11 +4,9 @@ import type {
     AdvisorRuleViolation,
     ValidationResult,
 } from "~/assets/models/advisor";
-import {
-    AdvisorService,
-    getAdviorService,
-} from "~/assets/services/AdvisorService";
+import { AdvisorService } from "~/assets/services/AdvisorService";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
+import TextStatsView from "./text-stats-view.vue";
 
 interface ToolPanelAdvisorViewProps {
     text: string;
@@ -87,6 +85,8 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
 </script>
 
 <template>
+  <TextStatsView :text="props.text" class="mb-4" />
+
   <div v-if="advisorService" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col h-full">
     <!-- Header section with subtle background and spacing -->
     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md mb-4 flex-shrink-0">

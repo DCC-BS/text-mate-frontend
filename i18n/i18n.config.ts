@@ -53,6 +53,8 @@ export default defineI18nConfig(() => ({
                 bullet_points: "Bullet Points",
                 summarize: "Summarize",
                 social_mediafy: "Social Media Format",
+                plain_language: "Plain Language",
+                easy_language: "Easy Language",
             },
             rewrite: {
                 writing_style: {
@@ -118,6 +120,14 @@ export default defineI18nConfig(() => ({
                 fr: "Translate to French",
                 it: "Translate to Italian",
             },
+            "flesch-score": {
+                easy: "Easy",
+                standard: "Standard",
+                difficult: "Difficult",
+                academic: "Academic",
+                "reading-ease": "Reading Ease",
+                score: "Score",
+            },
         },
 
         de: {
@@ -170,6 +180,8 @@ export default defineI18nConfig(() => ({
                 bullet_points: "Aufzählungspunkte",
                 summarize: "Zusammenfassen",
                 social_mediafy: "Social-Media-Format",
+                plain_language: "Einfache Sprache",
+                easy_language: "Leichte Sprache",
             },
             rewrite: {
                 writing_style: {
@@ -237,6 +249,14 @@ export default defineI18nConfig(() => ({
                 "en-GB": "Auf Englisch (GB) übersetzen",
                 fr: "Auf Französisch übersetzen",
                 it: "Auf Italienisch übersetzen",
+            },
+            "flesch-score": {
+                easy: "Einfach",
+                standard: "Standard",
+                difficult: "Schwer",
+                academic: "Akademisch",
+                "reading-ease": "Lesbarkeit",
+                score: "Bewertung",
             },
         },
     },
