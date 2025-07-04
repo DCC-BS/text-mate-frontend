@@ -35,7 +35,7 @@
         "@tiptap/starter-kit": "^2.11.5",
         "@tiptap/vue-3": "^2.11.5",
         "@types/diff": "^8.0.0",
-        "@vite-pwa/nuxt": "^0.10.6",
+        "@vite-pwa/nuxt": "^1.0.0",
         "jsdiff": "^1.1.1",
         "nuxt": "^3.16.1",
         "nuxt-viewport": "2.2.0",
