@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { defineAsyncComponent, onMounted, ref, watch } from "vue";
+
 // Import will be handled client-side only
 const PdfEmbed = defineAsyncComponent(() =>
     import("vue-pdf-embed").then((module) => module.default),
 );
+
 import type { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
 
 interface AdvisorPdfViewerProps {

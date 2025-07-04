@@ -14,7 +14,7 @@ export type CorrectionHandler = (
     correctedSentence: TextCorrectionBlock,
 ) => void;
 
-let correctionService: CorrectionService | undefined = undefined;
+let correctionService: CorrectionService | undefined;
 
 const onAddHandlers = new Set<CorrectionHandler>();
 const onRemoveHandlers = new Set<CorrectionHandler>();

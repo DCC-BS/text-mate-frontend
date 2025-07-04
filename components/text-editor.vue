@@ -14,6 +14,7 @@ import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
+import type { ICommand } from "#build/types/commands";
 import {
     type ApplyTextCommand,
     Cmds,
@@ -24,7 +25,6 @@ import {
 } from "~/assets/models/commands";
 import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
 import { FocusedWordMark } from "~/utils/focused-word-mark";
-import type { ICommand } from "#build/types/commands";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
 
@@ -90,7 +90,7 @@ const editor = useEditor({
     enablePasteRules: false,
     enableInputRules: false,
     editorProps: {
-        handleKeyDown: (view, event) => {
+        handleKeyDown: (_, event) => {
             // Check if Ctrl+C is pressed
             if (event.ctrlKey && event.key === "c") {
                 // Check if there is no text selection

@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
     isAlphanumeric,
-    isSentenceEnd,
-    isWhiteSpace,
     splitToSentences,
 } from "../../../assets/services/string-parser";
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { useTextStats } from "@/composables/text-stats";
 import FleschScoreVisualization from "@/components/flesch-score-visualization.vue";
+import { useTextStats } from "@/composables/text-stats";
 
 const props = defineProps<{
     text: string;

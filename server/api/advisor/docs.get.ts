@@ -1,6 +1,6 @@
 import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
     const config = useRuntimeConfig();
 
     return await $fetch<AdvisorDocumentDescription[]>(
