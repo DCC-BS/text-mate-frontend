@@ -1,8 +1,7 @@
 import type { ILogger } from "@dcc-bs/logger.bs.js";
 import type { Editor } from "@tiptap/core";
 import type { MarkType, Node } from "@tiptap/pm/model";
-import { Extension } from "@tiptap/vue-3";
-import { getMarkType } from "@tiptap/vue-3";
+import { Extension, getMarkType } from "@tiptap/vue-3";
 import {
     type ApplyCorrectionCommand,
     ApplyTextCommand,
@@ -56,7 +55,7 @@ export function useTextCorrectionMarks(
         name: "correctionExtension",
         addExtensions: () => [
             CorrectionMark.configure({
-                onMouseEnter: (event: MouseEvent, node: Node) => {
+                onMouseEnter: (_: MouseEvent, node: Node) => {
                     if (hoverBlock.value || !isActive.value) {
                         return;
                     }

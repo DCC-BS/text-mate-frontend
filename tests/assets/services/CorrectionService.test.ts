@@ -22,7 +22,6 @@ describe("CorrectionService", () => {
     // Mock dependencies
     let mockLogger: ILogger;
     let mockExecuteCommand: ReturnType<typeof vi.fn>;
-    let mockWordInUserDictionary: ReturnType<typeof vi.fn>;
     let mockOnError: ReturnType<typeof vi.fn>;
     let mockCorrectionFetcher: ICorrectionFetcher;
     let correctionService: CorrectionService;
@@ -37,7 +36,6 @@ describe("CorrectionService", () => {
         } as unknown as ILogger;
 
         mockExecuteCommand = vi.fn().mockResolvedValue(undefined);
-        mockWordInUserDictionary = vi.fn().mockResolvedValue(false);
         mockOnError = vi.fn();
 
         // Mock the ICorrectionFetcher
@@ -49,10 +47,10 @@ describe("CorrectionService", () => {
         // Create instance of service to test
         correctionService = new CorrectionService(
             mockLogger,
+            mockCorrectionFetcher,
             mockExecuteCommand as unknown as (
                 command: ICommand,
             ) => Promise<void>,
-            mockCorrectionFetcher,
             mockOnError,
             "en",
         );
@@ -243,14 +241,12 @@ describe("CorrectionService", () => {
 
             mockCorrectionFetcher.fetchBlocks = vi
                 .fn()
-                .mockImplementation(
-                    async (text: string, signal: AbortSignal) => {
-                        if (text.includes("teh")) {
-                            return blocks;
-                        }
-                        return [];
-                    },
-                );
+                .mockImplementation(async (text: string, _) => {
+                    if (text.includes("teh")) {
+                        return blocks;
+                    }
+                    return [];
+                });
 
             // Act
             await correctionService.correctText(`${text}`, signal);
@@ -292,14 +288,12 @@ describe("CorrectionService", () => {
 
             mockCorrectionFetcher.fetchBlocks = vi
                 .fn()
-                .mockImplementation(
-                    async (text: string, signal: AbortSignal) => {
-                        if (text.includes("teh")) {
-                            return blocks;
-                        }
-                        return [];
-                    },
-                );
+                .mockImplementation(async (text: string, _) => {
+                    if (text.includes("teh")) {
+                        return blocks;
+                    }
+                    return [];
+                });
 
             // Act
             await correctionService.correctText(`${text}`, signal);

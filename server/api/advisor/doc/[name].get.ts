@@ -1,14 +1,14 @@
 import { Readable } from "node:stream";
+import type { ReadableStream } from "node:stream/web";
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
-    const logger = getEventLogger(event);
 
     const name = getRouterParam(event, "name");
     const response = await fetch(`${config.public.apiUrl}/advisor/doc/${name}`);
 
     // Convert Web ReadableStream to Node.js Readable
-    const webStream = response.body;
+    const webStream = response.body as ReadableStream;
     if (!webStream) {
         throw createError({ statusCode: 404 });
     }

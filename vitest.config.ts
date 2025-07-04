@@ -1,6 +1,5 @@
 import { fileURLToPath } from "node:url";
 import Vue from "@vitejs/plugin-vue";
-import { defineNuxtConfig } from "nuxt/config";
 import { defineConfig } from "vitest/config";
 
 /**

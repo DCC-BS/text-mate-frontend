@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-const userDictionaryStore = useUserDictionaryStore();
+import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
+
+const userDictionaryQuery = useService(UserDictionaryQuery);
 
 const newWord = ref<string>("");
+const words = userDictionaryQuery.getWordsRef();
 
 function addNewWord() {
     if (newWord.value.trim() !== "") {
-        userDictionaryStore.addWord(newWord.value.trim());
+        userDictionaryQuery.addWord(newWord.value.trim());
         newWord.value = "";
     }
 }
@@ -40,18 +43,18 @@ function addNewWord() {
             </UButton>
           </div>
 
-          <div v-if="userDictionaryStore.words.length === 0" class="text-center text-gray-500">
+          <div v-if="words.length === 0" class="text-center text-gray-500">
             {{ $t("user-dictionary.empty") }}
           </div>
           
           <!-- Word list -->
-          <div v-for="word in userDictionaryStore.words" :key="word" class="flex items-center justify-between gap-2">
+          <div v-for="word in words" :key="word" class="flex items-center justify-between gap-2">
               <span>{{ word }}</span>
               <UButton
                 :key="word"
                 color="error"
                 icon="i-heroicons-trash"
-                @click="userDictionaryStore.removeWord(word)"
+                @click="userDictionaryQuery.removeWord(word)"
               >
               </UButton>
           </div>
@@ -60,7 +63,3 @@ function addNewWord() {
     </UPopover>
   </div>
 </template>
-
-<style>
-
-</style>

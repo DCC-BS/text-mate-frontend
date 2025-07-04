@@ -1,17 +1,15 @@
 import type {
-    AdvidorDocumentDescription,
+    AdvisorDocumentDescription,
     ValidationResult,
 } from "../models/advisor";
 
-export async function getAdviorService() {
-    const docs = await $fetch<AdvidorDocumentDescription[]>("api/advisor/docs");
-    return new AdivsorService(docs);
-}
+export class AdvisorService {
+    static readonly $injectKey = "advisorService";
+    static readonly $inject = [];
 
-export class AdivsorService {
-    constructor(private readonly docs: AdvidorDocumentDescription[]) {}
+    constructor(private readonly docs: AdvisorDocumentDescription[]) {}
 
-    getDocs(): AdvidorDocumentDescription[] {
+    getDocs(): AdvisorDocumentDescription[] {
         return this.docs;
     }
 

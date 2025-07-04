@@ -1,14 +1,12 @@
 <script lang="ts" setup>
 import type {
-    AdvidorDocumentDescription,
+    AdvisorDocumentDescription,
     AdvisorRuleViolation,
     ValidationResult,
 } from "~/assets/models/advisor";
-import {
-    type AdivsorService,
-    getAdviorService,
-} from "~/assets/services/AdvisorService";
+import { AdvisorService } from "~/assets/services/AdvisorService";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
+import TextStatsView from "./text-stats-view.vue";
 
 interface ToolPanelAdvisorViewProps {
     text: string;
@@ -22,12 +20,12 @@ const toast = useToast();
 const isLoading = ref(false);
 const overlay = useOverlay();
 
-const advisorService = ref<AdivsorService>();
-const selectedDocs = ref<AdvidorDocumentDescription[]>([]);
+const advisorService = ref<AdvisorService>();
+const selectedDocs = ref<AdvisorDocumentDescription[]>([]);
 const validationResult = ref<ValidationResult>();
 
 onMounted(() => {
-    getAdviorService().then((service) => {
+    useServiceAsync(AdvisorService).then((service) => {
         advisorService.value = service;
     });
 });
@@ -87,6 +85,8 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
 </script>
 
 <template>
+  <TextStatsView :text="props.text" class="mb-4" />
+
   <div v-if="advisorService" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col h-full">
     <!-- Header section with subtle background and spacing -->
     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md mb-4 flex-shrink-0">

@@ -1,6 +1,6 @@
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
-import type { CorrectedSegments, TextCorrectionBlock } from "./text-correction";
+import type { TextCorrectionBlock } from "./text-correction";
 
 export const Cmds = {
     JumpToBlockCommand: "JumpToBlockCommand",

@@ -1,9 +1,9 @@
-import type { AdvidorDocumentDescription } from "~/assets/models/advisor";
+import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
     const config = useRuntimeConfig();
 
-    return await $fetch<AdvidorDocumentDescription[]>(
+    return await $fetch<AdvisorDocumentDescription[]>(
         `${config.public.apiUrl}/advisor/docs`,
     );
 });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { twMerge } from "tailwind-merge";
-import { type StyleValue, computed, onUnmounted, ref, watch } from "vue";
+import { computed, onUnmounted, ref, type StyleValue, watch } from "vue";
 
 interface SplitViewProps {
     aPaneStyle?: string;

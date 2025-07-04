@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import type { TabsItem } from "@nuxt/ui";
+import { UTabs } from "#components";
 import {
     Cmds,
     type RewriteTextCommand,
     ToolSwitchCommand,
 } from "~/assets/models/commands";
-import { UTabs } from "#components";
 import AdvisorView from "./tool-panel/advisor-view.vue";
 import ComparePanel from "./tool-panel/compare-panel.vue";
 import ProblemsPanel from "./tool-panel/problems-panel.vue";

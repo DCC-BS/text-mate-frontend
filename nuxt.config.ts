@@ -40,6 +40,7 @@ export default defineNuxtConfig({
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",
+        "@dcc-bs/dependency-injection.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
     ],

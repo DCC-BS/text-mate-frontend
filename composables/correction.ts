@@ -8,14 +8,13 @@ import type {
     CorrectedSegments,
     TextCorrectionBlock,
 } from "~/assets/models/text-correction";
-import { createCorrectionFetcher } from "~/assets/services/CorrectionFetcher";
 import { CorrectionService } from "~/assets/services/CorrectionService";
 
 export type CorrectionHandler = (
     correctedSentence: TextCorrectionBlock,
 ) => void;
 
-let correctionService: CorrectionService | undefined = undefined;
+let correctionService: CorrectionService | undefined;
 
 const onAddHandlers = new Set<CorrectionHandler>();
 const onRemoveHandlers = new Set<CorrectionHandler>();
@@ -30,23 +29,11 @@ const blocks = computed(() => {
 
 export function useCorrectionService() {
     const logger = useLogger();
-    const { executeCommand, registerHandler, unregisterHandler } =
-        useCommandBus();
+    const { registerHandler, unregisterHandler } = useCommandBus();
 
-    const userDictStore = useUserDictionaryStore();
-    const fetcher = createCorrectionFetcher(
-        "auto",
-        logger,
-        userDictStore.exists.bind(userDictStore),
-    );
     const { sendError } = useUseErrorDialog();
 
-    correctionService = new CorrectionService(
-        logger,
-        executeCommand,
-        fetcher,
-        sendError,
-    );
+    correctionService = useService(CorrectionService, sendError, "auto");
 
     const handleChanged = async (command: CorrectionBlockChangedCommand) =>
         handleCorrectedSentenceChangedCommand(command, logger);

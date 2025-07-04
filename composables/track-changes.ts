@@ -1,5 +1,4 @@
 import type { Editor } from "@tiptap/core";
-import type { Node } from "@tiptap/pm/model";
 import { Extension } from "@tiptap/vue-3";
 import {
     Cmds,
@@ -21,10 +20,7 @@ export const useTrackChanges = () => {
         useCommandBus();
 
     const logger = useLogger();
-    const isActive = ref(false);
-    const textToCompare = ref("");
     const editor = ref<Editor>();
-    const applyNode = ref<Node>();
 
     onMounted(() => {
         registerHandler(
@@ -124,22 +120,6 @@ export const useTrackChanges = () => {
          */
         addExtensions() {
             return [TextRemovedMark, TextAddedMark, TextApplyNode];
-        },
-
-        /**
-         * Track changes on document updates
-         */
-        onUpdate() {
-            if (
-                !isActive.value ||
-                !textToCompare.value ||
-                !applyNode.value ||
-                !("newText" in applyNode.value.attrs)
-            ) {
-                return;
-            }
-
-            const currentText = this.editor.getText();
         },
     });
 

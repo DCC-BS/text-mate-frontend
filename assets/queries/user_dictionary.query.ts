@@ -1,23 +1,20 @@
 import type { IUserDictionaryQuery } from "./user_dictionary.query.interface";
 
 /**
- * Factory function that creates a new UserDictionaryQuery instance
- * @returns A new UserDictionaryQuery instance
- */
-export function createUserDictionaryQuery(): IUserDictionaryQuery {
-    return new UserDictionaryQuery();
-}
-
-/**
  * Implementation of UserDictionaryQuery using IndexedDB for persistence
  * with fallback to in-memory storage when IndexedDB is not available
  */
-class UserDictionaryQuery implements IUserDictionaryQuery {
+export class UserDictionaryQuery implements IUserDictionaryQuery {
+    static readonly $injectKey = "userDictionaryQuery";
+    static readonly $inject = [];
+
     private readonly dbName: string = "userDictionary";
     private readonly storeName: string = "words";
     private readonly dbVersion: number = 1;
     private readonly isIndexedDBAvailable: boolean;
     private inMemoryDictionary: Set<string> = new Set<string>();
+
+    private wordsRef = ref<string[]>([]);
 
     constructor() {
         // Check if IndexedDB is available in the current environment
@@ -99,6 +96,8 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
                     db.close();
                     resolve();
                 };
+
+                this.wordsRef.value.push(normalizedWord);
             });
         } catch (error) {
             // Fallback to in-memory if IndexedDB operation fails
@@ -144,6 +143,10 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
                     db.close();
                     resolve();
                 };
+
+                this.wordsRef.value = this.wordsRef.value.filter(
+                    (w) => w !== normalizedWord,
+                );
             });
         } catch (error) {
             // Fallback to in-memory if IndexedDB operation fails
@@ -203,6 +206,13 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
             );
             return Array.from(this.inMemoryDictionary);
         }
+    }
+
+    getWordsRef(): Ref<string[]> {
+        this.getWords().then((words) => {
+            this.wordsRef.value = words;
+        });
+        return this.wordsRef;
     }
 
     /**
@@ -278,6 +288,8 @@ class UserDictionaryQuery implements IUserDictionaryQuery {
                     db.close();
                     resolve();
                 };
+
+                this.wordsRef.value = [];
             });
         } catch (error) {
             // Fallback to in-memory if IndexedDB operation fails
