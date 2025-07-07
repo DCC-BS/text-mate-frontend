@@ -54,7 +54,7 @@ async function defaultHandler<TBackendResponse, TResponse>(
  * Default configuration options for backend handler
  */
 const defaultOptions = {
-    method: "POST" as const,
+    method: "GET" as const,
     bodyProvider: defaultBodyProvider,
     handler: defaultHandler,
 };
@@ -158,7 +158,7 @@ export const defineBackendHandler = <
             const idToken = token?.idToken;
 
             // Make authenticated request to backend API
-            const backendResponse = await $fetch(`${config.apiUrl}/${url}`, {
+            const backendResponse = await $fetch(`${config.apiUrl}${url}`, {
                 method,
                 body: JSON.stringify(body),
                 headers: {

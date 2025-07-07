@@ -1,5 +1,6 @@
 export default defineBackendHandler({
-    url: "advisor/validate",
+    url: "/advisor/validate",
+    method: "POST",
     async bodyProvider(event) {
         const { text, docs } = await readBody(event);
 

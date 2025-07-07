@@ -1,4 +1,3 @@
 export default defineBackendHandler({
-    url: "advisor/docs",
-    method: "GET",
+    url: "/advisor/docs",
 });

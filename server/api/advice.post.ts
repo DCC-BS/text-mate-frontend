@@ -1,5 +1,4 @@
-import { defineBackendHandler } from "../utils/backend_communication";
-
 export default defineBackendHandler({
-    url: "advisor",
+    url: "/advisor",
+    method: "POST",
 });
