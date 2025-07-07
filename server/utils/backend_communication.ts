@@ -31,10 +31,16 @@ export type BackendHandler<T, D> = (response: T) => Promise<D>;
  * @param event - The H3 event object
  * @returns Promise resolving to the parsed request body
  */
-async function defaultBodyProvider<TRequest extends EventHandlerRequest, TBody>(
+async function extractEventBody<TRequest extends EventHandlerRequest, TBody>(
     event: H3Event<TRequest>,
 ): Promise<TBody> {
     return readBody<TBody>(event);
+}
+
+export async function noBody<TRequest extends EventHandlerRequest>(
+    _: H3Event<TRequest>,
+): Promise<undefined> {
+    return undefined;
 }
 
 /**
@@ -44,7 +50,7 @@ async function defaultBodyProvider<TRequest extends EventHandlerRequest, TBody>(
  * @param response - The response from the backend API
  * @returns Promise resolving to the response cast to the expected type
  */
-async function defaultHandler<TBackendResponse, TResponse>(
+export async function defaultHandler<TBackendResponse, TResponse>(
     response: TBackendResponse,
 ): Promise<TResponse> {
     return response as unknown as TResponse;
@@ -55,9 +61,22 @@ async function defaultHandler<TBackendResponse, TResponse>(
  */
 const defaultOptions = {
     method: "GET" as const,
-    bodyProvider: defaultBodyProvider,
     handler: defaultHandler,
 };
+
+function getDefaultBodyProvider<TRequest extends EventHandlerRequest>(
+    method?: "GET" | "POST" | "PUT" | "DELETE",
+): BodyProvider<TRequest, unknown> {
+    switch (method) {
+        case undefined:
+            return noBody;
+        case "GET":
+        case "DELETE":
+            return noBody;
+        default:
+            return extractEventBody;
+    }
+}
 
 /**
  * Creates a Nuxt server event handler that proxies requests to a backend API with authentication
@@ -116,6 +135,7 @@ export const defineBackendHandler = <
             // Merge provided options with defaults
             const { url, method, bodyProvider, handler } = {
                 ...defaultOptions,
+                ...{ bodyProvider: getDefaultBodyProvider(options.method) },
                 ...options,
             };
 
