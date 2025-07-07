@@ -43,6 +43,7 @@ export default defineNuxtConfig({
         "@dcc-bs/dependency-injection.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
+        "@sidebase/nuxt-auth",
     ],
     "feedback-control.bs.js": {
         repo: "Feedback",
@@ -93,8 +94,12 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         githubToken: process.env.GITHUB_TOKEN,
+        azureAdTenantId: process.env.AZURE_AD_TENANT_ID,
+        azureAdClientId: process.env.AZURE_AD_CLIENT_ID,
+        azureAdClientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+        apiUrl: process.env.API_URL,
+        authSecret: process.env.NUXT_AUTH_SECRET,
         public: {
-            apiUrl: process.env.API_URL,
             logger_bs: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },
@@ -124,6 +129,20 @@ export default defineNuxtConfig({
         node: true,
         prerender: {
             routes: ["/"],
+        },
+    },
+    auth: {
+        isEnabled: true,
+        globalAppMiddleware: true,
+        originEnvKey: "AUTH_ORIGIN",
+        provider: {
+            type: "authjs",
+            defaultProvider: "azureAd",
+            addDefaultCallbackUrl: true,
+        },
+        sessionRefresh: {
+            enablePeriodically: 3000,
+            enableOnWindowFocus: true,
         },
     },
     pwa: {
@@ -181,7 +200,7 @@ export default defineNuxtConfig({
         fallbackBreakpoint: "lg",
     },
     $development: {
-        debug: true,
+        debug: false,
         pwa: {
             devOptions: {
                 enabled: false,

@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
 
     const name = getRouterParam(event, "name");
-    const response = await fetch(`${config.public.apiUrl}/advisor/doc/${name}`);
+    const response = await fetch(`${config.apiUrl}/advisor/doc/${name}`);
 
     // Convert Web ReadableStream to Node.js Readable
     const webStream = response.body as ReadableStream;

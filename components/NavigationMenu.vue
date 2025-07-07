@@ -10,6 +10,7 @@ import {
 // Add translation hook
 const { t } = useI18n();
 const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
+const { data } = useAuth();
 
 const undoRedoState = reactive({
     canUndo: false,
@@ -21,6 +22,11 @@ const switchLocalePath = useSwitchLocalePath();
 
 const availableLocales = computed(() => {
     return locales.value.filter((i) => i.code !== locale.value);
+});
+
+const userImage = computed(() => {
+    const base64 = data.value?.user?.image;
+    return base64 ? `${base64}` : "/LucideCircleUserRound.png";
 });
 
 // Navigation menu items
@@ -48,6 +54,13 @@ const items = computed<NavigationMenuItem[][]>(() => [
                 label: locale.name,
                 to: switchLocalePath(locale.code),
             })),
+        },
+        {
+            avatar: {
+                src: userImage.value,
+                alt: data.value?.user?.name || "User",
+            },
+            disabled: true,
         },
     ],
 ]);

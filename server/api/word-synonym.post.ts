@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event);
 
-    const response = await $fetch(`${config.public.apiUrl}/word-synonym`, {
+    const response = await $fetch(`${config.apiUrl}/word-synonym`, {
         method: "POST",
         body: JSON.stringify(body),
         headers: {
