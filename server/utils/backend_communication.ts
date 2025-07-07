@@ -25,6 +25,17 @@ export type BodyProvider<TIn extends EventHandlerRequest, TBody> = (
 export type BackendHandler<T, D> = (response: T) => Promise<D>;
 
 /**
+ * Function type for making HTTP requests to the backend
+ * @template T - The response type from the backend
+ */
+export type Fetcher<T> = (
+    url: string,
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    body: unknown,
+    headers: Record<string, string>,
+) => Promise<T>;
+
+/**
  * Default body provider that extracts and parses the request body using H3's readBody
  * @template TRequest - The event handler request type
  * @template TBody - The expected body type
@@ -57,11 +68,34 @@ export async function defaultHandler<TBackendResponse, TResponse>(
 }
 
 /**
+ * Default fetcher that uses Nuxt's $fetch utility
+ * @template T - The response type from the backend
+ * @param url - The full URL to fetch from
+ * @param method - HTTP method to use
+ * @param body - Request body (will be JSON stringified)
+ * @param headers - HTTP headers to include
+ * @returns Promise resolving to the backend response
+ */
+export async function defaultFetcher<T>(
+    url: string,
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    body: unknown,
+    headers: Record<string, string>,
+): Promise<T> {
+    return await $fetch(url, {
+        method,
+        body: JSON.stringify(body),
+        headers,
+    });
+}
+
+/**
  * Default configuration options for backend handler
  */
 const defaultOptions = {
     method: "GET" as const,
     handler: defaultHandler,
+    fetcher: defaultFetcher,
 };
 
 function getDefaultBodyProvider<TRequest extends EventHandlerRequest>(
@@ -99,6 +133,7 @@ function getDefaultBodyProvider<TRequest extends EventHandlerRequest>(
  * @param options.method - HTTP method to use (defaults to "POST")
  * @param options.bodyProvider - Function to extract the request body (defaults to readBody)
  * @param options.handler - Function to transform the backend response (defaults to pass-through)
+ * @param options.fetcher - Function to make HTTP requests (defaults to $fetch)
  *
  * @returns An H3 event handler that can be used in Nuxt server routes
  *
@@ -129,11 +164,12 @@ export const defineBackendHandler = <
     method?: "POST" | "GET" | "PUT" | "DELETE";
     bodyProvider?: BodyProvider<TRequest, TBody>;
     handler?: BackendHandler<TBackendResponse, TResponse>;
+    fetcher?: Fetcher<TBackendResponse>;
 }): EventHandler<TRequest, TResponse> =>
     defineEventHandler<TRequest>(async (event) => {
         try {
             // Merge provided options with defaults
-            const { url, method, bodyProvider, handler } = {
+            const { url, method, bodyProvider, handler, fetcher } = {
                 ...defaultOptions,
                 ...{ bodyProvider: getDefaultBodyProvider(options.method) },
                 ...options,
@@ -177,16 +213,17 @@ export const defineBackendHandler = <
             // Extract ID token for backend authentication
             const idToken = token?.idToken;
 
-            // Make authenticated request to backend API
-            const backendResponse = await $fetch(`${config.apiUrl}${url}`, {
+            // Make authenticated request to backend API using the configured fetcher
+            const backendResponse = await fetcher(
+                `${config.apiUrl}${url}`,
                 method,
-                body: JSON.stringify(body),
-                headers: {
+                body,
+                {
                     "Content-Type": "application/json",
                     Authorization: idToken || "",
                     "X-Access-Token": token ? JSON.stringify(token) : "",
                 },
-            });
+            );
 
             // Transform the backend response using the configured handler
             return await handler(backendResponse as TBackendResponse);
