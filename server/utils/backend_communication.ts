@@ -165,7 +165,7 @@ export const defineBackendHandler = <
     bodyProvider?: BodyProvider<TRequest, TBody>;
     handler?: BackendHandler<TBackendResponse, TResponse>;
     fetcher?: Fetcher<TBackendResponse>;
-}): EventHandler<TRequest, TResponse> =>
+}): EventHandler<TRequest, Promise<TResponse>> =>
     defineEventHandler<TRequest>(async (event) => {
         try {
             // Merge provided options with defaults

@@ -6,15 +6,16 @@ export default defineEventHandler(async (event) => {
 
     const handler = defineBackendHandler({
         url: `/advisor/doc/${name}`,
-        async handler(response: ) {
-
+        async fetcher(url, method, body, headers) {
+            return await fetch(url, {
+                method,
+                body: JSON.stringify(body),
+                headers,
+            });
         },
     });
 
-    console.log("Fetching document:", name);
     const response = await handler(event);
-
-    console.log("Document fetched successfully:", response);
 
     // Convert Web ReadableStream to Node.js Readable
     const webStream = response.body as ReadableStream;
