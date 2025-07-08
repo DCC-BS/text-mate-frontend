@@ -17,6 +17,7 @@ export default defineI18nConfig(() => ({
                 languages: "Languages",
                 undo: "Undo",
                 redo: "Redo",
+                signOut: "Sign Out",
             },
             tools: {
                 problems: "Problems",
@@ -144,6 +145,7 @@ export default defineI18nConfig(() => ({
                 languages: "Sprachen",
                 undo: "Rückgängig",
                 redo: "Wiederholen",
+                signOut: "Abmelden",
             },
             tools: {
                 problems: "Probleme",

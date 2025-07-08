@@ -220,7 +220,7 @@ export const defineBackendHandler = <
                 body,
                 {
                     "Content-Type": "application/json",
-                    Authorization: idToken || "",
+                    Authorization: idToken ? `Bearer ${idToken}` : "",
                     "X-Access-Token": token ? JSON.stringify(token) : "",
                 },
             );

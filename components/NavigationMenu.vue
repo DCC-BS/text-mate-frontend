@@ -10,7 +10,7 @@ import {
 // Add translation hook
 const { t } = useI18n();
 const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
-const { data } = useAuth();
+const { data, signOut } = useAuth();
 
 const undoRedoState = reactive({
     canUndo: false,
@@ -60,7 +60,13 @@ const items = computed<NavigationMenuItem[][]>(() => [
                 src: userImage.value,
                 alt: data.value?.user?.name || "User",
             },
-            disabled: true,
+            children: [
+                {
+                    label: t("navigation.signOut"),
+                    icon: "i-heroicons-arrow-right-on-rectangle",
+                    onSelect: handleSignOut,
+                },
+            ],
         },
     ],
 ]);
@@ -84,6 +90,10 @@ function handleUndo(): void {
 
 function handleRedo(): void {
     executeCommand(new RedoCommand());
+}
+
+async function handleSignOut(): Promise<void> {
+    await signOut();
 }
 </script>
 
