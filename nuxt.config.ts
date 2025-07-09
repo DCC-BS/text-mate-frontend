@@ -1,4 +1,4 @@
-import { visualizer } from "rollup-plugin-visualizer";
+import { baseURL } from "process";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -14,7 +14,7 @@ export default defineNuxtConfig({
                 { charset: "utf-8" },
                 {
                     name: "viewport",
-                    content: "width-device-width, initial-scale=1",
+                    content: "width=device-width, initial-scale=1",
                 },
                 {
                     name: "apple-mobile-web-app-title",
@@ -56,15 +56,6 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
-        plugins: [
-            visualizer({
-                filename: "stats.html",
-                gzipSize: true,
-                brotliSize: true,
-                open: true,
-                template: "treemap",
-            }),
-        ],
         build: {
             // Disable sourcemaps in production to avoid warnings
             sourcemap: process.env.NODE_ENV !== "production",
@@ -129,7 +120,13 @@ export default defineNuxtConfig({
         node: true,
         prerender: {
             routes: ["/"],
+            ignore: ["/session", "/providers", "/api/auth/**"],
         },
+    },
+    routeRules: {
+        "/session": { prerender: false },
+        "/providers": { prerender: false },
+        "/api/auth/**": { prerender: false },
     },
     auth: {
         isEnabled: true,
