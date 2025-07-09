@@ -13,8 +13,6 @@ export default defineI18nConfig(() => ({
                 redirecting: "Redirecting...",
                 azureAdDescription:
                     "We're securely connecting you to Azure Active Directory. This will only take a moment.",
-                poweredBy: "Powered by Azure Active Directory",
-                features: "Secure • Fast • Reliable",
             },
             language: {
                 auto: "Detect Language",
@@ -153,8 +151,6 @@ export default defineI18nConfig(() => ({
                 redirecting: "Weiterleiten...",
                 azureAdDescription:
                     "Wir verbinden Sie sicher mit Azure Active Directory. Das dauert nur einen Moment.",
-                poweredBy: "Unterstützt von Azure Active Directory",
-                features: "Sicher • Schnell • Zuverlässig",
             },
             language: {
                 auto: "Sprache erkennen",
