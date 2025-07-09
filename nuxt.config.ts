@@ -1,5 +1,3 @@
-import { baseURL } from "process";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
@@ -116,18 +114,6 @@ export default defineNuxtConfig({
         lazy: true,
         strategy: "prefix_except_default",
     },
-    nitro: {
-        node: true,
-        prerender: {
-            routes: ["/"],
-            ignore: ["/session", "/providers", "/api/auth/**"],
-        },
-    },
-    routeRules: {
-        "/session": { prerender: false },
-        "/providers": { prerender: false },
-        "/api/auth/**": { prerender: false },
-    },
     auth: {
         isEnabled: true,
         globalAppMiddleware: true,
@@ -138,7 +124,7 @@ export default defineNuxtConfig({
             addDefaultCallbackUrl: true,
         },
         sessionRefresh: {
-            enablePeriodically: 3000,
+            enablePeriodically: 10000,
             enableOnWindowFocus: true,
         },
     },

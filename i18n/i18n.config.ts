@@ -5,6 +5,17 @@ export default defineI18nConfig(() => ({
     messages: {
         en: {
             loading: "Loading...",
+            auth: {
+                welcomeBack: "Welcome Back",
+                signInToContinue: "Sign in to continue to your account",
+                connecting: "Connecting...",
+                authenticating: "Authenticating...",
+                redirecting: "Redirecting...",
+                azureAdDescription:
+                    "We're securely connecting you to Azure Active Directory. This will only take a moment.",
+                poweredBy: "Powered by Azure Active Directory",
+                features: "Secure • Fast • Reliable",
+            },
             language: {
                 auto: "Detect Language",
                 "de-CH": "German",
@@ -133,6 +144,18 @@ export default defineI18nConfig(() => ({
 
         de: {
             loading: "Wird geladen...",
+            auth: {
+                welcomeBack: "Willkommen zurück",
+                signInToContinue:
+                    "Melden Sie sich an, um zu Ihrem Konto zu gelangen",
+                connecting: "Verbinden...",
+                authenticating: "Authentifizieren...",
+                redirecting: "Weiterleiten...",
+                azureAdDescription:
+                    "Wir verbinden Sie sicher mit Azure Active Directory. Das dauert nur einen Moment.",
+                poweredBy: "Unterstützt von Azure Active Directory",
+                features: "Sicher • Schnell • Zuverlässig",
+            },
             language: {
                 auto: "Sprache erkennen",
                 "de-CH": "Deutsch",

@@ -1,3 +1,5 @@
 <template>
+    <FeedbackControl />
+    <NavigationMenu />
     <GrammarEditor />
-</template>
+</template>;
