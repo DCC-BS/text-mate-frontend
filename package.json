@@ -16,6 +16,7 @@
         "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
+        "@dcc-bs/authentication.bs.js": "git+https://github.com/DCC-BS/authentication.bs.js.git#v0.0.9",
         "@dcc-bs/common-ui.bs.js": "git+https://github.com/DCC-BS/common-ui.bs.js.git#v0.2.0",
         "@dcc-bs/dependency-injection.bs.js": "git+https://github.com/DCC-BS/dependency-injection.bs.js.git#v0.0.13",
         "@dcc-bs/event-system.bs.js": "git+https://github.com/DCC-BS/event-system.bs.js.git#v1.4.0",
@@ -26,7 +27,6 @@
         "@nuxtjs/i18n": "^9.4.0",
         "@nuxtjs/mdc": "0.17.0",
         "@pinia/nuxt": "0.11.1",
-        "@sidebase/nuxt-auth": "^1.0.0",
         "@tiptap/extension-bubble-menu": "^2.11.5",
         "@tiptap/extension-character-count": "^2.11.5",
         "@tiptap/extension-floating-menu": "^2.11.5",

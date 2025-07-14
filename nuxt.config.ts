@@ -27,7 +27,7 @@ export default defineNuxtConfig({
         },
     },
     ui: {
-        colorMode: false,
+        colorMode: false, // Disable color mode as it is not used
     },
     modules: [
         "@nuxt/ui",
@@ -39,9 +39,9 @@ export default defineNuxtConfig({
         "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
+        "@dcc-bs/authentication.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
-        "@sidebase/nuxt-auth",
     ],
     "feedback-control.bs.js": {
         repo: "Feedback",
@@ -83,11 +83,7 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         githubToken: process.env.GITHUB_TOKEN,
-        azureAdTenantId: process.env.AZURE_AD_TENANT_ID,
-        azureAdClientId: process.env.AZURE_AD_CLIENT_ID,
-        azureAdClientSecret: process.env.AZURE_AD_CLIENT_SECRET,
         apiUrl: process.env.API_URL,
-        authSecret: process.env.NUXT_AUTH_SECRET,
         public: {
             logger_bs: {
                 loglevel: process.env.LOG_LEVEL || "debug",
@@ -113,20 +109,6 @@ export default defineNuxtConfig({
         vueI18n: "./i18n.config.ts",
         lazy: true,
         strategy: "prefix_except_default",
-    },
-    auth: {
-        isEnabled: true,
-        globalAppMiddleware: true,
-        originEnvKey: "AUTH_ORIGIN",
-        provider: {
-            type: "authjs",
-            defaultProvider: "azureAd",
-            addDefaultCallbackUrl: true,
-        },
-        sessionRefresh: {
-            enablePeriodically: 10000,
-            enableOnWindowFocus: true,
-        },
     },
     pwa: {
         registerType: "autoUpdate",
