@@ -128,6 +128,14 @@ export default defineI18nConfig(() => ({
                 "reading-ease": "Reading Ease",
                 score: "Score",
             },
+            "plain-language": {
+                notice: "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication.",
+            },
+            "easy-language": {
+                notice: "Note: This tool is a support tool and does not replace a complete manual review. Binding formal guidelines apply to Easy Language. These must be manually checked and adhered to in all cases. We recommend that all automatically generated texts be reviewed again before publication.",
+                moreInfo: "More Information:",
+                networkLabel: "Easy Language Network:",
+            },
         },
 
         de: {
@@ -257,6 +265,14 @@ export default defineI18nConfig(() => ({
                 academic: "Akademisch",
                 "reading-ease": "Lesbarkeit",
                 score: "Bewertung",
+            },
+            "plain-language": {
+                notice: "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
+            },
+            "easy-language": {
+                notice: "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
+                moreInfo: "Weitere Informationen:",
+                networkLabel: "Netzwerk Leichte Sprache:",
             },
         },
     },
