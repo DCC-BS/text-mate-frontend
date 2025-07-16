@@ -125,7 +125,7 @@ export default defineI18nConfig(() => ({
                 standard: "Standard",
                 difficult: "Difficult",
                 academic: "Academic",
-                "reading-ease": "Reading Ease",
+                "reading-ease": "Reading Ease (Flesch Index)",
                 score: "Score",
             },
             "plain-language": {
@@ -263,7 +263,7 @@ export default defineI18nConfig(() => ({
                 standard: "Standard",
                 difficult: "Schwer",
                 academic: "Akademisch",
-                "reading-ease": "Lesbarkeit",
+                "reading-ease": "Lesbarkeit (Flesch Index)",
                 score: "Bewertung",
             },
             "plain-language": {

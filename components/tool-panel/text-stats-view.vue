@@ -42,7 +42,6 @@ const {
       </div>
     </div>
     
-    <!-- Fancy Flesch Score Visualization -->
     <FleschScoreVisualization :score="fleschScore" />
   </div>
 </template>
