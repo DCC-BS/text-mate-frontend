@@ -18,8 +18,8 @@ export function getRangeBoundingBox(
 
     try {
         // Get coordinates for start and end positions
-        const fromCoords = editor.view.coordsAtPos(validFrom);
-        const toCoords = editor.view.coordsAtPos(validTo);
+        const fromCoords = editor.view.coordsAtPos(validFrom, 1);
+        const toCoords = editor.view.coordsAtPos(validTo, -1);
 
         // Create a DOMRect from the coordinates
         return new DOMRect(
