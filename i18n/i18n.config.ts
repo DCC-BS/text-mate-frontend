@@ -138,6 +138,15 @@ export default defineI18nConfig(() => ({
                 "reading-ease": "Reading Ease",
                 score: "Score",
             },
+            "text-stats": {
+                "character-count": "Character Count",
+                "word-count": "Word Count",
+                "syllable-count": "Syllable Count",
+                "average-sentence-length": "Average Sentence Length",
+                "average-syllables-per-word": "Average Syllables per Word",
+                "show-details": "Show Details",
+                "hide-details": "Hide Details",
+            },
         },
 
         de: {
@@ -278,6 +287,16 @@ export default defineI18nConfig(() => ({
                 academic: "Akademisch",
                 "reading-ease": "Lesbarkeit",
                 score: "Bewertung",
+            },
+            "text-stats": {
+                "character-count": "Zeichenanzahl",
+                "word-count": "Wortanzahl",
+                "syllable-count": "Silbenanzahl",
+                "average-sentence-length": "Durchschnittliche Satzlänge",
+                "average-syllables-per-word":
+                    "Durchschnittliche Silben pro Wort",
+                "show-details": "Details anzeigen",
+                "hide-details": "Details ausblenden",
             },
         },
     },

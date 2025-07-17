@@ -116,6 +116,7 @@ export default defineNuxtConfig({
             globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
             globIgnores: ["dev-sw-dist/**/*"],
             navigateFallback: "/",
+            navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/],
             maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         },
         client: {
