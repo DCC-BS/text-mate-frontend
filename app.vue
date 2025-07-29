@@ -3,9 +3,8 @@
 
 <template>
     <NuxtPwaManifest />
-    <FeedbackControl />
+    <Disclaimer app-name="TextMate" />
     <UApp>
-        <NavigationMenu />
         <NuxtPage />
     </UApp>
 </template>

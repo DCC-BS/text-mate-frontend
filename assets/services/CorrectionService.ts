@@ -12,7 +12,7 @@ import { splitToSentences } from "./string-parser";
 
 export class CorrectionService {
     static readonly $injectKey = "correctionService";
-    static readonly $inject = ["logger", CorrectionFetcher];
+    static readonly $inject = ["logger", CorrectionFetcher, "executeCommand"];
 
     private lastSentences: string[] = [];
     private lastBlocks: TextCorrectionBlock[] = [];

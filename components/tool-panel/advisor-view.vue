@@ -87,7 +87,7 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
 <template>
   <TextStatsView :text="props.text" class="mb-4" />
 
-  <div v-if="advisorService" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col h-full">
+  <div v-if="advisorService" class="p-0 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col h-full">
     <!-- Header section with subtle background and spacing -->
     <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md mb-4 flex-shrink-0">
       <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">

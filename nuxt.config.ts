@@ -1,5 +1,3 @@
-import { visualizer } from "rollup-plugin-visualizer";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
@@ -14,7 +12,7 @@ export default defineNuxtConfig({
                 { charset: "utf-8" },
                 {
                     name: "viewport",
-                    content: "width-device-width, initial-scale=1",
+                    content: "width=device-width, initial-scale=1",
                 },
                 {
                     name: "apple-mobile-web-app-title",
@@ -29,7 +27,7 @@ export default defineNuxtConfig({
         },
     },
     ui: {
-        colorMode: false,
+        colorMode: false, // Disable color mode as it is not used
     },
     modules: [
         "@nuxt/ui",
@@ -41,6 +39,7 @@ export default defineNuxtConfig({
         "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
+        "@dcc-bs/authentication.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
     ],
@@ -55,20 +54,9 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
-        plugins: [
-            visualizer({
-                filename: "stats.html",
-                gzipSize: true,
-                brotliSize: true,
-                open: true,
-                template: "treemap",
-            }),
-        ],
         build: {
-            // Disable sourcemaps in production to avoid warnings
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
-            // Fix the chunk size warning by setting a higher limit
             chunkSizeWarningLimit: 800,
             rollupOptions: {
                 output: {
@@ -86,15 +74,14 @@ export default defineNuxtConfig({
                 },
             },
         },
-        // Add optimizations for vue-pdf-embed
         optimizeDeps: {
             include: ["vue-pdf-embed"],
         },
     },
     runtimeConfig: {
         githubToken: process.env.GITHUB_TOKEN,
+        apiUrl: process.env.API_URL,
         public: {
-            apiUrl: process.env.API_URL,
             logger_bs: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },
@@ -120,18 +107,12 @@ export default defineNuxtConfig({
         lazy: true,
         strategy: "prefix_except_default",
     },
-    nitro: {
-        node: true,
-        prerender: {
-            routes: ["/"],
-        },
-    },
     pwa: {
         registerType: "autoUpdate",
         workbox: {
             globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
             globIgnores: ["dev-sw-dist/**/*"],
-            navigateFallback: "/",
+            navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/],
             maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         },
         client: {
@@ -149,7 +130,6 @@ export default defineNuxtConfig({
                     sizes: "512x512",
                 },
             ],
-
             shortcuts: [
                 {
                     name: "From Clipboard",
@@ -181,7 +161,7 @@ export default defineNuxtConfig({
         fallbackBreakpoint: "lg",
     },
     $development: {
-        debug: true,
+        debug: false,
         pwa: {
             devOptions: {
                 enabled: false,
@@ -194,7 +174,7 @@ export default defineNuxtConfig({
             loglevel: "debug",
         },
         sourcemap: {
-            server: true,
+            server: false,
             client: true,
         },
     },

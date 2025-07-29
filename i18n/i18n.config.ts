@@ -5,6 +5,15 @@ export default defineI18nConfig(() => ({
     messages: {
         en: {
             loading: "Loading...",
+            auth: {
+                welcomeBack: "Welcome Back",
+                signInToContinue: "Sign in to continue to your account",
+                connecting: "Connecting...",
+                authenticating: "Authenticating...",
+                redirecting: "Redirecting...",
+                azureAdDescription:
+                    "We're securely connecting you to Azure Active Directory. This will only take a moment.",
+            },
             language: {
                 auto: "Detect Language",
                 "de-CH": "German",
@@ -17,6 +26,7 @@ export default defineI18nConfig(() => ({
                 languages: "Languages",
                 undo: "Undo",
                 redo: "Redo",
+                signOut: "Sign Out",
             },
             tools: {
                 problems: "Problems",
@@ -128,18 +138,37 @@ export default defineI18nConfig(() => ({
                 "reading-ease": "Reading Ease (Flesch Index)",
                 score: "Score",
             },
-            "plain-language": {
-                notice: "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication.",
-            },
-            "easy-language": {
-                notice: "Note: This tool is a support tool and does not replace a complete manual review. Binding formal guidelines apply to Easy Language. These must be manually checked and adhered to in all cases. We recommend that all automatically generated texts be reviewed again before publication.",
-                moreInfo: "More Information:",
-                networkLabel: "Easy Language Network:",
+            "text-stats": {
+                "character-count": "Character Count",
+                "word-count": "Word Count",
+                "syllable-count": "Syllable Count",
+                "average-sentence-length": "Average Sentence Length",
+                "average-syllables-per-word": "Average Syllables per Word",
+                "show-details": "Show Details",
+                "hide-details": "Hide Details",
+                "plain-language": {
+                    notice: "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication.",
+                },
+                "easy-language": {
+                    notice: "Note: This tool is a support tool and does not replace a complete manual review. Binding formal guidelines apply to Easy Language. These must be manually checked and adhered to in all cases. We recommend that all automatically generated texts be reviewed again before publication.",
+                    moreInfo: "More Information:",
+                    networkLabel: "Easy Language Network:",
+                },
             },
         },
 
         de: {
             loading: "Wird geladen...",
+            auth: {
+                welcomeBack: "Willkommen zurück",
+                signInToContinue:
+                    "Melden Sie sich an, um zu Ihrem Konto zu gelangen",
+                connecting: "Verbinden...",
+                authenticating: "Authentifizieren...",
+                redirecting: "Weiterleiten...",
+                azureAdDescription:
+                    "Wir verbinden Sie sicher mit Azure Active Directory. Das dauert nur einen Moment.",
+            },
             language: {
                 auto: "Sprache erkennen",
                 "de-CH": "Deutsch",
@@ -152,6 +181,7 @@ export default defineI18nConfig(() => ({
                 languages: "Sprachen",
                 undo: "Rückgängig",
                 redo: "Wiederholen",
+                signOut: "Abmelden",
             },
             tools: {
                 problems: "Probleme",
@@ -266,13 +296,23 @@ export default defineI18nConfig(() => ({
                 "reading-ease": "Lesbarkeit (Flesch Index)",
                 score: "Bewertung",
             },
-            "plain-language": {
-                notice: "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
-            },
-            "easy-language": {
-                notice: "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
-                moreInfo: "Weitere Informationen:",
-                networkLabel: "Netzwerk Leichte Sprache:",
+            "text-stats": {
+                "character-count": "Zeichenanzahl",
+                "word-count": "Wortanzahl",
+                "syllable-count": "Silbenanzahl",
+                "average-sentence-length": "Durchschnittliche Satzlänge",
+                "average-syllables-per-word":
+                    "Durchschnittliche Silben pro Wort",
+                "show-details": "Details anzeigen",
+                "hide-details": "Details ausblenden",
+                "plain-language": {
+                    notice: "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
+                },
+                "easy-language": {
+                    notice: "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
+                    moreInfo: "Weitere Informationen:",
+                    networkLabel: "Netzwerk Leichte Sprache:",
+                },
             },
         },
     },

@@ -10,6 +10,7 @@ import {
 // Add translation hook
 const { t } = useI18n();
 const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
+const { data, signOut } = useAuth();
 
 const undoRedoState = reactive({
     canUndo: false,
@@ -21,6 +22,11 @@ const switchLocalePath = useSwitchLocalePath();
 
 const availableLocales = computed(() => {
     return locales.value.filter((i) => i.code !== locale.value);
+});
+
+const userImage = computed(() => {
+    const base64 = data.value?.user?.image;
+    return base64 ? base64 : "/LucideCircleUserRound.png";
 });
 
 // Navigation menu items
@@ -49,6 +55,19 @@ const items = computed<NavigationMenuItem[][]>(() => [
                 to: switchLocalePath(locale.code),
             })),
         },
+        {
+            avatar: {
+                src: userImage.value,
+                alt: data.value?.user?.name || "User",
+            },
+            children: [
+                {
+                    label: t("navigation.signOut"),
+                    icon: "i-heroicons-arrow-right-on-rectangle",
+                    onSelect: handleSignOut,
+                },
+            ],
+        },
     ],
 ]);
 
@@ -71,6 +90,10 @@ function handleUndo(): void {
 
 function handleRedo(): void {
     executeCommand(new RedoCommand());
+}
+
+async function handleSignOut(): Promise<void> {
+    await signOut();
 }
 </script>
 

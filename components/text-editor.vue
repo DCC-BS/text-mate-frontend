@@ -240,7 +240,7 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
         <div
             class="flex gap-2 items-start justify-between"
             :class="{ 'character-count--warning': editor.storage.characterCount.characters() === limit }">
-            <DisclaimerLlm />
+            <DisclaimerButton variant="ghost" />
             <div class="data-bs-banner">
                 <DataBsBanner class="text-center" />
             </div>

@@ -1,22 +1,16 @@
-import type { ValidationResult } from "~/assets/models/advisor";
+export default defineBackendHandler({
+    url: "/advisor/validate",
+    method: "POST",
+    async bodyProvider(event) {
+        const { text, docs } = await readBody(event);
 
-export default defineEventHandler(async (event) => {
-    const config = useRuntimeConfig();
+        if (!text || !docs) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Invalid input",
+            });
+        }
 
-    const { text, docs } = await readBody(event);
-
-    if (!text || !docs) {
-        throw createError({ statusCode: 400, statusMessage: "Invalid input" });
-    }
-
-    return await $fetch<ValidationResult>(
-        `${config.public.apiUrl}/advisor/validate`,
-        {
-            method: "POST",
-            body: {
-                text,
-                docs,
-            },
-        },
-    );
+        return { text, docs };
+    },
 });

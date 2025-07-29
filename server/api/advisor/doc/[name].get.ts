@@ -2,10 +2,20 @@ import { Readable } from "node:stream";
 import type { ReadableStream } from "node:stream/web";
 
 export default defineEventHandler(async (event) => {
-    const config = useRuntimeConfig();
-
     const name = getRouterParam(event, "name");
-    const response = await fetch(`${config.public.apiUrl}/advisor/doc/${name}`);
+
+    const handler = defineBackendHandler({
+        url: `/advisor/doc/${name}`,
+        async fetcher(url, method, body, headers) {
+            return await fetch(url, {
+                method,
+                body: JSON.stringify(body),
+                headers,
+            });
+        },
+    });
+
+    const response = await handler(event);
 
     // Convert Web ReadableStream to Node.js Readable
     const webStream = response.body as ReadableStream;
