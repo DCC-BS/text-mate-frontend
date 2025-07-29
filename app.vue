@@ -3,6 +3,7 @@
 
 <template>
     <NuxtPwaManifest />
+    <Disclaimer app-name="TextMate" />
     <UApp>
         <NuxtPage />
     </UApp>
