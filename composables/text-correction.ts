@@ -56,7 +56,7 @@ export function useTextCorrectionMarks(
         addExtensions: () => [
             CorrectionMark.configure({
                 onMouseEnter: (_: MouseEvent, node: Node) => {
-                    if (hoverBlock.value || !isActive.value) {
+                    if (!isActive.value) {
                         return;
                     }
 
@@ -79,7 +79,7 @@ export function useTextCorrectionMarks(
                     hoverBlock.value = block;
                     hoverRect.value = getRangeBoundingBox(
                         editor.value,
-                        block.offset + 1,
+                        block.offset,
                         block.offset + block.length + 1,
                     );
 

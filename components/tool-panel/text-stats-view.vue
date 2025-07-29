@@ -66,7 +66,8 @@ const {
           </div>
         </div>
       </div>
-    </div>
+    </div>   
+    <FleschScoreVisualization :score="fleschScore" />
   </div>
 </template>
 

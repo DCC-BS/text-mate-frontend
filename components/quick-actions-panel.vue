@@ -114,6 +114,9 @@ async function applyAction(action: Actions) {
         await executeCommand(new ToggleEditableEditorCommand(true));
         await executeCommand(new ToggleLockEditorCommand(true));
 
+        if (action === "easy_language") {
+        }
+
         addProgress("quick-action", {
             icon: "i-lucide-text-search",
             title: t("status.quickAction"),
@@ -163,6 +166,7 @@ async function applyAction(action: Actions) {
             ),
         );
     } finally {
+        await executeCommand(new ToggleLockEditorCommand(false));
         removeProgress("quick-action");
         isRewriting.value = false;
     }
@@ -171,18 +175,43 @@ async function applyAction(action: Actions) {
 
 <template>
   <div class="flex justify-center gap-2 flex-wrap">
-    <UButton
-        variant="soft"
-        :disabled="!actionsAreAvailable"
-        @click="applyAction('plain_language')">
-        {{ t('editor.plain_language') }}
-    </UButton>
-    <UButton
-        variant="soft"
-        :disabled="!actionsAreAvailable"
-        @click="applyAction('easy_language')">
-        {{ t('editor.easy_language') }}
-    </UButton>
+    <UPopover mode="hover">
+        <UButton
+            variant="soft"
+            :disabled="!actionsAreAvailable"
+            @click="applyAction('plain_language')">
+            {{ t('editor.plain_language') }}
+        </UButton>
+        <template #content>
+            <div class="max-w-[50vw] p-2">
+                <div>
+                    {{ t('plain-language.notice') }}
+                </div>
+            </div>
+        </template>
+    </UPopover>
+    <UPopover mode="hover">
+        <UButton
+            variant="soft"
+            :disabled="!actionsAreAvailable"
+            @click="applyAction('easy_language')">
+            {{ t('editor.easy_language') }}
+        </UButton>
+        <template #content>
+            <div class="max-w-[50vw] p-2">
+                <div>
+                    {{ t('easy-language.notice') }}
+                </div>
+                <div class="mt-2">
+                    <strong>{{ t('easy-language.moreInfo') }}</strong>
+                </div>
+                <div class="mt-1">
+                    <strong>{{ t('easy-language.networkLabel') }} </strong>
+                    <ULink to="https://www.ebgb.admin.ch/de/leichte-sprache">https://www.ebgb.admin.ch/de/leichte-sprache</ULink>
+                </div>
+            </div>
+        </template>
+    </UPopover>
     <UButton
         variant="soft"
         :disabled="!actionsAreAvailable"
