@@ -113,6 +113,10 @@ export const useTrackChanges = () => {
          */
         onCreate() {
             editor.value = this.editor;
+
+            this.editor.schema.mark("textAdded", TextAddedMark);
+            this.editor.schema.node("textApply", TextApplyNode);
+            this.editor.schema.node("textRemoved", TextRemovedNode);
         },
 
         // addExtensions?: (this: {
@@ -125,9 +129,9 @@ export const useTrackChanges = () => {
         /**
          * Add required extensions
          */
-        addExtensions(this: unknown) {
-            return [TextRemovedMark, TextAddedMark, TextApplyNode];
-        },
+        // addExtensions(this: unknown) {
+        //     return [TextRemovedMark, TextAddedMark, TextApplyNode];
+        // },
     });
 
     return {
