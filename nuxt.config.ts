@@ -55,10 +55,8 @@ export default defineNuxtConfig({
     css: ["~/assets/css/main.css"],
     vite: {
         build: {
-            // Disable sourcemaps in production to avoid warnings
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
-            // Fix the chunk size warning by setting a higher limit
             chunkSizeWarningLimit: 800,
             rollupOptions: {
                 output: {
@@ -76,7 +74,6 @@ export default defineNuxtConfig({
                 },
             },
         },
-        // Add optimizations for vue-pdf-embed
         optimizeDeps: {
             include: ["vue-pdf-embed"],
         },
@@ -115,7 +112,6 @@ export default defineNuxtConfig({
         workbox: {
             globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
             globIgnores: ["dev-sw-dist/**/*"],
-            navigateFallback: "/",
             navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/],
             maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         },
@@ -134,7 +130,6 @@ export default defineNuxtConfig({
                     sizes: "512x512",
                 },
             ],
-
             shortcuts: [
                 {
                     name: "From Clipboard",
@@ -179,7 +174,7 @@ export default defineNuxtConfig({
             loglevel: "debug",
         },
         sourcemap: {
-            server: true,
+            server: false,
             client: true,
         },
     },
