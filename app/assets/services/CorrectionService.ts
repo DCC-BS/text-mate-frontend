@@ -1,5 +1,5 @@
 import type { ILogger } from "@dcc-bs/logger.bs.js";
-import { type ArrayChange, diffArrays } from "diff";
+import { diffArrays } from "diff";
 import type { ICommand } from "#build/types/commands";
 import { CorrectionBlockChangedCommand } from "../models/commands";
 import type { TextCorrectionBlock } from "../models/text-correction";
@@ -9,6 +9,9 @@ import {
 } from "./CorrectionFetcher";
 import { Queue } from "./Queue";
 import { splitToSentences } from "./string-parser";
+import type { ChangeObject } from "diff/lib/types.js";
+
+type ArrayChange<T> = ChangeObject<T[]>;
 
 export class CorrectionService {
     static readonly $injectKey = "correctionService";

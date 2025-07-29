@@ -36,7 +36,7 @@ export function countSyllables(word: string): number {
     let prevCharWasVowel = false;
 
     for (let i = 0; i < wordLower.length; i++) {
-        const char = wordLower[i];
+        const char = wordLower[i] ?? "";
         if (vowels.includes(char)) {
             // Only count the start of a new vowel group
             if (!prevCharWasVowel) {

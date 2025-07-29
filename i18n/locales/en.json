@@ -1,0 +1,152 @@
+{
+    "loading": "Loading...",
+    "auth": {
+        "welcomeBack": "Welcome Back",
+        "signInToContinue": "Sign in to continue to your account",
+        "connecting": "Connecting...",
+        "authenticating": "Authenticating...",
+        "redirecting": "Redirecting...",
+        "azureAdDescription": "We're securely connecting you to Azure Active Directory. This will only take a moment."
+    },
+    "language": {
+        "auto": "Detect Language",
+        "de-CH": "German",
+        "fr": "French",
+        "it": "Italian",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)"
+    },
+    "navigation": {
+        "languages": "Languages",
+        "undo": "Undo",
+        "redo": "Redo",
+        "signOut": "Sign Out"
+    },
+    "tools": {
+        "problems": "Problems",
+        "rewrite": "Rewrite",
+        "advisor": "Feedback"
+    },
+    "status": {
+        "rewritingText": "Rewriting text...",
+        "correctingText": "Correcting text...",
+        "advice": "giving advice...",
+        "ready": "Ready",
+        "quickAction": "Quick action in progress...",
+        "loading": "Loading..."
+    },
+    "problems": {
+        "title": "Problems",
+        "noProblems": "No problems found"
+    },
+    "text-editor": {
+        "addWordToDictionary": "Add to Dictionary",
+        "finding-synonym": "Finding synonyms...",
+        "finding-alternative-sentence": "Finding alternatives...",
+        "rewrite-word": "Rewrite Word",
+        "rewrite-sentence": "Rewrite Sentence",
+        "show-changes": "Show Changes",
+        "apply-changes": "Apply Changes",
+        "revert-changes": "Revert Changes",
+        "original": "Original"
+    },
+    "editor": {
+        "rewrite": "Rewrite",
+        "simplify": "Simplify",
+        "shorten": "Shorten",
+        "bullet_points": "Bullet Points",
+        "summarize": "Summarize",
+        "social_mediafy": "Social Media Format",
+        "plain_language": "Plain Language",
+        "easy_language": "Easy Language"
+    },
+    "rewrite": {
+        "writing_style": {
+            "general": "General",
+            "simple": "Simple",
+            "professional": "Professional",
+            "casual": "Casual",
+            "academic": "Academic",
+            "technical": "Technical"
+        },
+        "target_audience": {
+            "general": "General",
+            "young": "Young Adults",
+            "adult": "Adults",
+            "children": "Children"
+        },
+        "intend": {
+            "general": "General",
+            "persuasive": "Persuasive",
+            "informative": "Informative",
+            "descriptive": "Descriptive",
+            "narrative": "Narrative",
+            "entertaining": "Entertaining"
+        },
+        "writingStyleLabel": "Writing Style",
+        "targetAudienceLabel": "Target Audience",
+        "intendLabel": "Intent",
+        "apply": "Apply",
+        "rewrite": "Rewrite",
+        "noRewrite": "Select text and click \"Rewrite\" to rewrite it"
+    },
+    "advisor": {
+        "check": "Check Text",
+        "reason": "Reason",
+        "proposal": "Proposal",
+        "page": "Page",
+        "title": "Document Advisor",
+        "description": "Check your text against selected documents",
+        "results": "Results",
+        "issues": "{n} issue |{n} issues",
+        "noIssues": "No issues found!",
+        "noResultsYet": "Run a check to see results",
+        "checking": "Checking your text...",
+        "error": "Error",
+        "rule": {
+            "title": "Rule Violation",
+            "source": "Source",
+            "example": "Example",
+            "fix": "Suggested Fix"
+        },
+        "selectDocs": "select documents"
+    },
+    "user-dictionary": {
+        "title": "Dictionary",
+        "empty": "No words in your dictionary",
+        "add": "Add word",
+        "placeholder": "Enter a word..."
+    },
+    "quick-actions": {
+        "de-CH": "Translate to German",
+        "en-US": "Translate to English (US)",
+        "en-GB": "Translate to English (UK)",
+        "fr": "Translate to French",
+        "it": "Translate to Italian"
+    },
+    "flesch-score": {
+        "easy": "Easy",
+        "standard": "Standard",
+        "difficult": "Difficult",
+        "academic": "Academic",
+        "reading-ease": "Reading Ease (Flesch Index)",
+        "score": "Score"
+    },
+    "text-stats": {
+        "character-count": "Character Count",
+        "word-count": "Word Count",
+        "syllable-count": "Syllable Count",
+        "average-sentence-length": "Average Sentence Length",
+        "average-syllables-per-word": "Average Syllables per Word",
+        "show-details": "Show Details",
+        "hide-details": "Hide Details",
+        "plain-language": {
+            "notice": "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication."
+        },
+        "easy-language": {
+            "notice": "Note: This tool is a support tool and does not replace a complete manual review. Binding formal guidelines apply to Easy Language. These must be manually checked and adhered to in all cases. We recommend that all automatically generated texts be reviewed again before publication.",
+            "moreInfo": "More Information:",
+            "networkLabel": "Easy Language Network:"
+        }
+    }
+}

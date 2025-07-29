@@ -115,10 +115,17 @@ export const useTrackChanges = () => {
             editor.value = this.editor;
         },
 
+        // addExtensions?: (this: {
+        //     name: string;
+        //     options: Options;
+        //     storage: Storage;
+        //     parent: ParentConfig<Config>['addExtensions'];
+        // }) => Extensions;
+
         /**
          * Add required extensions
          */
-        addExtensions() {
+        addExtensions(this: unknown) {
             return [TextRemovedMark, TextAddedMark, TextApplyNode];
         },
     });

@@ -13,7 +13,8 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 
-import { BubbleMenu, EditorContent, useEditor } from "@tiptap/vue-3";
+import { BubbleMenu } from "@tiptap/extension-bubble-menu";
+import { EditorContent, useEditor } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
 import {
     type ApplyTextCommand,
@@ -47,7 +48,8 @@ const undoRedoState = ref({
 // computed
 const characterCountPercentage = computed(() =>
     Math.round(
-        (100 / limit.value) * editor.value?.storage.characterCount.characters(),
+        (100 / limit.value) *
+            (editor.value?.storage.characterCount.characters() ?? 0),
     ),
 );
 
@@ -76,7 +78,6 @@ const editor = useEditor({
         Strike,
         History,
         Heading,
-        // @ts-expect-error
         BubbleMenu,
         FocusExtension,
         CorrectionExtension,

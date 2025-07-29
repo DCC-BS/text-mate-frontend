@@ -14,14 +14,6 @@ export interface ICorrectionFetcher {
     ): Promise<TextCorrectionBlock[]>;
 }
 
-export function createCorrectionFetcher(
-    language: string,
-    logger: ILogger,
-    wordInUserDictionary: (word: string) => Promise<boolean>,
-): ICorrectionFetcher {
-    return new CorrectionFetcher(logger, language, wordInUserDictionary);
-}
-
 export class CorrectionFetcher implements ICorrectionFetcher {
     static readonly $injectKey = "correctionFetcher";
     static readonly $inject = ["logger", UserDictionaryQuery];

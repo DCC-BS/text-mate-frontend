@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Editor } from "@tiptap/vue-3";
-import { BubbleMenu } from "@tiptap/vue-3";
+import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import { ApplyTextCommand } from "~/assets/models/commands";
 
 interface InputProps {

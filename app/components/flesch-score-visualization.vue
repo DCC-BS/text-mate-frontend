@@ -14,7 +14,7 @@ const props = defineProps<{
 const { t } = useI18n();
 
 // Define the Flesch score levels with colors (simplified to 4 categories)
-const fleschLevels: FleschScoreLevel[] = [
+const fleschLevels: [FleschScoreLevel, ...FleschScoreLevel[]] = [
     {
         min: 70,
         max: 101,
@@ -50,7 +50,8 @@ const currentLevel = computed(() => {
     return (
         fleschLevels.find(
             (level) => props.score >= level.min && props.score < level.max,
-        ) || fleschLevels[fleschLevels.length - 1]
+            // biome-ignore lint: this is a safe access
+        ) ?? fleschLevels.at(-1)!
     );
 });
 
