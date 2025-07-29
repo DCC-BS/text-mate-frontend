@@ -26,7 +26,7 @@ const availableLocales = computed(() => {
 
 const userImage = computed(() => {
     const base64 = data.value?.user?.image;
-    return base64 ? `${base64}` : "/LucideCircleUserRound.png";
+    return base64 ? base64 : "/LucideCircleUserRound.png";
 });
 
 // Navigation menu items
