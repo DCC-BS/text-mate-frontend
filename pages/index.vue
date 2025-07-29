@@ -2,4 +2,4 @@
     <FeedbackControl />
     <NavigationMenu />
     <GrammarEditor />
-</template>;
+</template>
