@@ -38,7 +38,7 @@
         "@types/diff": "^8.0.0",
         "@vite-pwa/nuxt": "^1.0.0",
         "jsdiff": "^1.1.1",
-        "nuxt": "^3.16.1",
+        "nuxt": "^4.0.0",
         "nuxt-viewport": "2.3.1",
         "pinia": "^3.0.2",
         "ts-pattern": "^5.7.0",
