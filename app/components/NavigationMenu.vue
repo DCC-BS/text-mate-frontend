@@ -9,13 +9,13 @@ import {
 
 // Add translation hook
 const { t } = useI18n();
-const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
+const { executeCommand, onCommand } = useCommandBus();
 const { data, signOut } = useAuth();
 
-const undoRedoState = reactive({
+const undoRedoState = useState("undoRedoState", () => ({
     canUndo: false,
     canRedo: false,
-});
+}));
 
 const { locale, locales } = useI18n();
 const switchLocalePath = useSwitchLocalePath();
@@ -35,14 +35,14 @@ const items = computed<NavigationMenuItem[][]>(() => [
         {
             label: t("navigation.undo"),
             icon: "i-heroicons-arrow-uturn-left",
-            onSelect: () => handleUndo(),
-            disabled: !undoRedoState.canUndo,
+            onSelect: handleUndo,
+            disabled: !undoRedoState.value.canUndo,
         },
         {
             label: t("navigation.redo"),
             icon: "i-heroicons-arrow-uturn-right",
             onSelect: handleRedo,
-            disabled: !undoRedoState.canRedo,
+            disabled: !undoRedoState.value.canRedo,
         },
     ],
     [],
@@ -71,18 +71,10 @@ const items = computed<NavigationMenuItem[][]>(() => [
     ],
 ]);
 
-onMounted(() => {
-    registerHandler(Cmds.UndoRedoStateChanged, handleUndoRedoStateChanged);
+onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
+    undoRedoState.value.canUndo = command.canUndo;
+    undoRedoState.value.canRedo = command.canRedo;
 });
-
-onUnmounted(() => {
-    unregisterHandler(Cmds.UndoRedoStateChanged, handleUndoRedoStateChanged);
-});
-
-async function handleUndoRedoStateChanged(command: UndoRedoStateChanged) {
-    undoRedoState.canUndo = command.canUndo;
-    undoRedoState.canRedo = command.canRedo;
-}
 
 function handleUndo(): void {
     executeCommand(new UndoCommand());
