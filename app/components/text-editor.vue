@@ -13,15 +13,15 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
 
-import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import { EditorContent, useEditor } from "@tiptap/vue-3";
-import type { ICommand } from "#build/types/commands";
 import {
     type ApplyTextCommand,
     Cmds,
+    type RedoCommand,
     type ToggleEditableEditorCommand,
     type ToggleLockEditorCommand,
     type ToolSwitchCommand,
+    type UndoCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
 import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
@@ -55,13 +55,12 @@ const characterCountPercentage = computed(() =>
 
 // composables
 const toast = useToast();
-const { registerHandler, unregisterHandler, onCommand, executeCommand } =
-    useCommandBus();
+const { onCommand, executeCommand } = useCommandBus();
 const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
     useTextFocus(isInteractiableFocusActive);
 const { CorrectionExtension, hoverBlock, relativeHoverRect } =
     useTextCorrectionMarks(container, isTextCorrectionActive);
-const { TrackChangesExtension } = useTrackChanges();
+const { trackChangesExtensions } = useTrackChanges();
 
 const editor = useEditor({
     content: model.value,
@@ -78,10 +77,9 @@ const editor = useEditor({
         Strike,
         History,
         Heading,
-        BubbleMenu,
         FocusExtension,
         CorrectionExtension,
-        TrackChangesExtension,
+        ...trackChangesExtensions,
         CharacterCount.configure({
             limit: limit.value,
         }),
@@ -127,11 +125,31 @@ const editor = useEditor({
 });
 
 // lifecycle
-onMounted(() => {
-    registerHandler(Cmds.ApplyTextCommand, applyText);
-    registerHandler(Cmds.UndoCommand, applyUndo);
-    registerHandler(Cmds.RedoCommand, applyRedo);
-    registerHandler(Cmds.ToolSwitchCommand, handleToolSwitch);
+onCommand<ApplyTextCommand>(Cmds.ApplyTextCommand, async (command) => {
+    if (!editor.value) return;
+    const text = command.text;
+    const range = command.range;
+
+    console.log("Applying correction", text, range);
+
+    editor.value
+        .chain()
+        .setTextSelection(range)
+        .insertContent(text)
+        .focus(range.from)
+        .run();
+});
+
+onCommand<UndoCommand>(Cmds.UndoCommand, async () => {
+    if (!editor.value || !editor.value.can().undo()) return;
+
+    editor.value.commands.undo();
+});
+
+onCommand<RedoCommand>(Cmds.RedoCommand, async () => {
+    if (!editor.value || !editor.value.can().redo()) return;
+
+    editor.value.commands.redo();
 });
 
 onCommand<ToggleEditableEditorCommand>(
@@ -152,17 +170,17 @@ onCommand<ToggleLockEditorCommand>(
     },
 );
 
+onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
+    isTextCorrectionActive.value = command.tool === "correction";
+    isInteractiableFocusActive.value = command.tool === "rewrite";
+});
+
 watch(focusedSelection, (value) => {
     selectedText.value = value;
 });
 
 onUnmounted(() => {
     editor.value?.destroy();
-
-    unregisterHandler(Cmds.ApplyTextCommand, applyText);
-    unregisterHandler(Cmds.UndoCommand, applyUndo);
-    unregisterHandler(Cmds.RedoCommand, applyRedo);
-    unregisterHandler(Cmds.ToolSwitchCommand, handleToolSwitch);
 });
 
 // listeners
@@ -184,36 +202,6 @@ function getContent() {
 
     return editor.value.getText();
 }
-
-async function applyText(command: ApplyTextCommand) {
-    if (!editor.value) return;
-    const text = command.text;
-    const range = command.range;
-
-    editor.value
-        .chain()
-        .setTextSelection(range)
-        .insertContent(text)
-        .focus(range.from)
-        .run();
-}
-
-async function applyUndo(_: ICommand) {
-    if (!editor.value || !editor.value.can().undo()) return;
-
-    editor.value.commands.undo();
-}
-
-async function applyRedo(_: ICommand) {
-    if (!editor.value || !editor.value.can().redo()) return;
-
-    editor.value.commands.redo();
-}
-
-async function handleToolSwitch(command: ToolSwitchCommand) {
-    isTextCorrectionActive.value = command.tool === "correction";
-    isInteractiableFocusActive.value = command.tool === "rewrite";
-}
 </script>
 
 <template>
@@ -233,7 +221,7 @@ async function handleToolSwitch(command: ToolSwitchCommand) {
             :focused-word="focusedWord"
             :text="model"
             :editor="editor"
-            :is-text-correction-active="isTextCorrectionActive" />
+             />
 
         <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll relative">
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />

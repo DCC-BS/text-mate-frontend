@@ -113,28 +113,15 @@ export const useTrackChanges = () => {
          */
         onCreate() {
             editor.value = this.editor;
-
-            this.editor.schema.mark("textAdded", TextAddedMark);
-            this.editor.schema.node("textApply", TextApplyNode);
-            this.editor.schema.node("textRemoved", TextRemovedNode);
         },
-
-        // addExtensions?: (this: {
-        //     name: string;
-        //     options: Options;
-        //     storage: Storage;
-        //     parent: ParentConfig<Config>['addExtensions'];
-        // }) => Extensions;
-
-        /**
-         * Add required extensions
-         */
-        // addExtensions(this: unknown) {
-        //     return [TextRemovedMark, TextAddedMark, TextApplyNode];
-        // },
     });
 
     return {
-        TrackChangesExtension,
+        trackChangesExtensions: [
+            TrackChangesExtension,
+            TextRemovedMark,
+            TextAddedMark,
+            TextApplyNode,
+        ],
     };
 };

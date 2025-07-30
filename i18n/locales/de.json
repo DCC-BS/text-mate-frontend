@@ -139,14 +139,14 @@
         "average-sentence-length": "Durchschnittliche Satzlänge",
         "average-syllables-per-word": "Durchschnittliche Silben pro Wort",
         "show-details": "Details anzeigen",
-        "hide-details": "Details ausblenden",
-        "plain-language": {
-            "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen."
-        },
-        "easy-language": {
-            "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
-            "moreInfo": "Weitere Informationen:",
-            "networkLabel": "Netzwerk Leichte Sprache:"
-        }
+        "hide-details": "Details ausblenden"
+    },
+    "plain-language": {
+        "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen."
+    },
+    "easy-language": {
+        "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
+        "moreInfo": "Weitere Informationen:",
+        "networkLabel": "Netzwerk Leichte Sprache:"
     }
 }

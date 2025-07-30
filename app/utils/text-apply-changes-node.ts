@@ -1,9 +1,4 @@
-import {
-    mergeAttributes,
-    Node,
-    type NodeConfig,
-    type NodeViewRenderer,
-} from "@tiptap/core";
+import { mergeAttributes, Node, type NodeViewRenderer } from "@tiptap/core";
 import { VueNodeViewRenderer } from "@tiptap/vue-3";
 import TextApplyChanges from "~/components/text-editor/text-apply-changes.vue";
 
@@ -12,7 +7,7 @@ import TextApplyChanges from "~/components/text-editor/text-apply-changes.vue";
  * It renders applied text changes, making it easy to see what was changed
  * without interfering with normal text editing.
  */
-export const TextApplyNode: NodeConfig = Node.create({
+export const TextApplyNode = Node.create({
     name: "textApply",
 
     /**

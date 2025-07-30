@@ -12,10 +12,10 @@ const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
 const { data, signOut } = useAuth();
 
-const undoRedoState = useState("undoRedoState", () => ({
+const undoRedoState = reactive({
     canUndo: false,
     canRedo: false,
-}));
+});
 
 const { locale, locales } = useI18n();
 const switchLocalePath = useSwitchLocalePath();
@@ -36,13 +36,13 @@ const items = computed<NavigationMenuItem[][]>(() => [
             label: t("navigation.undo"),
             icon: "i-heroicons-arrow-uturn-left",
             onSelect: handleUndo,
-            disabled: !undoRedoState.value.canUndo,
+            disabled: !undoRedoState.canUndo,
         },
         {
             label: t("navigation.redo"),
             icon: "i-heroicons-arrow-uturn-right",
             onSelect: handleRedo,
-            disabled: !undoRedoState.value.canRedo,
+            disabled: !undoRedoState.canRedo,
         },
     ],
     [],
@@ -72,8 +72,8 @@ const items = computed<NavigationMenuItem[][]>(() => [
 ]);
 
 onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
-    undoRedoState.value.canUndo = command.canUndo;
-    undoRedoState.value.canRedo = command.canRedo;
+    undoRedoState.canUndo = command.canUndo;
+    undoRedoState.canRedo = command.canRedo;
 });
 
 function handleUndo(): void {
@@ -91,10 +91,12 @@ async function handleSignOut(): Promise<void> {
 
 <template>
     <div>
-        <UNavigationMenu
-            content-orientation="vertical"
-            :items="items"
-            class="w-full justify-between z-50"
-        />
+        <ClientOnly>
+            <UNavigationMenu
+                content-orientation="vertical"
+                :items="items"
+                class="w-full justify-between z-50"
+            />
+        </ClientOnly>
     </div>
 </template>

@@ -139,14 +139,14 @@
         "average-sentence-length": "Average Sentence Length",
         "average-syllables-per-word": "Average Syllables per Word",
         "show-details": "Show Details",
-        "hide-details": "Hide Details",
-        "plain-language": {
-            "notice": "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication."
-        },
-        "easy-language": {
-            "notice": "Note: This tool is a support tool and does not replace a complete manual review. Binding formal guidelines apply to Easy Language. These must be manually checked and adhered to in all cases. We recommend that all automatically generated texts be reviewed again before publication.",
-            "moreInfo": "More Information:",
-            "networkLabel": "Easy Language Network:"
-        }
+        "hide-details": "Hide Details"
+    },
+    "plain-language": {
+        "notice": "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication."
+    },
+    "easy-language": {
+        "notice": "Note: This tool is a support tool and does not replace a complete manual review. Binding formal guidelines apply to Easy Language. These must be manually checked and adhered to in all cases. We recommend that all automatically generated texts be reviewed again before publication.",
+        "moreInfo": "More Information:",
+        "networkLabel": "Easy Language Network:"
     }
 }
