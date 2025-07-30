@@ -158,7 +158,7 @@ export default defineNuxtConfig({
         debug: false,
         pwa: {
             devOptions: {
-                enabled: false,
+                enabled: true,
             },
         },
         devtools: {

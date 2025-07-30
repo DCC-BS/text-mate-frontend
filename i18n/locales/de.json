@@ -148,5 +148,10 @@
         "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
         "moreInfo": "Weitere Informationen:",
         "networkLabel": "Netzwerk Leichte Sprache:"
+    },
+    "pwa": {
+        "newContentAvailable": "Neue Inhalte verfügbar",
+        "newVersionDescription": "Eine neue Version der App ist verfügbar. Bitte aktualisieren Sie, um die neuesten Updates zu erhalten.",
+        "refresh": "Aktualisieren"
     }
 }
