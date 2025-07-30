@@ -108,15 +108,11 @@ export default defineNuxtConfig({
         strategy: "prefix_except_default",
     },
     pwa: {
-        registerType: "autoUpdate",
         workbox: {
             globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
             globIgnores: ["dev-sw-dist/**/*"],
             navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/],
             maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-        },
-        client: {
-            periodicSyncForUpdates: 60 * 10, // 10 minutes
         },
         manifest: {
             name: "Text Mate",
