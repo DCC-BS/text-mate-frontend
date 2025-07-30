@@ -9,7 +9,7 @@ import {
 
 // Add translation hook
 const { t } = useI18n();
-const { executeCommand, registerHandler, unregisterHandler } = useCommandBus();
+const { executeCommand, onCommand } = useCommandBus();
 const { data, signOut } = useAuth();
 
 const undoRedoState = reactive({
@@ -35,7 +35,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
         {
             label: t("navigation.undo"),
             icon: "i-heroicons-arrow-uturn-left",
-            onSelect: () => handleUndo(),
+            onSelect: handleUndo,
             disabled: !undoRedoState.canUndo,
         },
         {
@@ -71,18 +71,10 @@ const items = computed<NavigationMenuItem[][]>(() => [
     ],
 ]);
 
-onMounted(() => {
-    registerHandler(Cmds.UndoRedoStateChanged, handleUndoRedoStateChanged);
-});
-
-onUnmounted(() => {
-    unregisterHandler(Cmds.UndoRedoStateChanged, handleUndoRedoStateChanged);
-});
-
-async function handleUndoRedoStateChanged(command: UndoRedoStateChanged) {
+onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
     undoRedoState.canUndo = command.canUndo;
     undoRedoState.canRedo = command.canRedo;
-}
+});
 
 function handleUndo(): void {
     executeCommand(new UndoCommand());
@@ -99,10 +91,12 @@ async function handleSignOut(): Promise<void> {
 
 <template>
     <div>
-        <UNavigationMenu
-            content-orientation="vertical"
-            :items="items"
-            class="w-full justify-between z-50"
-        />
+        <ClientOnly>
+            <UNavigationMenu
+                content-orientation="vertical"
+                :items="items"
+                class="w-full justify-between z-50"
+            />
+        </ClientOnly>
     </div>
 </template>

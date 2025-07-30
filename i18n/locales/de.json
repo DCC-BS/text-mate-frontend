@@ -1,0 +1,152 @@
+{
+    "loading": "Wird geladen...",
+    "auth": {
+        "welcomeBack": "Willkommen zurück",
+        "signInToContinue": "Melden Sie sich an, um zu Ihrem Konto zu gelangen",
+        "connecting": "Verbinden...",
+        "authenticating": "Authentifizieren...",
+        "redirecting": "Weiterleiten...",
+        "azureAdDescription": "Wir verbinden Sie sicher mit Azure Active Directory. Das dauert nur einen Moment."
+    },
+    "language": {
+        "auto": "Sprache erkennen",
+        "de-CH": "Deutsch",
+        "fr": "Französisch",
+        "it": "Italienisch",
+        "en-US": "Englisch (US)",
+        "en-GB": "Englisch (GB)"
+    },
+    "navigation": {
+        "languages": "Sprachen",
+        "undo": "Rückgängig",
+        "redo": "Wiederholen",
+        "signOut": "Abmelden"
+    },
+    "tools": {
+        "problems": "Probleme",
+        "rewrite": "Umschreiben",
+        "advisor": "Feedback"
+    },
+    "status": {
+        "rewritingText": "Text wird umgeschrieben...",
+        "correctingText": "Text wird korrigiert...",
+        "advice": "Ratschlag geben...",
+        "ready": "Bereit",
+        "quickAction": "Schnellaktion wird ausgeführt...",
+        "loading": "Wird geladen..."
+    },
+    "problems": {
+        "title": "Probleme",
+        "noProblems": "Keine Probleme gefunden"
+    },
+    "text-editor": {
+        "addWordToDictionary": "Zum Wörterbuch hinzufügen",
+        "finding-synonym": "Synonyme finden...",
+        "finding-alternative-sentence": "Alternativen finden...",
+        "rewrite-word": "Wort umformulieren",
+        "rewrite-sentence": "Satz umformulieren",
+        "show-changes": "Änderungen anzeigen",
+        "apply-changes": "Änderungen anwenden",
+        "revert-changes": "Änderungen rückgängig",
+        "original": "Original"
+    },
+    "editor": {
+        "rewrite": "Umschreiben",
+        "simplify": "Vereinfachen",
+        "shorten": "Kürzen",
+        "bullet_points": "Aufzählungspunkte",
+        "summarize": "Zusammenfassen",
+        "social_mediafy": "Social-Media-Format",
+        "plain_language": "Einfache Sprache",
+        "easy_language": "Leichte Sprache"
+    },
+    "rewrite": {
+        "writing_style": {
+            "general": "Allgemein",
+            "simple": "Einfach",
+            "professional": "Professionell",
+            "casual": "Locker",
+            "academic": "Akademisch",
+            "technical": "Technisch"
+        },
+        "target_audience": {
+            "general": "Allgemein",
+            "young": "Junge Erwachsene",
+            "adult": "Erwachsene",
+            "children": "Kinder"
+        },
+        "intend": {
+            "general": "Allgemein",
+            "persuasive": "Überzeugend",
+            "informative": "Informativ",
+            "descriptive": "Beschreibend",
+            "narrative": "Erzählend",
+            "entertaining": "Unterhaltsam"
+        },
+        "writingStyleLabel": "Schreibstil",
+        "targetAudienceLabel": "Zielgruppe",
+        "intendLabel": "Absicht",
+        "apply": "Anwenden",
+        "rewrite": "Umschreiben",
+        "noRewrite": "Text auswählen und auf \"Umschreiben\" klicken, um ihn umzuschreiben"
+    },
+    "advisor": {
+        "check": "Text überprüfen",
+        "reason": "Grund",
+        "proposal": "Vorschlag",
+        "page": "Seite",
+        "title": "Dokumentenberater",
+        "description": "Überprüfen Sie Ihren Text anhand ausgewählter Dokumente",
+        "results": "Ergebnisse",
+        "issues": "{n} Problem |{n} Probleme",
+        "noIssues": "Keine Probleme gefunden!",
+        "noResultsYet": "Führen Sie eine Überprüfung durch, um Ergebnisse zu sehen",
+        "checking": "Überprüfe deinen Text...",
+        "error": "Fehler",
+        "rule": {
+            "title": "Regelverletzung",
+            "source": "Quelle",
+            "example": "Beispiel",
+            "fix": "Vorgeschlagene Korrektur"
+        },
+        "selectDocs": "Dokumente auswählen"
+    },
+    "user-dictionary": {
+        "title": "Wörterbuch",
+        "empty": "Keine Wörter in deinem Wörterbuch",
+        "add": "Wort hinzufügen",
+        "placeholder": "Gib ein Wort ein..."
+    },
+    "quick-actions": {
+        "de-CH": "Auf Deutsch übersetzen",
+        "en-US": "Auf Englisch (US) übersetzen",
+        "en-GB": "Auf Englisch (GB) übersetzen",
+        "fr": "Auf Französisch übersetzen",
+        "it": "Auf Italienisch übersetzen"
+    },
+    "flesch-score": {
+        "easy": "Einfach",
+        "standard": "Standard",
+        "difficult": "Schwer",
+        "academic": "Akademisch",
+        "reading-ease": "Lesbarkeit (Flesch Index)",
+        "score": "Bewertung"
+    },
+    "text-stats": {
+        "character-count": "Zeichenanzahl",
+        "word-count": "Wortanzahl",
+        "syllable-count": "Silbenanzahl",
+        "average-sentence-length": "Durchschnittliche Satzlänge",
+        "average-syllables-per-word": "Durchschnittliche Silben pro Wort",
+        "show-details": "Details anzeigen",
+        "hide-details": "Details ausblenden"
+    },
+    "plain-language": {
+        "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen."
+    },
+    "easy-language": {
+        "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
+        "moreInfo": "Weitere Informationen:",
+        "networkLabel": "Netzwerk Leichte Sprache:"
+    }
+}

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
     isAlphanumeric,
     splitToSentences,
-} from "../../../assets/services/string-parser";
+} from "../../../app/assets/services/string-parser";
 
 /**
  * Tests for the string-parser utility functions

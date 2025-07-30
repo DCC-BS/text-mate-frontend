@@ -50,6 +50,7 @@ export default defineNuxtConfig({
         githubToken: process.env.GITHUB_TOKEN,
     },
     typescript: {
+        typeCheck: true,
         strict: true,
     },
     css: ["~/assets/css/main.css"],
@@ -89,22 +90,19 @@ export default defineNuxtConfig({
     },
     // localization
     i18n: {
-        bundle: {
-            optimizeTranslationDirective: false,
-        },
         locales: [
             {
                 code: "en",
                 name: "English",
+                file: "en.json",
             },
             {
                 code: "de",
                 name: "Deutsch",
+                file: "de.json",
             },
         ],
         defaultLocale: "de",
-        vueI18n: "./i18n.config.ts",
-        lazy: true,
         strategy: "prefix_except_default",
     },
     pwa: {

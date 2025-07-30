@@ -41,7 +41,13 @@ const items = languages.map(
         }) as SelectMenuItem & { key: string },
 );
 
-const selectedLanguage = ref<SelectMenuItem & { key: string }>(items[0]);
+const selectedLanguage = ref<SelectMenuItem & { key: string }>(
+    items[0] ?? {
+        key: "auto",
+        icon: "i-heroicons-globe-alt",
+        label: t("language.auto"),
+    },
+);
 
 watch(selectedLanguage, (lang) => {
     executeCommand(new SwitchCorrectionLanguageCommand(lang.key));

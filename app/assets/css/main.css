@@ -12,7 +12,7 @@
 
 @import "./partials/typography.css";
 
-@source "../../node_modules/@dcc-bs/common-ui.bs.js/dist/runtime";
+@source "../../../node_modules/@dcc-bs/common-ui.bs.js/dist/runtime";
 
 .ProseMirror {
     z-index: 0;
