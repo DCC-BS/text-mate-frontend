@@ -114,16 +114,14 @@ export const useTrackChanges = () => {
         onCreate() {
             editor.value = this.editor;
         },
-
-        /**
-         * Add required extensions
-         */
-        addExtensions() {
-            return [TextRemovedMark, TextAddedMark, TextApplyNode];
-        },
     });
 
     return {
-        TrackChangesExtension,
+        trackChangesExtensions: [
+            TrackChangesExtension,
+            TextRemovedMark,
+            TextAddedMark,
+            TextApplyNode,
+        ],
     };
 };

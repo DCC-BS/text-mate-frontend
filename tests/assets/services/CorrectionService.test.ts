@@ -1,9 +1,9 @@
 import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ICommand } from "#build/types/commands";
-import type { TextCorrectionBlock } from "../../../assets/models/text-correction";
-import type { ICorrectionFetcher } from "../../../assets/services/CorrectionFetcher";
-import { CorrectionService } from "../../../assets/services/CorrectionService";
+import type { TextCorrectionBlock } from "../../../app/assets/models/text-correction";
+import type { ICorrectionFetcher } from "../../../app/assets/services/CorrectionFetcher";
+import { CorrectionService } from "../../../app/assets/services/CorrectionService";
 
 // Sample correction block for testing
 const sampleBlock: TextCorrectionBlock = {

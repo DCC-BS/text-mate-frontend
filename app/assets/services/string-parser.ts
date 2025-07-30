@@ -9,7 +9,9 @@ export function isAlphanumeric(char: string): boolean {
     );
 }
 
-export function isWhiteSpace(char: string): boolean {
+export function isWhiteSpace(char: string | undefined): boolean {
+    if (!char) return false;
+
     const code = char.charCodeAt(0);
     return (
         code === 9 || // Tab
@@ -174,8 +176,8 @@ export function* splitToSentences(text: string): Generator<string> {
 
     for (let i = 0; i < text.length; i++) {
         const prev = input.at(i - 1);
-        const current = input[i];
-        const next = input[i + 1];
+        const current = input[i] ?? " ";
+        const next = input[i + 1] ?? " ";
 
         if (isQuote(current)) {
             if (
@@ -412,7 +414,8 @@ function isEmail(text: string, position: number): number {
 /**
  * Check if a character is uppercase
  */
-function isUpperCase(char: string): boolean {
+function isUpperCase(char: string | undefined): boolean {
+    if (!char) return false;
     const code = char.charCodeAt(0);
     return code >= 65 && code <= 90; // A-Z
 }
@@ -420,7 +423,8 @@ function isUpperCase(char: string): boolean {
 /**
  * Check if a character is a digit
  */
-function isDigit(char: string): boolean {
+function isDigit(char: string | undefined): boolean {
+    if (!char) return false;
     const code = char.charCodeAt(0);
     return code >= 48 && code <= 57; // 0-9
 }

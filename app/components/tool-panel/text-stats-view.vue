@@ -67,11 +67,8 @@ const {
         </div>
       </div>
     </div>   
-    <FleschScoreVisualization :score="fleschScore" />
   </div>
 </template>
-
-
 
 <style scoped>
 .text-stats-container {

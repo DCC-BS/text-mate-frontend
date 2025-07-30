@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Editor } from "@tiptap/vue-3";
-import { BubbleMenu } from "@tiptap/vue-3";
+import { BubbleMenu } from "@tiptap/vue-3/menus";
 import { ApplyTextCommand } from "~/assets/models/commands";
 
 interface InputProps {
@@ -125,8 +125,8 @@ async function applyAlternativeSentence(sentence: string) {
 
 <template>
         <bubble-menu
-            :editor="editor" 
-            :tippy-options="{ duration: 100, placement: 'bottom', arrow: true, popperOptions: { placement: 'bottom'} }"
+            :editor="editor"
+            :options="{ placement: 'bottom'}"
             :should-show="() => true">
             <div
                 class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300"
@@ -170,3 +170,9 @@ async function applyAlternativeSentence(sentence: string) {
             </div>
         </bubble-menu>
 </template>
+
+<style scoped>
+#arrow {
+    position: absolute;
+}
+</style>
