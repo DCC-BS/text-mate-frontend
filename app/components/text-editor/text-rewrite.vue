@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { createDocument, type Editor } from "@tiptap/vue-3";
+import type { Editor } from "@tiptap/vue-3";
 import { BubbleMenu } from "@tiptap/vue-3/menus";
 import { ApplyTextCommand } from "~/assets/models/commands";
 
@@ -20,7 +20,6 @@ const wordSynonyms = ref<string[]>();
 const alternativeSentences = ref<string[]>();
 const isRewritingWord = ref<boolean>(false);
 const isRewritingSentence = ref<boolean>(false);
-const arrowElement = ref<HTMLElement>();
 
 watch(
     () => props.focusedWord,

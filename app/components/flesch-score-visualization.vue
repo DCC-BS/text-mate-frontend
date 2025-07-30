@@ -50,8 +50,7 @@ const currentLevel = computed(() => {
     return (
         fleschLevels.find(
             (level) => props.score >= level.min && props.score < level.max,
-            // biome-ignore lint: this is a safe access
-        ) ?? fleschLevels.at(-1)!
+        ) ?? (fleschLevels.at(-1) as FleschScoreLevel)
     );
 });
 
