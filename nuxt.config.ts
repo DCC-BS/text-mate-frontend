@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     modules: [
         "@nuxt/ui",
         "@nuxtjs/i18n",
-        "@vite-pwa/nuxt",
+        // "@vite-pwa/nuxt",
         "@nuxtjs/mdc",
         "@dcc-bs/event-system.bs.js",
         "@dcc-bs/common-ui.bs.js",
@@ -103,41 +103,42 @@ export default defineNuxtConfig({
             },
         ],
         defaultLocale: "de",
-        strategy: "prefix_except_default",
+        strategy: "no_prefix",
+        // strategy: "no_prefix",
     },
-    pwa: {
-        workbox: {
-            globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
-            globIgnores: ["dev-sw-dist/**/*"],
-            navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/],
-            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-        },
-        manifest: {
-            name: "Text Mate",
-            short_name: "Text Mate",
-            description: "Tool for text manipulation",
-            theme_color: "#000000",
-            background_color: "#000000",
-            icons: [
-                {
-                    src: "/HeroiconsLanguage.png",
-                    sizes: "512x512",
-                },
-            ],
-            shortcuts: [
-                {
-                    name: "From Clipboard",
-                    url: "/?clipboard=true",
-                    icons: [
-                        {
-                            src: "/MaterialSymbolsContentPasteGo.png",
-                            sizes: "512x512",
-                        },
-                    ],
-                },
-            ],
-        },
-    },
+    // pwa: {
+    //     workbox: {
+    //         globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg}"],
+    //         globIgnores: ["dev-sw-dist/**/*", "auth/**/*"],
+    //         navigateFallbackDenylist: [/^\/sw\.js$/, /^\/workbox-.*\.js$/],
+    //         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+    //     },
+    //     manifest: {
+    //         name: "Text Mate",
+    //         short_name: "Text Mate",
+    //         description: "Tool for text manipulation",
+    //         theme_color: "#000000",
+    //         background_color: "#000000",
+    //         icons: [
+    //             {
+    //                 src: "/HeroiconsLanguage.png",
+    //                 sizes: "512x512",
+    //             },
+    //         ],
+    //         shortcuts: [
+    //             {
+    //                 name: "From Clipboard",
+    //                 url: "/?clipboard=true",
+    //                 icons: [
+    //                     {
+    //                         src: "/MaterialSymbolsContentPasteGo.png",
+    //                         sizes: "512x512",
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     },
+    // },
     viewport: {
         breakpoints: {
             xs: 320,
@@ -156,11 +157,11 @@ export default defineNuxtConfig({
     },
     $development: {
         debug: false,
-        pwa: {
-            devOptions: {
-                enabled: true,
-            },
-        },
+        // pwa: {
+        //     devOptions: {
+        //         enabled: true,
+        //     },
+        // },
         devtools: {
             enabled: true,
         },

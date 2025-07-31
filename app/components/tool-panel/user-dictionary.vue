@@ -6,6 +6,8 @@ const userDictionaryQuery = useService(UserDictionaryQuery);
 const newWord = ref<string>("");
 const words = userDictionaryQuery.getWordsRef();
 
+const { t } = useI18n();
+
 function addNewWord() {
     if (newWord.value.trim() !== "") {
         userDictionaryQuery.addWord(newWord.value.trim());
@@ -21,7 +23,7 @@ function addNewWord() {
         icon="i-heroicons-book-open"
         color="info"
         class="w-full">
-        {{ $t("user-dictionary.title") }}
+        {{ t("user-dictionary.title") }}
       </UButton>
 
       <template #content>
@@ -30,7 +32,7 @@ function addNewWord() {
           <div class="flex items-center gap-2 mb-2">
             <UInput
               v-model="newWord"
-              :placeholder="$t('user-dictionary.placeholder')"
+              :placeholder="t('user-dictionary.placeholder')"
               @keyup.enter="addNewWord"
               class="flex-grow"
             />
@@ -39,12 +41,12 @@ function addNewWord() {
               icon="i-heroicons-plus"
               @click="addNewWord"
             >
-              {{ $t("user-dictionary.add") }}
+              {{ t("user-dictionary.add") }}
             </UButton>
           </div>
 
           <div v-if="words.length === 0" class="text-center text-gray-500">
-            {{ $t("user-dictionary.empty") }}
+            {{ t("user-dictionary.empty") }}
           </div>
           
           <!-- Word list -->

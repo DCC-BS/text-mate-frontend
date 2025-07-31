@@ -17,8 +17,7 @@ const undoRedoState = reactive({
     canRedo: false,
 });
 
-const { locale, locales } = useI18n();
-const switchLocalePath = useSwitchLocalePath();
+const { locale, locales, setLocale } = useI18n();
 
 const availableLocales = computed(() => {
     return locales.value.filter((i) => i.code !== locale.value);
@@ -52,7 +51,9 @@ const items = computed<NavigationMenuItem[][]>(() => [
             icon: "i-heroicons-language",
             children: availableLocales.value.map((locale) => ({
                 label: locale.name,
-                to: switchLocalePath(locale.code),
+                onSelect: async () => {
+                    setLocale(locale.code);
+                },
             })),
         },
         {
