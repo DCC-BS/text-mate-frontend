@@ -55,8 +55,8 @@
         "simplify": "Vereinfachen",
         "shorten": "Kürzen",
         "bullet_points": "Aufzählungspunkte",
-        "summarize": "Zusammenfassen",
-        "social_mediafy": "Social-Media-Format",
+        "summarize": "Zusammenfassung",
+        "social_mediafy": "Social Media Format",
         "plain_language": "Einfache Sprache",
         "easy_language": "Leichte Sprache"
     },
@@ -88,7 +88,7 @@
         "intendLabel": "Absicht",
         "apply": "Anwenden",
         "rewrite": "Umschreiben",
-        "noRewrite": "Text auswählen und auf \"Umschreiben\" klicken, um ihn umzuschreiben"
+        "noRewrite": "Text auswählen und auf \"Umschreiben\" klicken, um ihn umzuschreiben."
     },
     "advisor": {
         "check": "Text überprüfen",
@@ -96,7 +96,7 @@
         "proposal": "Vorschlag",
         "page": "Seite",
         "title": "Dokumentenberater",
-        "description": "Überprüfen Sie Ihren Text anhand ausgewählter Dokumente",
+        "description": "Überprüfen Sie Ihren Text anhand ausgewählter Dokumente.",
         "results": "Ergebnisse",
         "issues": "{n} Problem |{n} Probleme",
         "noIssues": "Keine Probleme gefunden!",
