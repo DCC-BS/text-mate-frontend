@@ -35,43 +35,43 @@ const { executeCommand } = useCommandBus();
 
 // refs
 const isRewriting = ref<boolean>(false);
-const items = ref<DropdownMenuItem[]>([
-    {
-        label: t("quick-actions.de-CH"),
-        icon: "i-flag-de-4x3",
-        onSelect: () => {
-            applyAction("translate_de-CH");
-        },
-    },
-    {
-        label: t("quick-actions.en-US"),
-        icon: "i-flag-us-4x3",
-        onSelect: () => {
-            applyAction("translate_en-US");
-        },
-    },
-    {
-        label: t("quick-actions.en-GB"),
-        icon: "i-flag-gb-4x3",
-        onSelect: () => {
-            applyAction("translate_en-GB");
-        },
-    },
-    {
-        label: t("quick-actions.fr"),
-        icon: "i-flag-fr-4x3",
-        onSelect: () => {
-            applyAction("translate_fr");
-        },
-    },
-    {
-        label: t("quick-actions.it"),
-        icon: "i-flag-it-4x3",
-        onSelect: () => {
-            applyAction("translate_it");
-        },
-    },
-]);
+// const items = ref<DropdownMenuItem[]>([
+//     {
+//         label: t("quick-actions.de-CH"),
+//         icon: "i-flag-de-4x3",
+//         onSelect: () => {
+//             applyAction("translate_de-CH");
+//         },
+//     },
+//     {
+//         label: t("quick-actions.en-US"),
+//         icon: "i-flag-us-4x3",
+//         onSelect: () => {
+//             applyAction("translate_en-US");
+//         },
+//     },
+//     {
+//         label: t("quick-actions.en-GB"),
+//         icon: "i-flag-gb-4x3",
+//         onSelect: () => {
+//             applyAction("translate_en-GB");
+//         },
+//     },
+//     {
+//         label: t("quick-actions.fr"),
+//         icon: "i-flag-fr-4x3",
+//         onSelect: () => {
+//             applyAction("translate_fr");
+//         },
+//     },
+//     {
+//         label: t("quick-actions.it"),
+//         icon: "i-flag-it-4x3",
+//         onSelect: () => {
+//             applyAction("translate_it");
+//         },
+//     },
+// ]);
 
 // computed
 const textSelectionRange = computed(() => {
@@ -230,8 +230,8 @@ async function applyAction(action: Actions) {
         @click="applyAction('social_mediafy')">
         {{ t('editor.social_mediafy') }}
     </UButton>
-    <UDropdownMenu :items="items" variant="soft">
+    <!-- <UDropdownMenu :items="items" variant="soft">
         <UButton icon="i-lucide-languages" variant="soft" />
-    </UDropdownMenu>
+    </UDropdownMenu> -->
   </div>
 </template>
