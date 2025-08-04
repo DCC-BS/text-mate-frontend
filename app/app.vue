@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { $pwa } = useNuxtApp();
 
-// const { t } = useI18n();
+const { t } = useI18n();
 
 const route = useRoute();
 
@@ -14,7 +14,7 @@ const isAuth = computed(() => {
 
 <template>
     <template v-if="!isAuth">
-        <!-- <div v-show="$pwa?.needRefresh" class="p-2">
+        <div v-show="$pwa?.needRefresh" class="p-2">
             <UAlert
                 :title="t('pwa.newContentAvailable')"
                 :description="t('pwa.newVersionDescription')"
@@ -27,9 +27,9 @@ const isAuth = computed(() => {
                     </UButton>
                 </template>
             </UAlert>
-        </div> -->
+        </div>
 
-        <!-- <NuxtPwaManifest /> -->
+        <NuxtPwaManifest />
         <Disclaimer app-name="TextMate" />
     </template>
 
