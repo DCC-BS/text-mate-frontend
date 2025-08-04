@@ -10,6 +10,25 @@ const isAuth = computed(() => {
         route.fullPath.includes("/auth") || route.fullPath.includes("/login")
     );
 });
+
+onMounted(() => {
+    // Remove all service workers and caches in the client
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+            for (const registration of registrations) {
+                registration.unregister();
+            }
+        });
+    }
+
+    if ("caches" in window) {
+        caches
+            .keys()
+            .then((keyList) =>
+                Promise.all(keyList.map((key) => caches.delete(key))),
+            );
+    }
+});
 </script>
 
 <template>
