@@ -26,7 +26,4 @@ logs
 # Don't ignore the symlink
 !.env
 
-# Ignore Service Worker
-sw.*
-
 .env
