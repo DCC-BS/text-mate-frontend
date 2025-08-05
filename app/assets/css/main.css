@@ -2,6 +2,8 @@
 
 @import "@nuxt/ui";
 
+@import "@dcc-bs/common-ui.bs.js";
+
 @import "./partials/animations.css";
 
 @import "./partials/blocks.css";
@@ -11,8 +13,6 @@
 @import "./partials/placeholder.css";
 
 @import "./partials/typography.css";
-
-@source "../../../node_modules/@dcc-bs/common-ui.bs.js/dist/runtime";
 
 .ProseMirror {
     z-index: 0;

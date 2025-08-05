@@ -11,9 +11,9 @@ const isAuth = computed(() => {
 </script>
 
 <template>
-    <UApp>
-        <NuxtLayout>
-            <NuxtPage />
-        </NuxtLayout>
-    </UApp>
+    <template v-if="!isAuth">
+        <Disclaimer app-name="TextMate" />
+    </template>
+    
+    <slot />
 </template>

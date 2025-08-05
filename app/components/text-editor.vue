@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DataBsBanner, DisclaimerButton } from "@dcc-bs/common-ui.bs.js";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -12,7 +13,6 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import Paragraph from "@tiptap/extension-paragraph";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
-
 import { EditorContent, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
