@@ -168,4 +168,5 @@ docker run -p 3000:3000 text-mate-frontend
 <a href="https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/datenwissenschaften-und-ki"><img src="https://github.com/DCC-BS/.github/blob/main/_imgs/databs_log.png?raw=true" alt="DCC Logo" width="200" /></a>
 
 Datenwissenschaften und KI <br>
-Developed with ❤️ by Data Alchemy Team
+Developed with ❤️ by DCC - Data Competence Center
+
