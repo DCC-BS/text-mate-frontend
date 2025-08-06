@@ -27,10 +27,6 @@ const { sendError } = useUseErrorDialog();
 const isRewriting = ref<boolean>(false);
 const advancedMode = ref<boolean>(false);
 
-const writing_style = ref<string>("general");
-const target_audience = ref<string>("general");
-const intend = ref<string>("general");
-
 const options = ref([
     {
         label: "rewrite.writingStyleLabel",
@@ -86,13 +82,32 @@ const options = ref([
     },
 ]);
 
-const advancedOptions = ref(
-    options.value
+const optionsString = computed(() => {
+    return options.value
         .map(
             (option) =>
                 `${t(option.label)}: ${t(`${option.valuePrefix}.${option.value}`)}`,
         )
-        .join("\n"),
+        .join("\n");
+});
+
+const advancedOptions = ref(optionsString.value);
+const isAdvancedDirty = ref(false);
+
+watch(optionsString, (newValue) => {
+    if (!isAdvancedDirty.value) {
+        advancedOptions.value = newValue;
+    }
+});
+
+watch(
+    advancedOptions,
+    (newValue) => {
+        if (newValue !== optionsString.value) {
+            isAdvancedDirty.value = true;
+        }
+    },
+    { flush: "post" },
 );
 
 // computed
@@ -108,16 +123,7 @@ const advancedToggleText = computed(() => {
 
 // functions
 function getOptions(): string {
-    if (!advancedMode.value) {
-        return options.value
-            .map(
-                (option) =>
-                    `${t(option.label)}: ${t(`${option.valuePrefix}.${option.value}`)}`,
-            )
-            .join("\n");
-    }
-
-    return advancedOptions.value;
+    return advancedMode.value ? advancedOptions.value : optionsString.value;
 }
 
 async function rewriteText() {
