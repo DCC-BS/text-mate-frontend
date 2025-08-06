@@ -16,7 +16,7 @@
     },
     "dependencies": {
         "@dcc-bs/authentication.bs.js": "git+https://github.com/DCC-BS/authentication.bs.js.git#v0.2.4",
-        "@dcc-bs/common-ui.bs.js": "git+https://github.com/DCC-BS/common-ui.bs.js.git#v1.0.1",
+        "@dcc-bs/common-ui.bs.js": "git+https://github.com/DCC-BS/common-ui.bs.js.git#v1.0.2",
         "@dcc-bs/dependency-injection.bs.js": "git+https://github.com/DCC-BS/dependency-injection.bs.js.git#v0.0.15",
         "@dcc-bs/event-system.bs.js": "git+https://github.com/DCC-BS/event-system.bs.js.git#v1.4.1",
         "@dcc-bs/feedback-control.bs.js": "git+https://github.com/DCC-BS/feedback-control.bs.js.git#v0.1.4",
@@ -37,7 +37,7 @@
         "@tiptap/vue-3": "^3.0.9",
         "@types/diff": "^8.0.0",
         "jsdiff": "^1.1.1",
-        "nuxt": "4.0.3",
+        "nuxt": "4.0.1",
         "nuxt-viewport": "2.3.1",
         "pinia": "^3.0.3",
         "ts-pattern": "^5.8.0",
