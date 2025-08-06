@@ -73,7 +73,9 @@
             "general": "Allgemein",
             "young": "Junge Erwachsene",
             "adult": "Erwachsene",
-            "children": "Kinder"
+            "children": "Kinder",
+            "journalists": "Journalisten",
+            "scientists": "Wissenschaftler"
         },
         "intend": {
             "general": "Allgemein",
@@ -83,12 +85,24 @@
             "narrative": "Erzählend",
             "entertaining": "Unterhaltsam"
         },
+        "medium": {
+            "general": "Allgemein",
+            "official letter": "Behördenbrief",
+            "email": "E-Mail",
+            "report": "Bericht",
+            "presentation": "Präsentation",
+            "website": "Webseite"
+        },
         "writingStyleLabel": "Schreibstil",
         "targetAudienceLabel": "Zielgruppe",
         "intendLabel": "Absicht",
+        "mediumLabel": "Medium",
         "apply": "Anwenden",
         "rewrite": "Umschreiben",
-        "noRewrite": "Text auswählen und auf \"Umschreiben\" klicken, um ihn umzuschreiben."
+        "noRewrite": "Text auswählen und auf \"Umschreiben\" klicken, um ihn umzuschreiben.",
+        "advancedOptionsLabel": "Hier können Sie Ihre benutzerdefinierten Umschreibungsregeln verfassen",
+        "hideAdvanced": "Einfach",
+        "showAdvanced": "Erweitert"
     },
     "advisor": {
         "check": "Text überprüfen",

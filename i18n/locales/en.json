@@ -73,7 +73,9 @@
             "general": "General",
             "young": "Young Adults",
             "adult": "Adults",
-            "children": "Children"
+            "children": "Children",
+            "journalists": "Journalists",
+            "scientists": "Scientists"
         },
         "intend": {
             "general": "General",
@@ -83,12 +85,24 @@
             "narrative": "Narrative",
             "entertaining": "Entertaining"
         },
+        "medium": {
+            "general": "General",
+            "official letter": "Official Letter",
+            "email": "Email",
+            "report": "Report",
+            "presentation": "Presentation",
+            "website": "Website"
+        },
         "writingStyleLabel": "Writing Style",
         "targetAudienceLabel": "Target Audience",
         "intendLabel": "Intent",
+        "mediumLabel": "Medium",
         "apply": "Apply",
         "rewrite": "Rewrite",
-        "noRewrite": "Select text and click \"Rewrite\" to rewrite it"
+        "noRewrite": "Select text and click \"Rewrite\" to rewrite it",
+        "advancedOptionsLabel": "Here you can write your custom rewrite rules",
+        "hideAdvanced": "Simple",
+        "showAdvanced": "Advanced"
     },
     "advisor": {
         "check": "Check Text",

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Editor } from "@tiptap/vue-3";
 import {
     RequestChangesCommand,
@@ -99,7 +98,7 @@ const actionsAreAvailable = computed(
     () => selectedText.value.length > 3 && !isRewriting.value,
 );
 
-async function applyAction(action: Actions) {
+async function applyAction(action: Actions): Promise<void> {
     if (!actionsAreAvailable.value) {
         toast.add({
             title: "Error",
@@ -114,9 +113,6 @@ async function applyAction(action: Actions) {
         await executeCommand(new ToggleEditableEditorCommand(true));
         await executeCommand(new ToggleLockEditorCommand(true));
 
-        if (action === "easy_language") {
-        }
-
         addProgress("quick-action", {
             icon: "i-lucide-text-search",
             title: t("status.quickAction"),
@@ -126,14 +122,17 @@ async function applyAction(action: Actions) {
         const { from, to } = textSelectionRange.value;
         const text = selectedText.value;
 
-        const response = (await $fetch("/api/quick-action", {
-            responseType: "stream",
-            method: "POST",
-            body: {
-                action,
-                text,
+        const response = await $fetch<ReadableStream<Uint8Array>>(
+            "/api/quick-action",
+            {
+                responseType: "stream",
+                method: "POST",
+                body: {
+                    action,
+                    text,
+                },
             },
-        })) as ReadableStream<Uint8Array>;
+        );
 
         if (!response) {
             toast.add({
