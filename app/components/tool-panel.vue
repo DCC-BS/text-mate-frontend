@@ -54,28 +54,26 @@ watch(
     },
 );
 
-const items = [
-    {
-        slot: "problems",
-        label: t("tools.problems"),
-        icon: "i-heroicons-bolt",
-    },
-    {
-        slot: "rewrite",
-        label: t("tools.rewrite"),
-        icon: "i-heroicons-arrow-path-rounded-square-16-solid",
-    },
-    {
-        slot: "advisor",
-        label: t("tools.advisor"),
-        icon: "i-heroicons-light-bulb",
-    },
-    // {
-    //     slot: "compare",
-    //     label: t("tools.compare"),
-    //     icon: "i-lucide-git-compare-arrows",
-    // },
-] as TabsItem[];
+const items = computed(
+    () =>
+        [
+            {
+                slot: "problems",
+                label: t("tools.problems"),
+                icon: "i-heroicons-bolt",
+            },
+            {
+                slot: "rewrite",
+                label: t("tools.rewrite"),
+                icon: "i-heroicons-arrow-path-rounded-square-16-solid",
+            },
+            {
+                slot: "advisor",
+                label: t("tools.advisor"),
+                icon: "i-heroicons-light-bulb",
+            },
+        ] as TabsItem[],
+);
 
 async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
     selectedTab.value = "1";
