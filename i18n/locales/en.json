@@ -25,7 +25,7 @@
     "tools": {
         "problems": "Problems",
         "rewrite": "Rewrite",
-        "advisor": "Feedback"
+        "advisor": "Review"
     },
     "status": {
         "rewritingText": "Rewriting text...",
