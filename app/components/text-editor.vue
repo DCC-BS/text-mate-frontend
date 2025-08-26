@@ -35,7 +35,7 @@ const selectedText = defineModel<TextFocus>("selectedText");
 
 // refs
 const container = ref<HTMLElement>();
-const limit = ref(5_000);
+const limit = ref(100_000);
 const isTextCorrectionActive = ref(true);
 const isInteractiableFocusActive = ref(false);
 const lockEditor = ref(false);
