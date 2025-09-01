@@ -1,4 +1,11 @@
 {
+    "errors": {
+        "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten. Möglicherweise ist der Server nicht erreichbar. Falls der Fehler weiterhin auftritt, nutzen Sie bitte die Feedback-Funktion, um uns eine Nachricht zu senden.",
+        "no_document": "Das Dokument wurde nicht gefunden.",
+        "check_text_error": "Fehler beim Überprüfen des Textes",
+        "language_tool_error": "Fehler mit dem Sprachtool. Dies ist ein interner Fehler. Falls der Fehler weiterhin auftritt, nutzen Sie bitte die Feedback-Funktion, um uns eine Nachricht zu senden.",
+        "rewrite_text_error": "Fehler beim Umschreiben des Textes"
+    },
     "loading": "Wird geladen...",
     "auth": {
         "welcomeBack": "Willkommen zurück",
