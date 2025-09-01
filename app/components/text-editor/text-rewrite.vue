@@ -15,6 +15,7 @@ const props = defineProps<InputProps>();
 const { t } = useI18n();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { executeCommand } = useCommandBus();
+const { getAlternativeSentences } = useSentenceRewrite();
 
 const wordSynonyms = ref<string[]>();
 const alternativeSentences = ref<string[]>();

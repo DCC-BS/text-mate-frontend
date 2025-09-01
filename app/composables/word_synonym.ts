@@ -3,7 +3,7 @@ import type {
     WordSynonymResult,
 } from "~/assets/models/word-synonym";
 
-export function getWordSynonym(
+export async function getWordSynonym(
     word: string,
     sentence: string,
 ): Promise<WordSynonymResult> {
@@ -12,11 +12,17 @@ export function getWordSynonym(
         context: sentence,
     } as WordSynonymInput;
 
-    return $fetch<WordSynonymResult>("api/word-synonym", {
+    const response = await apiFetch<WordSynonymResult>("api/word-synonym", {
         method: "POST",
-        body: JSON.stringify(body),
+        body: body,
         headers: {
             "Content-Type": "application/json",
         },
     });
+
+    if (isApiError(response)) {
+        throw response;
+    }
+
+    return response;
 }

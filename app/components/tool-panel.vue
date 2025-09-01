@@ -95,8 +95,7 @@ async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
             <template #rewrite>
                 <div class="h-full">
                     <RewriteView 
-                        :text="props.text"
-                        :selectedText="props.selectedText" />
+                        :text="props.text" />
                 </div>
             </template>
             <template #advisor>

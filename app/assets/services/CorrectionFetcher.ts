@@ -29,7 +29,7 @@ export class CorrectionFetcher implements ICorrectionFetcher {
         signal: AbortSignal,
     ): Promise<TextCorrectionBlock[]> {
         try {
-            const response = await $fetch<TextCorrectionResponse>(
+            const response = await apiFetch<TextCorrectionResponse>(
                 "/api/correct",
                 {
                     body: { text: text, language: this.language },
@@ -37,6 +37,10 @@ export class CorrectionFetcher implements ICorrectionFetcher {
                     signal: signal,
                 },
             );
+
+            if (isApiError(response)) {
+                throw response;
+            }
 
             const blocks: TextCorrectionBlock[] = [];
 
