@@ -14,6 +14,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     orchestrator.setup((builder) => {
         const logger = useLogger();
         const { t } = useI18n(); // this needs to be created in the setup context
+        const { sendError } = useUseErrorDialog();
 
         builder.registerInstance("translate", t);
         builder.registerInstance("logger", logger);
@@ -23,12 +24,19 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         builder.registerAsyncFactory(
             async () => {
-                const docs =
-                    await $fetch<AdvisorDocumentDescription[]>(
+                const response =
+                    await apiFetch<AdvisorDocumentDescription[]>(
                         "api/advisor/docs",
                     );
 
-                return new AdvisorService(docs);
+                if (isApiError(response)) {
+                    sendError(
+                        t(`errors.${response.errorId}`) || response.message,
+                    );
+                    return;
+                }
+
+                return new AdvisorService(response);
             },
             [],
             "advisorService",
@@ -54,28 +62,6 @@ export default defineNuxtPlugin((nuxtApp) => {
             ["logger", CorrectionFetcher],
             "correctionService",
         );
-
-        // builder.register(DatabaseService);
-        // builder.register(UserRepository);
-        // builder.register(UserService);
-
-        // // Register a service factory, which allows creating instances with custom parameters
-        // // you can mix injected services and custom parameters,
-        // // but the injected services must be before the custom parameters in the factory function
-        // builder.registerFactory(
-        //     "ServiceWithFactory",
-        //     (injected1, param1, param2) => {
-        //         return new SomeService(injected1, param1, param2);
-        //     },
-        // );
-
-        // builder.registerFactoryAsync(
-        //     "AsyncService",
-        //     async (injected1, param1, param2) => {
-        //         const result = await fetchSomeData(injected1, param1, param2);
-        //         return new AsyncService(result);
-        //     },
-        // );
     });
 
     nuxtApp.provide("serviceOrchestrator", orchestrator);

@@ -3,14 +3,12 @@ import { AnimatePresence, motion } from "motion-v";
 import { UButton } from "#components";
 import {
     ApplyTextCommand,
-    RequestChangesCommand,
     ToggleEditableEditorCommand,
 } from "~/assets/models/commands";
 import type { TextRewriteResponse } from "~/assets/models/text-rewrite";
 
 interface RewriteViewProps {
     text: string;
-    selectedText?: TextFocus;
 }
 
 const props = defineProps<RewriteViewProps>();
@@ -127,14 +125,7 @@ function getOptions(): string {
 }
 
 async function rewriteText() {
-    if (!props.selectedText) return;
-
-    const { text: textToRewrite, start, end } = props.selectedText;
-
-    const from = Math.max(0, start - 1);
-    const to = Math.min(props.text.length, end) + 1;
-
-    const context = `${props.text.slice(0, from)}<rewrite>${textToRewrite}</rewrite>${props.text.slice(to)}`;
+    if (!props.text) return;
 
     isRewriting.value = true;
 
@@ -146,30 +137,26 @@ async function rewriteText() {
 
     try {
         const body = {
-            text: textToRewrite,
-            context,
+            text: props.text,
+            context: "",
             options: getOptions(),
         };
 
-        const response = await $fetch<TextRewriteResponse>("/api/rewrite", {
+        const response = await apiFetch<TextRewriteResponse>("/api/rewrite", {
             body,
             method: "POST",
         });
 
-        await executeCommand(
-            new ApplyTextCommand(response.rewritten_text, {
-                from,
-                to,
-            }),
-        );
+        if (isApiError(response)) {
+            sendError(t(`errors.${response.errorId}`) || response.message);
+            return;
+        }
 
         await executeCommand(
-            new RequestChangesCommand(
-                textToRewrite,
-                response.rewritten_text,
-                from,
-                from + response.rewritten_text.length + 1,
-            ),
+            new ApplyTextCommand(response.rewritten_text, {
+                from: 0,
+                to: response.rewritten_text.length,
+            }),
         );
     } catch (e: unknown) {
         if (e instanceof Error) {
@@ -178,6 +165,7 @@ async function rewriteText() {
     } finally {
         isRewriting.value = false;
         removeProgress("rewriting");
+        await executeCommand(new ToggleEditableEditorCommand(false));
     }
 }
 </script>
@@ -209,14 +197,9 @@ async function rewriteText() {
         </motion.div>
     </AnimatePresence>
 
-    <div v-if="props.selectedText">
+    <div>
         <UButton @click="rewriteText()" variant="soft" :loading="isRewriting" :disabled="isRewriting">
             {{ t('rewrite.rewrite') }}
         </UButton>
-    </div>
-    <div v-else>
-        <p class="text-sm text-gray-500">
-            {{ t('rewrite.noRewrite') }}
-        </p>
     </div>
 </template>

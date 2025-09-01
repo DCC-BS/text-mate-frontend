@@ -122,22 +122,19 @@ async function applyAction(action: Actions): Promise<void> {
         const { from, to } = textSelectionRange.value;
         const text = selectedText.value;
 
-        const response = await $fetch<ReadableStream<Uint8Array>>(
-            "/api/quick-action",
-            {
-                responseType: "stream",
-                method: "POST",
-                body: {
-                    action,
-                    text,
-                },
+        const response = await apiStreamfetch("/api/quick-action", {
+            method: "POST",
+            body: {
+                action,
+                text,
             },
-        );
+        });
 
-        if (!response) {
+        if (isApiError(response)) {
             toast.add({
                 title: "Error",
-                description: "Failed to get response from server",
+                description:
+                    t(`errors.${response.errorId}`) || response.message,
                 color: "error",
                 icon: "i-heroicons-exclamation-circle",
             });

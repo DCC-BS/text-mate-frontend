@@ -13,7 +13,7 @@ export default defineBackendHandler({
 
         return { file };
     },
-    fetcher: async (url, method, body, headers) => {
+    fetcher: async ({ url, method, body, headers }) => {
         const formData = new FormData();
 
         formData.append("file", body.file, body.file.name);

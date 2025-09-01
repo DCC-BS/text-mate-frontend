@@ -28,12 +28,21 @@ export class AdvisorService {
     }
 
     async validate(text: string, docs: string[]): Promise<ValidationResult> {
-        return await $fetch<ValidationResult>("api/advisor/validate", {
-            method: "POST",
-            body: {
-                text,
-                docs,
+        const result = await apiFetch<ValidationResult>(
+            "api/advisor/validate",
+            {
+                method: "POST",
+                body: {
+                    text,
+                    docs,
+                },
             },
-        });
+        );
+
+        if (isApiError(result)) {
+            throw result;
+        }
+
+        return result;
     }
 }

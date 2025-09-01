@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
     const handler = defineBackendHandler({
         url: `/advisor/doc/${name}`,
-        async fetcher(url, method, body, headers) {
+        async fetcher({ url, method, body, headers }) {
             return await fetch(url, {
                 method,
                 body: JSON.stringify(body),
