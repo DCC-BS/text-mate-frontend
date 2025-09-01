@@ -39,6 +39,10 @@ export class CorrectionFetcher implements ICorrectionFetcher {
             );
 
             if (isApiError(response)) {
+                if (response.errorId === "request_aborted") {
+                    throw new Error("Request aborted", { cause: "aborted" });
+                }
+
                 throw response;
             }
 

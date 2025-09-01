@@ -41,6 +41,33 @@ async function extractApiError(response: Response): Promise<ApiError> {
     }
 }
 
+async function extractApiErrorFormError(error: unknown) {
+    if (
+        error &&
+        typeof error === "object" &&
+        "name" in error &&
+        error.name === "AbortError"
+    ) {
+        return new ApiError("request_aborted", 499);
+    }
+
+    if (
+        error &&
+        typeof error === "object" &&
+        "cause" in error &&
+        error.cause === "aborted"
+    ) {
+        return new ApiError("request_aborted", 499);
+    }
+
+    if (typeof error === "string" && error === "aborted") {
+        return new ApiError("request_aborted", 499);
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
+    return new ApiError("fetch_failed", 500, message);
+}
+
 async function _fetch(url: string, options: FetchOptions) {
     const isFormData = options.body instanceof FormData;
 
@@ -78,8 +105,7 @@ export async function apiFetch<T extends object>(
 
         return extractApiError(response);
     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return new ApiError("fetch_failed", 500, message);
+        return extractApiErrorFormError(error);
     }
 }
 
@@ -87,11 +113,15 @@ export async function apiStreamfetch(
     url: string,
     options?: FetchOptions,
 ): Promise<ApiResponse<ReadableStream<Uint8Array>>> {
-    const response = await _fetch(url, options ?? {});
+    try {
+        const response = await _fetch(url, options ?? {});
 
-    if (response.ok) {
-        return response.body as ReadableStream<Uint8Array>;
+        if (response.ok) {
+            return response.body as ReadableStream<Uint8Array>;
+        }
+
+        return extractApiError(response);
+    } catch (error) {
+        return extractApiErrorFormError(error);
     }
-
-    return extractApiError(response);
 }
