@@ -1,4 +1,11 @@
 {
+    "errors": {
+        "unexpected_error": "Unexpected error occurred.  Maybe the server is down, if the error persists. Please use the feedback button to send us a message.",
+        "no_document": "The document was not found.",
+        "check_text_error": "Error checking text",
+        "language_tool_error": "Error with language tool. This is a internal error, if the error persists. Please use the feedback button to send us a message.",
+        "rewrite_text_error": "Error rewriting text"
+    },
     "loading": "Loading...",
     "auth": {
         "welcomeBack": "Welcome Back",

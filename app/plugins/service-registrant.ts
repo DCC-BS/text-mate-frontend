@@ -46,6 +46,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             (
                 logger: ILogger,
                 correctionFetcher: CorrectionFetcher,
+                t: (key: string) => string,
                 onError: (message: string) => void,
                 language = "auto",
             ) => {
@@ -55,11 +56,12 @@ export default defineNuxtPlugin((nuxtApp) => {
                     logger,
                     correctionFetcher,
                     executeCommand,
+                    t,
                     onError,
                     language,
                 );
             },
-            ["logger", CorrectionFetcher],
+            ["logger", CorrectionFetcher, "translate"],
             "correctionService",
         );
     });

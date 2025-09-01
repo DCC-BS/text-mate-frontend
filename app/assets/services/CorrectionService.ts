@@ -15,7 +15,12 @@ type ArrayChange<T> = ChangeObject<T[]>;
 
 export class CorrectionService {
     static readonly $injectKey = "correctionService";
-    static readonly $inject = ["logger", CorrectionFetcher, "executeCommand"];
+    static readonly $inject = [
+        "logger",
+        CorrectionFetcher,
+        "executeCommand",
+        "translate",
+    ];
 
     private lastSentences: string[] = [];
     private lastBlocks: TextCorrectionBlock[] = [];
@@ -25,6 +30,7 @@ export class CorrectionService {
         private readonly logger: ILogger,
         private readonly correctionFetcher: ICorrectionFetcher,
         private readonly executeCommand: (command: ICommand) => Promise<void>,
+        private readonly t: (key: string) => string,
         private readonly onError: (message: string) => void,
         private language = "auto",
     ) {}
@@ -88,6 +94,11 @@ export class CorrectionService {
                 }
             }
         } catch (e: unknown) {
+            if (e instanceof ApiError) {
+                this.onError(this.t(`errors.${e.errorId}`));
+                return;
+            }
+
             if (!(e instanceof Error)) {
                 this.logger.error("Unknown error during text correction");
                 return;
