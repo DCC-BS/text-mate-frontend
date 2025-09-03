@@ -37,7 +37,7 @@
         "@tiptap/vue-3": "^3.0.9",
         "@types/diff": "^8.0.0",
         "jsdiff": "^1.1.1",
-        "nuxt": "4.0.1",
+        "nuxt": "4.1.0",
         "nuxt-viewport": "2.3.1",
         "pinia": "^3.0.3",
         "ts-pattern": "^5.8.0",
