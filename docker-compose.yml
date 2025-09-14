@@ -33,7 +33,7 @@ services:
 
   llm:
     platform: linux/amd64
-    image: vllm/vllm-openai:v0.10.1
+    image: vllm/vllm-openai:v0.10.2
     container_name: llm
     expose:
       - "8000"
