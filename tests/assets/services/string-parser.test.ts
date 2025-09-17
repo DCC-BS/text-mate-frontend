@@ -139,20 +139,66 @@ describe("splitToSentences", () => {
      * German language tests
      */
     describe("German language", () => {
-        it("should handle German abbreviations and numbers", () => {
+        it.each([
+            [
+                "Das Treffen war um 13.00 Uhr. Herr Dr. Müller kam später.",
+                [
+                    "Das Treffen war um 13.00 Uhr.",
+                    " Herr Dr. Müller kam später.",
+                ],
+            ],
+            [
+                "Das bedeutet d.h. nichts anderes. Zum Beispiel z.B. hier.",
+                [
+                    "Das bedeutet d.h. nichts anderes.",
+                    " Zum Beispiel z.B. hier.",
+                ],
+            ],
+            [
+                "Vgl. die Studie von Prof. Dr. Schmidt et al. Sie zeigt u.a. wichtige Erkenntnisse.",
+                [
+                    "Vgl. die Studie von Prof. Dr. Schmidt et al.",
+                    " Sie zeigt u.a. wichtige Erkenntnisse.",
+                ],
+            ],
+            [
+                "Die GmbH & Co. KG wurde gegründet. Der CEO bzw. Geschäftsführer ist anwesend.",
+                [
+                    "Die GmbH & Co. KG wurde gegründet.",
+                    " Der CEO bzw. Geschäftsführer ist anwesend.",
+                ],
+            ],
+            [
+                "Das Meeting ist ca. 2 Std. lang. Es beginnt um 14.30 Uhr bzw. 2.30 PM.",
+                [
+                    "Das Meeting ist ca. 2 Std. lang.",
+                    " Es beginnt um 14.30 Uhr bzw. 2.30 PM.",
+                ],
+            ],
+            [
+                "Gem. § 15 Abs. 2 BGB ist das möglich. Siehe auch Art. 3 GG bzgl. der Regelung.",
+                [
+                    "Gem. § 15 Abs. 2 BGB ist das möglich.",
+                    " Siehe auch Art. 3 GG bzgl. der Regelung.",
+                ],
+            ],
+            ["Wir treffen uns morgen usw.", ["Wir treffen uns morgen usw."]],
+        ])(
+            "should handle German abbreviations for %s",
+            (text: string, expected: string[]) => {
+                const sentences = Array.from(splitToSentences(text));
+                expect(sentences).toEqual(expected);
+            },
+        );
+
+        it("should handle mixed abbreviations in complex sentences", () => {
             const text =
-                "Das Treffen war um 13.00 Uhr. Herr Dr. Müller kam später.";
+                "Die Firma Max Mustermann GmbH i.G. wurde am 15.03.2023 gegründet. Der Gründer, Hr. Mustermann, ist ca. 45 J. alt.";
             const sentences = Array.from(splitToSentences(text));
             expect(sentences).toEqual([
-                "Das Treffen war um 13.00 Uhr.",
-                " Herr Dr. Müller kam später.",
+                "Die Firma Max Mustermann GmbH i.G. wurde am 15.03.2023 gegründet.",
+                " Der Gründer, Hr. Mustermann, ist ca. 45 J. alt.",
             ]);
-        });
-
-        it("should handle abbreviation at sentence end", () => {
-            const text = "Wir treffen uns morgen usw.";
-            const sentences = Array.from(splitToSentences(text));
-            expect(sentences).toEqual(["Wir treffen uns morgen usw."]);
         });
 
         it("should handle freestanding lines without punctuation", () => {
