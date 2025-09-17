@@ -59,6 +59,11 @@
     [data-type="horizontalRule"] {
         @apply my-8 py-4 transition-all duration-100 ease-in-out cursor-pointer;
 
+        hr {
+            @apply border-0 border-t border-black/20 bg-black/80;
+            @apply dark:border-white/20 dark:bg-white/80;
+        }
+
         &.ProseMirror-selectednode {
             @apply bg-black/5 dark:bg-white/10;
 
@@ -70,11 +75,6 @@
         &:hover:not(&.ProseMirror-selectednode) {
             @apply bg-black/5;
             @apply dark:bg-white/10;
-        }
-
-        hr {
-            @apply border-0 border-t border-black/20 bg-black/80;
-            @apply dark:border-white/20 dark:bg-white/80;
         }
     }
 }

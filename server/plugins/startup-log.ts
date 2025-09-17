@@ -8,7 +8,6 @@ const filter_secrets = (str: string) => {
     }, str);
 };
 
-
 export default defineNitroPlugin(() => {
     if (import.meta.dev) {
         return;
