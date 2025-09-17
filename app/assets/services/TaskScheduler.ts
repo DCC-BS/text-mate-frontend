@@ -56,7 +56,7 @@ export class TaskScheduler {
         }
 
         if (this.startedTask?.canBeAborted) {
-            this.startedTask.abortController.abort("aborted");
+            this.startedTask.abortController.abort();
         }
 
         const abortController = new AbortController();
@@ -69,5 +69,11 @@ export class TaskScheduler {
             abortController: abortController,
             canBeAborted: canBeAborted,
         };
+    }
+
+    public abortRunningTask(): void {
+        if (this.startedTask?.canBeAborted) {
+            this.startedTask.abortController.abort();
+        }
     }
 }
