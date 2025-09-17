@@ -1,4 +1,12 @@
 .ProseMirror {
+    code {
+        @apply caret-white text-white bg-neutral-900 rounded-sm shadow-lg font-mono;
+
+        &::selection {
+            @apply bg-white/30;
+        }
+    }
+
     pre {
         @apply caret-white bg-neutral-700 text-white rounded my-12 p-4 border border-black dark:bg-neutral-900 dark:border-neutral-800;
 
@@ -60,14 +68,6 @@
 
         .hljs-strong {
             font-weight: 700;
-        }
-    }
-
-    code {
-        @apply caret-white text-white bg-neutral-900 rounded-sm shadow-lg font-mono;
-
-        &::selection {
-            @apply bg-white/30;
         }
     }
 }
