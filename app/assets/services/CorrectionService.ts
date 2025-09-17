@@ -10,6 +10,7 @@ import {
 } from "./CorrectionFetcher";
 import { Queue } from "./Queue";
 import { splitToSentences } from "./string-parser";
+import { ApiError } from "../../utils/apiFetch";
 
 type ArrayChange<T> = ChangeObject<T[]>;
 

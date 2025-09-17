@@ -51,6 +51,7 @@ describe("CorrectionService", () => {
             mockExecuteCommand as unknown as (
                 command: ICommand,
             ) => Promise<void>,
+            (key: string) => key, // simple identity function for translation
             mockOnError,
             "en",
         );
