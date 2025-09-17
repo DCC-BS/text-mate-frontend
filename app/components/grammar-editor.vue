@@ -92,6 +92,7 @@ onCommand(
 );
 
 async function handleInvalidate(_: InvalidateCorrectionCommand) {
+    taskScheduler.abortRunningTask();
     await correctionService.invalidateAll();
     taskScheduler.schedule((signal: AbortSignal) =>
         correctText(userText.value, signal),

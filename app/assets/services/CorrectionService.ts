@@ -259,7 +259,14 @@ export class CorrectionService {
     }
 
     private async lock() {
+        const now = Date.now();
+
         while (this.correction_lock) {
+            if (Date.now() - now > 5000) {
+                this.logger.warn("Lock timeout exceeded, forcing unlock");
+                break;
+            }
+
             await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
