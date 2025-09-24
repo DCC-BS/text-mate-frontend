@@ -46,17 +46,14 @@ export function useFileConvert(onComplete: (text: string) => void) {
             if (result && result?.statusMessage === "Failed to convert file") {
                 logger.error("File conversion error:", { extra: result });
 
-                useUseErrorDialog().sendError(
-                    t(`conversion.error.${result.statusMessage}`),
-                );
+                useUseErrorDialog().sendError(t("upload.errorDescription"));
                 return;
             }
 
-            if (result)
-                if (result.html.startsWith('"') && result.html.endsWith('"')) {
-                    // remove " at start and end of the string
-                    result.html = result.html.slice(1, -1);
-                }
+            if (result?.html?.startsWith('"') && result?.html?.endsWith('"')) {
+                // remove " at start and end of the string
+                result.html = result.html.slice(1, -1);
+            }
 
             result.html = result.html.replace(/\\n/g, "\n"); // Replace escaped newlines with actual newlines
             result.html = result.html.replace(/\\t/g, "\t"); // Replace escaped tabs with actual tabs
@@ -71,7 +68,7 @@ export function useFileConvert(onComplete: (text: string) => void) {
             }
 
             logger.error("File conversion error:", err);
-            useUseErrorDialog().sendError(t("conversion.errorDescription"));
+            useUseErrorDialog().sendError(t("upload.errorDescription"));
         } finally {
             isConverting.value = false;
         }

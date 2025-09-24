@@ -210,36 +210,29 @@ watch(model, (value) => {
 });
 
 watch(isConverting, (value) => {
-    if (value) {
-        lockEditor.value = true;
-    } else {
-        lockEditor.value = false;
-    }
+    lockEditor.value = value;
 });
 
 /**
  * Watch for error changes to show error toast
  */
-watch(
-    () => conversionError,
-    (newError) => {
-        if (newError) {
-            toast.add({
-                title: t("upload.error"),
-                description: `${newError}. ${t("upload.errorDescription")}`,
-                color: "error",
-                icon: "i-lucide-alert-circle",
-                duration: 5000,
-                actions: [
-                    {
-                        label: t("upload.dismiss"),
-                        onClick: () => clearError(),
-                    },
-                ],
-            });
-        }
-    },
-);
+watch(conversionError, (newError) => {
+    if (newError) {
+        toast.add({
+            title: t("upload.error"),
+            description: `${newError}. ${t("upload.errorDescription")}`,
+            color: "error",
+            icon: "i-lucide-alert-circle",
+            duration: 5000,
+            actions: [
+                {
+                    label: t("upload.dismiss"),
+                    onClick: () => clearError(),
+                },
+            ],
+        });
+    }
+});
 
 /**
  * Watch for fileName changes to show success toast
@@ -249,7 +242,7 @@ watch(
     (newFileName, oldFileName) => {
         if (
             newFileName &&
-            !conversionError &&
+            !conversionError.value &&
             !isConverting.value &&
             newFileName !== oldFileName
         ) {
