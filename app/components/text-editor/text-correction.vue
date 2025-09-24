@@ -33,7 +33,7 @@ function addWord(word: string) {
 </script>
 
 <template>
-  <UPopover :open="!!props.hoverBlock" :content="{onOpenAutoFocus: (e: FocusEvent) => e.preventDefault()}" class="absolute">
+  <UPopover :open="!!props.hoverBlock" :content="{onOpenAutoFocus: (e: Event) => e.preventDefault()}" class="absolute">
       <div class="absolute pointer-events-none select-none touch-none" :style="{
           top: props.relativeHoverRect?.top + 'px', 
           left: props.relativeHoverRect?.left + 'px',
