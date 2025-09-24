@@ -129,7 +129,7 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
         </h4>
         <span class="px-2 py-1 text-xs rounded-full" 
           :class="validationResult.rules.length ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'">
-          {{ $t('advisor.issues', validationResult.rules.length) }}
+          {{ t('advisor.issues', validationResult.rules.length) }}
         </span>
       </div>
 

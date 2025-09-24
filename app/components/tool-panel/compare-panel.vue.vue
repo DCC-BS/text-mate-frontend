@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+const { t } = useI18n();
+
 interface ComparePanelProps {
     text: string;
 }
@@ -21,7 +23,7 @@ watch(
 
 <template>
   <div v-if="oldText">
-    <UTextarea v-model="oldText" :placeholder="$t('text-editor.compare.oldText')" class="mb-4" />
+    <UTextarea v-model="oldText" :placeholder="t('text-editor.compare.oldText')" class="mb-4" />
   </div>
 </template>
 

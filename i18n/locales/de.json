@@ -167,5 +167,16 @@
         "newContentAvailable": "Neue Inhalte verfügbar",
         "newVersionDescription": "Eine neue Version der App ist verfügbar. Bitte aktualisieren Sie, um die neuesten Updates zu erhalten.",
         "refresh": "Aktualisieren"
+    },
+    "upload": {
+        "convertingFile": "Datei wird konvertiert...",
+        "uploading": "Datei wird hochgeladen...",
+        "uploadFile": "Datei hochladen",
+        "dropFileToConvert": "Für Upload, die Datei hierher ziehen",
+        "supportedFormats": "Unterstützte Formate: PDF, DOCX, PPTX, HTML, TXT, RTF",
+        "error": "Fehler",
+        "errorDescription": "Fehler beim Hochladen der Datei. Versuchen Sie es erneut oder melden Sie sich bei uns.",
+        "dismiss": "Schliessen",
+        "fileConvertedSuccess": "Datei erfolgreich konvertiert"
     }
 }
