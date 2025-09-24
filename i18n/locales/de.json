@@ -173,7 +173,7 @@
         "uploading": "Datei wird hochgeladen...",
         "uploadFile": "Datei hochladen",
         "dropFileToConvert": "Für Upload, die Datei hierher ziehen",
-        "supportedFormats": "Unterstützte Formate: PDF, DOCX, PPTX, HTML, TXT, RTF",
+        "supportedFormats": "Unterstützte Formate: DOC, DOCX, HTML, MD, PDF, PPTX, RTF, TXT",
         "error": "Fehler",
         "errorDescription": "Fehler beim Hochladen der Datei. Versuchen Sie es erneut oder melden Sie sich bei uns.",
         "dismiss": "Schliessen",
