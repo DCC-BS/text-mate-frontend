@@ -173,7 +173,7 @@
         "uploading": "Uploading file...",
         "uploadFile": "Upload File",
         "dropFileToConvert": "For upload, drop the file here",
-        "supportedFormats": "Supported formats: PDF, DOCX, PPTX, HTML, TXT, RTF",
+        "supportedFormats": "Supported formats: DOC, DOCX, HTML, MD, PDF, PPTX, RTF, TXT",
         "error": "Error",
         "errorDescription": "Error uploading file. Please try again or contact us.",
         "dismiss": "Dismiss",
