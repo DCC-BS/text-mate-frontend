@@ -1,6 +1,6 @@
 import { useDropZone } from "@vueuse/core";
 import { FetchError } from "ofetch";
-import type { ConvertionResult } from "~/assets/models/convertion-result";
+import type { ConversionResult } from "~/assets/models/conversion-result";
 import { useUseErrorDialog } from "./useErrorDialog";
 /**
  * Composable for handling file conversion and drop zone functionality
@@ -37,7 +37,7 @@ export function useFileConvert(onComplete: (text: string) => void) {
             const formData = new FormData();
             formData.append("file", file, file.name);
 
-            const result = await $fetch<ConvertionResult>("/api/convert", {
+            const result = await $fetch<ConversionResult>("/api/convert", {
                 method: "POST",
                 body: formData,
                 signal: abortController.value.signal,
