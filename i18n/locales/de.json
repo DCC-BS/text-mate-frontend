@@ -64,8 +64,7 @@
         "bullet_points": "Aufzählungspunkte",
         "summarize": "Zusammenfassung",
         "social_mediafy": "Social Media Format",
-        "plain_language": "Einfache Sprache",
-        "easy_language": "Leichte Sprache"
+        "plain_language": "Einfache Sprache"
     },
     "rewrite": {
         "writing_style": {
@@ -164,11 +163,6 @@
     },
     "plain-language": {
         "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen."
-    },
-    "easy-language": {
-        "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Für Leichte Sprache gelten verbindliche formale Richtlinien. Diese müssen in jedem Fall manuell geprüft und eingehalten werden. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen.",
-        "moreInfo": "Weitere Informationen:",
-        "networkLabel": "Netzwerk Leichte Sprache:"
     },
     "pwa": {
         "newContentAvailable": "Neue Inhalte verfügbar",

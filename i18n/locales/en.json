@@ -64,8 +64,7 @@
         "bullet_points": "Bullet Points",
         "summarize": "Summarize",
         "social_mediafy": "Social Media Format",
-        "plain_language": "Plain Language",
-        "easy_language": "Easy Language"
+        "plain_language": "Plain Language"
     },
     "rewrite": {
         "writing_style": {
@@ -164,11 +163,6 @@
     },
     "plain-language": {
         "notice": "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication."
-    },
-    "easy-language": {
-        "notice": "Note: This tool is a support tool and does not replace a complete manual review. Binding formal guidelines apply to Easy Language. These must be manually checked and adhered to in all cases. We recommend that all automatically generated texts be reviewed again before publication.",
-        "moreInfo": "More Information:",
-        "networkLabel": "Easy Language Network:"
     },
     "pwa": {
         "newContentAvailable": "New content available",

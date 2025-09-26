@@ -13,7 +13,6 @@ interface QuickActionsPanelProps {
 // Updated to include social_mediafy action
 type Actions =
     | "plain_language"
-    | "easy_language"
     | "bullet_points"
     | "summarize"
     | "social_mediafy"
@@ -182,28 +181,6 @@ async function applyAction(action: Actions): Promise<void> {
             <div class="max-w-[50vw] p-2">
                 <div>
                     {{ t('plain-language.notice') }}
-                </div>
-            </div>
-        </template>
-    </UPopover>
-    <UPopover mode="hover">
-        <UButton
-            variant="soft"
-            :disabled="!actionsAreAvailable"
-            @click="applyAction('easy_language')">
-            {{ t('editor.easy_language') }}
-        </UButton>
-        <template #content>
-            <div class="max-w-[50vw] p-2">
-                <div>
-                    {{ t('easy-language.notice') }}
-                </div>
-                <div class="mt-2">
-                    <strong>{{ t('easy-language.moreInfo') }}</strong>
-                </div>
-                <div class="mt-1">
-                    <strong>{{ t('easy-language.networkLabel') }} </strong>
-                    <ULink to="https://www.ebgb.admin.ch/de/leichte-sprache">https://www.ebgb.admin.ch/de/leichte-sprache</ULink>
                 </div>
             </div>
         </template>
