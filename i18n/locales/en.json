@@ -27,7 +27,8 @@
         "languages": "Languages",
         "undo": "Undo",
         "redo": "Redo",
-        "signOut": "Sign Out"
+        "signOut": "Sign Out",
+        "app": "Text Mate"
     },
     "tools": {
         "problems": "Problems",

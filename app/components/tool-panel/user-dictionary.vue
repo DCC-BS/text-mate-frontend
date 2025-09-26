@@ -21,7 +21,8 @@ function addNewWord() {
     <UPopover>
       <UButton
         icon="i-heroicons-book-open"
-        color="info"
+        color="neutral"
+        variant="link"
         class="w-full">
         {{ t("user-dictionary.title") }}
       </UButton>

@@ -62,6 +62,7 @@ export default defineNuxtConfig({
         "@nuxt/ui",
         "@nuxtjs/i18n",
         "@nuxtjs/mdc",
+        "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/event-system.bs.js",
         "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",

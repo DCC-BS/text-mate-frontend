@@ -27,7 +27,8 @@
         "languages": "Sprachen",
         "undo": "Rückgängig",
         "redo": "Wiederholen",
-        "signOut": "Abmelden"
+        "signOut": "Abmelden",
+        "app": "Text Mate"
     },
     "tools": {
         "problems": "Probleme",

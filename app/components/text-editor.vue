@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { DataBsBanner, DisclaimerButton } from "@dcc-bs/common-ui.bs.js";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -286,8 +285,6 @@ function onFileSelect(event: Event): void {
         <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10">
         </div>
 
-        <QuickActionsPanel :editor="editor" />
-
         <TextCorrection v-if="isTextCorrectionActive" :hover-block="hoverBlock"
             :relative-hover-rect="relativeHoverRect" />
 
@@ -319,16 +316,12 @@ function onFileSelect(event: Event): void {
 
         <div class="flex gap-2 items-start justify-between"
             :class="{ 'character-count--warning': editor.storage.characterCount.characters() === limit }">
-            <DisclaimerButton variant="ghost" />
             <UButton size="xs" color="primary" @click="triggerFileUpload" :loading="isConverting"
                 :disabled="isConverting" icon="i-lucide-file-up" variant="soft">
                 {{ isConverting ? t('upload.uploading') : t('upload.uploadFile') }}
             </UButton>
             <input type="file" ref="fileInputRef" class="hidden" @change="onFileSelect"
                             accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
-            <div class="data-bs-banner">
-                <DataBsBanner class="text-center" />
-            </div>
 
             <div class="flex items-center gap-2">
                 <svg height="20" width="20" viewBox="0 0 20 20">
@@ -391,10 +384,6 @@ function onFileSelect(event: Event): void {
 
 .character-count--warning {
     @apply text-red-500;
-}
-
-.data-bs-banner {
-    @apply hidden @md:inline max-md:hidden;
 }
 
 @media screen and (max-height: 600px) {

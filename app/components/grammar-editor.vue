@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { SplitView } from "@dcc-bs/common-ui.bs.js";
 import {
     Cmds,
     InvalidateCorrectionCommand,
@@ -101,23 +100,28 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
 </script>
 
 <template>
-    <div class="h-[90vh]">
-        <SplitView :is-horizontal="viewport.isLessThan('md')" a-pane-style="min-w-[250px] min-h-[200px]"
-            b-pane-style="min-w-[300px] min-h-[200px]">
-            <template #a>
-                <client-only>
-                    <div class="w-full h-full relative">
-                        <TextEditor v-model="userText" v-model:selectedText="selectedText" />
-                    </div>
-                </client-only>
-            </template>
-            <template #b>
-                <div>
-                    <ToolPanel :text="userText" :selectedText="selectedText" />
-                </div>
-            </template>
-        </SplitView>
-    </div>
+    <SplitContainer>
+        <template #header>
+            <div class="flex items-center w-full">
+                <div class="flex-1"></div>
+                <ToolSelectView class="flex-1"/>
+                <OptionsBar class="flex-1"/>
+            </div>
+        </template>
+
+        <template #left>
+            <div class="w-full h-full relative">
+                <TextEditor v-model="userText" v-model:selectedText="selectedText" />
+            </div>
+        </template>
+
+        <template #right>
+            <ToolPanel :text="userText" :selectedText="selectedText" />
+        </template>
+    </SplitContainer>
+
+    <DataBsFooter></DataBsFooter>
+
     <div class="fixed bottom-5 left-0 right-0">
         <ProgressIndication />
     </div>

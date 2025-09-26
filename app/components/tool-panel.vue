@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { TabsItem } from "@nuxt/ui";
-import { UTabs } from "#components";
 import {
     Cmds,
     type RewriteTextCommand,
@@ -8,8 +6,9 @@ import {
 } from "~/assets/models/commands";
 import AdvisorView from "./tool-panel/advisor-view.vue";
 import ComparePanel from "./tool-panel/compare-panel.vue";
-import ProblemsPanel from "./tool-panel/problems-panel.vue";
 import RewriteView from "./tool-panel/rewrite-view.vue";
+import ProblemsPanel from "./tool-panel/problems-panel.vue";
+import { motion, AnimatePresence } from "motion-v";
 
 // definitions
 interface ToolPanelProps {
@@ -21,90 +20,39 @@ const props = defineProps<ToolPanelProps>();
 
 // composables
 const { t } = useI18n();
-const { registerHandler, unregisterHandler, executeCommand } = useCommandBus();
+const { onCommand } = useCommandBus();
 
 // refs
 const selectedTab = ref("0");
-const formality = ref<string>("neutral");
-const domain = ref<string>("general");
+const selectedTool = ref<"correction" | "rewrite" | "advisor">("correction");
 
-onMounted(() => {
-    registerHandler(Cmds.RewriteTextCommand, handleRewriteText);
+// animations
+const initial = { opacity: 0, y: -20 };
+const animate = { opacity: 1, y: 0 };
+const exit = { opacity: 0, y: 20 };
+
+onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
+    selectedTool.value = command.tool;
 });
 
-onUnmounted(() => {
-    unregisterHandler(Cmds.RewriteTextCommand, handleRewriteText);
-});
-
-watch(
-    () => selectedTab.value,
-    (tab) => {
-        switch (tab) {
-            case "0":
-                executeCommand(new ToolSwitchCommand("correction"));
-                break;
-            case "1":
-                executeCommand(new ToolSwitchCommand("rewrite"));
-                break;
-            case "2":
-                executeCommand(new ToolSwitchCommand("advisor"));
-                break;
-            default:
-        }
-    },
-);
-
-const items = computed(
-    () =>
-        [
-            {
-                slot: "problems",
-                label: t("tools.problems"),
-                icon: "i-heroicons-bolt",
-            },
-            {
-                slot: "rewrite",
-                label: t("tools.rewrite"),
-                icon: "i-heroicons-arrow-path-rounded-square-16-solid",
-            },
-            {
-                slot: "advisor",
-                label: t("tools.advisor"),
-                icon: "i-heroicons-light-bulb",
-            },
-        ] as TabsItem[],
-);
-
-async function handleRewriteText(_: RewriteTextCommand): Promise<void> {
+onCommand<RewriteTextCommand>(Cmds.RewriteTextCommand, async (_) => {
     selectedTab.value = "1";
-}
+});
 </script>
 
 <template>
     <div class="h-full p-2">
-        <!-- wrapper: 'h-[30vh] md:h-[90vh]'             -->
-        <UTabs
-            v-model="selectedTab"
-            :items="items"
-            class="h-full"
-            :unmountOnHide="false"
-            :ui="{ content: 'h-[30vh] md:h-[80vh] overflow-y-auto scrollable-container' }"> 
-            <template #problems>
-                <ProblemsPanel />
-            </template>
-            <template #rewrite>
-                <div class="h-full">
-                    <RewriteView 
-                        :text="props.text" />
-                </div>
-            </template>
-            <template #advisor>
+        <AnimatePresence>
+            <motion.div :initial="initial" :animate="animate" :exit="exit" mode="popLayout" v-show="selectedTool === 'correction'" class="h-full">
+                <ProblemsPanel :text="props.text" />
+            </motion.div>
+            <motion.div :initial="initial" :animate="animate" :exit="exit" mode="popLayout" v-show="selectedTool === 'rewrite'" class="h-full">
+                <RewriteView :text="props.text" />
+            </motion.div>
+            <motion.div :initial="initial" :animate="animate" :exit="exit" mode="popLayout" v-show="selectedTool === 'advisor'" class="h-full">
                 <AdvisorView :text="props.text" />
-            </template>
-            <template #compare>
-                <ComparePanel :text="props.text" />
-            </template>
-        </UTabs>
+            </motion.div>
+        </AnimatePresence>
     </div>
 </template>
 

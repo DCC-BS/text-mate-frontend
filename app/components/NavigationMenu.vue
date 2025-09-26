@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import type { NavigationMenuItem } from "#ui/components/NavigationMenu.vue";
+import type { DropdownMenuItem } from "@nuxt/ui";
+
 import {
     Cmds,
     RedoCommand,
@@ -29,47 +30,12 @@ const userImage = computed(() => {
 });
 
 // Navigation menu items
-const items = computed<NavigationMenuItem[][]>(() => [
-    [
-        {
-            label: t("navigation.undo"),
-            icon: "i-heroicons-arrow-uturn-left",
-            onSelect: handleUndo,
-            disabled: !undoRedoState.canUndo,
-        },
-        {
-            label: t("navigation.redo"),
-            icon: "i-heroicons-arrow-uturn-right",
-            onSelect: handleRedo,
-            disabled: !undoRedoState.canRedo,
-        },
-    ],
-    [],
-    [
-        {
-            label: t("navigation.languages"),
-            icon: "i-heroicons-language",
-            children: availableLocales.value.map((locale) => ({
-                label: locale.name,
-                onSelect: async () => {
-                    setLocale(locale.code);
-                },
-            })),
-        },
-        {
-            avatar: {
-                src: userImage.value,
-                alt: data.value?.user?.name || "User",
-            },
-            children: [
-                {
-                    label: t("navigation.signOut"),
-                    icon: "i-heroicons-arrow-right-on-rectangle",
-                    onSelect: handleSignOut,
-                },
-            ],
-        },
-    ],
+const items = computed<DropdownMenuItem[]>(() => [
+    {
+        label: t("navigation.signOut"),
+        icon: "i-heroicons-arrow-right-on-rectangle",
+        onSelect: handleSignOut,
+    },
 ]);
 
 onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
@@ -91,13 +57,13 @@ async function handleSignOut(): Promise<void> {
 </script>
 
 <template>
-    <div>
-        <ClientOnly>
-            <UNavigationMenu
-                content-orientation="vertical"
-                :items="items"
-                class="w-full justify-between z-50"
-            />
-        </ClientOnly>
-    </div>
+    <NavigationBar>
+        <template #right>
+            <UDropdownMenu :items="items">
+                <UButton variant="ghost" color="neutral">
+                    <img :src="userImage" class="h-6 w-6 rounded-full" :alt="data?.user?.name || 'User'" />
+                </UButton>
+            </UDropdownMenu>
+        </template>
+    </NavigationBar>
 </template>
