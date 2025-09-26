@@ -174,5 +174,16 @@
         "newContentAvailable": "New content available",
         "newVersionDescription": "A new version of the app is available. Please refresh to get the latest updates.",
         "refresh": "Refresh"
+    },
+    "upload": {
+        "convertingFile": "Converting file...",
+        "uploading": "Uploading file...",
+        "uploadFile": "Upload File",
+        "dropFileToConvert": "For upload, drop the file here",
+        "supportedFormats": "Supported formats: DOC, DOCX, HTML, MD, PDF, PPTX, RTF, TXT",
+        "error": "Error",
+        "errorDescription": "Error uploading file. Please try again or contact us.",
+        "dismiss": "Dismiss",
+        "fileConvertedSuccess": "File converted successfully"
     }
 }

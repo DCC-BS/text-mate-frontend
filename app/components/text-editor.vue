@@ -29,6 +29,21 @@ import { FocusedWordMark } from "~/utils/focused-word-mark";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
 
+const { t } = useI18n();
+
+const {
+    dropZoneRef,
+    isOverDropZone,
+    isConverting,
+    error: conversionError,
+    fileName,
+    handleFileSelect,
+    clearError,
+} = useFileConvert((text: string) => {
+    editor.value?.commands.setContent(text);
+    lockEditor.value = false;
+});
+
 // model
 const model = defineModel<string>("modelValue", { required: true });
 const selectedText = defineModel<TextFocus>("selectedText");
@@ -39,6 +54,7 @@ const limit = ref(100_000);
 const isTextCorrectionActive = ref(true);
 const isInteractiableFocusActive = ref(false);
 const lockEditor = ref(false);
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const undoRedoState = ref({
     canUndo: false,
@@ -190,9 +206,56 @@ watch(model, (value) => {
     if (getContent() === value) {
         return;
     }
-
     editor.value.commands.setContent(value);
 });
+
+watch(isConverting, (value) => {
+    lockEditor.value = value;
+});
+
+/**
+ * Watch for error changes to show error toast
+ */
+watch(conversionError, (newError) => {
+    if (newError) {
+        toast.add({
+            title: t("upload.error"),
+            description: `${newError}. ${t("upload.errorDescription")}`,
+            color: "error",
+            icon: "i-lucide-alert-circle",
+            duration: 5000,
+            actions: [
+                {
+                    label: t("upload.dismiss"),
+                    onClick: () => clearError(),
+                },
+            ],
+        });
+    }
+});
+
+/**
+ * Watch for fileName changes to show success toast
+ */
+watch(
+    () => fileName.value,
+    (newFileName, oldFileName) => {
+        if (
+            newFileName &&
+            !conversionError.value &&
+            !isConverting.value &&
+            newFileName !== oldFileName
+        ) {
+            toast.add({
+                title: t("upload.fileConvertedSuccess"),
+                description: newFileName,
+                color: "success",
+                icon: "i-lucide-check-circle",
+                duration: 3000,
+            });
+        }
+    },
+);
 
 // functions
 function getContent() {
@@ -202,34 +265,67 @@ function getContent() {
 
     return editor.value.getText();
 }
+
+function triggerFileUpload(): void {
+    if (fileInputRef.value) {
+        fileInputRef.value.click();
+    }
+}
+
+function onFileSelect(event: Event): void {
+    handleFileSelect(event);
+    // Reset the input so the same file can be selected again
+    if (fileInputRef.value) {
+        fileInputRef.value.value = "";
+    }
+}
 </script>
 
 <template>
     <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
         <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10">
         </div>
-        
+
         <QuickActionsPanel :editor="editor" />
 
-        <TextCorrection
-            v-if="isTextCorrectionActive"
-            :hover-block="hoverBlock"
+        <TextCorrection v-if="isTextCorrectionActive" :hover-block="hoverBlock"
             :relative-hover-rect="relativeHoverRect" />
 
-        <TextRewrite
-            :focused-sentence="focusedSentence"
-            :focused-word="focusedWord"
-            :text="model"
-            :editor="editor"
-             />
+        <TextRewrite :focused-sentence="focusedSentence" :focused-word="focusedWord" :text="model" :editor="editor" />
 
-        <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll relative">
+        <div ref="dropZoneRef" class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll relative">
+            <!-- Drop zone overlay -->
+            <div v-if="isOverDropZone" class="absolute inset-0 bg-gray-100/80 dark:bg-gray-800/80 border-2 border-dashed border-primary-500 rounded-lg 
+                    flex flex-col items-center justify-center z-10 transition-all duration-200 backdrop-blur-sm">
+                <div class="text-5xl text-primary-500 mb-2">
+                    <div class="i-lucide-file-down animate-bounce"></div>
+                </div>
+                <span class="text-lg font-medium text-primary-600 dark:text-primary-400">
+                    {{ t('upload.dropFileToConvert') }}
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ t('upload.supportedFormats') }}</span>
+            </div>
+            <!-- Loading overlay -->
+            <div v-if="isConverting"
+                class="absolute inset-0 bg-gray-50/90 dark:bg-gray-900/90 rounded-lg flex flex-col items-center justify-center z-10">
+                <!-- Loading spinner -->
+                <div class="text-4xl text-primary-500 mb-4">
+                    <UIcon name="i-lucide-loader-circle" class="animate-spin-slow" />
+                </div>
+                <span class="text-gray-600 dark:text-gray-300">{{ t('upload.convertingFile') }}</span>
+            </div>
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
         </div>
-        <div
-            class="flex gap-2 items-start justify-between"
+
+        <div class="flex gap-2 items-start justify-between"
             :class="{ 'character-count--warning': editor.storage.characterCount.characters() === limit }">
             <DisclaimerButton variant="ghost" />
+            <UButton size="xs" color="primary" @click="triggerFileUpload" :loading="isConverting"
+                :disabled="isConverting" icon="i-lucide-file-up" variant="soft">
+                {{ isConverting ? t('upload.uploading') : t('upload.uploadFile') }}
+            </UButton>
+            <input type="file" ref="fileInputRef" class="hidden" @change="onFileSelect"
+                            accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
             <div class="data-bs-banner">
                 <DataBsBanner class="text-center" />
             </div>
@@ -237,8 +333,7 @@ function getContent() {
             <div class="flex items-center gap-2">
                 <svg height="20" width="20" viewBox="0 0 20 20">
                     <circle r="10" cx="10" cy="10" fill="#e9ecef" />
-                    <circle
-                        r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
+                    <circle r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
                         :stroke-dasharray="`calc(${characterCountPercentage} * 31.4 / 100) 31.4`"
                         transform="rotate(-90) translate(-20)" />
                     <circle r="6" cx="10" cy="10" fill="white" />
@@ -321,5 +416,20 @@ function getContent() {
   to {
     opacity: 1; /* End fully visible */
   }
+}
+
+/* Slower spinning animation for loading spinner */
+.animate-spin-slow {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>

@@ -2,6 +2,8 @@
 import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 import type { AdvisorService } from "~/assets/services/AdvisorService";
 
+const { t } = useI18n();
+
 interface AdvisorDocSelectProps {
     advisorService: AdvisorService;
 }
@@ -23,7 +25,7 @@ const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
         </div>
         <div v-else>
           <p class="text-gray-500">
-            {{ $t("advisor.selectDocs") }}
+            {{ t("advisor.selectDocs") }}
           </p>
         </div>
       </template>
