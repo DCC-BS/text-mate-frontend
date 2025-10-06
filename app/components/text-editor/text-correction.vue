@@ -44,15 +44,19 @@ function addWord(word: string) {
       <template #content>
           <div
               v-if="hoverBlock && hoverBlock.corrected.length > 0"
-              class="flex flex-wrap gap-1 justify-center p-2">
+              class="flex flex-col p-2 rounded-md ring-1 ring-gray-400">
               <UButton
                   v-for="correction in hoverBlock.corrected.slice(0, 5)" :key="correction"
+                  variant="link"
+                  color="neutral"
                   @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
                   {{ correction }}
               </UButton>
-            <UButton color="info" icon="i-heroicons-plus-circle" @click="addWord(hoverBlock?.original)">
-                {{ t("text-editor.addWordToDictionary") }}
-            </UButton>
+            
+            <UTooltip :text="t('text-editor.addWordToDictionary')">
+              <UButton color="neutral" variant="link" icon="i-lucide-book-plus" @click="addWord(hoverBlock?.original)">
+              </UButton>
+            </UTooltip>
           </div>
       </template>
   </UPopover>

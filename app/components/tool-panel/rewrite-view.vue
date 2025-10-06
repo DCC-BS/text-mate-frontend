@@ -131,7 +131,7 @@ async function rewriteText() {
 
     await executeCommand(new ToggleEditableEditorCommand(true));
     addProgress("rewriting", {
-        icon: "i-heroicons-pencil",
+        icon: "i-lucide-pencil",
         title: t("status.rewritingText"),
     });
 
@@ -172,30 +172,41 @@ async function rewriteText() {
 
 <template>
     <div class="flex justify-end mb-2">
-        <div>
-            <MotionUButton layout :label="advancedToggleText" :icon="advancedToggleIcon"
-                @click="advancedMode = !advancedMode" variant="soft">
-            </MotionUButton>
-        </div>
+        <UDrawer direction="right" handleOnly>
+            <UButton icon="i-lucide-sliders" variant="soft" color="neutral">
+                Optionen
+            </UButton>
+            <template #content>
+                <div class="w-[400px] p-2">
+                    <div>
+                        <MotionUButton layout :label="advancedToggleText" :icon="advancedToggleIcon"
+                            @click="advancedMode = !advancedMode" variant="link" color="neutral">
+                        </MotionUButton>
+                    </div>
+
+                    <AnimatePresence mode="wait">
+                        <motion.div class="grid grid-cols-2 mb-3 gap-2" v-if="!advancedMode" :initial="{ opacity: 0, x: 50 }"
+                            :exit="{ opacity: 0, x: 50 }" :animate="{  x: 0,opacity: 1 }" :transition="{ duration: 0.2 }">
+
+                            <template v-for="option in options" :key="option.label">
+                                <span>{{ t(option.label) }}</span>
+                                <SelectMenuLocalized v-model="option.value" :options="option.options"   
+                                    :local-parent="option.valuePrefix" />
+                            </template>
+                        </motion.div>
+                        <motion.div v-if="advancedMode" class="mb-3" :initial="{ opacity: 0, x: -50 }"
+                            :exit="{ opacity: 0, x: -50 }" :animate="{  x: 0,opacity: 1 }" :transition="{ duration: 0.2 }">
+                            <span>{{ t('rewrite.advancedOptionsLabel') }}</span>
+                            <UTextarea class="w-full" :rows="5" v-model="advancedOptions">
+                            </UTextarea>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+            </template>
+        </UDrawer>
     </div>
 
-    <AnimatePresence mode="wait">
-        <motion.div class="grid grid-cols-2 mb-3 gap-2" v-if="!advancedMode" :initial="{ opacity: 0, x: 50 }"
-            :exit="{ opacity: 0, x: 50 }" :animate="{  x: 0,opacity: 1 }" :transition="{ duration: 0.2 }">
 
-            <template v-for="option in options" :key="option.label">
-                <span>{{ t(option.label) }}</span>
-                <SelectMenuLocalized v-model="option.value" :options="option.options"   
-                    :local-parent="option.valuePrefix" />
-            </template>
-        </motion.div>
-        <motion.div v-if="advancedMode" class="mb-3" :initial="{ opacity: 0, x: -50 }"
-            :exit="{ opacity: 0, x: -50 }" :animate="{  x: 0,opacity: 1 }" :transition="{ duration: 0.2 }">
-            <span>{{ t('rewrite.advancedOptionsLabel') }}</span>
-            <UTextarea class="w-full" :rows="5" v-model="advancedOptions">
-            </UTextarea>
-        </motion.div>
-    </AnimatePresence>
 
     <div>
         <UButton @click="rewriteText()" variant="soft" :loading="isRewriting" :disabled="isRewriting">

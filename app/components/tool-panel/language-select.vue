@@ -8,7 +8,7 @@ const { executeCommand } = useCommandBus();
 const languages = [
     {
         key: "auto",
-        icon: "i-heroicons-globe-alt",
+        icon: "i-lucide-earth",
     },
     {
         key: "de-CH",
@@ -44,7 +44,7 @@ const items = languages.map(
 const selectedLanguage = ref<SelectMenuItem & { key: string }>(
     items[0] ?? {
         key: "auto",
-        icon: "i-heroicons-globe-alt",
+        icon: "i-lucide-earth",
         label: t("language.auto"),
     },
 );

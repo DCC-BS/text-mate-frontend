@@ -33,7 +33,7 @@ const userImage = computed(() => {
 const items = computed<DropdownMenuItem[]>(() => [
     {
         label: t("navigation.signOut"),
-        icon: "i-heroicons-arrow-right-on-rectangle",
+        icon: "i-lucide-sign-out",
         onSelect: handleSignOut,
     },
 ]);

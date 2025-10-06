@@ -115,7 +115,7 @@ const editor = useEditor({
                         title: "Ctrl+C pressed",
                         description: "Select all text",
                         color: "info",
-                        icon: "i-heroicons-clipboard-document-list",
+                        icon: "i-lucide-clipboard-list",
                     });
                 }
             }
@@ -144,8 +144,6 @@ onCommand<ApplyTextCommand>(Cmds.ApplyTextCommand, async (command) => {
     if (!editor.value) return;
     const text = command.text;
     const range = command.range;
-
-    console.log("Applying correction", text, range);
 
     editor.value
         .chain()
@@ -312,6 +310,10 @@ function onFileSelect(event: Event): void {
                 <span class="text-gray-600 dark:text-gray-300">{{ t('upload.convertingFile') }}</span>
             </div>
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
+
+            <div class="absolute bottom-0 inset-x-0">
+                <TextEditorTextToolbar :characters="editor.storage.characterCount.characters()" :words="editor.storage.characterCount.words()" :limit="limit" />
+            </div>
         </div>
 
         <div class="flex gap-2 items-start justify-between"
@@ -322,20 +324,6 @@ function onFileSelect(event: Event): void {
             </UButton>
             <input type="file" ref="fileInputRef" class="hidden" @change="onFileSelect"
                             accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
-
-            <div class="flex items-center gap-2">
-                <svg height="20" width="20" viewBox="0 0 20 20">
-                    <circle r="10" cx="10" cy="10" fill="#e9ecef" />
-                    <circle r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
-                        :stroke-dasharray="`calc(${characterCountPercentage} * 31.4 / 100) 31.4`"
-                        transform="rotate(-90) translate(-20)" />
-                    <circle r="6" cx="10" cy="10" fill="white" />
-                </svg>
-
-                {{ editor.storage.characterCount.characters() }} / {{ limit }} characters
-                <br class="hidden md:block">
-                {{ editor.storage.characterCount.words() }} words
-            </div>
         </div>
     </div>
 </template>

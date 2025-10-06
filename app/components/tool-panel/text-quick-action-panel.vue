@@ -1,66 +1,22 @@
 <script lang="ts" setup>
-import type { Editor } from "@tiptap/vue-3";
-import {
-    RequestChangesCommand,
-    ToggleEditableEditorCommand,
-    ToggleLockEditorCommand,
-} from "~/assets/models/commands";
+import type { TextActions } from "~/assets/models/text-actions";
 
-interface QuickActionsPanelProps {
-    editor: Editor;
+interface InputProps {
+    text: string;
 }
 
-// Updated to include social_mediafy action
-type Actions =
-    | "plain_language"
-    | "bullet_points"
-    | "summarize"
-    | "social_mediafy"
-    | "translate_de-CH"
-    | "translate_en-US"
-    | "translate_en-GB"
-    | "translate_fr"
-    | "translate_it";
+const props = defineProps<InputProps>();
 
-const props = defineProps<QuickActionsPanelProps>();
-
-// composables
 const { t } = useI18n();
-const toast = useToast();
-const { applyStreamToEditor } = useStreamWriter();
-const { addProgress, removeProgress } = useUseProgressIndication();
-const { executeCommand } = useCommandBus();
 
-// refs
 const isRewriting = ref<boolean>(false);
 
-// computed
-const textSelectionRange = computed(() => {
-    const { from, to } = props.editor.state.selection;
+const actionsAreAvailable = computed(() => !isRewriting.value);
+const { addProgress, removeProgress } = useUseProgressIndication();
+const { executeCommand } = useCommandBus();
+const toast = useToast();
 
-    if (from === to) {
-        return {
-            from: 0,
-            to: props.editor.getText().length + 1,
-        };
-    }
-
-    return {
-        from,
-        to,
-    };
-});
-
-const selectedText = computed(() => {
-    const { from, to } = textSelectionRange.value;
-    return props.editor.state.doc.textBetween(from, to);
-});
-
-const actionsAreAvailable = computed(
-    () => selectedText.value.length > 3 && !isRewriting.value,
-);
-
-async function applyAction(action: Actions): Promise<void> {
+async function applyAction(action: TextActions): Promise<void> {
     if (!actionsAreAvailable.value) {
         toast.add({
             title: "Error",
@@ -72,23 +28,17 @@ async function applyAction(action: Actions): Promise<void> {
     }
 
     try {
-        await executeCommand(new ToggleEditableEditorCommand(true));
-        await executeCommand(new ToggleLockEditorCommand(true));
-
         addProgress("quick-action", {
             icon: "i-lucide-text-search",
             title: t("status.quickAction"),
         });
         isRewriting.value = true;
 
-        const { from, to } = textSelectionRange.value;
-        const text = selectedText.value;
-
         const response = await apiStreamfetch("/api/quick-action", {
             method: "POST",
             body: {
                 action,
-                text,
+                text: props.text,
             },
         });
 

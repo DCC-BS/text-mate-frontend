@@ -52,7 +52,7 @@ async function findWordSynonym() {
 
     addProgress("finding-synonym", {
         title: t("text-editor.finding-synonym"),
-        icon: "i-heroicons-magnifying-glass",
+        icon: "i-lucide-search",
     });
     isRewritingWord.value = true;
 
@@ -91,7 +91,7 @@ async function findAlternativeSentence() {
 
     addProgress("finding-alternative-sentence", {
         title: t("text-editor.finding-alternative-sentence"),
-        icon: "i-heroicons-magnifying-glass",
+        icon: "i-lucide-search",
     });
     isRewritingSentence.value = true;
 

@@ -20,7 +20,7 @@ function addNewWord() {
   <div>
     <UPopover>
       <UButton
-        icon="i-heroicons-book-open"
+        icon="i-lucide-book-open"
         color="neutral"
         variant="link"
         class="w-full">
@@ -39,8 +39,9 @@ function addNewWord() {
             />
             <UButton
               color="success"
-              icon="i-heroicons-plus"
+              icon="i-lucide-plus"
               @click="addNewWord"
+
             >
               {{ t("user-dictionary.add") }}
             </UButton>
@@ -56,7 +57,7 @@ function addNewWord() {
               <UButton
                 :key="word"
                 color="error"
-                icon="i-heroicons-trash"
+                icon="i-lucide-trash-2"
                 @click="userDictionaryQuery.removeWord(word)"
               >
               </UButton>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { motion, AnimatePresence } from "motion-v";
 import {
     ApplyCorrectionCommand,
     Cmds,
@@ -10,22 +11,19 @@ import { useCorrection } from "~/composables/correction";
 // composables
 const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
+const { blocks } = useCorrection();
 
 // refs
 const selectedBlock = ref<TextCorrectionBlock | null>(null);
-
-// computed
-const { blocks } = useCorrection();
+const currentBlockIndex = ref(0);
+const currentBlock = computed(() => {
+    return blocks.value[currentBlockIndex.value];
+});
 
 onCommand(Cmds.JumpToBlockCommand, async (command: JumpToBlockCommand) => {
-    selectBlock(command.block);
-
-    const blockElement = document.getElementById(
-        `block-${command.block.offset}`,
+    currentBlockIndex.value = blocks.value.findIndex(
+        (b) => b.offset === command.block.offset,
     );
-    if (blockElement) {
-        scrollToBlock(blockElement);
-    }
 });
 
 function selectBlock(block: TextCorrectionBlock) {
@@ -63,30 +61,47 @@ async function applyBlock(block: TextCorrectionBlock, corrected: string) {
 </script>
 
 <template>
-    <div class="flex justify-stretch items-stretch gap-2 flex-wrap w-full">
-        <ToolPanelLanguageSelect class="grow"/>
-        <ToolPanelUserDictionary class="grow"/>
-    </div>
-
     <div v-if="blocks.length > 0">
-        <div class="text-lg">{{ t('problems.title') }}</div>
-        <div>
-            <template v-for="block in blocks">
-                <UCard :id="`block-${block.offset}`" class="m-2">
-                    <div @click="selectBlock(block)">
-                        {{ block.original.replace(/\s/g, '_') }} - {{ block.explanation }}
+        <div class="flex justify-between">
+            <div class="text-lg font-bold">{{ t('problems.title') }}</div>
+            <div class="flex gap-1">
+                <UButton
+                    :disabled="currentBlockIndex === 0"
+                    variant="link"
+                    color="neutral"
+                    icon="i-lucide-chevron-left"
+                    @click="currentBlockIndex = Math.max(0, currentBlockIndex - 1)"
+                />
+                <UButton
+                    :disabled="currentBlockIndex >= blocks.length - 1"
+                    variant="link"
+                    color="neutral"
+                    icon="i-lucide-chevron-right"
+                    @click="currentBlockIndex = Math.min(blocks.length - 1, currentBlockIndex + 1)"
+                />
+            </div>
+        </div>
+        <AnimatePresence>
+            <div v-if="currentBlock">
+                <motion.div :key="currentBlock.id" :initial="{ opacity: 0, x: 50 }" :animate="{ opacity: 1, x: 0 }" :exit="{ opacity: 0, x: 50 }">
+                    <div class="mt-2 text-2xl font-bold">{{ currentBlock.original.replace(/\s/g, '_') }}</div>
+
+                    <div class="flex gap-2 flex-wrap mt-1">
+                        <UButton v-for="corrected in currentBlock.corrected" @click="applyBlock(currentBlock, corrected)" variant="link">
+                            {{ corrected }}
+                        </UButton>
+                    </div>
+                    
+                    <div class="text-gray-600 my-1">
+                        {{ currentBlock.explanation }}
                     </div>
 
-                    <div v-if="selectedBlock?.offset == block.offset">
-                        <div class="flex gap-2 flex-wrap mt-1">
-                            <UButton v-for="corrected in block.corrected" @click="applyBlock(block, corrected)">
-                                {{ corrected }}
-                            </UButton>
-                        </div>
-                    </div>
-                </UCard>
-            </template>
-        </div>
+                    <UButton variant="link" color="neutral" icon="i-lucide-book-plus">
+                        "{{ currentBlock.original }}" zum Wörterbuch hinzufügen
+                    </UButton>
+                </motion.div>
+            </div>
+        </AnimatePresence>
     </div>
     <div v-else>
         <div class="text-lg">{{ t('problems.noProblems') }}</div>

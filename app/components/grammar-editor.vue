@@ -57,7 +57,7 @@ watch(userText, (newText, oldText) => {
 // functions
 async function correctText(text: string, signal: AbortSignal) {
     addProgress("correcting", {
-        icon: "i-heroicons-pencil",
+        icon: "i-lucide-pencil",
         title: t("status.correctingText"),
     });
     try {
@@ -100,27 +100,28 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
 </script>
 
 <template>
-    <SplitContainer>
-        <template #header>
-            <div class="flex items-center w-full">
-                <div class="flex-1"></div>
-                <ToolSelectView class="flex-1"/>
-                <OptionsBar class="flex-1"/>
-            </div>
-        </template>
+    <div class="p-2 w-full h-full">
+        <SplitContainer>
+            <template #header>
+                <div class="flex items-center w-full flex-1">
+                    <div class="flex-1"></div>
+                    <ToolSelectView class="flex-1"/>
+                    <OptionsBar class="flex-1"/>
+                </div>
+            </template>
 
-        <template #left>
-            <div class="w-full h-full relative">
-                <TextEditor v-model="userText" v-model:selectedText="selectedText" />
-            </div>
-        </template>
+            <template #left>
+                <div class="w-full h-full relative">
+                    <TextEditor v-model="userText" v-model:selectedText="selectedText" />
+                </div>
+            </template>
 
-        <template #right>
-            <ToolPanel :text="userText" :selectedText="selectedText" />
-        </template>
-    </SplitContainer>
+            <template #right>
+                <ToolPanel :text="userText" :selectedText="selectedText" />
+            </template>
+        </SplitContainer>
+    </div>
 
-    <DataBsFooter></DataBsFooter>
 
     <div class="fixed bottom-5 left-0 right-0">
         <ProgressIndication />
