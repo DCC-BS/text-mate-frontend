@@ -259,19 +259,52 @@ export class CorrectionService {
         return { blocks: newBlocks, commands };
     }
 
-    private async lock() {
+    private async lock(): Promise<void> {
         const now = Date.now();
+        const timeout = 10000; // Increased timeout for better reliability
 
         while (this.correction_lock) {
-            if (Date.now() - now > 5000) {
+            if (Date.now() - now > timeout) {
                 this.logger.warn("Lock timeout exceeded, forcing unlock");
+                this.correction_lock = false;
                 break;
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
         this.correction_lock = true;
+    }
+
+    /**
+     * Validates if the text is worth processing (not empty or just whitespace)
+     */
+    private shouldProcessText(text: string): boolean {
+        return text.trim().length > 0;
+    }
+
+    /**
+     * Batch process multiple corrections efficiently
+     */
+    async batchCorrect(texts: string[], signal: AbortSignal): Promise<void[]> {
+        const results = await Promise.allSettled(
+            texts.map((text) => this.correctText(text, signal)),
+        );
+
+        const successfulResults: void[] = [];
+
+        results.forEach((result, index) => {
+            if (result.status === "rejected") {
+                this.logger.error(
+                    `Batch correction failed for text ${index}:`,
+                    result.reason,
+                );
+            } else {
+                successfulResults.push(result.value);
+            }
+        });
+
+        return successfulResults;
     }
 
     private unlock() {

@@ -25,6 +25,7 @@ import {
 } from "~/assets/models/commands";
 import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
 import { FocusedWordMark } from "~/utils/focused-word-mark";
+import TextAutocomplete from "./text-editor/text-autocomplete.vue";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
 
@@ -54,6 +55,20 @@ const isTextCorrectionActive = ref(true);
 const isInteractiableFocusActive = ref(false);
 const lockEditor = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
+
+// Autocomplete state
+const autocompleteVisible = ref(false);
+const autocompleteSuggestions = ref<
+    Array<{
+        text: string;
+        type: "word" | "phrase" | "correction";
+        description?: string;
+    }>
+>([]);
+const autocompleteSelectedIndex = ref(0);
+const autocompletePosition = ref({ x: 0, y: 0 });
+const currentWordStart = ref(0);
+const debounceTimer = ref<NodeJS.Timeout | null>(null);
 
 const undoRedoState = ref({
     canUndo: false,
@@ -105,6 +120,20 @@ const editor = useEditor({
     enableInputRules: false,
     editorProps: {
         handleKeyDown: (_, event) => {
+            // Handle autocomplete
+            if (autocompleteVisible.value) {
+                if (event.key === "Escape") {
+                    hideAutocomplete();
+                    return true;
+                }
+                if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+                    return true; // Let the autocomplete component handle this
+                }
+                if (event.key === "Enter" || event.key === "Tab") {
+                    return true; // Let the autocomplete component handle this
+                }
+            }
+
             // Check if Ctrl+C is pressed
             if (event.ctrlKey && event.key === "c") {
                 // Check if there is no text selection
@@ -118,6 +147,13 @@ const editor = useEditor({
                         icon: "i-lucide-clipboard-list",
                     });
                 }
+            }
+
+            // Check if Ctrl+Space is pressed for manual autocomplete trigger
+            if (event.ctrlKey && event.key === " ") {
+                event.preventDefault();
+                showAutocomplete();
+                return true;
             }
         },
     },
@@ -136,6 +172,9 @@ const editor = useEditor({
             undoRedoState.value = { canUndo, canRedo };
             executeCommand(new UndoRedoStateChanged(canUndo, canRedo));
         }
+
+        // Trigger autocomplete on text changes
+        triggerAutocompleteDebounced();
     },
 });
 
@@ -255,12 +294,274 @@ watch(
 );
 
 // functions
-function getContent() {
+function getContent(): string {
     if (!editor.value) {
         return "";
     }
 
     return editor.value.getText();
+}
+
+/**
+ * Gets the current cursor position and selection information
+ */
+function getCursorInfo() {
+    if (!editor.value) return null;
+
+    const { from, to } = editor.value.state.selection;
+    const selectedText = editor.value.state.doc.textBetween(from, to);
+
+    return {
+        from,
+        to,
+        selectedText,
+        currentLine: 1, // Simplified for now
+        column: from + 1,
+        isEmpty: from === to,
+    };
+}
+
+/**
+ * Inserts text at the current cursor position
+ */
+function insertText(text: string): void {
+    if (!editor.value) return;
+
+    editor.value.chain().focus().insertContent(text).run();
+}
+
+/**
+ * Replaces the current selection with new text
+ */
+function replaceSelection(text: string): void {
+    if (!editor.value) return;
+
+    const cursorInfo = getCursorInfo();
+    if (!cursorInfo) return;
+
+    editor.value
+        .chain()
+        .focus()
+        .setTextSelection({ from: cursorInfo.from, to: cursorInfo.to })
+        .insertContent(text)
+        .run();
+}
+
+/**
+ * Gets the word at the current cursor position
+ */
+function getCurrentWord(): string {
+    if (!editor.value) return "";
+
+    const cursorInfo = getCursorInfo();
+    if (!cursorInfo) return "";
+
+    const text = editor.value.getText();
+    const beforeCursor = text.substring(0, cursorInfo.from);
+    const afterCursor = text.substring(cursorInfo.from);
+
+    // Match word boundaries
+    const wordBefore = beforeCursor.match(/\w+$/)?.[0] || "";
+    const wordAfter = afterCursor.match(/^\w+/)?.[0] || "";
+
+    return wordBefore + wordAfter;
+}
+
+/**
+ * Autoformats the current paragraph
+ */
+function autoformatParagraph(): void {
+    if (!editor.value) return;
+
+    const cursorInfo = getCursorInfo();
+    if (!cursorInfo) return;
+
+    // Get the full text and apply formatting rules
+    const fullText = editor.value.getText();
+    const sentences = fullText.split(/([.!?]+)/);
+
+    let formattedText = "";
+    for (let i = 0; i < sentences.length; i++) {
+        let sentence = sentences[i] || "";
+
+        // Capitalize standalone 'i'
+        sentence = sentence.replace(/\b(i)\b/g, "I");
+
+        // Capitalize first letter after punctuation
+        if (i > 0 && /[.!?]/.test(sentences[i - 1] || "")) {
+            sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
+        }
+
+        // Remove extra spaces
+        sentence = sentence.replace(/\s{2,}/g, " ");
+
+        formattedText += sentence;
+    }
+
+    editor.value.commands.setContent(formattedText);
+}
+
+/**
+ * Smart text completion based on context
+ */
+function suggestCompletion(): Array<{
+    text: string;
+    type: "word" | "phrase" | "correction";
+    description?: string;
+}> {
+    const currentWord = getCurrentWord().toLowerCase();
+    const cursorInfo = getCursorInfo();
+
+    if (!cursorInfo || currentWord.length < 2) return [];
+
+    const suggestions: Array<{
+        text: string;
+        type: "word" | "phrase" | "correction";
+        description?: string;
+    }> = [];
+
+    // Word completions
+    if (currentWord.startsWith("th")) {
+        suggestions.push(
+            { text: "the", type: "word", description: "definite article" },
+            { text: "that", type: "word", description: "demonstrative" },
+            { text: "this", type: "word", description: "demonstrative" },
+            { text: "there", type: "word", description: "adverb" },
+            { text: "their", type: "word", description: "possessive" },
+            { text: "them", type: "word", description: "pronoun" },
+            { text: "then", type: "word", description: "adverb" },
+        );
+    } else if (currentWord.startsWith("an")) {
+        suggestions.push(
+            { text: "and", type: "word", description: "conjunction" },
+            { text: "another", type: "word", description: "determiner" },
+            { text: "any", type: "word", description: "determiner" },
+            { text: "answer", type: "word", description: "noun" },
+        );
+    } else if (currentWord.startsWith("be")) {
+        suggestions.push(
+            { text: "because", type: "phrase", description: "conjunction" },
+            { text: "been", type: "word", description: "verb" },
+            { text: "before", type: "word", description: "preposition" },
+            { text: "being", type: "word", description: "verb" },
+            { text: "between", type: "word", description: "preposition" },
+        );
+    }
+
+    // Context-aware suggestions
+    const text = getContent();
+    const sentences = text.split(/[.!?]+/);
+    const lastSentence =
+        sentences[sentences.length - 2]?.trim().toLowerCase() || "";
+
+    if (lastSentence.includes("however") || lastSentence.includes("but")) {
+        suggestions.push(
+            { text: "although", type: "phrase", description: "concession" },
+            { text: "despite", type: "phrase", description: "concession" },
+            { text: "nevertheless", type: "phrase", description: "contrast" },
+        );
+    }
+
+    return suggestions.slice(0, 5); // Limit to top 5 suggestions
+}
+
+/**
+ * Shows autocomplete suggestions at cursor position
+ */
+function showAutocomplete(): void {
+    const cursorInfo = getCursorInfo();
+    if (!cursorInfo || !editor.value) return;
+
+    const suggestions = suggestCompletion();
+    if (suggestions.length === 0) {
+        hideAutocomplete();
+        return;
+    }
+
+    // Calculate position for autocomplete popup
+    const coords = editor.value.view.coordsAtPos(cursorInfo.from);
+    autocompletePosition.value = {
+        x: coords.left,
+        y: coords.bottom,
+    };
+
+    // Store current word start position for replacement
+    const currentWord = getCurrentWord();
+    currentWordStart.value = cursorInfo.from - currentWord.length;
+
+    autocompleteSuggestions.value = suggestions;
+    autocompleteSelectedIndex.value = 0;
+    autocompleteVisible.value = true;
+}
+
+/**
+ * Hides the autocomplete popup
+ */
+function hideAutocomplete(): void {
+    autocompleteVisible.value = false;
+    autocompleteSuggestions.value = [];
+    autocompleteSelectedIndex.value = 0;
+}
+
+/**
+ * Handles autocomplete navigation
+ */
+function navigateAutocomplete(direction: "up" | "down" | number): void {
+    if (!autocompleteVisible.value) return;
+
+    if (typeof direction === "number") {
+        autocompleteSelectedIndex.value = direction;
+    } else if (direction === "up") {
+        autocompleteSelectedIndex.value = Math.max(
+            0,
+            autocompleteSelectedIndex.value - 1,
+        );
+    } else {
+        autocompleteSelectedIndex.value = Math.min(
+            autocompleteSuggestions.value.length - 1,
+            autocompleteSelectedIndex.value + 1,
+        );
+    }
+}
+
+/**
+ * Applies the selected autocomplete suggestion
+ */
+function applyAutocomplete(suggestion: {
+    text: string;
+    type: "word" | "phrase" | "correction";
+    description?: string;
+}): void {
+    if (!editor.value) return;
+
+    const cursorInfo = getCursorInfo();
+    if (!cursorInfo) return;
+
+    const currentWord = getCurrentWord();
+    const wordStart = cursorInfo.from - currentWord.length;
+
+    // Replace the current word with the suggestion
+    editor.value
+        .chain()
+        .focus()
+        .setTextSelection({ from: wordStart, to: cursorInfo.to })
+        .insertContent(suggestion.text)
+        .run();
+
+    hideAutocomplete();
+}
+
+/**
+ * Debounced autocomplete trigger
+ */
+function triggerAutocompleteDebounced(): void {
+    if (debounceTimer.value) {
+        clearTimeout(debounceTimer.value);
+    }
+
+    debounceTimer.value = setTimeout(() => {
+        showAutocomplete();
+    }, 300); // 300ms delay
 }
 
 function triggerFileUpload(): void {
@@ -325,6 +626,17 @@ function onFileSelect(event: Event): void {
             <input type="file" ref="fileInputRef" class="hidden" @change="onFileSelect"
                             accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
         </div>
+
+        <!-- Autocomplete Component -->
+        <TextAutocomplete
+            :suggestions="autocompleteSuggestions"
+            :is-visible="autocompleteVisible"
+            :selected-index="autocompleteSelectedIndex"
+            :position="autocompletePosition"
+            @select="applyAutocomplete"
+            @hide="hideAutocomplete"
+            @navigate="navigateAutocomplete"
+        />
     </div>
 </template>
 
