@@ -4,6 +4,7 @@
     "scripts": {
         "build": "nuxt build",
         "dev": "nuxt dev",
+        "dummy": "DUMMY=true nuxt dev",
         "debug": "nuxt dev --inspect",
         "generate": "nuxt generate",
         "preview": "nuxt preview",

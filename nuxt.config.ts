@@ -162,4 +162,7 @@ export default defineNuxtConfig({
             client: true,
         },
     },
+    auth: {
+        enable: !process.env.DUMMY,
+    },
 });
