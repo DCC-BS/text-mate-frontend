@@ -51,21 +51,7 @@ export default defineEventHandler(async (event) => {
     }
     if (docs.includes("anderes-dokument.pdf")) {
         return {
-            rules: [
-                {
-                    description:
-                        "Vermeiden Sie die Verwendung von Passivkonstruktionen, um den Text klarer  und direkter zu gestalten.",
-                    example:
-                        "Das Dokument wurde von Erika Mustermann verfasst.",
-                    file_name: "anderes-dokument.pdf",
-                    name: "Passivkonstruktionen vermeiden",
-                    page_number: 3,
-                    reason: "Der Einsatz von Passivkonstruktionen kann die Klarheit und Direktheit des Textes beeinträchtigen.",
-                    proposal:
-                        "Formulieren Sie Sätze aktiver, indem Sie die handelnden Personen hervorheben.",
-                    source: "https://www.duden.de/rechtschreibung/passiv",
-                },
-            ],
+            rules: [],
         } as ValidationResult;
     }
 

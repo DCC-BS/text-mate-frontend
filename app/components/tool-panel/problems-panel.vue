@@ -81,9 +81,9 @@ async function applyBlock(block: TextCorrectionBlock, corrected: string) {
                 />
             </div>
         </div>
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
             <div v-if="currentBlock">
-                <motion.div :key="currentBlock.id" :initial="{ opacity: 0, x: 50 }" :animate="{ opacity: 1, x: 0 }" :exit="{ opacity: 0, x: 50 }">
+                <motion.div :key="currentBlock.id" :initial="{ opacity: 0, x: -20 }" :animate="{ opacity: 1, x: 0 }" :exit="{ opacity: 0, x: 20 }">
                     <div class="mt-2 text-2xl font-bold">{{ currentBlock.original.replace(/\s/g, '_') }}</div>
 
                     <div class="flex gap-2 flex-wrap mt-1">

@@ -21,7 +21,7 @@
         ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
     ],
     "[vue]": {
-        "editor.defaultFormatter": "biomejs.biome"
+        "editor.defaultFormatter": "Vue.volar"
     },
     "[scss]": {
         "editor.defaultFormatter": "vscode.css-language-features"

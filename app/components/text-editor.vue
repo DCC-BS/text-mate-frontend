@@ -75,14 +75,6 @@ const undoRedoState = ref({
     canRedo: false,
 });
 
-// computed
-const characterCountPercentage = computed(() =>
-    Math.round(
-        (100 / limit.value) *
-            (editor.value?.storage.characterCount.characters() ?? 0),
-    ),
-);
-
 // composables
 const toast = useToast();
 const { onCommand, executeCommand } = useCommandBus();
@@ -613,7 +605,8 @@ function onFileSelect(event: Event): void {
             <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
 
             <div class="absolute bottom-0 inset-x-0">
-                <TextEditorTextToolbar :characters="editor.storage.characterCount.characters()" :words="editor.storage.characterCount.words()" :limit="limit" />
+                <TextEditorTextToolbar :characters="editor.storage.characterCount.characters()"
+                    :words="editor.storage.characterCount.words()" :limit="limit" />
             </div>
         </div>
 
@@ -624,19 +617,13 @@ function onFileSelect(event: Event): void {
                 {{ isConverting ? t('upload.uploading') : t('upload.uploadFile') }}
             </UButton>
             <input type="file" ref="fileInputRef" class="hidden" @change="onFileSelect"
-                            accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
+                accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
         </div>
 
         <!-- Autocomplete Component -->
-        <TextAutocomplete
-            :suggestions="autocompleteSuggestions"
-            :is-visible="autocompleteVisible"
-            :selected-index="autocompleteSelectedIndex"
-            :position="autocompletePosition"
-            @select="applyAutocomplete"
-            @hide="hideAutocomplete"
-            @navigate="navigateAutocomplete"
-        />
+        <TextAutocomplete :suggestions="autocompleteSuggestions" :is-visible="autocompleteVisible"
+            :selected-index="autocompleteSelectedIndex" :position="autocompletePosition" @select="applyAutocomplete"
+            @hide="hideAutocomplete" @navigate="navigateAutocomplete" />
     </div>
 </template>
 
@@ -693,18 +680,23 @@ function onFileSelect(event: Event): void {
 }
 
 .fade-in {
-  opacity: 0; /* Start completely transparent */
-  animation: fadeIn 2s ease-in forwards; /* Apply the fadeIn animation */
+    opacity: 0;
+    /* Start completely transparent */
+    animation: fadeIn 2s ease-in forwards;
+    /* Apply the fadeIn animation */
 }
 
 /* Keyframes for the fade-in effect */
 @keyframes fadeIn {
-  from {
-    opacity: 0; /* Start transparent */
-  }
-  to {
-    opacity: 1; /* End fully visible */
-  }
+    from {
+        opacity: 0;
+        /* Start transparent */
+    }
+
+    to {
+        opacity: 1;
+        /* End fully visible */
+    }
 }
 
 /* Slower spinning animation for loading spinner */

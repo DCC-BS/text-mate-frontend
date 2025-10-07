@@ -7,6 +7,7 @@ import type {
 import { AdvisorService } from "~/assets/services/AdvisorService";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
 import TextStatsView from "./text-stats-view.vue";
+import { motion, AnimatePresence } from "motion-v";
 
 interface ToolPanelAdvisorViewProps {
     text: string;
@@ -56,6 +57,7 @@ async function check() {
         title: t("advisor.checking"),
         icon: "i-lucide-check",
     });
+
     try {
         const result = await advisorService.value.validate(
             props.text,
@@ -98,83 +100,92 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
 </script>
 
 <template>
-  <TextStatsView :text="props.text" class="mb-4" />
+    <TextStatsView :text="props.text" class="mb-4" />
 
-  <div v-if="advisorService" class="p-0 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col h-full">
-    <!-- Header section with subtle background and spacing -->
-    <div class="mb-4 flex-shrink-0">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
-        {{ t('advisor.title') || 'Document Advisor' }}
-      </h3>
-      <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
-        {{ t('advisor.description') || 'Check your text against selected documents' }}
-      </p>
-      
-      <!-- Document selector -->
-      <div class="mb-4">
-        <ToolPanelAdvisorDocSelect 
-          :advisor-service="advisorService" 
-          v-model="selectedDocs"
-          class="mb-3"
-        />
-      </div>
-      
-      <!-- Check button with loading state -->
-      <UButton 
-        @click="check" 
-        :disabled="selectedDocs.length == 0 || props.text.length < 3"
-        :loading="isLoading"
-        block
-        color="primary"
-        class="w-full flex justify-center items-center gap-2 transition-all duration-200 hover:shadow-lg"
-      >
-        <span v-if="!isLoading" class="i-lucide-check mr-1" aria-hidden="true"></span>
-        {{ t('advisor.check') }}
-      </UButton>
-    </div>
+    <div v-if="advisorService" class="p-2 flex flex-col h-full">
+        <!-- Header section with subtle background and spacing -->
+        <div class="mb-4 flex-shrink-0">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                {{ t('advisor.title') || 'Document Advisor' }}
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                {{ t('advisor.description') || 'Check your text against selected documents' }}
+            </p>
 
-    <div v-if="validationResult" class="flex flex-col flex-grow overflow-hidden">
-      <!-- Results header -->
-      <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <h4 class="font-medium text-gray-800 dark:text-gray-200">
-          {{ t('advisor.results') || 'Results' }}
-        </h4>
-        <span class="px-2 py-1 text-xs rounded-full" 
-          :class="validationResult.rules.length ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'">
-          {{ t('advisor.issues', validationResult.rules.length) }}
-        </span>
-      </div>
-    </div>
+            <!-- Document selector -->
+            <div class="mb-4">
+                <ToolPanelAdvisorDocSelect :advisor-service="advisorService" v-model="selectedDocs" class="mb-3" />
+            </div>
 
-    <!-- No issues found message -->
-    <div v-if="validationResult && validationResult.rules.length === 0" class="text-center py-8 flex-grow flex items-center justify-center">
-      <div class="text-center">
-        <div class="i-lucide-check-circle text-3xl text-green-500 mx-auto mb-2"></div>
-        <p class="text-gray-600 dark:text-gray-300">{{ t('advisor.noIssues') || 'No issues found!' }}</p>
-      </div>
-    </div>
-
-    <div v-if="currentRule">
-        <div>
-          <div class="flex gap-2">
-              <UButton icon="i-lucide-chevron-left" variant="link" :disabled="selectedRuleIndex === 0" @click="selectedRuleIndex--"></UButton>
-              <UButton icon="i-lucide-chevron-right" variant="link" :disabled="selectedRuleIndex >= (validationResult?.rules.length || 0) - 1" @click="selectedRuleIndex++"></UButton>
-          </div>
+            <!-- Check button with loading state -->
+            <UButton @click="check" :disabled="selectedDocs.length == 0 || props.text.length < 3" :loading="isLoading"
+                block color="primary"
+                class="w-full flex justify-center items-center gap-2 transition-all duration-200 hover:shadow-lg">
+                <span v-if="!isLoading" class="i-lucide-check mr-1" aria-hidden="true"></span>
+                {{ t('advisor.check') }}
+            </UButton>
         </div>
 
-        <div>
-          <h2>{{ currentRule.name }}</h2>
+        <div v-if="validationResult" class="flex flex-col">
+            <!-- Results header -->
+            <div
+                class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <h4 class="font-medium text-gray-800 dark:text-gray-200">
+                    {{ t('advisor.results') || 'Results' }}
+                </h4>
+                <span class="px-2 py-1 text-xs rounded-full"
+                    :class="validationResult.rules.length ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'">
+                    {{ t('advisor.issues', validationResult.rules.length) }}
+                </span>
+            </div>
         </div>
 
-    </div>
+        <div v-if="currentRule" class="relative">
+            <AnimatePresence mode="popLayout">
+                <div class="flex gap-2 absolute top-0 right-0">
+                    <UButton icon="i-lucide-chevron-left" variant="link" :disabled="selectedRuleIndex === 0"
+                        @click="selectedRuleIndex--"></UButton>
+                    <UButton icon="i-lucide-chevron-right" variant="link"
+                        :disabled="selectedRuleIndex >= (validationResult?.rules.length || 0) - 1"
+                        @click="selectedRuleIndex++"></UButton>
+                </div>
+                <motion.div class="flex justify-between" :key="`rule-${selectedRuleIndex}`"
+                    :initial="{ opacity: 0, x: -20 }" :animate="{ opacity: 1, x: 0 }" :exit="{ opacity: 0, x: 20 }">
+                    <div>
+                        <h2 class="text-xl font-bold">{{ currentRule.name }}</h2>
+                        <p>
+                            {{ currentRule.description }}
+                        </p>
+                        <div class="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400"
+                            @click="openPdfView(currentRule)" style="cursor: pointer;">
+                            <UIcon name="i-lucide-file-search" class="mr-1 flex-shrink-0" />
+                            <span>{{ currentRule.file_name }}</span>
+                            <template v-if="currentRule.page_number">
+                                <span class="mx-1">•</span>
+                                <UIcon name="i-lucide-bookmark" class="mr-1 flex-shrink-0" />
+                                <span>{{ t('advisor.page') }} {{ currentRule.page_number }}</span>
+                            </template>
+                        </div>
+                    </div>
+                </motion.div>
+            </AnimatePresence>
+        </div>
 
-    <!-- Results section - now with flex-grow to take remaining space -->
+        <!-- No issues found message -->
+        <div v-else-if="validationResult && validationResult.rules.length === 0">
+            <div class="text-center">
+                <div class="i-lucide-check-circle text-3xl text-green-500 mx-auto mb-2"></div>
+                <p class="text-gray-600 dark:text-gray-300">{{ t('advisor.noIssues') || 'No issues found!' }}</p>
+            </div>
+        </div>
+
+        <!-- Results section - now with flex-grow to take remaining space -->
 
 
 
 
-      <!-- Issues list with scroll area now taking full height -->
-      <!-- <div v-else class="space-y-2 overflow-y-auto pr-1 custom-scrollbar flex-grow">
+        <!-- Issues list with scroll area now taking full height -->
+        <!-- <div v-else class="space-y-2 overflow-y-auto pr-1 custom-scrollbar flex-grow">
         <div v-for="ruel in validationResult.rules" :key="ruel.name">
           <ToolPanelAdvisorRuleView 
             :rule="ruel" 
@@ -183,53 +194,55 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
           />
         </div>
       </div> -->
-    
-    <!-- Placeholder when no results yet, also fills vertical space -->
-    <div v-else-if="!isLoading" class="flex-grow flex items-center justify-center text-center p-8 text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 mt-4">
-      <div>
-        <div class="i-lucide-file-search text-4xl mb-3 mx-auto opacity-50"></div>
-        <p>{{ t('advisor.noResultsYet') || 'Run a check to see results' }}</p>
-      </div>
-    </div>
-  </div>
 
-  <!-- Loading state -->
-  <div v-else class="p-8 flex flex-col items-center justify-center bg-white dark:bg-gray-800 rounded-lg shadow-md h-full">
-    <div class="i-lucide-loader animate-spin text-2xl text-gray-400 mb-3"></div>
-    <p class="text-gray-600 dark:text-gray-300">{{ t("loading") }}</p>
-  </div>
+        <!-- Placeholder when no results yet, also fills vertical space -->
+        <div v-else-if="!isLoading"
+            class="flex-grow flex items-center justify-center text-center p-8 text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 mt-4">
+            <div>
+                <div class="i-lucide-file-search text-4xl mb-3 mx-auto opacity-50"></div>
+                <p>{{ t('advisor.noResultsYet') || 'Run a check to see results' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading state -->
+    <div v-else
+        class="p-8 flex flex-col items-center justify-center bg-white dark:bg-gray-800 rounded-lg shadow-md h-full">
+        <div class="i-lucide-loader animate-spin text-2xl text-gray-400 mb-3"></div>
+        <p class="text-gray-600 dark:text-gray-300">{{ t("loading") }}</p>
+    </div>
 </template>
 
 <style>
 /* Custom scrollbar styles for results list */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+    width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
 }
 
 custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 /* Dark mode scrollbar */
 .dark .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 </style>
