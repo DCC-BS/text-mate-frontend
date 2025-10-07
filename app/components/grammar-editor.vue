@@ -17,7 +17,6 @@ const isEditorLocked = ref(false);
 
 // composables
 const router = useRouter();
-const viewport = useViewport();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { onCommand } = useCommandBus();

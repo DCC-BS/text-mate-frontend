@@ -77,6 +77,9 @@ export default defineNuxtConfig({
         project: "text-mate",
         githubToken: process.env.GITHUB_TOKEN,
     },
+    "authentication.bs.js": {
+        useDummy: process.env.DUMMY === "true",
+    },
     typescript: {
         typeCheck: true,
         strict: true,

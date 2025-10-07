@@ -6,7 +6,6 @@ import {
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
 import AdvisorView from "./tool-panel/advisor-view.vue";
-import ComparePanel from "./tool-panel/compare-panel.vue";
 import ProblemsPanel from "./tool-panel/problems-panel.vue";
 import RewriteView from "./tool-panel/rewrite-view.vue";
 

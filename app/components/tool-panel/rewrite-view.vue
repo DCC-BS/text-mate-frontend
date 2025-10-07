@@ -171,7 +171,8 @@ async function rewriteText() {
 </script>
 
 <template>
-    <div class="flex justify-end mb-2">
+    <div class="flex justify-between mb-2">
+        <ToolPanelTextQuickActionPanel :text="text" />
         <UDrawer direction="right" handleOnly>
             <UButton icon="i-lucide-sliders" variant="soft" color="neutral">
                 Optionen

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { motion, AnimatePresence } from "motion-v";
+import { AnimatePresence, motion } from "motion-v";
 import {
     ApplyCorrectionCommand,
     Cmds,

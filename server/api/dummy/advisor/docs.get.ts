@@ -6,21 +6,23 @@ type AdvisorDocumentDescription = {
     file: string;
 };
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_) => {
     return [
         {
-            author: "John Doe",
-            description: "A sample advisor document.",
-            edition: "1st Edition",
-            file: "sample-doc.pdf",
-            title: "Sample Document",
+            author: "Max Mustermann",
+            description:
+                "Ein Beispiel-Dokument zur Demonstration der Advisor-Funktionalität.",
+            edition: "1. Auflage",
+            file: "beispiel-dokument.pdf",
+            title: "Beispiel-Dokument",
         },
         {
-            author: "Jane Smith",
-            description: "Another sample advisor document.",
-            edition: "2nd Edition",
-            file: "another-sample-doc.pdf",
-            title: "Another Sample Document",
+            author: "Erika Mustermann",
+            description:
+                "Ein weiteres Beispiel-Dokument mit nützlichen Informationen.",
+            edition: "2. Auflage",
+            file: "anderes-dokument.pdf",
+            title: "Anderes Dokument",
         },
     ] as AdvisorDocumentDescription[];
 });

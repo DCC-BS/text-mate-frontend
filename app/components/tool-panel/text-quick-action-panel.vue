@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ToggleLockEditorCommand } from "~/assets/models/commands";
 import type { TextActions } from "~/assets/models/text-actions";
 
 interface InputProps {
@@ -54,25 +55,25 @@ async function applyAction(action: TextActions): Promise<void> {
         }
 
         const reader = response.getReader();
-        const oldText = props.editor.state.doc.textBetween(from, to);
+        // const oldText = props.editor.state.doc.textBetween(from, to);
 
-        const newText = await applyStreamToEditor(
-            reader,
-            props.editor,
-            from,
-            to,
-        );
+        // const newText = await applyStreamToEditor(
+        //     reader,
+        //     props.editor,
+        //     from,
+        //     to,
+        // );
 
         await executeCommand(new ToggleLockEditorCommand(false));
 
-        await executeCommand(
-            new RequestChangesCommand(
-                oldText,
-                newText,
-                from,
-                from + newText.length + 1,
-            ),
-        );
+        // await executeCommand(
+        //     new RequestChangesCommand(
+        //         oldText,
+        //         newText,
+        //         from,
+        //         from + newText.length + 1,
+        //     ),
+        // );
     } finally {
         await executeCommand(new ToggleLockEditorCommand(false));
         removeProgress("quick-action");
@@ -85,7 +86,7 @@ async function applyAction(action: TextActions): Promise<void> {
   <div class="flex justify-center gap-2 flex-wrap">
     <UPopover mode="hover">
         <UButton
-            variant="soft"
+            variant="link"
             :disabled="!actionsAreAvailable"
             @click="applyAction('plain_language')">
             {{ t('editor.plain_language') }}
@@ -99,19 +100,19 @@ async function applyAction(action: TextActions): Promise<void> {
         </template>
     </UPopover>
     <UButton
-        variant="soft"
+        variant="link"
         :disabled="!actionsAreAvailable"
         @click="applyAction('bullet_points')">
         {{ t('editor.bullet_points') }}
     </UButton>
     <UButton
-        variant="soft"
+        variant="link"
         :disabled="!actionsAreAvailable"
         @click="applyAction('summarize')">
         {{ t('editor.summarize') }}
     </UButton>
     <UButton
-        variant="soft"
+        variant="link"
         :disabled="!actionsAreAvailable"
         @click="applyAction('social_mediafy')">
         {{ t('editor.social_mediafy') }}
