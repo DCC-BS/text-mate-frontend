@@ -1,5 +1,5 @@
 import type { Range } from "@tiptap/vue-3";
-import type { ICommand } from "#build/types/commands";
+import type { ICommand, IReversibleCommand } from "#build/types/commands";
 import type { TextCorrectionBlock } from "./text-correction";
 
 export const Cmds = {
@@ -13,11 +13,10 @@ export const Cmds = {
     ToolSwitchCommand: "ToolSwitchCommand",
     SwitchCorrectionLanguageCommand: "SwitchCorrectionLanguageCommand",
     InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
-    RequestChangesCommand: "RequestChangesCommand",
-    CompleteRequestChangeCommand: "CompleteRequestChangeCommand",
     ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
     CorrectionBlockChangedCommand: "CorrectionBlockChangedCommand",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
+    ApplyTextAction: "ApplyTextAction",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -95,24 +94,16 @@ export class InvalidateCorrectionCommand implements ICommand {
     readonly $type = "InvalidateCorrectionCommand";
 }
 
-export class RequestChangesCommand implements ICommand {
-    readonly $type = "RequestChangesCommand";
+export class ApplyTextAction implements IReversibleCommand {
+    readonly $type = "ApplyTextAction";
+    readonly $undoCommand: ICommand;
 
     constructor(
         public oldText: string,
         public newText: string,
-        public from: number,
-        public to: number,
-    ) {}
-}
-
-export class CompleteRequestChangeCommand implements ICommand {
-    readonly $type = "CompleteRequestChangeCommand";
-
-    constructor(
-        public requestCommand: RequestChangesCommand,
-        public mode: "accept" | "reject",
-    ) {}
+    ) {
+        this.$undoCommand = new ApplyTextAction(newText, oldText);
+    }
 }
 
 /**

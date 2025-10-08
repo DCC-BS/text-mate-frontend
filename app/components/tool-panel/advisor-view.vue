@@ -6,7 +6,6 @@ import type {
 } from "~/assets/models/advisor";
 import { AdvisorService } from "~/assets/services/AdvisorService";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
-import TextStatsView from "./text-stats-view.vue";
 import { motion, AnimatePresence } from "motion-v";
 
 interface ToolPanelAdvisorViewProps {
@@ -100,8 +99,6 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
 </script>
 
 <template>
-    <TextStatsView :text="props.text" class="mb-4" />
-
     <div v-if="advisorService" class="p-2 flex flex-col h-full">
         <!-- Header section with subtle background and spacing -->
         <div class="mb-4 flex-shrink-0">

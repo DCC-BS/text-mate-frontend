@@ -83,42 +83,30 @@ async function applyAction(action: TextActions): Promise<void> {
 </script>
 
 <template>
-  <div class="flex justify-center gap-2 flex-wrap">
-    <UPopover mode="hover">
-        <UButton
-            variant="link"
-            :disabled="!actionsAreAvailable"
-            @click="applyAction('plain_language')">
-            {{ t('editor.plain_language') }}
-        </UButton>
-        <template #content>
-            <div class="max-w-[50vw] p-2">
-                <div>
-                    {{ t('plain-language.notice') }}
+    <div class="flex justify-center gap-2 flex-wrap">
+        <UPopover mode="hover">
+            <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('plain_language')">
+                {{ t('editor.plain_language') }}
+            </UButton>
+            <template #content>
+                <div class="max-w-[50vw] p-2">
+                    <div>
+                        {{ t('plain-language.notice') }}
+                    </div>
                 </div>
-            </div>
-        </template>
-    </UPopover>
-    <UButton
-        variant="link"
-        :disabled="!actionsAreAvailable"
-        @click="applyAction('bullet_points')">
-        {{ t('editor.bullet_points') }}
-    </UButton>
-    <UButton
-        variant="link"
-        :disabled="!actionsAreAvailable"
-        @click="applyAction('summarize')">
-        {{ t('editor.summarize') }}
-    </UButton>
-    <UButton
-        variant="link"
-        :disabled="!actionsAreAvailable"
-        @click="applyAction('social_mediafy')">
-        {{ t('editor.social_mediafy') }}
-    </UButton>
-    <!-- <UDropdownMenu :items="items" variant="soft">
+            </template>
+        </UPopover>
+        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('bullet_points')">
+            {{ t('editor.bullet_points') }}
+        </UButton>
+        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('summarize')">
+            {{ t('editor.summarize') }}
+        </UButton>
+        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('social_mediafy')">
+            {{ t('editor.social_mediafy') }}
+        </UButton>
+        <!-- <UDropdownMenu :items="items" variant="soft">
         <UButton icon="i-lucide-languages" variant="soft" />
     </UDropdownMenu> -->
-  </div>
+    </div>
 </template>

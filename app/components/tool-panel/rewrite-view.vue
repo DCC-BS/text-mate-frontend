@@ -186,17 +186,19 @@ async function rewriteText() {
                     </div>
 
                     <AnimatePresence mode="wait">
-                        <motion.div class="grid grid-cols-2 mb-3 gap-2" v-if="!advancedMode" :initial="{ opacity: 0, x: 50 }"
-                            :exit="{ opacity: 0, x: 50 }" :animate="{  x: 0,opacity: 1 }" :transition="{ duration: 0.2 }">
+                        <motion.div class="grid grid-cols-2 mb-3 gap-2" v-if="!advancedMode"
+                            :initial="{ opacity: 0, x: 50 }" :exit="{ opacity: 0, x: 50 }"
+                            :animate="{ x: 0, opacity: 1 }" :transition="{ duration: 0.2 }">
 
                             <template v-for="option in options" :key="option.label">
                                 <span>{{ t(option.label) }}</span>
-                                <SelectMenuLocalized v-model="option.value" :options="option.options"   
+                                <SelectMenuLocalized v-model="option.value" :options="option.options"
                                     :local-parent="option.valuePrefix" />
                             </template>
                         </motion.div>
                         <motion.div v-if="advancedMode" class="mb-3" :initial="{ opacity: 0, x: -50 }"
-                            :exit="{ opacity: 0, x: -50 }" :animate="{  x: 0,opacity: 1 }" :transition="{ duration: 0.2 }">
+                            :exit="{ opacity: 0, x: -50 }" :animate="{ x: 0, opacity: 1 }"
+                            :transition="{ duration: 0.2 }">
                             <span>{{ t('rewrite.advancedOptionsLabel') }}</span>
                             <UTextarea class="w-full" :rows="5" v-model="advancedOptions">
                             </UTextarea>
@@ -214,4 +216,6 @@ async function rewriteText() {
             {{ t('rewrite.rewrite') }}
         </UButton>
     </div>
+
+    <ToolPanelRewriteDiffViewer :text="text" />
 </template>
