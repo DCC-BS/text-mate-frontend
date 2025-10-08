@@ -57,19 +57,6 @@ const lockEditor = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 // Autocomplete state
-const autocompleteVisible = ref(false);
-const autocompleteSuggestions = ref<
-    Array<{
-        text: string;
-        type: "word" | "phrase" | "correction";
-        description?: string;
-    }>
->([]);
-const autocompleteSelectedIndex = ref(0);
-const autocompletePosition = ref({ x: 0, y: 0 });
-const currentWordStart = ref(0);
-const debounceTimer = ref<NodeJS.Timeout | null>(null);
-
 const undoRedoState = ref({
     canUndo: false,
     canRedo: false,
