@@ -15,6 +15,10 @@ const props = defineProps<{
   limit: number;
 }>();
 
+const emit = defineEmits<{
+  (e: "upload-file"): void;
+}>();
+
 const { executeCommand, onCommand } = useCommandBus();
 const { t } = useI18n();
 const undoRedoState = reactive({
@@ -46,6 +50,9 @@ function handleRedo(): void {
       <UTooltip :text="t('navigation.redo')" :kbds="['Ctrl', 'Y']">
         <UButton icon="i-lucide-redo" variant="link" color="neutral" @click="handleRedo"
           :disabled="!undoRedoState.canRedo"></UButton>
+      </UTooltip>
+      <UTooltip :text="t('upload.uploadFile')">
+        <UButton icon="i-lucide-upload" variant="link" color="neutral" @click="emit('upload-file')"></UButton>
       </UTooltip>
     </div>
 

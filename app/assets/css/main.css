@@ -23,10 +23,6 @@
     font-size: large;
 }
 
-.dark .ProseMirror {
-    caret-color: white;
-}
-
 .ProseMirror .selection {
     display: inline;
 }
@@ -34,11 +30,6 @@
 .ProseMirror .selection,
 .ProseMirror *::selection {
     background-color: rgba(0, 0, 0, 0.1);
-}
-
-.dark .ProseMirror .selection,
-.dark .ProseMirror *::selection {
-    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .ProseMirror > .react-renderer {
@@ -75,8 +66,4 @@
     margin-right: auto;
     width: 100%;
     max-width: 42rem;
-}
-
-.dark .ProseMirror .ProseMirror-gapcursor:after {
-    border-top-color: rgba(255, 255, 255, 0.4);
 }

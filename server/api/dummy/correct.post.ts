@@ -12,14 +12,6 @@ type TextCorrectionResponse = {
     blocks: Omit<TextCorrectionBlock, "id">[];
 };
 
-type CorrectedSegments = {
-    id: string;
-    text: string;
-    from: number;
-    to: number;
-    blocks: TextCorrectionBlock[];
-};
-
 export default defineEventHandler(async (event) => {
     const body = await readBody<{ text: string }>(event);
 

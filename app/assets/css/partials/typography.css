@@ -44,6 +44,10 @@
         @apply mt-8;
     }
 
+    p {
+        @apply my-4 first:mt-0 last:mb-0;
+    }
+
     a.link {
         @apply text-blue-500 font-extrabold dark:text-blue-400;
     }

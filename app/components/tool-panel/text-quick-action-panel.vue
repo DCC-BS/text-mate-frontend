@@ -1,21 +1,25 @@
 <script lang="ts" setup>
-import { ToggleLockEditorCommand } from "~/assets/models/commands";
+import { Cmds, ExecuteTextActionCommand, ToggleLockEditorCommand } from "~/assets/models/commands";
 import type { TextActions } from "~/assets/models/text-actions";
 
 interface InputProps {
     text: string;
+    options: string;
 }
 
 const props = defineProps<InputProps>();
 
 const { t } = useI18n();
 
-const isRewriting = ref<boolean>(false);
+const isLocked = ref<boolean>(false);
 
-const actionsAreAvailable = computed(() => !isRewriting.value);
-const { addProgress, removeProgress } = useUseProgressIndication();
-const { executeCommand } = useCommandBus();
+const actionsAreAvailable = computed(() => !isLocked.value && props.text.trim().length > 0);
+const { executeCommand, onCommand } = useCommandBus();
 const toast = useToast();
+
+onCommand<ToggleLockEditorCommand>(Cmds.ToggleLockEditorCommand, async (command) => {
+    isLocked.value = command.locked;
+});
 
 async function applyAction(action: TextActions): Promise<void> {
     if (!actionsAreAvailable.value) {
@@ -29,17 +33,14 @@ async function applyAction(action: TextActions): Promise<void> {
     }
 
     try {
-        addProgress("quick-action", {
-            icon: "i-lucide-text-search",
-            title: t("status.quickAction"),
-        });
-        isRewriting.value = true;
+        isLocked.value = true;
 
         const response = await apiStreamfetch("/api/quick-action", {
             method: "POST",
             body: {
                 action,
                 text: props.text,
+                options: props.options,
             },
         });
 
@@ -54,30 +55,9 @@ async function applyAction(action: TextActions): Promise<void> {
             return;
         }
 
-        const reader = response.getReader();
-        // const oldText = props.editor.state.doc.textBetween(from, to);
-
-        // const newText = await applyStreamToEditor(
-        //     reader,
-        //     props.editor,
-        //     from,
-        //     to,
-        // );
-
-        await executeCommand(new ToggleLockEditorCommand(false));
-
-        // await executeCommand(
-        //     new RequestChangesCommand(
-        //         oldText,
-        //         newText,
-        //         from,
-        //         from + newText.length + 1,
-        //     ),
-        // );
+        executeCommand(new ExecuteTextActionCommand(response, 1, props.text.length + 1));
     } finally {
-        await executeCommand(new ToggleLockEditorCommand(false));
-        removeProgress("quick-action");
-        isRewriting.value = false;
+        isLocked.value = false;
     }
 }
 </script>
@@ -104,6 +84,9 @@ async function applyAction(action: TextActions): Promise<void> {
         </UButton>
         <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('social_mediafy')">
             {{ t('editor.social_mediafy') }}
+        </UButton>
+        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('rewrite')">
+            {{ t('editor.rewrite') }}
         </UButton>
         <!-- <UDropdownMenu :items="items" variant="soft">
         <UButton icon="i-lucide-languages" variant="soft" />

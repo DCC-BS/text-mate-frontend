@@ -16,7 +16,8 @@ export const Cmds = {
     ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
     CorrectionBlockChangedCommand: "CorrectionBlockChangedCommand",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
-    ApplyTextAction: "ApplyTextAction",
+    RegisterDiffCommand: "RegisterDiffCommand",
+    ExecuteTextActionCommand: "ExecuteTextActionCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -94,16 +95,26 @@ export class InvalidateCorrectionCommand implements ICommand {
     readonly $type = "InvalidateCorrectionCommand";
 }
 
-export class ApplyTextAction implements IReversibleCommand {
-    readonly $type = "ApplyTextAction";
-    readonly $undoCommand: ICommand;
+export class ExecuteTextActionCommand implements ICommand {
+    readonly $type = "ExecuteTextActionCommand";
+
+    constructor(
+        public stream: ReadableStream<Uint8Array<ArrayBufferLike>>,
+        public form: number,
+        public to: number,
+    ) {}
+}
+
+/**
+ * Command that applies a text change and can be undone/redone
+ */
+export class RegisterDiffCommand implements ICommand {
+    readonly $type = "RegisterDiffCommand";
 
     constructor(
         public oldText: string,
         public newText: string,
-    ) {
-        this.$undoCommand = new ApplyTextAction(newText, oldText);
-    }
+    ) {}
 }
 
 /**

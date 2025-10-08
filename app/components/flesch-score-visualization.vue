@@ -1,68 +1,68 @@
 <script lang="ts" setup>
 interface FleschScoreLevel {
-  min: number;
-  max: number;
-  label: string;
-  color: string;
-  bgColor: string;
+    min: number;
+    max: number;
+    label: string;
+    color: string;
+    bgColor: string;
 }
 
 const props = defineProps<{
-  score: number;
+    score: number;
 }>();
 
 const { t } = useI18n();
 
 // Define the Flesch score levels with colors (simplified to 4 categories)
 const fleschLevels: [FleschScoreLevel, ...FleschScoreLevel[]] = [
-  {
-    min: 70,
-    max: 101,
-    label: t("flesch-score.easy"),
-    color: "#10B981",
-    bgColor: "#ECFDF5",
-  },
-  {
-    min: 50,
-    max: 70,
-    label: t("flesch-score.standard"),
-    color: "#F59E0B",
-    bgColor: "#FFFBEB",
-  },
-  {
-    min: 30,
-    max: 50,
-    label: t("flesch-score.difficult"),
-    color: "#EF4444",
-    bgColor: "#FEF2F2",
-  },
-  {
-    min: 0,
-    max: 30,
-    label: t("flesch-score.academic"),
-    color: "#8B5CF6",
-    bgColor: "#F3E8FF",
-  },
+    {
+        min: 70,
+        max: 101,
+        label: t("flesch-score.easy"),
+        color: "#10B981",
+        bgColor: "#ECFDF5",
+    },
+    {
+        min: 50,
+        max: 70,
+        label: t("flesch-score.standard"),
+        color: "#F59E0B",
+        bgColor: "#FFFBEB",
+    },
+    {
+        min: 30,
+        max: 50,
+        label: t("flesch-score.difficult"),
+        color: "#EF4444",
+        bgColor: "#FEF2F2",
+    },
+    {
+        min: 0,
+        max: 30,
+        label: t("flesch-score.academic"),
+        color: "#8B5CF6",
+        bgColor: "#F3E8FF",
+    },
 ];
 
 // Find the current score level
 const currentLevel = computed(() => {
-  return (
-    fleschLevels.find(
-      (level) => props.score >= level.min && props.score < level.max,
-    ) ?? (fleschLevels.at(-1) as FleschScoreLevel)
-  );
+    return (
+        fleschLevels.find(
+            (level) => props.score >= level.min && props.score < level.max,
+        ) ?? (fleschLevels.at(-1) as FleschScoreLevel)
+    );
 });
 
 // Calculate the position on the scale (0-100%)
 const scorePosition = computed(() => {
-  const clampedScore = Math.max(0, Math.min(100, props.score));
-  return `${clampedScore}%`;
+    const clampedScore = Math.max(0, Math.min(100, props.score));
+    return `${clampedScore}%`;
 });
 
 // Calculate the width of each segment
 const segmentWidth = computed(() => {
-  return `${100 / fleschLevels.length}%`;
+    return `${100 / fleschLevels.length}%`;
 });
 </script>
 

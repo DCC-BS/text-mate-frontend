@@ -1,11 +1,3 @@
-type AdvisorDocumentDescription = {
-    title: string;
-    description: string;
-    author: string;
-    edition: string;
-    file: string;
-};
-
 type AdvisorRuleViolation = {
     name: string;
     description: string;
@@ -21,7 +13,7 @@ type ValidationResult = {
     rules: AdvisorRuleViolation[];
 };
 
-export default defineEventHandler((event) => {
+export default defineEventHandler((_) => {
     return {
         rules: [
             {

@@ -33,31 +33,30 @@ function addWord(word: string) {
 </script>
 
 <template>
-  <UPopover :open="!!props.hoverBlock" :content="{onOpenAutoFocus: (e: Event) => e.preventDefault()}" class="absolute">
-      <div class="absolute pointer-events-none select-none touch-none" :style="{
-          top: props.relativeHoverRect?.top + 'px', 
-          left: props.relativeHoverRect?.left + 'px',
-          width: props.relativeHoverRect?.width + 'px',
-          height: props.relativeHoverRect?.height + 'px',}">
-      </div>
+    <UPopover :open="!!props.hoverBlock" :content="{ onOpenAutoFocus: (e: Event) => e.preventDefault() }"
+        class="absolute">
+        <div class="absolute pointer-events-none select-none touch-none" :style="{
+            top: props.relativeHoverRect?.top + 'px',
+            left: props.relativeHoverRect?.left + 'px',
+            width: props.relativeHoverRect?.width + 'px',
+            height: props.relativeHoverRect?.height + 'px',
+        }">
+        </div>
 
-      <template #content>
-          <div
-              v-if="hoverBlock && hoverBlock.corrected.length > 0"
-              class="flex flex-col p-2 rounded-md ring-1 ring-gray-400">
-              <UButton
-                  v-for="correction in hoverBlock.corrected.slice(0, 5)" :key="correction"
-                  variant="link"
-                  color="neutral"
-                  @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
-                  {{ correction }}
-              </UButton>
-            
-            <UTooltip :text="t('text-editor.addWordToDictionary')">
-              <UButton color="neutral" variant="link" icon="i-lucide-book-plus" @click="addWord(hoverBlock?.original)">
-              </UButton>
-            </UTooltip>
-          </div>
-      </template>
-  </UPopover>
+        <template #content>
+            <div v-if="hoverBlock && hoverBlock.corrected.length > 0"
+                class="flex flex-col p-2 rounded-md ring-1 ring-gray-400">
+                <UButton v-for="correction in hoverBlock.corrected.slice(0, 5)" :key="correction" variant="link"
+                    color="neutral" @click="applyCorrection(new ApplyCorrectionCommand(hoverBlock, correction))">
+                    {{ correction }}
+                </UButton>
+
+                <UTooltip :text="t('text-editor.addWordToDictionary')">
+                    <UButton color="neutral" variant="link" icon="i-lucide-book-plus"
+                        @click="addWord(hoverBlock?.original)">
+                    </UButton>
+                </UTooltip>
+            </div>
+        </template>
+    </UPopover>
 </template>

@@ -6,7 +6,7 @@ const userMail = computed(() => data.value?.user?.email ?? undefined);
 <template>
     <FeedbackControl :default-mail="userMail" />
     <NavigationMenu />
-    <div class="md:h-[calc(100vh-100px)] flex flex-col">
+    <div class="md:h-[calc(100vh-150px)]">
         <GrammarEditor />
         <DataBsFooter />
     </div>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { AnimatePresence, motion } from "motion-v";
 import type {
     AdvisorDocumentDescription,
     AdvisorRuleViolation,
@@ -6,7 +7,6 @@ import type {
 } from "~/assets/models/advisor";
 import { AdvisorService } from "~/assets/services/AdvisorService";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
-import { motion, AnimatePresence } from "motion-v";
 
 interface ToolPanelAdvisorViewProps {
     text: string;
