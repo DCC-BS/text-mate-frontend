@@ -1,11 +1,6 @@
 <script lang="ts" setup>
 import { AnimatePresence, motion } from "motion-v";
 import { UButton } from "#components";
-import {
-    ApplyTextCommand,
-    ToggleEditableEditorCommand,
-} from "~/assets/models/commands";
-import type { TextRewriteResponse } from "~/assets/models/text-rewrite";
 
 interface RewriteViewProps {
     text: string;
@@ -17,12 +12,8 @@ const MotionUButton = motion.create(UButton);
 
 // composables
 const { t } = useI18n();
-const { addProgress, removeProgress } = useUseProgressIndication();
-const { executeCommand } = useCommandBus();
-const { sendError } = useUseErrorDialog();
 
 // refs
-const isRewriting = ref<boolean>(false);
 const advancedMode = ref<boolean>(false);
 
 const options = ref([
@@ -126,43 +117,46 @@ const finalOptions = computed(() =>
 
 <template>
     <div class="flex flex-col h-full">
-        <div class="flex justify-between mb-2">
-            <ToolPanelTextQuickActionPanel :text="text" :options="finalOptions" />
-            <UDrawer direction="right" handleOnly>
-                <UButton icon="i-lucide-sliders" variant="soft" color="neutral">
-                    Optionen
-                </UButton>
-                <template #content>
-                    <div class="w-[400px] p-2">
-                        <div>
-                            <MotionUButton layout :label="advancedToggleText" :icon="advancedToggleIcon"
-                                @click="advancedMode = !advancedMode" variant="link" color="neutral">
-                            </MotionUButton>
+        <Teleport to=".quick-action-panel">
+            <div class="flex justify-between mb-2">
+                <ToolPanelTextQuickActionPanel :text="text" :options="finalOptions" />
+                <UDrawer direction="right" handleOnly>
+                    <UButton icon="i-lucide-sliders" variant="soft" color="neutral">
+                        Optionen
+                    </UButton>
+                    <template #content>
+                        <div class="w-[400px] p-2">
+                            <div>
+                                <MotionUButton layout :label="advancedToggleText" :icon="advancedToggleIcon"
+                                    @click="advancedMode = !advancedMode" variant="link" color="neutral">
+                                </MotionUButton>
+                            </div>
+
+                            <AnimatePresence mode="wait">
+                                <motion.div class="grid grid-cols-2 mb-3 gap-2" v-if="!advancedMode"
+                                    :initial="{ opacity: 0, x: 50 }" :exit="{ opacity: 0, x: 50 }"
+                                    :animate="{ x: 0, opacity: 1 }" :transition="{ duration: 0.2 }">
+
+                                    <template v-for="option in options" :key="option.label">
+                                        <span>{{ t(option.label) }}</span>
+                                        <SelectMenuLocalized v-model="option.value" :options="option.options"
+                                            :local-parent="option.valuePrefix" />
+                                    </template>
+                                </motion.div>
+                                <motion.div v-if="advancedMode" class="mb-3" :initial="{ opacity: 0, x: -50 }"
+                                    :exit="{ opacity: 0, x: -50 }" :animate="{ x: 0, opacity: 1 }"
+                                    :transition="{ duration: 0.2 }">
+                                    <span>{{ t('rewrite.advancedOptionsLabel') }}</span>
+                                    <UTextarea class="w-full" :rows="5" v-model="advancedOptions">
+                                    </UTextarea>
+                                </motion.div>
+                            </AnimatePresence>
                         </div>
+                    </template>
+                </UDrawer>
+            </div>
+        </Teleport>
 
-                        <AnimatePresence mode="wait">
-                            <motion.div class="grid grid-cols-2 mb-3 gap-2" v-if="!advancedMode"
-                                :initial="{ opacity: 0, x: 50 }" :exit="{ opacity: 0, x: 50 }"
-                                :animate="{ x: 0, opacity: 1 }" :transition="{ duration: 0.2 }">
-
-                                <template v-for="option in options" :key="option.label">
-                                    <span>{{ t(option.label) }}</span>
-                                    <SelectMenuLocalized v-model="option.value" :options="option.options"
-                                        :local-parent="option.valuePrefix" />
-                                </template>
-                            </motion.div>
-                            <motion.div v-if="advancedMode" class="mb-3" :initial="{ opacity: 0, x: -50 }"
-                                :exit="{ opacity: 0, x: -50 }" :animate="{ x: 0, opacity: 1 }"
-                                :transition="{ duration: 0.2 }">
-                                <span>{{ t('rewrite.advancedOptionsLabel') }}</span>
-                                <UTextarea class="w-full" :rows="5" v-model="advancedOptions">
-                                </UTextarea>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-                </template>
-            </UDrawer>
-        </div>
 
         <div class="relative grow">
             <ToolPanelRewriteDiffViewer :text="text" />

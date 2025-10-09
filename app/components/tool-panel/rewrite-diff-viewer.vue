@@ -83,9 +83,9 @@ onCommand<RegisterDiffCommand>(Cmds.RegisterDiffCommand, async (cmd) => {
 <template>
     <div class="overflow-auto absolute inset-0 p-1 ProseMirror dark">
         <div>
-            <h3 v-if="changes.length">{{ $t('rewrite-diff-viewer.changes') }}
+            <!-- <h3 v-if="changes.length">{{ $t('rewrite-diff-viewer.changes') }}
                 <span class="text-sm text-gray-500"> {{ $t('rewrite-diff-viewer.clickToUndo') }}</span>
-            </h3>
+            </h3> -->
             <template v-for="change in changes" :key="change.from">
                 <UPopover v-if="change.hasChanged">
                     <span class="cursor-pointer hover:bg-info-50">

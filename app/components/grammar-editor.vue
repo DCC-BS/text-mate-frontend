@@ -2,18 +2,21 @@
 import {
     Cmds,
     InvalidateCorrectionCommand,
+    type ToolSwitchCommand,
     type SwitchCorrectionLanguageCommand,
     type ToggleEditableEditorCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
 import ToolPanel from "./tool-panel.vue";
+import { motion, AnimatePresence } from "motion-v";
 
 // refs
 const userText = ref("");
 const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
 const isEditorLocked = ref(false);
+const currentTool = ref<"correction" | "rewrite" | "advisor">("correction");
 
 // composables
 const router = useRouter();
@@ -89,6 +92,10 @@ onCommand(
     },
 );
 
+onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
+    currentTool.value = cmd.tool;
+});
+
 async function handleInvalidate(_: InvalidateCorrectionCommand) {
     taskScheduler.abortRunningTask();
     await correctionService.invalidateAll();
@@ -104,9 +111,18 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
             <template #header>
                 <div class="flex items-center w-full flex-1">
                     <div class="flex-1"></div>
-                    <ToolSelectView class="flex-1"/>
-                    <OptionsBar class="flex-1"/>
+                    <ToolSelectView class="flex-1" />
+                    <OptionsBar class="flex-1" />
                 </div>
+
+                <AnimatePresence>
+                    <motion.div v-show="currentTool === 'rewrite'" class="quick-action-panel" :layout="true"
+                        :initial="{ height: 0, opacity: 0 }" :animate="{ height: 'auto', opacity: 1 }"
+                        :exit="{ height: 0, opacity: 0 }" :transition="{
+                            height: { type: 'spring', stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 }
+                        }" style="overflow: hidden;" />
+                </AnimatePresence>
             </template>
 
             <template #left>
