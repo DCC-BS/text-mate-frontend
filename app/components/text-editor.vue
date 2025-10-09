@@ -73,9 +73,8 @@ function handleFileSelect(event: Event): void {
 
 <template>
     <div class="w-full h-full">
-        <motion.div class="w-full text-center" style="{ height: isRewriteActive ? '100px' : '0' }"
-            :initial="{ opacity: 0, scaleY: 0 }" :animate="{ opacity: 1, scaleY: 1 }">
-            Rewritten
+        <motion.div class="w-full text-center h-[200px]" v-if="isRewriteActive" :initial="{ opacity: 0, scaleY: 0 }"
+            :animate="{ opacity: 1, scaleY: 1 }">
         </motion.div>
         <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
             <!-- Lock overlay -->
