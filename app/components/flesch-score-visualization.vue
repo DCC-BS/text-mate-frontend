@@ -67,92 +67,92 @@ const segmentWidth = computed(() => {
 </script>
 
 <template>
-  <!-- <div class="flesch-score-container"> -->
-  <!-- Compact header with score and level inline -->
-  <div class="flesch-header">
-    <span class="flesch-title">{{ t('flesch-score.reading-ease') }}</span>
-    <div class="flesch-info">
-      <span class="flesch-score">{{ Math.round(score) }}</span>
-      <span class="flesch-level" :style="{ color: currentLevel.color }">
-        {{ currentLevel.label }}
-      </span>
+    <!-- <div class="flesch-score-container"> -->
+    <!-- Compact header with score and level inline -->
+    <div class="flesch-header">
+        <span class="flesch-title">{{ t('flesch-score.reading-ease') }}</span>
+        <div class="flesch-info">
+            <span class="flesch-score">{{ Math.round(score) }}</span>
+            <span class="flesch-level" :style="{ color: currentLevel.color }">
+                {{ currentLevel.label }}
+            </span>
+        </div>
     </div>
-  </div>
 
-  <!-- Compact progress bar -->
-  <div class="flesch-progress-bar">
-    <div class="progress-track">
-      <div class="progress-fill" :style="{
-        width: scorePosition,
-        backgroundColor: currentLevel.color
-      }"></div>
+    <!-- Compact progress bar -->
+    <div class="flesch-progress-bar">
+        <div class="progress-track">
+            <div class="progress-fill" :style="{
+                width: scorePosition,
+                backgroundColor: currentLevel.color
+            }"></div>
+        </div>
     </div>
-  </div>
-  <!-- </div> -->
+    <!-- </div> -->
 </template>
 
 <style scoped>
 .flesch-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
 }
 
 .flesch-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #6b7280;
-  margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0;
 }
 
 .flesch-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .flesch-score {
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: #1f2937;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #1f2937;
 }
 
 .flesch-level {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .flesch-progress-bar {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .progress-track {
-  height: 6px;
-  background-color: #f3f4f6;
-  border-radius: 3px;
-  overflow: hidden;
-  position: relative;
+    height: 6px;
+    background-color: #f3f4f6;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
 }
 
 .progress-fill {
-  height: 100%;
-  transition: width 0.3s ease;
-  border-radius: 3px;
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 3px;
 }
 
 /* Mobile responsive */
 @media (max-width: 640px) {
-  .flesch-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
+    .flesch-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
 
-  .flesch-info {
-    align-self: flex-end;
-  }
+    .flesch-info {
+        align-self: flex-end;
+    }
 }
 </style>

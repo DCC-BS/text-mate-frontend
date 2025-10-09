@@ -1,9 +1,9 @@
 import type { Editor } from "@tiptap/vue-3";
 import {
-    RegisterDiffCommand,
     Cmds,
-    ToggleLockEditorCommand,
     type ExecuteTextActionCommand,
+    RegisterDiffCommand,
+    ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 
 export function useTextAction(editor: Ref<Editor | undefined>) {

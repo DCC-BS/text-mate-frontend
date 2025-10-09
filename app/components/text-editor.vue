@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { EditorContent } from "@tiptap/vue-3";
+import { motion } from "motion-v";
+import { useTextAction } from "~/composables/textAction.composable";
 import { useTextFileUpload } from "~/composables/useFileUpload";
 import { useTextEditor } from "~/composables/useTextEditor";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
 import TextToolbar from "./text-editor/text-toolbar.vue";
-import { useTextAction } from "~/composables/textAction.composable";
-import { EditorContent } from "@tiptap/vue-3";
-import { motion } from "motion-v";
 
 const { t } = useI18n();
 
@@ -73,9 +73,6 @@ function handleFileSelect(event: Event): void {
 
 <template>
     <div class="w-full h-full">
-        <motion.div class="w-full text-center h-[32px]" v-if="isRewriteActive" :initial="{ opacity: 0, scaleY: 0 }"
-            :animate="{ opacity: 1, scaleY: 1 }">
-        </motion.div>
         <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
             <!-- Lock overlay -->
             <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10" />

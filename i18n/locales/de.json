@@ -180,5 +180,10 @@
         "errorDescription": "Fehler beim Hochladen der Datei. Versuchen Sie es erneut oder melden Sie sich bei uns.",
         "dismiss": "Schliessen",
         "fileConvertedSuccess": "Datei erfolgreich konvertiert"
+    },
+    "rewrite-diff-viewer": {
+        "changes": "Änderungen",
+        "clickToUndo": "Klicken Sie auf die Änderungen, um sie rückgängig zu machen",
+        "undo": "Rückgängig"
     }
 }

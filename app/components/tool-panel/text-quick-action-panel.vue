@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import { Cmds, ExecuteTextActionCommand, ToggleLockEditorCommand } from "~/assets/models/commands";
+import {
+    Cmds,
+    ExecuteTextActionCommand,
+    type ToggleLockEditorCommand,
+} from "~/assets/models/commands";
 import type { TextActions } from "~/assets/models/text-actions";
 
 interface InputProps {
@@ -13,13 +17,18 @@ const { t } = useI18n();
 
 const isLocked = ref<boolean>(false);
 
-const actionsAreAvailable = computed(() => !isLocked.value && props.text.trim().length > 0);
+const actionsAreAvailable = computed(
+    () => !isLocked.value && props.text.trim().length > 0,
+);
 const { executeCommand, onCommand } = useCommandBus();
 const toast = useToast();
 
-onCommand<ToggleLockEditorCommand>(Cmds.ToggleLockEditorCommand, async (command) => {
-    isLocked.value = command.locked;
-});
+onCommand<ToggleLockEditorCommand>(
+    Cmds.ToggleLockEditorCommand,
+    async (command) => {
+        isLocked.value = command.locked;
+    },
+);
 
 async function applyAction(action: TextActions): Promise<void> {
     if (!actionsAreAvailable.value) {
@@ -55,7 +64,9 @@ async function applyAction(action: TextActions): Promise<void> {
             return;
         }
 
-        executeCommand(new ExecuteTextActionCommand(response, 1, props.text.length + 1));
+        executeCommand(
+            new ExecuteTextActionCommand(response, 1, props.text.length + 1),
+        );
     } finally {
         isLocked.value = false;
     }
@@ -88,8 +99,5 @@ async function applyAction(action: TextActions): Promise<void> {
         <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('rewrite')">
             {{ t('editor.rewrite') }}
         </UButton>
-        <!-- <UDropdownMenu :items="items" variant="soft">
-        <UButton icon="i-lucide-languages" variant="soft" />
-    </UDropdownMenu> -->
     </div>
 </template>

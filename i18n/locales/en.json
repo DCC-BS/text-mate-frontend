@@ -180,5 +180,10 @@
         "errorDescription": "Error uploading file. Please try again or contact us.",
         "dismiss": "Dismiss",
         "fileConvertedSuccess": "File converted successfully"
+    },
+    "rewrite-diff-viewer": {
+        "changes": "Changes",
+        "clickToUndo": "Click on the changes to undo them",
+        "undo": "Undo"
     }
 }

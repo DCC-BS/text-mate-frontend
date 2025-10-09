@@ -276,37 +276,6 @@ export class CorrectionService {
         this.correction_lock = true;
     }
 
-    /**
-     * Validates if the text is worth processing (not empty or just whitespace)
-     */
-    private shouldProcessText(text: string): boolean {
-        return text.trim().length > 0;
-    }
-
-    /**
-     * Batch process multiple corrections efficiently
-     */
-    async batchCorrect(texts: string[], signal: AbortSignal): Promise<void[]> {
-        const results = await Promise.allSettled(
-            texts.map((text) => this.correctText(text, signal)),
-        );
-
-        const successfulResults: void[] = [];
-
-        results.forEach((result, index) => {
-            if (result.status === "rejected") {
-                this.logger.error(
-                    `Batch correction failed for text ${index}:`,
-                    result.reason,
-                );
-            } else {
-                successfulResults.push(result.value);
-            }
-        });
-
-        return successfulResults;
-    }
-
     private unlock() {
         this.correction_lock = false;
     }

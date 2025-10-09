@@ -1,5 +1,5 @@
 import type { Range } from "@tiptap/vue-3";
-import type { ICommand, IReversibleCommand } from "#build/types/commands";
+import type { ICommand } from "#build/types/commands";
 import type { TextCorrectionBlock } from "./text-correction";
 
 export const Cmds = {

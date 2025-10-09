@@ -15,9 +15,7 @@ const props = defineProps<{
   limit: number;
 }>();
 
-const emit = defineEmits<{
-  (e: "upload-file"): void;
-}>();
+const emit = defineEmits<(e: "upload-file") => void>();
 
 const { executeCommand, onCommand } = useCommandBus();
 const { t } = useI18n();

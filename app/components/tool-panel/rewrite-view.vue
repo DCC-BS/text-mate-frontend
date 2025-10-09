@@ -119,8 +119,9 @@ const advancedToggleText = computed(() => {
         : t("rewrite.showAdvanced");
 });
 
-
-const finalOptions = computed(() => advancedMode.value ? advancedOptions.value : optionsString.value);
+const finalOptions = computed(() =>
+    advancedMode.value ? advancedOptions.value : optionsString.value,
+);
 </script>
 
 <template>
