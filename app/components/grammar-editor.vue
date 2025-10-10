@@ -116,8 +116,8 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
                 </div>
 
                 <AnimatePresence>
-                    <motion.div v-show="currentTool === 'rewrite'" class="quick-action-panel" :layout="true"
-                        :initial="{ height: 0, opacity: 0 }" :animate="{ height: 'auto', opacity: 1 }"
+                    <motion.div data-allow-mismatch v-show="currentTool === 'rewrite'" class="quick-action-panel"
+                        :layout="true" :initial="{ height: 0, opacity: 0 }" :animate="{ height: 'auto', opacity: 1 }"
                         :exit="{ height: 0, opacity: 0 }" :transition="{
                             height: { type: 'spring', stiffness: 300, damping: 30 },
                             opacity: { duration: 0.2 }

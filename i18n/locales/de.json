@@ -184,6 +184,7 @@
     "rewrite-diff-viewer": {
         "changes": "Änderungen",
         "clickToUndo": "Klicken Sie auf die Änderungen, um sie rückgängig zu machen",
-        "undo": "Rückgängig"
+        "undo": "Rückgängig",
+        "noChangesYet": "Noch keine Änderungen. Wenn der Text von Textmate umgeschrieben wird, werden die Änderungen hier hervorgehoben."
     }
 }

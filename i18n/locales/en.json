@@ -184,6 +184,7 @@
     "rewrite-diff-viewer": {
         "changes": "Changes",
         "clickToUndo": "Click on the changes to undo them",
-        "undo": "Undo"
+        "undo": "Undo",
+        "noChangesYet": "No changes yet. When the text is rewritten by textmate, the changes will be highlighted here."
     }
 }

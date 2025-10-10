@@ -16,6 +16,7 @@ const props = defineProps<InputProps>();
 const { t } = useI18n();
 
 const isLocked = ref<boolean>(false);
+const selectedLanguage = useCookie<string>("selected-language", { default: () => "auto" });
 
 const actionsAreAvailable = computed(
     () => !isLocked.value && props.text.trim().length > 0,
@@ -49,7 +50,7 @@ async function applyAction(action: TextActions): Promise<void> {
             body: {
                 action,
                 text: props.text,
-                options: props.options,
+                options: `${props.options};\nlanguage code: ${selectedLanguage.value}`,
             },
         });
 

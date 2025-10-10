@@ -37,9 +37,9 @@ const changes = computed<ActionChange[]>(() => {
 
     for (let i = 0; i < diffs.length; i++) {
         const current = diffs[i] as ChangeObject<string>;
-        const next = diffs[i + 1] as ChangeObject<string>;
+        const next = diffs[i + 1] as ChangeObject<string> | undefined;
 
-        if (current.removed && next.added) {
+        if (current.removed && next?.added) {
             changes.push({
                 diffs: [next, current],
                 from: currentPos,
@@ -67,7 +67,6 @@ const changes = computed<ActionChange[]>(() => {
         }
     }
 
-    console.log("Computed changes:", changes);
     return changes;
 });
 
@@ -78,14 +77,34 @@ function undo(change: ActionChange): void {
 onCommand<RegisterDiffCommand>(Cmds.RegisterDiffCommand, async (cmd) => {
     commandHistory.value.push(cmd);
 });
+
+function applyAllChanges() {
+    commandHistory.value = [];
+}
+
+async function undoAllChanges() {
+    for (const change of changes.value) {
+        if (change.hasChanged) {
+            await executeCommand(new ApplyTextCommand(change.oldText, { from: change.from, to: change.to }));
+        }
+    }
+
+    commandHistory.value = [];
+}
 </script>
 
 <template>
+    <div class="absolute -bottom-2 -inset-x-2 z-10">
+        <div class="flex justify-between">
+            <div v-if="changes.length">
+                <UButton variant="link" color="neutral" icon="i-lucide-check" @click="applyAllChanges" />
+                <UButton variant="link" color="neutral" icon="i-lucide-x" @click="undoAllChanges" />
+            </div>
+        </div>
+    </div>
+
     <div class="overflow-auto absolute inset-0 p-1 ProseMirror dark">
         <div>
-            <!-- <h3 v-if="changes.length">{{ $t('rewrite-diff-viewer.changes') }}
-                <span class="text-sm text-gray-500"> {{ $t('rewrite-diff-viewer.clickToUndo') }}</span>
-            </h3> -->
             <template v-for="change in changes" :key="change.from">
                 <UPopover v-if="change.hasChanged">
                     <span class="cursor-pointer hover:bg-info-50">
@@ -102,14 +121,18 @@ onCommand<RegisterDiffCommand>(Cmds.RegisterDiffCommand, async (cmd) => {
                             <span class="bg-green-50">{{change.diffs.filter(x => x.added).map(x =>
                                 x.value).join('')}}</span>
                             <br />
-                            <UButton variant="link" color="neutral" icon="i-lucide-undo" @click="undo(change)">{{
-                                $t('rewrite-diff-viewer.undo') }}
+                            <UButton variant="link" color="neutral" icon="i-lucide-undo" @click="undo(change)">
+                                {{
+                                    $t('rewrite-diff-viewer.undo') }}
                             </UButton>
                         </div>
                     </template>
                 </UPopover>
                 <span v-else class="text-wrap">{{change.diffs.map(x => x.value).join('')}}</span>
             </template>
+            <div v-if="!changes.length" class="text-gray-600 text-center mt-5">
+                {{ $t('rewrite-diff-viewer.noChangesYet') }}
+            </div>
         </div>
     </div>
 </template>

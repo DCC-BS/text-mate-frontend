@@ -127,28 +127,29 @@ async function applyAlternativeSentence(sentence: string) {
 
 <template>
     <bubble-menu :editor="editor" :options="{ placement: 'bottom' }" :should-show="() => true">
-        <div class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300" v-if="focusedSentence || focusedWord">
+        <div class="p-2 rounded-md ring-1 ring-gray-400 flex gap-2" v-if="focusedSentence || focusedWord">
             <div v-if="focusedWord">
                 <UButton @click="findWordSynonym" :loading="isRewritingWord"
-                    :disabled="isRewritingWord || isRewritingSentence" variant="subtle">
+                    :disabled="isRewritingWord || isRewritingSentence" variant="link" color="primary">
                     {{ t("text-editor.rewrite-word") }}
                 </UButton>
 
                 <div class="flex gap-1 flex-col pt-1">
-                    <UButton v-for="synonym in wordSynonyms" :key="synonym" @click="applyWordSynonym(synonym)">
+                    <UButton v-for="synonym in wordSynonyms" :key="synonym" @click="applyWordSynonym(synonym)"
+                        variant="link" color="neutral">
                         {{ synonym }}
                     </UButton>
                 </div>
             </div>
             <div v-if="focusedSentence">
                 <UButton @click="findAlternativeSentence" :loading="isRewritingSentence"
-                    :disabled="isRewritingSentence || isRewritingWord" variant="subtle">
+                    :disabled="isRewritingSentence || isRewritingWord" variant="link" color="primary">
                     {{ t("text-editor.rewrite-sentence") }}
                 </UButton>
 
                 <div class="flex gap-1 flex-col pt-1">
                     <UButton v-for="sentence in alternativeSentences" :key="sentence"
-                        @click="applyAlternativeSentence(sentence)">
+                        @click="applyAlternativeSentence(sentence)" variant="link" color="neutral">
                         {{ sentence }}
                     </UButton>
                 </div>

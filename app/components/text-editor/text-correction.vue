@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 // biome-ignore lint/style/useImportType: use in the vue template
-import { ApplyCorrectionCommand } from "~/assets/models/commands";
+import { ApplyCorrectionCommand, InvalidateCorrectionCommand } from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 
@@ -27,8 +27,9 @@ async function applyCorrection(command: ApplyCorrectionCommand) {
     await executeCommand(command);
 }
 
-function addWord(word: string) {
-    userDictionaryQuery.addWord(word);
+async function addWord(word: string) {
+    await userDictionaryQuery.addWord(word);
+    await executeCommand(new InvalidateCorrectionCommand());
 }
 </script>
 

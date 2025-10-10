@@ -2,6 +2,13 @@
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
+
+    // Development server configuration for hot reload
+    devServer: {
+        port: 3000,
+        host: "0.0.0.0",
+    },
+
     routeRules: {
         "/api/ping": {
             cors: true,
@@ -86,6 +93,19 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
+        // Hot reload configuration for dev tunnels
+        server: {
+            watch: {
+                usePolling: true,
+                interval: 100,
+            },
+            hmr: {
+                port: 24678,
+                host: "0.0.0.0",
+                clientPort: 24678,
+                overlay: true,
+            },
+        },
         build: {
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",

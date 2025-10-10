@@ -3,15 +3,18 @@ import { AnimatePresence, motion } from "motion-v";
 import {
     ApplyCorrectionCommand,
     Cmds,
+    InvalidateCorrectionCommand,
     type JumpToBlockCommand,
 } from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
+import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 import { useCorrection } from "~/composables/correction";
 
 // composables
 const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
 const { blocks } = useCorrection();
+const userDictionaryQuery = useService(UserDictionaryQuery);
 
 // refs
 const selectedBlock = ref<TextCorrectionBlock | null>(null);
@@ -58,6 +61,11 @@ function scrollToBlock(blockElement: HTMLElement) {
 async function applyBlock(block: TextCorrectionBlock, corrected: string) {
     await executeCommand(new ApplyCorrectionCommand(block, corrected));
 }
+
+async function addWord(word: string) {
+    await userDictionaryQuery.addWord(word);
+    await executeCommand(new InvalidateCorrectionCommand());
+}
 </script>
 
 <template>
@@ -89,7 +97,8 @@ async function applyBlock(block: TextCorrectionBlock, corrected: string) {
                         {{ currentBlock.explanation }}
                     </div>
 
-                    <UButton variant="link" color="neutral" icon="i-lucide-book-plus">
+                    <UButton variant="link" color="neutral" icon="i-lucide-book-plus"
+                        @click="addWord(currentBlock.original)">
                         "{{ currentBlock.original }}" zum Wörterbuch hinzufügen
                     </UButton>
                 </motion.div>
