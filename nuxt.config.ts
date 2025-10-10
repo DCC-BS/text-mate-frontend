@@ -77,6 +77,7 @@ export default defineNuxtConfig({
         "@dcc-bs/authentication.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
+        "nuxt-tour",
     ],
     "feedback-control.bs.js": {
         repo: "Feedback",

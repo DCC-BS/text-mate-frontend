@@ -73,7 +73,8 @@ function handleFileSelect(event: Event): void {
 
 <template>
     <div class="w-full h-full">
-        <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
+        <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative"
+            data-tour="text-editor">
             <!-- Lock overlay -->
             <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10" />
 

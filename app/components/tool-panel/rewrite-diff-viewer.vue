@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { type ChangeObject, diffWords } from "diff";
-import { ApplyTextCommand, Cmds, type RegisterDiffCommand } from "~/assets/models/commands";
+import {
+    ApplyTextCommand,
+    Cmds,
+    type RegisterDiffCommand,
+} from "~/assets/models/commands";
 
 interface Props {
     text: string;
@@ -12,7 +16,7 @@ type ActionChange = {
     from: number;
     to: number;
     oldText: string;
-}
+};
 
 const props = defineProps<Props>();
 
@@ -71,7 +75,12 @@ const changes = computed<ActionChange[]>(() => {
 });
 
 function undo(change: ActionChange): void {
-    executeCommand(new ApplyTextCommand(change.oldText, { from: change.from, to: change.to }));
+    executeCommand(
+        new ApplyTextCommand(change.oldText, {
+            from: change.from,
+            to: change.to,
+        }),
+    );
 }
 
 onCommand<RegisterDiffCommand>(Cmds.RegisterDiffCommand, async (cmd) => {
@@ -85,7 +94,12 @@ function applyAllChanges() {
 async function undoAllChanges() {
     for (const change of changes.value) {
         if (change.hasChanged) {
-            await executeCommand(new ApplyTextCommand(change.oldText, { from: change.from, to: change.to }));
+            await executeCommand(
+                new ApplyTextCommand(change.oldText, {
+                    from: change.from,
+                    to: change.to,
+                }),
+            );
         }
     }
 

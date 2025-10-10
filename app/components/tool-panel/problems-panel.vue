@@ -29,35 +29,6 @@ onCommand(Cmds.JumpToBlockCommand, async (command: JumpToBlockCommand) => {
     );
 });
 
-function selectBlock(block: TextCorrectionBlock) {
-    selectedBlock.value = block;
-}
-
-function scrollToBlock(blockElement: HTMLElement) {
-    const container = blockElement.closest(
-        ".scrollable-container",
-    ) as HTMLElement;
-    if (!container) return;
-
-    const containerRect = container.getBoundingClientRect();
-    const elementRect = blockElement.getBoundingClientRect();
-    const relativeTop =
-        elementRect.top - containerRect.top + container.scrollTop;
-    const centerOffset = (containerRect.height - elementRect.height) / 2;
-
-    const targetScrollTop = relativeTop - centerOffset;
-
-    container.scrollTo({
-        top: targetScrollTop,
-        behavior: "smooth",
-    });
-
-    // Fallback for browsers that don't support smooth scrolling
-    if (!("scrollBehavior" in document.documentElement.style)) {
-        container.scrollTop = targetScrollTop;
-    }
-}
-
 async function applyBlock(block: TextCorrectionBlock, corrected: string) {
     await executeCommand(new ApplyCorrectionCommand(block, corrected));
 }

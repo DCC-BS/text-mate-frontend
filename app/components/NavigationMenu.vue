@@ -32,6 +32,11 @@ const userImage = computed(() => {
 // Navigation menu items
 const items = computed<DropdownMenuItem[]>(() => [
     {
+        label: t("tour.restart"),
+        icon: "i-lucide-help-circle",
+        onSelect: handleRestartTour,
+    },
+    {
         label: t("navigation.signOut"),
         icon: "i-lucide-sign-out",
         onSelect: handleSignOut,
@@ -53,6 +58,15 @@ function handleRedo(): void {
 
 async function handleSignOut(): Promise<void> {
     await signOut();
+}
+
+// Define emits
+const emit = defineEmits<{
+    "restart-tour": [];
+}>();
+
+function handleRestartTour(): void {
+    emit("restart-tour");
 }
 </script>
 

@@ -186,5 +186,28 @@
         "clickToUndo": "Click on the changes to undo them",
         "undo": "Undo",
         "noChangesYet": "No changes yet. When the text is rewritten by textmate, the changes will be highlighted here."
+    },
+    "tour": {
+        "welcome": {
+            "title": "Welcome to Text Mate!",
+            "content": "Here you can switch between three modes: Problems to see and fix grammar and spelling errors, Rewrite to leverage AI for text enhancement, and Review to check your text against guideline documents."
+        },
+        "language": {
+            "title": "Language Selection",
+            "content": "Choose the proofing language for your text. This helps the grammar and spelling checker provide accurate suggestions for the selected language."
+        },
+        "dictionary": {
+            "title": "Personal Dictionary",
+            "content": "Add words that should be ignored during spelling checks. This is useful for specialized terminology, names, or words that are correct but not in the standard dictionary."
+        },
+        "editor": {
+            "title": "Text Editor",
+            "content": "This is where you write and edit your text. The editor provides real-time grammar and spelling checking as you type."
+        },
+        "wordCount": {
+            "title": "Text Statistics",
+            "content": "View detailed information about your text including word count, character count, and Flesch reading ease score. Click on these statistics to see more details about your text's readability."
+        },
+        "restart": "Start Tour"
     }
 }

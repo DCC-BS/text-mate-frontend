@@ -186,5 +186,28 @@
         "clickToUndo": "Klicken Sie auf die Änderungen, um sie rückgängig zu machen",
         "undo": "Rückgängig",
         "noChangesYet": "Noch keine Änderungen. Wenn der Text von Textmate umgeschrieben wird, werden die Änderungen hier hervorgehoben."
+    },
+    "tour": {
+        "welcome": {
+            "title": "Willkommen bei Text Mate!",
+            "content": "Hier können Sie zwischen drei Modi wechseln: Probleme zum Anzeigen und Beheben von Grammatik- und Rechtschreibfehlern, Rewrite zur Nutzung von KI für Textverbesserungen und Review zur Überprüfung Ihres Texts anhand von Leitliniendokumenten."
+        },
+        "language": {
+            "title": "Sprachauswahl",
+            "content": "Wählen Sie die Korrektursprache für Ihren Text. Dies hilft der Grammatik- und Rechtschreibprüfung, genaue Vorschläge für die ausgewählte Sprache zu liefern."
+        },
+        "dictionary": {
+            "title": "Persönliches Wörterbuch",
+            "content": "Fügen Sie Wörter hinzu, die bei der Rechtschreibprüfung ignoriert werden sollen. Dies ist nützlich für Fachbegriffe, Namen oder Wörter, die korrekt sind aber nicht im Standardwörterbuch enthalten."
+        },
+        "editor": {
+            "title": "Text-Editor",
+            "content": "Hier schreiben und bearbeiten Sie Ihren Text. Der Editor bietet Echtzeit-Grammatik- und Rechtschreibprüfung während Sie tippen."
+        },
+        "wordCount": {
+            "title": "Textstatistiken",
+            "content": "Sehen Sie detaillierte Informationen über Ihren Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klicken Sie auf diese Statistiken, um mehr Details über die Lesbarkeit Ihres Texts zu sehen."
+        },
+        "restart": "Tour starten"
     }
 }

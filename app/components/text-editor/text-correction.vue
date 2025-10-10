@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 // biome-ignore lint/style/useImportType: use in the vue template
-import { ApplyCorrectionCommand, InvalidateCorrectionCommand } from "~/assets/models/commands";
+import {
+    ApplyCorrectionCommand,
+    InvalidateCorrectionCommand,
+} from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
 import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 

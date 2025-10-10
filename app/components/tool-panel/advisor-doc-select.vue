@@ -5,23 +5,24 @@ import type { AdvisorService } from "~/assets/services/AdvisorService";
 const { t } = useI18n();
 
 interface AdvisorDocSelectProps {
-    advisorService: AdvisorService;
+  advisorService: AdvisorService;
 }
 
 const props = defineProps<AdvisorDocSelectProps>();
 
 const docs = props.advisorService.getDocs();
 const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
-    default: [],
+  default: [],
 });
 </script>
 
 <template>
   <div class="w-full">
-    <USelectMenu :items="docs" v-model="selectedDocs[0]" :filter-fields="['title', 'description', 'author', 'edition']" class="w-full">
+    <USelectMenu :items="docs" v-model="selectedDocs[0]" :filter-fields="['title', 'description', 'author', 'edition']"
+      class="w-full">
       <template #default>
         <div v-if="selectedDocs.length > 0">
-          {{ selectedDocs.map((doc) => doc.title).join(", ") }}
+          {{selectedDocs.map((doc) => doc.title).join(", ")}}
         </div>
         <div v-else>
           <p class="text-gray-500">
@@ -43,6 +44,4 @@ const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
 
 
 
-<style>
-
-</style>
+<style></style>

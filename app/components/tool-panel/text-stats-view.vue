@@ -23,7 +23,7 @@ const {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2" data-tour="word-count">
     <!-- Fancy Flesch Score Visualization -->
     <div class="bg-white border-1 border-gray-200 p-2 rounded-md">
       <!-- <div v-if="showDetails"> -->

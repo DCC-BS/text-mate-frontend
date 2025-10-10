@@ -25,7 +25,7 @@ async function removeWord(word: string) {
 </script>
 
 <template>
-    <div>
+    <div data-tour="dictionary">
         <UPopover>
             <UButton icon="i-lucide-book-open" color="neutral" variant="link" class="w-full">
                 {{ t("user-dictionary.title") }}

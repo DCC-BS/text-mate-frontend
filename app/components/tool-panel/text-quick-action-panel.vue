@@ -16,7 +16,9 @@ const props = defineProps<InputProps>();
 const { t } = useI18n();
 
 const isLocked = ref<boolean>(false);
-const selectedLanguage = useCookie<string>("selected-language", { default: () => "auto" });
+const selectedLanguage = useCookie<string>("selected-language", {
+    default: () => "auto",
+});
 
 const actionsAreAvailable = computed(
     () => !isLocked.value && props.text.trim().length > 0,
