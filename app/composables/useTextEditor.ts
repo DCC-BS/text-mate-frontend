@@ -14,6 +14,7 @@ import Text from "@tiptap/extension-text";
 import { useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
+    type ClearTextCommand,
     Cmds,
     type RedoCommand,
     type ToggleEditableEditorCommand,
@@ -124,6 +125,11 @@ export function useTextEditor(options: UseTextEditorOptions) {
             .insertContent(text)
             .focus(range.from)
             .run();
+    });
+
+    onCommand<ClearTextCommand>(Cmds.ClearTextCommand, async () => {
+        if (!editor.value) return;
+        editor.value.commands.clearContent();
     });
 
     onCommand<UndoCommand>(Cmds.UndoCommand, async () => {

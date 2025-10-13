@@ -208,6 +208,46 @@
             "title": "Text Statistics",
             "content": "View detailed information about your text including word count, character count, and Flesch reading ease score. Click on these statistics to see more details about your text's readability."
         },
-        "restart": "Start Tour"
+        "restart": "Start Tour",
+        "problems": {
+            "title": "Problems Panel",
+            "content": "Here you can see all grammar and spelling problems in your text. Use the arrow keys to quickly navigate to each problem in the text. Or hover over the underlined words in the text to see suggestions. You can also add a word directly to the dictionary."
+        },
+        "textEditorToolpanel": {
+            "title": "Text Editor Tools",
+            "content": "Here you can undo or redo your changes. Additionally, you can upload a document, which will be converted to text and opened in the editor."
+        },
+        "rewrite": {
+            "title": "AI Text Rewriting",
+            "content": "When a text action is performed, the changes will appear here. Click on a change to undo it or on the checkmark at the bottom to apply all changes."
+        },
+        "rewriteOptions": {
+            "title": "Rewrite Options",
+            "content": "Define here how your text should be rewritten. Customize writing style, target audience, intent, and medium to suit your needs."
+        },
+        "rewriteToolpanel": {
+            "title": "Accept or Reject Rewrite Actions",
+            "content": "Here you can undo the last rewrite action or accept all changes."
+        },
+        "check": {
+            "title": "Check",
+            "content": "Check your text against documents."
+        },
+        "advisor": {
+            "title": "Document Advisor",
+            "content": "Select a policy according to which you want to check your document. The document advisor will show you the violations it found against the selected policy."
+        },
+        "quickActions": {
+            "title": "Rewrite Actions",
+            "content": "Perform text actions such as summaries or rewrites. Select an action to apply it to your text."
+        },
+        "conclusion": {
+            "title": "That's it!",
+            "content": "You are now ready to make full use of Text Mate. Feel free to restart the tour if you forget something. Have fun writing!"
+        },
+        "skip": "Skip",
+        "next": "Next",
+        "prev": "Back",
+        "finish": "Finish"
     }
 }

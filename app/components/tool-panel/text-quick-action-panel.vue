@@ -77,7 +77,7 @@ async function applyAction(action: TextActions): Promise<void> {
 </script>
 
 <template>
-    <div class="flex justify-center gap-2 flex-wrap">
+    <div class="flex justify-center gap-2 flex-wrap" data-tour="quick-actions">
         <UPopover mode="hover">
             <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('plain_language')">
                 {{ t('editor.plain_language') }}

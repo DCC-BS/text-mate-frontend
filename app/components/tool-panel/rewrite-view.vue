@@ -120,7 +120,7 @@ const finalOptions = computed(() =>
         <div class="flex justify-between">
             <ToolPanelTextQuickActionPanel :text="text" :options="finalOptions" />
             <UDrawer direction="right" handleOnly>
-                <UButton icon="i-lucide-sliders" variant="soft" color="neutral">
+                <UButton data-tour="rewrite-options" icon="i-lucide-sliders" variant="soft" color="neutral">
                     Optionen
                 </UButton>
                 <template #content>

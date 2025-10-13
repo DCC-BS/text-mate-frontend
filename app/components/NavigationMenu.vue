@@ -1,28 +1,11 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from "@nuxt/ui";
-
-import {
-    Cmds,
-    RedoCommand,
-    UndoCommand,
-    type UndoRedoStateChanged,
-} from "~/assets/models/commands";
+import { RestartTourCommand } from "~/assets/models/commands";
 
 // Add translation hook
 const { t } = useI18n();
-const { executeCommand, onCommand } = useCommandBus();
 const { data, signOut } = useAuth();
-
-const undoRedoState = reactive({
-    canUndo: false,
-    canRedo: false,
-});
-
-const { locale, locales, setLocale } = useI18n();
-
-const availableLocales = computed(() => {
-    return locales.value.filter((i) => i.code !== locale.value);
-});
+const { executeCommand } = useCommandBus();
 
 const userImage = computed(() => {
     const base64 = data.value?.user?.image;
@@ -32,47 +15,29 @@ const userImage = computed(() => {
 // Navigation menu items
 const items = computed<DropdownMenuItem[]>(() => [
     {
-        label: t("tour.restart"),
-        icon: "i-lucide-help-circle",
-        onSelect: handleRestartTour,
-    },
-    {
         label: t("navigation.signOut"),
         icon: "i-lucide-sign-out",
         onSelect: handleSignOut,
     },
 ]);
 
-onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
-    undoRedoState.canUndo = command.canUndo;
-    undoRedoState.canRedo = command.canRedo;
-});
-
-function handleUndo(): void {
-    executeCommand(new UndoCommand());
-}
-
-function handleRedo(): void {
-    executeCommand(new RedoCommand());
-}
-
 async function handleSignOut(): Promise<void> {
     await signOut();
 }
 
-// Define emits
-const emit = defineEmits<{
-    "restart-tour": [];
-}>();
-
 function handleRestartTour(): void {
-    emit("restart-tour");
+    executeCommand(new RestartTourCommand());
 }
 </script>
 
 <template>
     <NavigationBar>
         <template #right>
+            <UTooltip :text="t('tour.restart')" placement="bottom">
+                <UButton data-tour="start-tour" variant="ghost" color="neutral" icon="i-lucide-help-circle"
+                    @click="handleRestartTour">
+                </UButton>
+            </UTooltip>
             <UDropdownMenu :items="items">
                 <UButton variant="ghost" color="neutral">
                     <img :src="userImage" class="h-6 w-6 rounded-full" :alt="data?.user?.name || 'User'" />

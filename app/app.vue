@@ -10,6 +10,8 @@ const isAuth = computed(() => {
 
 <template>
     <UApp>
+        <Onboarding v-if="!isAuth" />
+
         <NuxtLayout>
             <NuxtPage />
         </NuxtLayout>

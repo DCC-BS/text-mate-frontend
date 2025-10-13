@@ -110,14 +110,14 @@ async function undoAllChanges() {
 <template>
     <div class="absolute -bottom-2 -inset-x-2 z-10">
         <div class="flex justify-between">
-            <div v-if="changes.length">
+            <div v-if="changes.length" data-tour="rewrite-toolpanel">
                 <UButton variant="link" color="neutral" icon="i-lucide-check" @click="applyAllChanges" />
                 <UButton variant="link" color="neutral" icon="i-lucide-x" @click="undoAllChanges" />
             </div>
         </div>
     </div>
 
-    <div class="overflow-auto absolute inset-0 p-1 ProseMirror dark">
+    <div class="overflow-y-auto pb-[35px] absolute inset-0 p-1 ProseMirror dark">
         <div>
             <template v-for="change in changes" :key="change.from">
                 <UPopover v-if="change.hasChanged">

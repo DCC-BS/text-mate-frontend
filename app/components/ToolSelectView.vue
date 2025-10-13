@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { ToolSwitchCommand } from "~/assets/models/commands";
+import { Cmds, ToolSwitchCommand } from "~/assets/models/commands";
 
 const { t } = useI18n();
 
-const { executeCommand } = useCommandBus();
+const { executeCommand, onCommand } = useCommandBus();
 
 const activeTool = ref<"correction" | "rewrite" | "advisor">("correction");
 
@@ -17,6 +17,13 @@ watch(
         executeCommand(new ToolSwitchCommand(value));
     },
 );
+
+onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
+    if (activeTool.value === command.tool) {
+        return;
+    }
+    activeTool.value = command.tool;
+});
 </script>
 
 <template>

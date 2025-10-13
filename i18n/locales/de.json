@@ -206,8 +206,48 @@
         },
         "wordCount": {
             "title": "Textstatistiken",
-            "content": "Sehen Sie detaillierte Informationen über Ihren Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klicken Sie auf diese Statistiken, um mehr Details über die Lesbarkeit Ihres Texts zu sehen."
+            "content": "Sehen Sie detaillierte Informationen über Ihren Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klicken Sie hier, um mehr Details über die Lesbarkeit Ihres Texts zu sehen."
         },
-        "restart": "Tour starten"
+        "restart": "Tutorial neu starten",
+        "problems": {
+            "title": "Probleme-Panel",
+            "content": "Hier sehen Sie alle Grammatik- und Rechtschreibprobleme in Ihrem Text. Mit den Pfeiltasten können Sie schnell zu jedem Problem im Text navigieren. Oder sie fahren mit der Maus über die unterstrichenen Wörter im Text, um Vorschläge zu sehen. Es ist auch möglich, ein Wort direkt ins Wörterbuch hinzuzufügen."
+        },
+        "textEditorToolpanel": {
+            "title": "Text-Editor-Werkzeuge",
+            "content": "Hier können sie ihre änderungen rückgängig machen oder wiederholen. Zusätzlich können Sie ein Dokument hochladen, welches in den Text konvertiert und im Editor geöffnet wird."
+        },
+        "rewrite": {
+            "title": "KI-Textumschreibung",
+            "content": "Wenn eine Textaktion asgeführt wird, erscheinen die Änderungen hier. Klicken Sie auf eine Änderung, um sie rückgängig zu machen oder auf das Häkchen unten, um alle Änderungen zu übernehmen."
+        },
+        "rewriteOptions": {
+            "title": "Umschreibungsoptionen",
+            "content": "Definieren Sie hier, wie Ihr Text umgeschrieben werden soll. Passen Sie Schreibstil, Zielgruppe, Absicht und Medium an Ihre Bedürfnisse an."
+        },
+        "rewriteToolpanel": {
+            "title": "Umschreibaktionen annehmen oder ablehnen",
+            "content": "Hier kanst du die letzte Umschreibaktion rückgängig machen oder alle Änderungen annehmen."
+        },
+        "check": {
+            "title": "Überprüfen",
+            "content": "Überprüfen Sie Ihren Text anhand von Dokumenten."
+        },
+        "advisor": {
+            "title": "Dokumentenberater",
+            "content": "Wählen Sie eine Richtlinie aus nach welcher sie ihr Dokument überprüfen möchten. Der Dokumentenberater zeigt Ihnen die von Ihm gefundenen Verstösse gegen die ausgewählte Richtlinie an."
+        },
+        "quickActions": {
+            "title": "Umschreibaktionen",
+            "content": "Führen Sie Textaktionen wie Zusammenfassungen oder Umschreiben durch. Wählen Sie eine Aktion aus, um sie auf Ihren Text anzuwenden."
+        },
+        "conclusion": {
+            "title": "Das war's!",
+            "content": "Sie sind jetzt bereit, Text Mate voll zu nutzen. Zögern Sie nicht, die Tour erneut zu starten, wenn Sie etwas vergessen. Viel Spass beim Schreiben!"
+        },
+        "skip": "Überspringen",
+        "next": "Weiter",
+        "prev": "Zurück",
+        "finish": "Beenden"
     }
 }

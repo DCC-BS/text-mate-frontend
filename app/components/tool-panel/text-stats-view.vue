@@ -5,7 +5,7 @@ import { useTextStats } from "@/composables/text-stats";
 const { t } = useI18n();
 
 const props = defineProps<{
-    text: string;
+  text: string;
 }>();
 
 const text = computed(() => props.text);
@@ -13,17 +13,17 @@ const text = computed(() => props.text);
 const showDetails = ref(false);
 
 const {
-    charCount,
-    wordCount,
-    syllableCount,
-    averageSentenceLength,
-    averageSyllablesPerWord,
-    fleschScore,
+  charCount,
+  wordCount,
+  syllableCount,
+  averageSentenceLength,
+  averageSyllablesPerWord,
+  fleschScore,
 } = useTextStats(text);
 </script>
 
 <template>
-  <div class="flex flex-col gap-2" data-tour="word-count">
+  <div class="flex flex-col gap-2">
     <!-- Fancy Flesch Score Visualization -->
     <div class="bg-white border-1 border-gray-200 p-2 rounded-md">
       <!-- <div v-if="showDetails"> -->

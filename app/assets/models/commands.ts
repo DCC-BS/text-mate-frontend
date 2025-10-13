@@ -18,6 +18,8 @@ export const Cmds = {
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
     RegisterDiffCommand: "RegisterDiffCommand",
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
+    RestartTourCommand: "RestartTourCommand",
+    ClearTextCommand: "ClearTextCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -33,6 +35,10 @@ export class ApplyCorrectionCommand implements ICommand {
         public block: TextCorrectionBlock,
         public corrected: string,
     ) {}
+}
+
+export class ClearTextCommand implements ICommand {
+    readonly $type = "ClearTextCommand";
 }
 
 export class CorrectionBlockChangedCommand implements ICommand {
@@ -133,4 +139,8 @@ export class ToggleLockEditorCommand implements ICommand {
     readonly $type = "ToggleLockEditorCommand";
 
     constructor(public locked: boolean) {}
+}
+
+export class RestartTourCommand implements ICommand {
+    readonly $type = "RestartTourCommand";
 }

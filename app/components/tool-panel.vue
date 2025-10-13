@@ -42,13 +42,16 @@ onCommand<RewriteTextCommand>(Cmds.RewriteTextCommand, async (_) => {
 <template>
     <div class="h-full p-2">
         <AnimatePresence>
-            <motion.div :initial="initial" :animate="animate" :exit="exit" mode="popLayout" v-show="selectedTool === 'correction'" class="h-full">
+            <motion.div data-tour="problems" :initial="initial" :animate="animate" :exit="exit" mode="popLayout"
+                v-show="selectedTool === 'correction'" class="h-full relative">
                 <ProblemsPanel :text="props.text" />
             </motion.div>
-            <motion.div :initial="initial" :animate="animate" :exit="exit" mode="popLayout" v-show="selectedTool === 'rewrite'" class="h-full">
+            <motion.div data-tour="rewrite" :initial="initial" :animate="animate" :exit="exit" mode="popLayout"
+                v-show="selectedTool === 'rewrite'" class="h-full relative">
                 <RewriteView :text="props.text" />
             </motion.div>
-            <motion.div :initial="initial" :animate="animate" :exit="exit" mode="popLayout" v-show="selectedTool === 'advisor'" class="h-full">
+            <motion.div data-tour="advisor" :initial="initial" :animate="animate" :exit="exit" mode="popLayout"
+                v-show="selectedTool === 'advisor'" class="h-full relative">
                 <AdvisorView :text="props.text" />
             </motion.div>
         </AnimatePresence>
