@@ -156,7 +156,7 @@ const finalOptions = computed(() =>
         </div>
     </Teleport>
 
-    <div class="w-full h-full relative">
+    <div class="w-full h-full relative pb-[35px]">
         <ToolPanelRewriteDiffViewer :text="text" />
     </div>
 </template>

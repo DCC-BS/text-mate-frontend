@@ -127,7 +127,7 @@ async function applyAlternativeSentence(sentence: string) {
 
 <template>
     <bubble-menu :editor="editor" :options="{ placement: 'bottom' }" :should-show="() => true">
-        <div class="p-2 rounded-md ring-1 ring-gray-400 flex gap-2" v-if="focusedSentence || focusedWord">
+        <div class="p-2 bg-white rounded-md ring-1 ring-gray-400 flex gap-2" v-if="focusedSentence || focusedWord">
             <div v-if="focusedWord">
                 <UButton @click="findWordSynonym" :loading="isRewritingWord"
                     :disabled="isRewritingWord || isRewritingSentence" variant="link" color="primary">

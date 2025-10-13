@@ -117,7 +117,7 @@ async function undoAllChanges() {
         </div>
     </div>
 
-    <div class="overflow-y-auto pb-[35px] absolute inset-0 p-1 ProseMirror dark">
+    <div class="overflow-y-auto absolute inset-0 p-1 ProseMirror dark">
         <div>
             <template v-for="change in changes" :key="change.from">
                 <UPopover v-if="change.hasChanged">
