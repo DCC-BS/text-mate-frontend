@@ -121,11 +121,6 @@ const steps = [
         },
     },
     {
-        target: '[data-tour="rewrite-options"]',
-        title: t("tour.rewriteOptions.title"),
-        body: t("tour.rewriteOptions.content"),
-    },
-    {
         target: '[data-tour="rewrite-toolpanel"]',
         title: t("tour.rewriteToolpanel.title"),
         body: t("tour.rewriteToolpanel.content"),

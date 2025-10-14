@@ -10,12 +10,94 @@ async function switchToRewrite(page: Page) {
 }
 
 [
-    { action: "bullet_points", buttonName: local.editor.bullet_points },
-    { action: "summarize", buttonName: local.editor.summarize },
-    { action: "social_mediafy", buttonName: local.editor.social_mediafy },
-    { action: "plain_language", buttonName: local.editor.plain_language },
-].forEach(({ action, buttonName }) => {
-    test(`Text should show problems - ${action}`, async ({ page }) => {
+    {
+        action: "bullet_points",
+        buttonName: local.editor.bullet_points,
+        secondButtonName: undefined as string | undefined,
+        config: "",
+    },
+    {
+        action: "summarize",
+        buttonName: local.editor.summarize,
+        secondButtonName: local["quick-actions"].summarize.sentence,
+        config: "sentence",
+    },
+    {
+        action: "summarize",
+        buttonName: local.editor.summarize,
+        secondButtonName: local["quick-actions"].summarize.three_sentence,
+        config: "three_sentence",
+    },
+    {
+        action: "summarize",
+        buttonName: local.editor.summarize,
+        secondButtonName: local["quick-actions"].summarize.paragraph,
+        config: "paragraph",
+    },
+    {
+        action: "summarize",
+        buttonName: local.editor.summarize,
+        secondButtonName: local["quick-actions"].summarize.page,
+        config: "page",
+    },
+    {
+        action: "social_mediafy",
+        buttonName: local.editor.social_mediafy,
+        secondButtonName: local["quick-actions"]["social-mediafy"].bluesky,
+        config: "bluesky",
+    },
+    {
+        action: "social_mediafy",
+        buttonName: local.editor.social_mediafy,
+        secondButtonName: local["quick-actions"]["social-mediafy"].instagram,
+        config: "instagram",
+    },
+    {
+        action: "social_mediafy",
+        buttonName: local.editor.social_mediafy,
+        secondButtonName: local["quick-actions"]["social-mediafy"].linkedin,
+        config: "linkedin",
+    },
+    {
+        action: "formality",
+        buttonName: local.editor.formality,
+        secondButtonName: local["quick-actions"].formality.formal,
+        config: "formal",
+    },
+    {
+        action: "formality",
+        buttonName: local.editor.formality,
+        secondButtonName: local["quick-actions"].formality.informal,
+        config: "informal",
+    },
+    {
+        action: "medium",
+        buttonName: local.editor.medium,
+        secondButtonName: local["quick-actions"].medium.email,
+        config: "email",
+    },
+    {
+        action: "medium",
+        buttonName: local.editor.medium,
+        secondButtonName: local["quick-actions"].medium.official_letter,
+        config: "official_letter",
+    },
+    {
+        action: "medium",
+        buttonName: local.editor.medium,
+        secondButtonName: local["quick-actions"].medium.presentation,
+        config: "presentation",
+    },
+    {
+        action: "medium",
+        buttonName: local.editor.medium,
+        secondButtonName: local["quick-actions"].medium.report,
+        config: "report",
+    },
+].forEach(({ action, buttonName, secondButtonName, config }) => {
+    test(`Text should be edited - ${action} - ${secondButtonName}`, async ({
+        page,
+    }) => {
         await page.goto("/");
 
         await skipDisclaimer(page);
@@ -27,14 +109,23 @@ async function switchToRewrite(page: Page) {
 
         await page.locator(".tiptap").fill(inputText);
 
-        await page.getByRole("button", { name: buttonName }).click();
+        await page
+            .getByRole("button", { name: buttonName, exact: true })
+            .click();
 
-        await page.waitForTimeout(1000);
+        if (secondButtonName) {
+            await page
+                .getByRole("button", { name: secondButtonName, exact: true })
+                .click();
+        }
+
+        await page.waitForTimeout(1500);
 
         const text = await page.locator(".tiptap").innerText();
 
         expect(text).toContain(`Action: ${action}`);
         expect(text).toContain(`Input: ${inputText}`);
+        expect(text).toContain(`Options: ${config}`);
     });
 });
 
@@ -51,7 +142,9 @@ test("After rewrite, changes are shown on the rigt side", async ({ page }) => {
 
     await page.locator(".tiptap").fill(inputText);
 
-    await page.getByRole("button", { name: local.editor.rewrite }).click();
+    await page
+        .getByRole("button", { name: local.editor.plain_language, exact: true })
+        .click();
 
     await page.waitForTimeout(1000);
 
@@ -63,3 +156,5 @@ test("After rewrite, changes are shown on the rigt side", async ({ page }) => {
         page.locator("span.decoration-red-400[text='test']"),
     ).toBeVisible();
 });
+
+// TODO test custom action

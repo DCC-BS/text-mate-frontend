@@ -128,7 +128,7 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
             </template>
 
             <template #left>
-                <div class="w-full h-full relative">
+                <div class="w-full md:h-full relative h-[400px]">
                     <TextEditor v-model="userText" v-model:selectedText="selectedText" />
                 </div>
             </template>

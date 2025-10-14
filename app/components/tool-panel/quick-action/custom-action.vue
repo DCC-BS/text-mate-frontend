@@ -15,7 +15,7 @@ const customText = ref("");
 
 <template>
   <UDrawer>
-    <UButton variant="link">{{ t('actions.custom') }}</UButton>
+    <UButton variant="link" :disabled="!props.actionsAreAvailable">{{ t('actions.custom') }}</UButton>
     <template #content>
       <div class="p-4 flex flex-col items-stretch gap-2 max-w-[400px] w-full m-auto">
         <UTextarea v-model="customText" :label="t('quick-actions.custom.label')"

@@ -65,51 +65,9 @@
         "bullet_points": "Aufzählungspunkte",
         "summarize": "Zusammenfassung",
         "social_mediafy": "Social Media Format",
-        "plain_language": "Einfache Sprache"
-    },
-    "rewrite": {
-        "writing_style": {
-            "general": "Allgemein",
-            "simple": "Einfach",
-            "professional": "Professionell",
-            "casual": "Locker",
-            "academic": "Akademisch",
-            "technical": "Technisch"
-        },
-        "target_audience": {
-            "general": "Allgemein",
-            "young": "Junge Erwachsene",
-            "adult": "Erwachsene",
-            "children": "Kinder",
-            "journalists": "Journalisten",
-            "scientists": "Wissenschaftler"
-        },
-        "intend": {
-            "general": "Allgemein",
-            "persuasive": "Überzeugend",
-            "informative": "Informativ",
-            "descriptive": "Beschreibend",
-            "narrative": "Erzählend",
-            "entertaining": "Unterhaltsam"
-        },
-        "medium": {
-            "general": "Allgemein",
-            "official letter": "Behördenbrief",
-            "email": "E-Mail",
-            "report": "Bericht",
-            "presentation": "Präsentation",
-            "website": "Webseite"
-        },
-        "writingStyleLabel": "Schreibstil",
-        "targetAudienceLabel": "Zielgruppe",
-        "intendLabel": "Absicht",
-        "mediumLabel": "Medium",
-        "apply": "Anwenden",
-        "rewrite": "Umschreiben",
-        "noRewrite": "Text auswählen und auf \"Umschreiben\" klicken, um ihn umzuschreiben.",
-        "advancedOptionsLabel": "Hier können Sie Ihre benutzerdefinierten Umschreibungsregeln verfassen",
-        "hideAdvanced": "Einfach",
-        "showAdvanced": "Erweitert"
+        "plain_language": "Einfache Sprache",
+        "formality": "Formalität",
+        "medium": "Medium"
     },
     "advisor": {
         "check": "Text überprüfen",
@@ -131,6 +89,10 @@
             "fix": "Vorgeschlagene Korrektur"
         },
         "selectDocs": "Dokumente auswählen"
+    },
+    "actions": {
+        "custom": "Benutzerdefiniert",
+        "apply": "Anwenden"
     },
     "user-dictionary": {
         "title": "Wörterbuch",
@@ -155,6 +117,20 @@
             "instagram": "Instagram",
             "linkedin": "LinkedIn",
             "x": "X"
+        },
+        "custom": {
+            "label": "Benutzerdefinierte Anweisungen",
+            "placeholder": "Geben Sie hier Ihre benutzerdefinierten Umschreibanweisungen ein..."
+        },
+        "formality": {
+            "formal": "Formell",
+            "informal": "Informell"
+        },
+        "medium": {
+            "email": "E-Mail",
+            "official_letter": "Behördenbrief",
+            "presentation": "Präsentation",
+            "report": "Bericht"
         }
     },
     "flesch-score": {

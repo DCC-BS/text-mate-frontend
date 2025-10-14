@@ -13,7 +13,6 @@ import CustomAction from "./quick-action/custom-action.vue";
 
 interface InputProps {
     text: string;
-    options: string;
 }
 
 const props = defineProps<InputProps>();
@@ -57,7 +56,7 @@ async function applyAction(action: TextActions, config?: string): Promise<void> 
             body: {
                 action,
                 text: props.text,
-                options: `${config};\nlanguage code: ${selectedLanguage.value}`,
+                options: `${config ?? ''};\nlanguage code: ${selectedLanguage.value}`,
             },
         });
 

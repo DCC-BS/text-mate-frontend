@@ -12,12 +12,12 @@ export default defineEventHandler(async (event) => {
     // Dummy text to stream word by word
     let dummyText = "";
     switch (body.action) {
-        case "rewrite":
+        case "plain_language":
             dummyText =
                 "This is a dummy streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
             break;
         default:
-            dummyText = `Action: ${body.action}, Input: ${body.text}`;
+            dummyText = `Action: ${body.action}, Input: ${body.text}, Options: ${body.options}`;
             break;
     }
 

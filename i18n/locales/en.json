@@ -65,7 +65,9 @@
         "bullet_points": "Bullet Points",
         "summarize": "Summarize",
         "social_mediafy": "Social Media Format",
-        "plain_language": "Plain Language"
+        "plain_language": "Plain Language",
+        "formality": "Formality",
+        "medium": "Medium"
     },
     "rewrite": {
         "writing_style": {
@@ -132,6 +134,10 @@
         },
         "selectDocs": "select documents"
     },
+    "actions": {
+        "custom": "Custom",
+        "apply": "Apply"
+    },
     "user-dictionary": {
         "title": "Dictionary",
         "empty": "No words in your dictionary",
@@ -155,6 +161,20 @@
             "instagram": "Instagram",
             "linkedin": "LinkedIn",
             "x": "X"
+        },
+        "custom": {
+            "label": "Custom Instructions",
+            "placeholder": "Enter your custom rewrite instructions here..."
+        },
+        "formality": {
+            "formal": "Formal",
+            "informal": "Informal"
+        },
+        "medium": {
+            "email": "Email",
+            "official_letter": "Official Letter",
+            "presentation": "Presentation",
+            "report": "Report"
         }
     },
     "flesch-score": {
