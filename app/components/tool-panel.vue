@@ -23,7 +23,7 @@ const { onCommand } = useCommandBus();
 
 // refs
 const selectedTab = ref("0");
-const selectedTool = ref<"correction" | "rewrite" | "advisor">("correction");
+const selectedTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
 
 // animations
 const initial = { opacity: 0, y: -20 };
@@ -42,13 +42,13 @@ onCommand<RewriteTextCommand>(Cmds.RewriteTextCommand, async (_) => {
 <template>
     <div class="h-full p-2">
         <AnimatePresence>
-            <motion.div data-tour="problems" :initial="initial" :animate="animate" :exit="exit" mode="popLayout"
-                v-show="selectedTool === 'correction'" class="h-full relative">
-                <ProblemsPanel :text="props.text" />
-            </motion.div>
             <motion.div data-tour="rewrite" :initial="initial" :animate="animate" :exit="exit" mode="popLayout"
                 v-show="selectedTool === 'rewrite'" class="h-full relative">
                 <RewriteView :text="props.text" />
+            </motion.div>
+            <motion.div data-tour="problems" :initial="initial" :animate="animate" :exit="exit" mode="popLayout"
+                v-show="selectedTool === 'correction'" class="h-full relative">
+                <ProblemsPanel :text="props.text" />
             </motion.div>
             <motion.div data-tour="advisor" :initial="initial" :animate="animate" :exit="exit" mode="popLayout"
                 v-show="selectedTool === 'advisor'" class="h-full relative">

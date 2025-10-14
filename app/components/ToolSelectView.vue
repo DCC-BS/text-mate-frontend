@@ -5,7 +5,7 @@ const { t } = useI18n();
 
 const { executeCommand, onCommand } = useCommandBus();
 
-const activeTool = ref<"correction" | "rewrite" | "advisor">("correction");
+const activeTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
 
 function switchTool(tool: "correction" | "rewrite" | "advisor") {
     activeTool.value = tool;
@@ -28,14 +28,14 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
 
 <template>
     <div class="flex gap-2 justify-center" data-tour="tool-switch">
-        <UButton layout :variant="activeTool === 'correction' ? 'soft' : 'link'"
-            :color="activeTool === 'correction' ? 'primary' : 'neutral'" @click="switchTool('correction')">
-            {{ t('tools.problems') }}
-        </UButton layout>
-
         <UButton layout :variant="activeTool === 'rewrite' ? 'soft' : 'link'"
             :color="activeTool === 'rewrite' ? 'primary' : 'neutral'" @click="switchTool('rewrite')">
             {{ t('tools.rewrite') }}
+        </UButton layout>
+
+        <UButton layout :variant="activeTool === 'correction' ? 'soft' : 'link'"
+            :color="activeTool === 'correction' ? 'primary' : 'neutral'" @click="switchTool('correction')">
+            {{ t('tools.problems') }}
         </UButton layout>
 
         <UButton layout :variant="activeTool === 'advisor' ? 'soft' : 'link'"

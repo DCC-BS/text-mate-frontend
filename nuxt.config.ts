@@ -1,13 +1,9 @@
+import { fileURLToPath } from "node:url";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
-
-    // Development server configuration for hot reload
-    devServer: {
-        port: 3000,
-        host: "0.0.0.0",
-    },
 
     routeRules: {
         "/api/ping": {
@@ -21,6 +17,9 @@ export default defineNuxtConfig({
                 "Access-Control-Allow-Credentials": "true",
             },
         },
+    },
+    alias: {
+        "#shared": fileURLToPath(new URL("./shared", import.meta.url)),
     },
     app: {
         head: {
@@ -174,7 +173,6 @@ export default defineNuxtConfig({
         fallbackBreakpoint: "lg",
     },
     $development: {
-        debug: false,
         devtools: {
             enabled: true,
         },

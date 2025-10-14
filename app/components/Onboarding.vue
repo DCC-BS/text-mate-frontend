@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { VTour } from "#components";
+import type { VTour } from "#components";
 import type { ButtonProp, TourStep } from "#nuxt-tour/props";
 import { ApplyTextCommand, ClearTextCommand, Cmds, ExecuteTextActionCommand, RegisterDiffCommand, type RestartTourCommand, ToolSwitchCommand } from "~/assets/models/commands";
 
 const exampleText = "Schreibe hier dein text.";
 const exampleRewriteText = "Dein umformulierte Text.";
-
 
 const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
@@ -16,10 +15,12 @@ const tour = ref<InstanceType<typeof VTour>>();
 const tourCompleted = useCookie("tour-completed", { default: () => false });
 const showTour = ref(false);
 const tourIsActive = ref(false);
+const trapFocus = ref(false);
 
 // Tour control functions
 function startTour(): void {
     showTour.value = true;
+    tour.value?.startTour();
 }
 
 function onTourStart(): void {
@@ -40,7 +41,8 @@ const steps = [
         target: '[data-tour="tool-switch"]',
         title: t("tour.welcome.title"),
         body: t("tour.welcome.content"),
-        onShow: async () => {
+        onNext: async () => {
+            trapFocus.value = true;
             await executeCommand(new ToolSwitchCommand("correction"));
         },
     },
@@ -186,9 +188,9 @@ const finishButton: ButtonProp = {
 </script>
 
 <template>
-    <VTour ref="tour" :steps="steps" autoStart @onTourStart="onTourStart" @onTourEnd="onTourComplete"
+    <VTour ref="tour" :steps="steps" @onTourStart="onTourStart" @onTourEnd="onTourComplete"
         @skip="() => { onTourComplete() }" :highlight="true" :jumpOptions="{ duration: 10 }" :skip-button="skipBtn"
-        :next-button="nextBtn" :prev-button="prevButton" :finish-button="finishButton" :trapFocus="true" />
+        :next-button="nextBtn" :prev-button="prevButton" :finish-button="finishButton" :trap-focus="trapFocus" />
 
     <div class="absolute bg-gray-500 z-99 inset-0 opacity-30" v-if="tourIsActive"></div>
 </template>

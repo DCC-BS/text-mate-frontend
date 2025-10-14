@@ -4,7 +4,12 @@ import {
     ExecuteTextActionCommand,
     type ToggleLockEditorCommand,
 } from "~/assets/models/commands";
-import type { TextActions } from "~/assets/models/text-actions";
+import type { TextActions } from "~~/shared/text-actions";
+import SummarizeAction from "./quick-action/summarize-action.vue";
+import SocialMediaAction from "./quick-action/social-media-action.vue";
+import MediumAction from "./quick-action/medium-action.vue";
+import FormalityAction from "./quick-action/formality-action.vue";
+import CustomAction from "./quick-action/custom-action.vue";
 
 interface InputProps {
     text: string;
@@ -33,7 +38,7 @@ onCommand<ToggleLockEditorCommand>(
     },
 );
 
-async function applyAction(action: TextActions): Promise<void> {
+async function applyAction(action: TextActions, config?: string): Promise<void> {
     if (!actionsAreAvailable.value) {
         toast.add({
             title: "Error",
@@ -52,7 +57,7 @@ async function applyAction(action: TextActions): Promise<void> {
             body: {
                 action,
                 text: props.text,
-                options: `${props.options};\nlanguage code: ${selectedLanguage.value}`,
+                options: `${config};\nlanguage code: ${selectedLanguage.value}`,
             },
         });
 
@@ -93,14 +98,10 @@ async function applyAction(action: TextActions): Promise<void> {
         <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('bullet_points')">
             {{ t('editor.bullet_points') }}
         </UButton>
-        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('summarize')">
-            {{ t('editor.summarize') }}
-        </UButton>
-        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('social_mediafy')">
-            {{ t('editor.social_mediafy') }}
-        </UButton>
-        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('rewrite')">
-            {{ t('editor.rewrite') }}
-        </UButton>
+        <SummarizeAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
+        <SocialMediaAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
+        <FormalityAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
+        <MediumAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
+        <CustomAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
     </div>
 </template>

@@ -1,0 +1,77 @@
+import { expect, test } from "@playwright/test";
+import { skipDisclaimer, skipTour } from "./utils";
+
+test("Undo and Redo buttons should be disabled when no action was taken", async ({
+    page,
+}) => {
+    await page.goto("/");
+
+    await skipDisclaimer(page);
+    await skipTour(page);
+
+    const undoButton = page.getByTestId("undo-button");
+    const redoButton = page.getByTestId("redo-button");
+
+    await expect(undoButton).toBeDisabled();
+    await expect(redoButton).toBeDisabled();
+});
+
+test("Undo button should be enabled after an action was taken", async ({
+    page,
+}) => {
+    await page.goto("/");
+
+    await skipDisclaimer(page);
+    await skipTour(page);
+
+    const undoButton = page.getByTestId("undo-button");
+
+    await page.locator(".tiptap").fill("This is a test.");
+
+    await expect(undoButton).toBeEnabled();
+});
+
+test("Redo button should be enabled after an undo action was taken", async ({
+    page,
+}) => {
+    await page.goto("/");
+
+    await skipDisclaimer(page);
+    await skipTour(page);
+
+    const undoButton = page.getByTestId("undo-button");
+    const redoButton = page.getByTestId("redo-button");
+
+    await page.locator(".tiptap").fill("This is a test.");
+
+    await expect(undoButton).toBeEnabled();
+
+    await undoButton.click();
+
+    await expect(redoButton).toBeEnabled();
+});
+
+test("Clicking undo and redo buttons should undo and redo the last action", async ({
+    page,
+}) => {
+    await page.goto("/");
+
+    await skipDisclaimer(page);
+    await skipTour(page);
+
+    const undoButton = page.getByTestId("undo-button");
+    const redoButton = page.getByTestId("redo-button");
+    const editor = page.locator(".tiptap");
+
+    await editor.fill("This is a test.");
+
+    await expect(editor).toHaveText("This is a test.");
+
+    await undoButton.click();
+
+    await expect(editor).toHaveText("");
+
+    await redoButton.click();
+
+    await expect(editor).toHaveText("This is a test.");
+});

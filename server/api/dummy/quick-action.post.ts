@@ -1,3 +1,5 @@
+import { TextActionInputSchema } from "#shared/text-actions";
+
 export default defineEventHandler(async (event) => {
     // Set headers for streaming response
     setHeader(event, "Content-Type", "text/plain; charset=utf-8");
@@ -5,9 +7,20 @@ export default defineEventHandler(async (event) => {
     setHeader(event, "Cache-Control", "no-cache");
     setHeader(event, "Connection", "keep-alive");
 
+    const body = TextActionInputSchema.parse(await readBody(event));
+
     // Dummy text to stream word by word
-    const dummyText =
-        "This is a dummy streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
+    let dummyText = "";
+    switch (body.action) {
+        case "rewrite":
+            dummyText =
+                "This is a dummy streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
+            break;
+        default:
+            dummyText = `Action: ${body.action}, Input: ${body.text}`;
+            break;
+    }
+
     const words = dummyText.split(" ");
 
     // Create a readable stream

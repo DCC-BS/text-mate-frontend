@@ -143,7 +143,19 @@
         "en-US": "Translate to English (US)",
         "en-GB": "Translate to English (UK)",
         "fr": "Translate to French",
-        "it": "Translate to Italian"
+        "it": "Translate to Italian",
+        "summarize": {
+            "sentence": "Sentence",
+            "three_sentence": "Three Sentences",
+            "paragraph": "Paragraph",
+            "page": "Page"
+        },
+        "social-mediafy": {
+            "bluesky": "Bluesky",
+            "instagram": "Instagram",
+            "linkedin": "LinkedIn",
+            "x": "X"
+        }
     },
     "flesch-score": {
         "easy": "Easy",

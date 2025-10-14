@@ -43,11 +43,11 @@ function handleRedo(): void {
     <div data-tour="text-editor-toolpanel">
       <UTooltip :text="t('navigation.undo')" :kbds="['Ctrl', 'Z']">
         <UButton icon="i-lucide-undo" variant="link" color="neutral" @click="handleUndo"
-          :disabled="!undoRedoState.canUndo"></UButton>
+          :disabled="!undoRedoState.canUndo" data-testid="undo-button"></UButton>
       </UTooltip>
       <UTooltip :text="t('navigation.redo')" :kbds="['Ctrl', 'Y']">
         <UButton icon="i-lucide-redo" variant="link" color="neutral" @click="handleRedo"
-          :disabled="!undoRedoState.canRedo"></UButton>
+          :disabled="!undoRedoState.canRedo" data-testid="redo-button"></UButton>
       </UTooltip>
       <UTooltip :text="t('upload.uploadFile')">
         <UButton icon="i-lucide-upload" variant="link" color="neutral" @click="emit('upload-file')"></UButton>

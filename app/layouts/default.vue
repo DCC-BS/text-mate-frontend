@@ -11,7 +11,8 @@ const isAuth = computed(() => {
 <template>
     <template v-if="!isAuth">
         <Disclaimer app-name="TextMate" />
+        <Onboarding />
     </template>
-    
+
     <slot />
 </template>

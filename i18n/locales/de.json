@@ -143,7 +143,19 @@
         "en-US": "Auf Englisch (US) übersetzen",
         "en-GB": "Auf Englisch (GB) übersetzen",
         "fr": "Auf Französisch übersetzen",
-        "it": "Auf Italienisch übersetzen"
+        "it": "Auf Italienisch übersetzen",
+        "summarize": {
+            "sentence": "Satz",
+            "three_sentence": "Drei Sätze",
+            "paragraph": "Absatz",
+            "page": "Seite"
+        },
+        "social-mediafy": {
+            "bluesky": "Bluesky",
+            "instagram": "Instagram",
+            "linkedin": "LinkedIn",
+            "x": "X"
+        }
     },
     "flesch-score": {
         "easy": "Einfach",

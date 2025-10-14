@@ -17,7 +17,7 @@ const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
 const isEditorLocked = ref(false);
 
-const currentTool = ref<"correction" | "rewrite" | "advisor">("correction");
+const currentTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
 const tourIsActive = ref(false);
 
 // composables
