@@ -1,14 +1,16 @@
 import { expect, test } from "@playwright/test";
 import { skipDisclaimer, skipTour } from "./utils";
 
-test("Undo and Redo buttons should be disabled when no action was taken", async ({
-    page,
-}) => {
+test.beforeEach(async ({ page }) => {
     await page.goto("/");
 
     await skipDisclaimer(page);
     await skipTour(page);
+});
 
+test("Undo and Redo buttons should be disabled when no action was taken", async ({
+    page,
+}) => {
     const undoButton = page.getByTestId("undo-button");
     const redoButton = page.getByTestId("redo-button");
 
@@ -19,11 +21,6 @@ test("Undo and Redo buttons should be disabled when no action was taken", async 
 test("Undo button should be enabled after an action was taken", async ({
     page,
 }) => {
-    await page.goto("/");
-
-    await skipDisclaimer(page);
-    await skipTour(page);
-
     const undoButton = page.getByTestId("undo-button");
 
     await page.locator(".tiptap").fill("This is a test.");
@@ -34,11 +31,6 @@ test("Undo button should be enabled after an action was taken", async ({
 test("Redo button should be enabled after an undo action was taken", async ({
     page,
 }) => {
-    await page.goto("/");
-
-    await skipDisclaimer(page);
-    await skipTour(page);
-
     const undoButton = page.getByTestId("undo-button");
     const redoButton = page.getByTestId("redo-button");
 
@@ -54,11 +46,6 @@ test("Redo button should be enabled after an undo action was taken", async ({
 test("Clicking undo and redo buttons should undo and redo the last action", async ({
     page,
 }) => {
-    await page.goto("/");
-
-    await skipDisclaimer(page);
-    await skipTour(page);
-
     const undoButton = page.getByTestId("undo-button");
     const redoButton = page.getByTestId("redo-button");
     const editor = page.locator(".tiptap");

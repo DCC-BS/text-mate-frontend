@@ -1,12 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { skipDisclaimer, skipTour } from "./utils";
+import { skipDisclaimer, skipTour, switchTo } from "./utils";
 
-test("Text should show problems", async ({ page }) => {
+test.beforeEach(async ({ page }) => {
     await page.goto("/");
 
     await skipDisclaimer(page);
     await skipTour(page);
+    await switchTo(page, "problems");
+});
 
+test("Text should show problems", async ({ page }) => {
     await page.locator(".tiptap").fill("This is a test.");
 
     await page.waitForTimeout(1000);
