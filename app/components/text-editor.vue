@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { EditorContent } from "@tiptap/vue-3";
-import { motion } from "motion-v";
 import { useTextAction } from "~/composables/textAction.composable";
 import { useTextFileUpload } from "~/composables/useFileUpload";
 import { useTextEditor } from "~/composables/useTextEditor";

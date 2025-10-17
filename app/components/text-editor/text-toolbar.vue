@@ -1,18 +1,18 @@
 <script lang="ts" setup>
 import { UTooltip } from "#components";
 import {
-    Cmds,
-    RedoCommand,
-    UndoCommand,
-    type UndoRedoStateChanged,
+  Cmds,
+  RedoCommand,
+  UndoCommand,
+  type UndoRedoStateChanged,
 } from "~/assets/models/commands";
 import TextStatsView from "../tool-panel/text-stats-view.vue";
 
 const props = defineProps<{
-    text: string;
-    characters: number;
-    words: number;
-    limit: number;
+  text: string;
+  characters: number;
+  words: number;
+  limit: number;
 }>();
 
 const emit = defineEmits<(e: "upload-file") => void>();
@@ -20,21 +20,21 @@ const emit = defineEmits<(e: "upload-file") => void>();
 const { executeCommand, onCommand } = useCommandBus();
 const { t } = useI18n();
 const undoRedoState = reactive({
-    canUndo: false,
-    canRedo: false,
+  canUndo: false,
+  canRedo: false,
 });
 
 onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
-    undoRedoState.canUndo = command.canUndo;
-    undoRedoState.canRedo = command.canRedo;
+  undoRedoState.canUndo = command.canUndo;
+  undoRedoState.canRedo = command.canRedo;
 });
 
 function handleUndo(): void {
-    executeCommand(new UndoCommand());
+  executeCommand(new UndoCommand());
 }
 
 function handleRedo(): void {
-    executeCommand(new RedoCommand());
+  executeCommand(new RedoCommand());
 }
 </script>
 
@@ -55,7 +55,7 @@ function handleRedo(): void {
     </div>
 
     <UPopover>
-      <UButton class="text-gray-500" variant="link" color="neutral" data-tour="word-count">
+      <UButton class="text-gray-500" variant="link" color="neutral" data-tour="word-count" data-testid="characterCount">
         {{ props.characters }} / {{ props.limit }} Zeichen
       </UButton>
 
