@@ -68,12 +68,11 @@
     max-width: 42rem;
 }
 
-
 .nt-highlight {
-    outline: var(--color-blue-600) solid 1px;
-    outline: 1px;
+    /* outline: var(--color-blue-600) solid 1px; */
+    outline: 0px;
     outline-offset: 2px;
     border-radius: 5px;
-    z-index: 1000 !important;
+    z-index: 1000;
     background-color: white;
 }

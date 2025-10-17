@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { UButton } from '#components';
-
+import { UButton } from "#components";
 </script>
 
 <template>

@@ -1,7 +1,15 @@
 <script lang="ts" setup>
 import type { VTour } from "#components";
 import type { ButtonProp, TourStep } from "#nuxt-tour/props";
-import { ApplyTextCommand, ClearTextCommand, Cmds, ExecuteTextActionCommand, RegisterDiffCommand, type RestartTourCommand, ToolSwitchCommand } from "~/assets/models/commands";
+import {
+    ApplyTextCommand,
+    ClearTextCommand,
+    Cmds,
+    ExecuteTextActionCommand,
+    RegisterDiffCommand,
+    type RestartTourCommand,
+    ToolSwitchCommand,
+} from "~/assets/models/commands";
 
 const exampleText = "Schreibe hier dein text.";
 const exampleRewriteText = "Dein umformulierte Text.";
@@ -56,7 +64,9 @@ const steps = [
         title: t("tour.dictionary.title"),
         body: t("tour.dictionary.content"),
         onNext: async () => {
-            await executeCommand(new ApplyTextCommand(exampleText, { from: 0, to: 0 }));
+            await executeCommand(
+                new ApplyTextCommand(exampleText, { from: 0, to: 0 }),
+            );
         },
     },
     {
@@ -78,7 +88,7 @@ const steps = [
         body: t("tour.textEditorToolpanel.content"),
         popperConfig: {
             placement: "top",
-        }
+        },
     },
     {
         target: '[data-tour="word-count"]',
@@ -109,7 +119,13 @@ const steps = [
                 },
             });
 
-            await executeCommand(new ExecuteTextActionCommand(stream, 0, exampleRewriteText.length + 1));
+            await executeCommand(
+                new ExecuteTextActionCommand(
+                    stream,
+                    0,
+                    exampleRewriteText.length + 1,
+                ),
+            );
         },
     },
     {
@@ -117,7 +133,12 @@ const steps = [
         title: t("tour.rewrite.title"),
         body: t("tour.rewrite.content"),
         onPrev: async () => {
-            await executeCommand(new ApplyTextCommand(exampleText, { from: 0, to: exampleRewriteText.length + 1 }));
+            await executeCommand(
+                new ApplyTextCommand(exampleText, {
+                    from: 0,
+                    to: exampleRewriteText.length + 1,
+                }),
+            );
         },
     },
     {
@@ -145,7 +166,7 @@ const steps = [
         target: '[data-tour="start-tour"]',
         title: t("tour.conclusion.title"),
         body: t("tour.conclusion.content"),
-    }
+    },
 ] as TourStep[];
 
 // life cycle

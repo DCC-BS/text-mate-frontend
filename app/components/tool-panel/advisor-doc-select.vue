@@ -5,14 +5,14 @@ import type { AdvisorService } from "~/assets/services/AdvisorService";
 const { t } = useI18n();
 
 interface AdvisorDocSelectProps {
-  advisorService: AdvisorService;
+    advisorService: AdvisorService;
 }
 
 const props = defineProps<AdvisorDocSelectProps>();
 
 const docs = props.advisorService.getDocs();
 const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
-  default: [],
+    default: [],
 });
 </script>
 

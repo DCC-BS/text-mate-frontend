@@ -1,23 +1,41 @@
 <script lang="ts" setup>
-import type { DropdownMenuItem } from '@nuxt/ui';
+import type { DropdownMenuItem } from "@nuxt/ui";
 
 interface InputProps {
-  actionsAreAvailable: boolean;
+    actionsAreAvailable: boolean;
 }
 
 const props = defineProps<InputProps>();
 
-const emit = defineEmits<(e: 'apply-action', action: "summarize", config: string) => void>();
+const emit =
+    defineEmits<
+        (e: "apply-action", action: "summarize", config: string) => void
+    >();
 
 const { t } = useI18n();
 
 const items = computed<DropdownMenuItem[]>(() => [
-  { label: t('quick-actions.summarize.sentence'), value: 'sentence', icon: "i-lucide-tally-1" },
-  { label: t('quick-actions.summarize.three_sentence'), value: 'three_sentence', icon: "i-lucide-tally-3" },
-  { label: t('quick-actions.summarize.paragraph'), value: 'paragraph', icon: "i-lucide-text-wrap" },
-  { label: t('quick-actions.summarize.page'), value: 'page', icon: "i-lucide-file-text" },
+    {
+        label: t("quick-actions.summarize.sentence"),
+        value: "sentence",
+        icon: "i-lucide-tally-1",
+    },
+    {
+        label: t("quick-actions.summarize.three_sentence"),
+        value: "three_sentence",
+        icon: "i-lucide-tally-3",
+    },
+    {
+        label: t("quick-actions.summarize.paragraph"),
+        value: "paragraph",
+        icon: "i-lucide-text-wrap",
+    },
+    {
+        label: t("quick-actions.summarize.page"),
+        value: "page",
+        icon: "i-lucide-file-text",
+    },
 ]);
-
 </script>
 
 <template>

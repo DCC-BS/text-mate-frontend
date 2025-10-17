@@ -5,11 +5,11 @@ import {
     type ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 import type { TextActions } from "~~/shared/text-actions";
-import SummarizeAction from "./quick-action/summarize-action.vue";
-import SocialMediaAction from "./quick-action/social-media-action.vue";
-import MediumAction from "./quick-action/medium-action.vue";
-import FormalityAction from "./quick-action/formality-action.vue";
 import CustomAction from "./quick-action/custom-action.vue";
+import FormalityAction from "./quick-action/formality-action.vue";
+import MediumAction from "./quick-action/medium-action.vue";
+import SocialMediaAction from "./quick-action/social-media-action.vue";
+import SummarizeAction from "./quick-action/summarize-action.vue";
 
 interface InputProps {
     text: string;
@@ -37,7 +37,10 @@ onCommand<ToggleLockEditorCommand>(
     },
 );
 
-async function applyAction(action: TextActions, config?: string): Promise<void> {
+async function applyAction(
+    action: TextActions,
+    config?: string,
+): Promise<void> {
     if (!actionsAreAvailable.value) {
         toast.add({
             title: "Error",
@@ -56,7 +59,7 @@ async function applyAction(action: TextActions, config?: string): Promise<void> 
             body: {
                 action,
                 text: props.text,
-                options: `${config ?? ''};\nlanguage code: ${selectedLanguage.value}`,
+                options: `${config ?? ""};language code: ${selectedLanguage.value}`,
             },
         });
 
