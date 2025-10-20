@@ -50,6 +50,9 @@ export class CorrectionBlockChangedCommand implements ICommand {
     ) {}
 }
 
+/**
+ * Command that applies a text change to the text editor
+ */
 export class ApplyTextCommand implements ICommand {
     readonly $type = "ApplyTextCommand";
 

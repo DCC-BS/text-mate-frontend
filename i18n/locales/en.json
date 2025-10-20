@@ -222,7 +222,11 @@
     "tour": {
         "welcome": {
             "title": "Welcome to Text Mate!",
-            "content": "Here you can switch between three modes: Problems to see and fix grammar and spelling errors, Rewrite to leverage AI for text enhancement, and Review to check your text against guideline documents."
+            "content": "Here you can switch between three modes:  Rewrite to leverage AI for text enhancement, Problems to see and fix grammar and spelling errors, and Review to check your text against guideline documents."
+        },
+        "problemsIntro": {
+            "title": "Spelling and Grammar Problems",
+            "content": "Textmate helps you find and fix grammar and spelling errors in your text."
         },
         "language": {
             "title": "Language Selection",
@@ -249,10 +253,6 @@
             "title": "Text Editor Tools",
             "content": "Here you can undo or redo your changes. Additionally, you can upload a document, which will be converted to text and opened in the editor."
         },
-        "rewrite": {
-            "title": "AI Text Rewriting",
-            "content": "When a text action is performed, the changes will appear here. Click on a change to undo it or on the checkmark at the bottom to apply all changes."
-        },
         "rewriteOptions": {
             "title": "Rewrite Options",
             "content": "Define here how your text should be rewritten. Customize writing style, target audience, intent, and medium to suit your needs."
@@ -260,6 +260,10 @@
         "rewriteToolpanel": {
             "title": "Accept or Reject Rewrite Actions",
             "content": "Here you can undo the last rewrite action or accept all changes."
+        },
+        "rewrite": {
+            "title": "AI Text Rewriting",
+            "content": "When a text action is executed, the changes appear here. Click on a change to undo it or on the checkmark below to accept all changes."
         },
         "check": {
             "title": "Check",

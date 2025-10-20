@@ -41,8 +41,8 @@ export function useTextEditor(options: UseTextEditorOptions) {
         canRedo: false,
     });
 
-    const isTextCorrectionActive = ref(true);
-    const isRewriteActive = ref(false);
+    const isTextCorrectionActive = ref(false);
+    const isRewriteActive = ref(true);
 
     const { onCommand, executeCommand } = useCommandBus();
     const toast = useToast();
@@ -55,12 +55,12 @@ export function useTextEditor(options: UseTextEditorOptions) {
     const editor = useEditor({
         content: modelValue.value,
         extensions: [
-            Text,
             Document,
+            Paragraph,
+            Text,
             BulletList,
             ListItem,
             OrderedList,
-            Paragraph,
             HardBreak,
             Bold,
             Italic,
@@ -75,8 +75,8 @@ export function useTextEditor(options: UseTextEditorOptions) {
             FocusedSentenceMark,
             FocusedWordMark,
         ],
-        enablePasteRules: false,
-        enableInputRules: false,
+        enablePasteRules: true,
+        enableInputRules: true,
         editorProps: {
             handleKeyDown: (_, event) => {
                 // Check if Ctrl+C is pressed
@@ -122,7 +122,7 @@ export function useTextEditor(options: UseTextEditorOptions) {
         editor.value
             .chain()
             .setTextSelection(range)
-            .insertContent(text)
+            .insertContent(text, { applyInputRules: true })
             .focus(range.from)
             .run();
     });

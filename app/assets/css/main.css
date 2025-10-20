@@ -14,6 +14,8 @@
 
 @import "./partials/typography.css";
 
+@import "./partials/prosemirror-lists.css";
+
 .ProseMirror {
     z-index: 0;
     height: 100%;
