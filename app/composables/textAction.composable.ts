@@ -35,12 +35,7 @@ export function useTextAction(editor: Ref<Editor | undefined>) {
                     title: t("status.quickAction"),
                 });
 
-                await applyStreamToEditor(
-                    reader,
-                    editor.value,
-                    command.form,
-                    command.to,
-                );
+                await applyStreamToEditor(reader, editor.value);
             } finally {
                 removeProgress("quick-action");
                 await executeCommand(new ToggleLockEditorCommand(false));

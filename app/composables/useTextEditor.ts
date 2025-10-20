@@ -11,7 +11,7 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import Paragraph from "@tiptap/extension-paragraph";
 import Strike from "@tiptap/extension-strike";
 import Text from "@tiptap/extension-text";
-import { useEditor } from "@tiptap/vue-3";
+import { CommandManager, useEditor } from "@tiptap/vue-3";
 import {
     type ApplyTextCommand,
     type ClearTextCommand,
@@ -129,6 +129,7 @@ export function useTextEditor(options: UseTextEditorOptions) {
 
     onCommand<ClearTextCommand>(Cmds.ClearTextCommand, async () => {
         if (!editor.value) return;
+
         editor.value.commands.clearContent();
     });
 
