@@ -74,9 +74,7 @@ async function applyAction(
             return;
         }
 
-        executeCommand(
-            new ExecuteTextActionCommand(response, 1, props.text.length + 1),
-        );
+        executeCommand(new ExecuteTextActionCommand(response));
     } finally {
         isLocked.value = false;
     }

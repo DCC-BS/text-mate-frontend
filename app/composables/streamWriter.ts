@@ -1,9 +1,9 @@
+import UndoRedo from "@tiptap/extension-history";
 import type { Editor } from "@tiptap/vue-3";
-import { unified } from "unified";
+import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import rehypeStringify from "rehype-stringify";
-import UndoRedo from "@tiptap/extension-history";
+import { unified } from "unified";
 
 export const useStreamWriter = () => {
     return {
@@ -50,12 +50,14 @@ async function applyStreamToEditor(
 
     console.log("Raw buffer:", buffer);
 
-    const newBuffer = await unified()
-        .use(remarkParse) // Parse markdown to mdast
-        .use(remarkRehype) // Convert mdast to hast (HTML AST)
-        .use(rehypeStringify) // Serialize hast to HTML string
-        .process(buffer)
-        .then((file) => String(file));
+    // const newBuffer = await unified()
+    //     .use(remarkParse) // Parse markdown to mdast
+    //     .use(remarkRehype) // Convert mdast to hast (HTML AST)
+    //     .use(rehypeStringify) // Serialize hast to HTML string
+    //     .process(buffer)
+    //     .then((file) => String(file));
+
+    const newBuffer = buffer;
 
     console.log("Final buffer:", newBuffer);
 

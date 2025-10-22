@@ -15,6 +15,8 @@ type ActionChange = {
     hasChanged: boolean;
     from: number;
     to: number;
+    addedText: string;
+    removedText: string;
     oldText: string;
 };
 
@@ -30,7 +32,7 @@ const commandHistory = ref<RegisterDiffCommand[]>([]);
  * @returns The filtered string.
  */
 function filterExtraNewlines(text: string): string {
-    return text.replace(/\n{2,}/g, '\n');
+    return text.replace(/\n{3,}/g, "\n");
 }
 
 const changes = computed<ActionChange[]>(() => {
@@ -60,6 +62,8 @@ const changes = computed<ActionChange[]>(() => {
                 from: currentPos,
                 hasChanged: true,
                 to: currentPos + next.value.length,
+                addedText: next.value,
+                removedText: current.value,
                 oldText: filterExtraNewlines(current.value),
             });
 
@@ -74,7 +78,11 @@ const changes = computed<ActionChange[]>(() => {
             from: currentPos,
             hasChanged: current.added || current.removed,
             to: currentPos + current.value.length,
-            oldText: current?.added ? "" : filterExtraNewlines(current.value),
+            addedText: current?.added ? filterExtraNewlines(current.value) : "",
+            removedText: current?.removed
+                ? filterExtraNewlines(current.value)
+                : "",
+            oldText: filterExtraNewlines(current.value),
         });
 
         if (!current.removed) {
@@ -132,20 +140,14 @@ async function undoAllChanges() {
         <div>
             <template v-for="change in changes" :key="`${change.from}${change.oldText}`">
                 <UPopover v-if="change.hasChanged">
-                    <span class="cursor-pointer hover:bg-info-50">
-                        <span v-for="diff in change.diffs" class="underline text-wrap decoration-2"
-                            :class="{ 'decoration-red-400': diff.removed, 'decoration-green-400': diff.added }">
-                            {{ diff.value }}
-                        </span>
+                    <span class="group cursor-pointer hover:bg-info-300 inline-block align-top">
+                        <pre class="bg-red-100 group-hover:bg-red-200 inline text-wrap">{{ change.removedText }}</pre>
+                        <UIcon name="i-lucide-arrow-right" class="mx-2"
+                            v-if="change.removedText.length > 0 && change.addedText.length > 0" />
+                        <pre class="bg-green-100 group-hover:bg-green-200 inline text-wrap">{{ change.addedText }}</pre>
                     </span>
                     <template #content>
                         <div class="p-2 ring-1 ring-gray-400 rounded-md">
-                            <span class="bg-red-50">{{change.diffs.filter(x => x.removed).map(x =>
-                                x.value).join('')}}</span>
-                            <UIcon name="i-lucide-arrow-right" class="mx-2" />
-                            <span class="bg-green-50">{{change.diffs.filter(x => x.added).map(x =>
-                                x.value).join('')}}</span>
-                            <br />
                             <UButton variant="link" color="neutral" icon="i-lucide-undo" @click="undo(change)">
                                 {{
                                     $t('rewrite-diff-viewer.undo') }}

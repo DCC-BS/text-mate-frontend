@@ -80,13 +80,7 @@ const steps = [
                     to: 0,
                 }),
             );
-            await executeCommand(
-                new ExecuteTextActionCommand(
-                    stream,
-                    0,
-                    exampleRewriteText.length + 1,
-                ),
-            );
+            await executeCommand(new ExecuteTextActionCommand(stream));
         },
         onPrev: async () => {
             await executeCommand(new ClearTextCommand());
