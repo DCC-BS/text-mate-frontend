@@ -178,7 +178,11 @@
     "tour": {
         "welcome": {
             "title": "Willkommen bei Text Mate!",
-            "content": "Hier können Sie zwischen drei Modi wechseln: Probleme zum Anzeigen und Beheben von Grammatik- und Rechtschreibfehlern, Rewrite zur Nutzung von KI für Textverbesserungen und Review zur Überprüfung Ihres Texts anhand von Leitliniendokumenten."
+            "content": "Hier können Sie zwischen drei Modi wechseln: Umschreiben zur Nutzung von KI für Textverbesserungen, Probleme zum Anzeigen und Beheben von Grammatik- und Rechtschreibfehlern und Überprüfen zur Überprüfung Ihres Texts anhand von Richtlinien."
+        },
+        "problemsIntro": {
+            "title": "Rechtsschreibungs- und Grammatikprobleme",
+            "content": "Textmate hilft Ihnen, Grammatik- und Rechtschreibfehler in Ihrem Text zu finden und zu beheben."
         },
         "language": {
             "title": "Sprachauswahl",
@@ -205,10 +209,6 @@
             "title": "Text-Editor-Werkzeuge",
             "content": "Hier können sie ihre änderungen rückgängig machen oder wiederholen. Zusätzlich können Sie ein Dokument hochladen, welches in den Text konvertiert und im Editor geöffnet wird."
         },
-        "rewrite": {
-            "title": "KI-Textumschreibung",
-            "content": "Wenn eine Textaktion asgeführt wird, erscheinen die Änderungen hier. Klicken Sie auf eine Änderung, um sie rückgängig zu machen oder auf das Häkchen unten, um alle Änderungen zu übernehmen."
-        },
         "rewriteOptions": {
             "title": "Umschreibungsoptionen",
             "content": "Definieren Sie hier, wie Ihr Text umgeschrieben werden soll. Passen Sie Schreibstil, Zielgruppe, Absicht und Medium an Ihre Bedürfnisse an."
@@ -216,6 +216,10 @@
         "rewriteToolpanel": {
             "title": "Umschreibaktionen annehmen oder ablehnen",
             "content": "Hier kanst du die letzte Umschreibaktion rückgängig machen oder alle Änderungen annehmen."
+        },
+        "rewrite": {
+            "title": "KI-Textumschreibung",
+            "content": "Wenn eine Textaktion asgeführt wird, erscheinen die Änderungen hier. Klicken Sie auf eine Änderung, um sie rückgängig zu machen oder auf das Häkchen unten, um alle Änderungen zu übernehmen."
         },
         "check": {
             "title": "Überprüfen",
@@ -227,7 +231,7 @@
         },
         "quickActions": {
             "title": "Umschreibaktionen",
-            "content": "Führen Sie Textaktionen wie Zusammenfassungen oder Umschreiben durch. Wählen Sie eine Aktion aus, um sie auf Ihren Text anzuwenden."
+            "content": "Führen Sie Textaktionen wie Einfache Sprache oder Zusammenfassungen durch. Wählen Sie eine Aktion aus, um sie auf Ihren Text anzuwenden."
         },
         "conclusion": {
             "title": "Das war's!",

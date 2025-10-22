@@ -35,7 +35,9 @@ const changes = computed<ActionChange[]>(() => {
         return [];
     }
 
+    console.log("diff from", lastCommand.newText, "to", props.text);
     const diffs = diffWords(lastCommand.newText, props.text);
+    console.log("Diffs:", diffs);
     const changes = [] as ActionChange[];
     let currentPos = 0;
 
@@ -119,7 +121,7 @@ async function undoAllChanges() {
 
     <div class="overflow-y-auto absolute inset-0 p-1 ProseMirror dark">
         <div>
-            <template v-for="change in changes" :key="change.from">
+            <template v-for="change in changes" :key="`${change.from}${change.oldText}`">
                 <UPopover v-if="change.hasChanged">
                     <span class="cursor-pointer hover:bg-info-50">
                         <span v-for="diff in change.diffs" class="underline text-wrap decoration-2"

@@ -50,6 +50,9 @@ export class CorrectionBlockChangedCommand implements ICommand {
     ) {}
 }
 
+/**
+ * Command that applies a text change to the text editor
+ */
 export class ApplyTextCommand implements ICommand {
     readonly $type = "ApplyTextCommand";
 
@@ -104,11 +107,7 @@ export class InvalidateCorrectionCommand implements ICommand {
 export class ExecuteTextActionCommand implements ICommand {
     readonly $type = "ExecuteTextActionCommand";
 
-    constructor(
-        public stream: ReadableStream<Uint8Array<ArrayBufferLike>>,
-        public form: number,
-        public to: number,
-    ) {}
+    constructor(public stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {}
 }
 
 /**

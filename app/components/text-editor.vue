@@ -21,13 +21,11 @@ const lockEditor = ref(false);
 // Text editor composable
 const {
     editor,
-    undoRedoState,
     focusedSentence,
     focusedWord,
     focusedSelection,
     hoverBlock,
     relativeHoverRect,
-    isRewriteActive,
     isTextCorrectionActive,
 } = useTextEditor({
     container,

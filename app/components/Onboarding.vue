@@ -49,9 +49,71 @@ const steps = [
         target: '[data-tour="tool-switch"]',
         title: t("tour.welcome.title"),
         body: t("tour.welcome.content"),
+        onShow: async () => {
+            await executeCommand(new ToolSwitchCommand("rewrite"));
+        },
         onNext: async () => {
-            trapFocus.value = true;
+            // also switch tool on next because the user might change tool before clicking next
+            await executeCommand(new ToolSwitchCommand("rewrite"));
+        },
+        onPrev: async () => {
             await executeCommand(new ToolSwitchCommand("correction"));
+        },
+    },
+    {
+        target: '[data-tour="quick-actions"]',
+        title: t("tour.quickActions.title"),
+        body: t("tour.quickActions.content"),
+        onNext: async () => {
+            const stream = new ReadableStream({
+                start(controller) {
+                    const encoder = new TextEncoder();
+                    controller.enqueue(encoder.encode(exampleRewriteText));
+                    controller.close();
+                },
+            });
+
+            await executeCommand(new ClearTextCommand());
+            await executeCommand(
+                new ApplyTextCommand(exampleText, {
+                    from: 0,
+                    to: 0,
+                }),
+            );
+            await executeCommand(
+                new ExecuteTextActionCommand(
+                    stream,
+                    0,
+                    exampleRewriteText.length + 1,
+                ),
+            );
+        },
+        onPrev: async () => {
+            await executeCommand(new ClearTextCommand());
+        },
+    },
+    {
+        target: '[data-tour="rewrite"]',
+        title: t("tour.rewrite.title"),
+        body: t("tour.rewrite.content"),
+    },
+    {
+        target: '[data-tour="rewrite-toolpanel"]',
+        title: t("tour.rewriteToolpanel.title"),
+        body: t("tour.rewriteToolpanel.content"),
+    },
+    {
+        target: '[data-tour="tool-switch"]',
+        title: t("tour.problemsIntro.title"),
+        body: t("tour.problemsIntro.content"),
+        onShow: async () => {
+            await executeCommand(new ToolSwitchCommand("correction"));
+        },
+        onNext: async () => {
+            await executeCommand(new ToolSwitchCommand("correction"));
+        },
+        onPrev: async () => {
+            await executeCommand(new ToolSwitchCommand("rewrite"));
         },
     },
     {
@@ -64,6 +126,7 @@ const steps = [
         title: t("tour.dictionary.title"),
         body: t("tour.dictionary.content"),
         onNext: async () => {
+            await executeCommand(new ClearTextCommand());
             await executeCommand(
                 new ApplyTextCommand(exampleText, { from: 0, to: 0 }),
             );
@@ -100,69 +163,19 @@ const steps = [
     },
     {
         target: '[data-tour="tool-switch"]',
-        title: t("tour.rewrite.title"),
-        body: t("tour.rewrite.content"),
-        onShow: async () => {
-            await executeCommand(new ToolSwitchCommand("rewrite"));
-        },
-        onPrev: async () => {
-            await executeCommand(new ToolSwitchCommand("correction"));
-        },
-    },
-    {
-        target: '[data-tour="quick-actions"]',
-        title: t("tour.quickActions.title"),
-        body: t("tour.quickActions.content"),
-        onNext: async () => {
-            const stream = new ReadableStream({
-                start(controller) {
-                    const encoder = new TextEncoder();
-                    controller.enqueue(encoder.encode(exampleRewriteText));
-                    controller.close();
-                },
-            });
-
-            await executeCommand(
-                new ExecuteTextActionCommand(
-                    stream,
-                    0,
-                    exampleRewriteText.length + 1,
-                ),
-            );
-        },
-    },
-    {
-        target: '[data-tour="rewrite"]',
-        title: t("tour.rewrite.title"),
-        body: t("tour.rewrite.content"),
-        onPrev: async () => {
-            await executeCommand(
-                new ApplyTextCommand(exampleText, {
-                    from: 0,
-                    to: exampleRewriteText.length + 1,
-                }),
-            );
-        },
-    },
-    {
-        target: '[data-tour="rewrite-toolpanel"]',
-        title: t("tour.rewriteToolpanel.title"),
-        body: t("tour.rewriteToolpanel.content"),
-        popperConfig: {
-            placement: "top",
-        },
-    },
-    {
-        target: '[data-tour="tool-switch"]',
         title: t("tour.check.title"),
         body: t("tour.check.content"),
         onShow: async () => {
+            await executeCommand(new ToolSwitchCommand("advisor"));
+        },
+        onNext: async () => {
             await executeCommand(new ToolSwitchCommand("advisor"));
         },
         onPrev: async () => {
             await executeCommand(new ToolSwitchCommand("rewrite"));
         },
     },
+
     {
         target: '[data-tour="advisor"]',
         title: t("tour.advisor.title"),
