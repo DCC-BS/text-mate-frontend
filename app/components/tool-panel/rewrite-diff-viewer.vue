@@ -24,6 +24,15 @@ const { onCommand, executeCommand } = useCommandBus();
 
 const commandHistory = ref<RegisterDiffCommand[]>([]);
 
+/**
+ * Filters a string to replace sequences of more than one newline with a single newline.
+ * @param text The input string to filter.
+ * @returns The filtered string.
+ */
+function filterExtraNewlines(text: string): string {
+    return text.replace(/\n{2,}/g, '\n');
+}
+
 const changes = computed<ActionChange[]>(() => {
     if (commandHistory.value.length === 0) {
         return [] as ActionChange[];
@@ -51,7 +60,7 @@ const changes = computed<ActionChange[]>(() => {
                 from: currentPos,
                 hasChanged: true,
                 to: currentPos + next.value.length,
-                oldText: current.value,
+                oldText: filterExtraNewlines(current.value),
             });
 
             i++; // Skip the next one as it's already processed
@@ -65,7 +74,7 @@ const changes = computed<ActionChange[]>(() => {
             from: currentPos,
             hasChanged: current.added || current.removed,
             to: currentPos + current.value.length,
-            oldText: current?.added ? "" : current.value,
+            oldText: current?.added ? "" : filterExtraNewlines(current.value),
         });
 
         if (!current.removed) {
@@ -119,7 +128,7 @@ async function undoAllChanges() {
         </div>
     </div>
 
-    <div class="overflow-y-auto absolute inset-0 p-1 ProseMirror dark">
+    <div class="overflow-y-auto absolute inset-0 p-1  dark">
         <div>
             <template v-for="change in changes" :key="`${change.from}${change.oldText}`">
                 <UPopover v-if="change.hasChanged">
