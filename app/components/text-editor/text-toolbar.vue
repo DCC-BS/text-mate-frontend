@@ -55,7 +55,8 @@ function handleRedo(): void {
     </div>
 
     <UPopover>
-      <UButton class="text-gray-500" variant="link" color="neutral" data-tour="word-count" data-testid="characterCount">
+      <UButton class="text-gray-500" variant="link" color="neutral" data-tour="word-count"
+        data-testid="characterCountButton">
         {{ props.characters }} / {{ props.limit }} Zeichen
       </UButton>
 

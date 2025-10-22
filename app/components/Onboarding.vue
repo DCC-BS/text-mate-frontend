@@ -94,6 +94,9 @@ const steps = [
         target: '[data-tour="word-count"]',
         title: t("tour.wordCount.title"),
         body: t("tour.wordCount.content"),
+        popperConfig: {
+            placement: "top",
+        },
     },
     {
         target: '[data-tour="tool-switch"]',
@@ -145,6 +148,9 @@ const steps = [
         target: '[data-tour="rewrite-toolpanel"]',
         title: t("tour.rewriteToolpanel.title"),
         body: t("tour.rewriteToolpanel.content"),
+        popperConfig: {
+            placement: "top",
+        },
     },
     {
         target: '[data-tour="tool-switch"]',
