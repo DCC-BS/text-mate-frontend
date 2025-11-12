@@ -20,6 +20,8 @@ export const Cmds = {
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
     RestartTourCommand: "RestartTourCommand",
     ClearTextCommand: "ClearTextCommand",
+    ShowTextStatsCommand: "ShowTextStatsCommand",
+    HideTextStatsCommand: "HideTextStatsCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -108,6 +110,14 @@ export class ExecuteTextActionCommand implements ICommand {
     readonly $type = "ExecuteTextActionCommand";
 
     constructor(public stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {}
+}
+
+export class ShowTextStatsCommand implements ICommand {
+    readonly $type = "ShowTextStatsCommand";
+}
+
+export class HideTextStatsCommand implements ICommand {
+    readonly $type = "HideTextStatsCommand";
 }
 
 /**

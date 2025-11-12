@@ -7,6 +7,7 @@ import type {
 } from "~/assets/models/advisor";
 import { AdvisorService } from "~/assets/services/AdvisorService";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
+import TextStatsView from "./text-stats-view.vue";
 
 interface ToolPanelAdvisorViewProps {
     text: string;

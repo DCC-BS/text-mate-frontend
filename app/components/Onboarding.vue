@@ -9,6 +9,8 @@ import {
     RegisterDiffCommand,
     type RestartTourCommand,
     ToolSwitchCommand,
+    ShowTextStatsCommand,
+    HideTextStatsCommand,
 } from "~/assets/models/commands";
 
 const exampleText = "Schreibe hier dein text.";
@@ -33,14 +35,46 @@ function startTour(): void {
 
 function onTourStart(): void {
     tourIsActive.value = true;
+    // Add keyboard navigation when tour starts
+    window.addEventListener('keydown', handleKeyboardNavigation);
 }
 
 async function onTourComplete(): Promise<void> {
     tourCompleted.value = true;
     tourIsActive.value = false;
+    // Remove keyboard navigation when tour ends
+    window.removeEventListener('keydown', handleKeyboardNavigation);
     await executeCommand(new ClearTextCommand());
     await executeCommand(new ToolSwitchCommand("correction"));
     await executeCommand(new RegisterDiffCommand("", ""));
+}
+
+// Keyboard navigation handler
+function handleKeyboardNavigation(event: KeyboardEvent): void {
+    if (!tourIsActive.value) return;
+
+    // Check if user is typing in an input field
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+    }
+
+    switch (event.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+            event.preventDefault();
+            tour.value?.nextStep();
+            break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+            event.preventDefault();
+            tour.value?.prevStep();
+            break;
+        case 'Escape':
+            event.preventDefault();
+            tour.value?.endTour();
+            break;
+    }
 }
 
 // Tour steps for onboarding
@@ -95,6 +129,9 @@ const steps = [
         target: '[data-tour="rewrite-toolpanel"]',
         title: t("tour.rewriteToolpanel.title"),
         body: t("tour.rewriteToolpanel.content"),
+        popperConfig: {
+            placement: "top",
+        },
     },
     {
         target: '[data-tour="tool-switch"]',
@@ -154,6 +191,15 @@ const steps = [
         popperConfig: {
             placement: "top",
         },
+        onShow: async () => {
+            await executeCommand(new ShowTextStatsCommand())
+        },
+        onNext: async () => {
+            await executeCommand(new HideTextStatsCommand())
+        },
+        onPrev: async () => {
+            await executeCommand(new HideTextStatsCommand())
+        },
     },
     {
         target: '[data-tour="tool-switch"]',
@@ -196,6 +242,13 @@ onMounted(async () => {
 onCommand<RestartTourCommand>(Cmds.RestartTourCommand, async (_) => {
     tour.value?.resetTour();
     startTour();
+});
+
+// Clean up keyboard listener on unmount
+onUnmounted(() => {
+    if (tourIsActive.value) {
+        window.removeEventListener('keydown', handleKeyboardNavigation);
+    }
 });
 
 const skipBtn: ButtonProp = {

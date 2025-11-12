@@ -5,20 +5,18 @@ import { useTextStats } from "@/composables/text-stats";
 const { t } = useI18n();
 
 const props = defineProps<{
-    text: string;
+  text: string;
 }>();
 
 const text = computed(() => props.text);
 
-const showDetails = ref(false);
-
 const {
-    charCount,
-    wordCount,
-    syllableCount,
-    averageSentenceLength,
-    averageSyllablesPerWord,
-    fleschScore,
+  charCount,
+  wordCount,
+  syllableCount,
+  averageSentenceLength,
+  averageSyllablesPerWord,
+  fleschScore,
 } = useTextStats(text);
 </script>
 
