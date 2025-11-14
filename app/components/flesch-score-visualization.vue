@@ -67,7 +67,6 @@ const segmentWidth = computed(() => {
 </script>
 
 <template>
-    <!-- <div class="flesch-score-container"> -->
     <!-- Compact header with score and level inline -->
     <div class="flesch-header">
         <span class="flesch-title">{{ t('flesch-score.reading-ease') }}</span>
@@ -88,7 +87,6 @@ const segmentWidth = computed(() => {
             }"></div>
         </div>
     </div>
-    <!-- </div> -->
 </template>
 
 <style scoped>

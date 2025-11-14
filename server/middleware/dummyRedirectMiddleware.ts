@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
     if (
-        process.env.DUMMY &&
+        process.env.DUMMY === "true" &&
         event.node.req.url &&
         event.node.req.url.startsWith("/api/") &&
         !event.node.req.url.startsWith("/api/auth/") &&

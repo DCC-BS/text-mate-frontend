@@ -20,7 +20,6 @@ export default defineEventHandler(async (event) => {
     const words = [];
     let currentOffset = 0;
 
-    // Solution 1: Use non-null assertion operator (!) when you're sure it's safe
     for (const [i, word] of allWords.entries()) {
         if (i % 2 !== 0) {
             words.push({

@@ -24,9 +24,10 @@ const currentBlock = computed(() => {
 });
 
 onCommand(Cmds.JumpToBlockCommand, async (command: JumpToBlockCommand) => {
-    currentBlockIndex.value = blocks.value.findIndex(
+    const index = blocks.value.findIndex(
         (b) => b.offset === command.block.offset,
     );
+    currentBlockIndex.value = index === -1 ? 0 : index;
 });
 
 async function applyBlock(block: TextCorrectionBlock, corrected: string) {

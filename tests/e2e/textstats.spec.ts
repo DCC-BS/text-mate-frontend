@@ -49,5 +49,6 @@ test("Text statistics are updated on text change", async ({ page }) => {
         "4.0",
     );
     await expect(page.getByTestId("averageSyllablesPerWord")).toContainText(
-        "1.0", 
+        "1.0",
+    );
 });

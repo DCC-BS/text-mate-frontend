@@ -12,7 +12,7 @@ import { UButton } from "#components";
       <UPopover>
         <UButton variant="link" color="neutral" icon="i-lucide-ellipsis"></UButton>
         <template #content>
-          <div class="p-2 gap-2">
+          <div class="p-2 flex flex-col gap-2">
             <tool-panel-language-select />
             <tool-panel-user-dictionary />
           </div>

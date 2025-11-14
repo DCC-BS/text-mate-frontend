@@ -67,7 +67,7 @@ const changes = computed<ActionChange[]>(() => {
 
             i++; // Skip the next one as it's already processed
 
-            currentPos += next.value.length + 1;
+            currentPos += next.value.length;
             continue;
         }
 
@@ -84,7 +84,7 @@ const changes = computed<ActionChange[]>(() => {
         });
 
         if (!current.removed) {
-            currentPos += current.value.length + 1;
+            currentPos += current.value.length;
         }
     }
 

@@ -38,7 +38,7 @@ const items = computed<DropdownMenuItem[]>(() => [
   {
     label: t("quick-actions.summarize.management_summary"),
     value: "management_summary",
-    icon: "i-lucide-file-text",
+    icon: "i-lucide-file-user",
   },
 ]);
 </script>

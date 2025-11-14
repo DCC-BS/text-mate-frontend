@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
 test("Text should show problems", async ({ page }) => {
     await page.locator(".tiptap").fill("This is a test.");
 
-    await page.waitForTimeout(1000);
+    await page.locator("span.correction").first().waitFor({ state: 'visible', timeout: 5000 });
 
     const textCorrectionCount = await page.locator("span.correction").all();
 
