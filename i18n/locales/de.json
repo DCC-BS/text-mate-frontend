@@ -110,7 +110,8 @@
             "sentence": "Satz",
             "three_sentence": "Drei Sätze",
             "paragraph": "Absatz",
-            "page": "Seite"
+            "page": "Seite",
+            "management_summary": "Management Zusammenfassung"
         },
         "social-mediafy": {
             "bluesky": "Bluesky",

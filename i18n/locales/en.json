@@ -154,7 +154,8 @@
             "sentence": "Sentence",
             "three_sentence": "Three Sentences",
             "paragraph": "Paragraph",
-            "page": "Page"
+            "page": "Page",
+            "management_summary": "Management Summary"
         },
         "social-mediafy": {
             "bluesky": "Bluesky",
