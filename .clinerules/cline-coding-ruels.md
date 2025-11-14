@@ -257,8 +257,8 @@
 
 ### 15. **Comments**
    - Always add meaningful comments to your code
-   - dont explain what the code does, but why it does it
-   - dont comment obvious things
+   - don't explain what the code does, but why it does it
+   - don't comment obvious things
    - Explain complex logic and business rules
    - Use JSDoc for function documentation
 
