@@ -67,7 +67,7 @@ const changes = computed<ActionChange[]>(() => {
 
             i++; // Skip the next one as it's already processed
 
-            currentPos += next.value.length;
+            currentPos += next.value.length + 1;
             continue;
         }
 
@@ -75,16 +75,16 @@ const changes = computed<ActionChange[]>(() => {
             diffs: [current],
             from: currentPos,
             hasChanged: current.added || current.removed,
-            to: current.removed ? currentPos : currentPos + current.value.length,
+            to: currentPos + current.value.length,
             addedText: current?.added ? filterExtraNewlines(current.value) : "",
             removedText: current?.removed
                 ? filterExtraNewlines(current.value)
                 : "",
-            oldText: current.added ? "" : filterExtraNewlines(current.value),
+            oldText: filterExtraNewlines(current.value),
         });
 
         if (!current.removed) {
-            currentPos += current.value.length;
+            currentPos += current.value.length + 1;
         }
     }
 

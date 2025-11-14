@@ -46,7 +46,7 @@
     "problems": {
         "title": "Rechtsschreibungs- und Grammatikprobleme",
         "noProblems": "Keine Probleme gefunden",
-        "addToDictionary": "{{ word }} zum Wörterbuch hinzufügen"
+        "addToDictionary": "{ word } zum Wörterbuch hinzufügen"
     },
     "text-editor": {
         "addWordToDictionary": "Zum Wörterbuch hinzufügen",
