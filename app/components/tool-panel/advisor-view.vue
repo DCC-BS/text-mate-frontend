@@ -138,67 +138,79 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
             </div>
         </div>
 
-        <div v-if="currentRule" class="relative">
-            <AnimatePresence mode="popLayout">
-                <div class="flex gap-2 absolute top-0 right-0">
-                    <UButton icon="i-lucide-chevron-left" variant="link" :disabled="selectedRuleIndex === 0"
-                        @click="selectedRuleIndex--"></UButton>
-                    <UButton icon="i-lucide-chevron-right" variant="link"
-                        :disabled="selectedRuleIndex >= (validationResult?.rules.length || 0) - 1"
-                        @click="selectedRuleIndex++"></UButton>
-                </div>
-                <motion.div class="flex justify-between" :key="`rule-${selectedRuleIndex}`"
-                    :initial="{ opacity: 0, x: -20 }" :animate="{ opacity: 1, x: 0 }" :exit="{ opacity: 0, x: 20 }">
-                    <div>
-                        <h2 class="text-xl font-bold">{{ currentRule.name }}</h2>
-                        <p>
-                            {{ currentRule.description }}
-                        </p>
-                        <div class="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400"
-                            @click="openPdfView(currentRule)" style="cursor: pointer;">
-                            <UIcon name="i-lucide-file-search" class="mr-1 flex-shrink-0" />
-                            <span>{{ currentRule.file_name }}</span>
-                            <template v-if="currentRule.page_number">
-                                <span class="mx-1">•</span>
-                                <UIcon name="i-lucide-bookmark" class="mr-1 flex-shrink-0" />
-                                <span>{{ t('advisor.page') }} {{ currentRule.page_number }}</span>
-                            </template>
-                        </div>
+        <div class="grow flex flex-col">
+            <div v-if="currentRule" class="relative">
+                <AnimatePresence mode="popLayout">
+                    <div class="flex gap-2 absolute top-0 right-0">
+                        <UButton icon="i-lucide-chevron-left" variant="link" :disabled="selectedRuleIndex === 0"
+                            @click="selectedRuleIndex--"></UButton>
+                        <UButton icon="i-lucide-chevron-right" variant="link"
+                            :disabled="selectedRuleIndex >= (validationResult?.rules.length || 0) - 1"
+                            @click="selectedRuleIndex++"></UButton>
                     </div>
-                </motion.div>
-            </AnimatePresence>
-        </div>
+                    <motion.div class="flex justify-between" :key="`rule-${selectedRuleIndex}`"
+                        :initial="{ opacity: 0, x: -20 }" :animate="{ opacity: 1, x: 0 }" :exit="{ opacity: 0, x: 20 }">
+                        <div class="space-y-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                                    {{ currentRule.name }}
+                                </h2>
+                                <p class="text-base leading-relaxed text-gray-700 dark:text-gray-200">
+                                    {{ currentRule.description }}
+                                </p>
+                            </div>
 
-        <!-- No issues found message -->
-        <div v-else-if="validationResult && validationResult.rules.length === 0">
-            <div class="text-center">
-                <div class="i-lucide-check-circle text-3xl text-green-500 mx-auto mb-2"></div>
-                <p class="text-gray-600 dark:text-gray-300">{{ t('advisor.noIssues') || 'No issues found!' }}</p>
+                            <div class="grid gap-4">
+                                <div v-if="currentRule.reason"
+                                    class="p-4 rounded-lg border border-amber-200/70 dark:border-amber-400/20 bg-amber-50/60 dark:bg-amber-500/10">
+                                    <p class="text-xs uppercase tracking-wide text-amber-800 dark:text-amber-200 mb-1">
+                                        {{ t('advisor.reason') }}
+                                    </p>
+                                    <p class="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">
+                                        {{ currentRule.reason }}
+                                    </p>
+                                </div>
+
+                                <div v-if="currentRule.proposal"
+                                    class="p-4 rounded-lg border border-emerald-200/70 dark:border-emerald-400/20 bg-emerald-50/70 dark:bg-emerald-500/10">
+                                    <p
+                                        class="text-xs uppercase tracking-wide text-emerald-800 dark:text-emerald-200 mb-1">
+                                        {{ t('advisor.proposal') }}
+                                    </p>
+                                    <p class="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">
+                                        {{ currentRule.proposal }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400"
+                                @click="openPdfView(currentRule)" style="cursor: pointer;">
+                                <UIcon name="i-lucide-file-search" class="mr-1 shrink-0" />
+                                <span class="truncate">{{ currentRule.file_name }}</span>
+                                <template v-if="currentRule.page_number">
+                                    <span class="mx-1 text-gray-400 dark:text-gray-500">•</span>
+                                    <UIcon name="i-lucide-bookmark" class="mr-1 shrink-0" />
+                                    <span>{{ t('advisor.page') }} {{ currentRule.page_number }}</span>
+                                </template>
+                            </div>
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
             </div>
-        </div>
 
-        <!-- Results section - now with flex-grow to take remaining space -->
+            <div v-else-if="validationResult && validationResult.rules.length === 0">
+                <div class="text-center">
+                    <div class="i-lucide-check-circle text-3xl text-green-500 mx-auto mb-2"></div>
+                    <p class="text-gray-600 dark:text-gray-300">{{ t('advisor.noIssues') || 'No issues found!' }}</p>
+                </div>
+            </div>
 
-
-
-
-        <!-- Issues list with scroll area now taking full height -->
-        <!-- <div v-else class="space-y-2 overflow-y-auto pr-1 custom-scrollbar flex-grow">
-        <div v-for="ruel in validationResult.rules" :key="ruel.name">
-          <ToolPanelAdvisorRuleView 
-            :rule="ruel" 
-            @open-pdf="openPdfView"
-            class="w-full"
-          />
-        </div>
-      </div> -->
-
-        <!-- Placeholder when no results yet, also fills vertical space -->
-        <div v-else-if="!isLoading"
-            class="flex-grow flex items-center justify-center text-center p-8 text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 mt-4">
-            <div>
-                <div class="i-lucide-file-search text-4xl mb-3 mx-auto opacity-50"></div>
-                <p>{{ t('advisor.noResultsYet') || 'Run a check to see results' }}</p>
+            <div v-else-if="!isLoading"
+                class="grow flex items-center justify-center text-center p-8 text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 mt-4">
+                <div>
+                    <div class="i-lucide-file-search text-4xl mb-3 mx-auto opacity-50"></div>
+                    <p>{{ t('advisor.noResultsYet') || 'Run a check to see results' }}</p>
+                </div>
             </div>
         </div>
     </div>
