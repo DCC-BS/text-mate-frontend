@@ -23,6 +23,12 @@ const currentBlock = computed(() => {
     return blocks.value[currentBlockIndex.value];
 });
 
+watch(blocks, () => {
+    if (currentBlockIndex.value >= blocks.value.length) {
+        currentBlockIndex.value = Math.max(0, blocks.value.length - 1);
+    }
+});
+
 onCommand(Cmds.JumpToBlockCommand, async (command: JumpToBlockCommand) => {
     const index = blocks.value.findIndex(
         (b) => b.offset === command.block.offset,
@@ -71,7 +77,7 @@ async function addWord(word: string) {
 
                     <UButton variant="link" color="neutral" icon="i-lucide-book-plus"
                         @click="addWord(currentBlock.original)">
-                        "{{ currentBlock.original }}" zum Wörterbuch hinzufügen
+                        {{ t('problems.addToDictionary', { word: currentBlock.original }) }}
                     </UButton>
                 </motion.div>
             </div>

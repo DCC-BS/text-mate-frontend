@@ -75,12 +75,12 @@ const changes = computed<ActionChange[]>(() => {
             diffs: [current],
             from: currentPos,
             hasChanged: current.added || current.removed,
-            to: currentPos + current.value.length,
+            to: current.removed ? currentPos : currentPos + current.value.length,
             addedText: current?.added ? filterExtraNewlines(current.value) : "",
             removedText: current?.removed
                 ? filterExtraNewlines(current.value)
                 : "",
-            oldText: filterExtraNewlines(current.value),
+            oldText: current.added ? "" : filterExtraNewlines(current.value),
         });
 
         if (!current.removed) {

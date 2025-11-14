@@ -14,7 +14,7 @@ export function getRangeBoundingBox(
     // Ensure positions are within document bounds
     const docSize = editor.state.doc.content.size;
     const validFrom = Math.max(0, Math.min(from, docSize));
-    const validTo = Math.max(validFrom, Math.min(to, docSize - 1));
+    const validTo = Math.max(validFrom, Math.min(to, docSize));
 
     try {
         // Get coordinates for start and end positions

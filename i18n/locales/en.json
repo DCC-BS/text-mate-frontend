@@ -45,7 +45,8 @@
     },
     "problems": {
         "title": "Spelling and Grammar Problems",
-        "noProblems": "No problems found"
+        "noProblems": "No problems found",
+        "addToDictionary": "Add {{ word }} to the dictionary"
     },
     "text-editor": {
         "addWordToDictionary": "Add to Dictionary",
