@@ -16,15 +16,10 @@ export function getRangeBoundingBox(
     const validFrom = Math.max(0, Math.min(from, docSize));
     const validTo = Math.max(validFrom, Math.min(to, docSize - 1));
 
-    console.log("Calculating bounding box for range:", { validFrom, validTo });
-
     try {
         // Get coordinates for start and end positions
         const fromCoords = editor.view.coordsAtPos(validFrom, 1);
         const toCoords = editor.view.coordsAtPos(validTo, -1);
-
-        console.log("From coordinates:", fromCoords);
-        console.log("To coordinates:", toCoords);
 
         // Create a DOMRect from the coordinates
         return new DOMRect(

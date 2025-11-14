@@ -46,9 +46,7 @@ const changes = computed<ActionChange[]>(() => {
         return [];
     }
 
-    console.log("diff from", lastCommand.newText, "to", props.text);
     const diffs = diffWords(lastCommand.newText, props.text);
-    console.log("Diffs:", diffs);
     const changes = [] as ActionChange[];
     let currentPos = 0;
 

@@ -48,18 +48,7 @@ async function applyStreamToEditor(
         buffer += chunk;
     }
 
-    console.log("Raw buffer:", buffer);
-
-    // const newBuffer = await unified()
-    //     .use(remarkParse) // Parse markdown to mdast
-    //     .use(remarkRehype) // Convert mdast to hast (HTML AST)
-    //     .use(rehypeStringify) // Serialize hast to HTML string
-    //     .process(buffer)
-    //     .then((file) => String(file));
-
     const newBuffer = buffer;
-
-    console.log("Final buffer:", newBuffer);
 
     editor
         .chain()
