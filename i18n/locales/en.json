@@ -222,7 +222,11 @@
     "tour": {
         "welcome": {
             "title": "Welcome to Text Mate!",
-            "content": "Here you can switch between three modes:  Rewrite to leverage AI for text enhancement, Problems to see and fix grammar and spelling errors, and Review to check your text against guideline documents."
+            "content": "Text Mate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to confidentiality obligations with Text Mate. I will now show you the main functions of Text Mate."
+        },
+        "functions": {
+            "title": "Text Mate has three main functions",
+            "content": "Here you can switch between the three main functions: Rewrite to leverage AI for text enhancement, Problems to see and fix grammar and spelling errors, and Review to check your text against guideline documents."
         },
         "problemsIntro": {
             "title": "Spelling and Grammar Problems",
@@ -276,6 +280,13 @@
         "quickActions": {
             "title": "Rewrite Actions",
             "content": "Perform text actions such as summaries or rewrites. Select an action to apply it to your text."
+        },
+        "customQuickAction": {
+            "title": "Custom Rewrite Instructions",
+            "content": "Enter your custom rewrite instructions here to rewrite your text according to your wishes. This is useful when you have special requirements that are not included in the standard actions.",
+            "contentWithLink": "Enter your custom rewrite instructions here to rewrite your text according to your wishes. This is useful when you have special requirements that are not included in the standard actions. For tips on writing effective prompts, visit the {link}.",
+            "linkText": "Prompting Guide",
+            "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
         },
         "conclusion": {
             "title": "That's it!",

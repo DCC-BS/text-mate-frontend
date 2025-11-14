@@ -80,9 +80,13 @@ function handleKeyboardNavigation(event: KeyboardEvent): void {
 // Tour steps for onboarding
 const steps = [
     {
-        target: '[data-tour="tool-switch"]',
         title: t("tour.welcome.title"),
         body: t("tour.welcome.content"),
+    },
+    {
+        target: '[data-tour="tool-switch"]',
+        title: t("tour.functions.title"),
+        body: t("tour.functions.content"),
         onShow: async () => {
             await executeCommand(new ToolSwitchCommand("rewrite"));
         },
@@ -95,29 +99,17 @@ const steps = [
         },
     },
     {
-        target: '[data-tour="quick-actions"]',
-        title: t("tour.quickActions.title"),
-        body: t("tour.quickActions.content"),
-        onNext: async () => {
-            const stream = new ReadableStream({
-                start(controller) {
-                    const encoder = new TextEncoder();
-                    controller.enqueue(encoder.encode(exampleRewriteText));
-                    controller.close();
-                },
-            });
-
-            await executeCommand(new ClearTextCommand());
-            await executeCommand(
-                new ApplyTextCommand(exampleText, {
-                    from: 0,
-                    to: 0,
-                }),
-            );
-            await executeCommand(new ExecuteTextActionCommand(stream));
+        target: '[data-tour="custom-quick-action"]',
+        title: t("tour.customQuickAction.title"),
+        body: t("tour.customQuickAction.contentWithLink", {
+            link: `<a href="${t("tour.customQuickAction.linkUrl")}" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary-600 font-medium">${t("tour.customQuickAction.linkText")}</a>`
+        }),
+        onShow: async () => {
+            await executeCommand(new ToolSwitchCommand("rewrite"));
         },
-        onPrev: async () => {
-            await executeCommand(new ClearTextCommand());
+        onNext: async () => {
+            // also switch tool on next because the user might change tool before clicking next
+            await executeCommand(new ToolSwitchCommand("rewrite"));
         },
     },
     {
