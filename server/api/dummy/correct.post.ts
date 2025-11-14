@@ -14,6 +14,13 @@ type TextCorrectionResponse = {
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<{ text: string }>(event);
+    
+    if (!body?.text || typeof body.text !== 'string') {
+        throw createError({
+            statusCode: 400,
+            message: 'Invalid request body: "text" field is required and must be a string'
+        });
+    }
 
     const allWords = body.text.split(" ");
 
