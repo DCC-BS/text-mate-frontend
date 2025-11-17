@@ -24,7 +24,7 @@
         "@iconify-json/heroicons": "^1.2.3",
         "@nuxt/ui": "^4.0.0",
         "@nuxtjs/i18n": "^10.1.0",
-        "@nuxtjs/mdc": "0.18.3",
+        "@nuxtjs/mdc": "0.18.4",
         "@pinia/nuxt": "0.11.3",
         "@tiptap/extension-bubble-menu": "^3.5.1",
         "@tiptap/extension-character-count": "^3.5.1",
