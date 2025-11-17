@@ -13,4 +13,14 @@ export default defineBackendHandler({
 
         return { text, docs };
     },
+    async fetcher({ url, method, body, headers, event }) {
+        const signal = getAbortSignal(event);
+
+        return await fetch(url, {
+            method,
+            body: JSON.stringify(body),
+            headers,
+            signal,
+        });
+    },
 });

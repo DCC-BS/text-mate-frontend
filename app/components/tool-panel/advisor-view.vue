@@ -6,8 +6,8 @@ import type {
     ValidationResult,
 } from "~/assets/models/advisor";
 import { AdvisorService } from "~/assets/services/AdvisorService";
+import { ApiError } from "~/utils/apiFetch";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
-import TextStatsView from "./text-stats-view.vue";
 
 interface ToolPanelAdvisorViewProps {
     text: string;
@@ -25,21 +25,61 @@ const advisorService = ref<AdvisorService>();
 const selectedDocs = ref<AdvisorDocumentDescription[]>([]);
 const validationResult = ref<ValidationResult>();
 const selectedRuleIndex = ref<number>(0);
+const currentValidationAbort = ref<AbortController | null>(null);
+const rules = computed(() => validationResult.value?.rules ?? []);
+const ruleCount = computed(() => rules.value.length);
 const currentRule = computed<AdvisorRuleViolation | undefined>(() => {
-    if (
-        validationResult.value === undefined ||
-        validationResult.value.rules.length === 0
-    ) {
+    if (ruleCount.value === 0) {
         return undefined;
     }
 
-    return validationResult.value.rules[selectedRuleIndex.value];
+    return rules.value[selectedRuleIndex.value];
 });
+
+watch(
+    () => ruleCount.value,
+    (newLength) => {
+        if (newLength === 0) {
+            selectedRuleIndex.value = 0;
+            return;
+        }
+
+        if (selectedRuleIndex.value > newLength - 1) {
+            selectedRuleIndex.value = newLength - 1;
+        }
+    },
+);
+
+function createRuleKey(rule: AdvisorRuleViolation): string {
+    return [
+        rule.file_name ?? "",
+        rule.page_number ?? "",
+        rule.name ?? "",
+        rule.description ?? "",
+        rule.reason ?? "",
+    ].join("|");
+}
+
+function changeRuleIndex(delta: number) {
+    if (ruleCount.value === 0) {
+        return;
+    }
+
+    const nextIndex = selectedRuleIndex.value + delta;
+    selectedRuleIndex.value = Math.min(
+        Math.max(0, nextIndex),
+        ruleCount.value - 1,
+    );
+}
 
 onMounted(() => {
     useServiceAsync(AdvisorService).then((service) => {
         advisorService.value = service;
     });
+});
+
+onBeforeUnmount(() => {
+    currentValidationAbort.value?.abort();
 });
 
 async function check() {
@@ -50,8 +90,16 @@ async function check() {
     if (selectedDocs.value.length === 0) {
         return;
     }
+
+    currentValidationAbort.value?.abort();
+
     isLoading.value = true;
     selectedRuleIndex.value = 0;
+    const abortController = new AbortController();
+    currentValidationAbort.value = abortController;
+    const aggregatedRules: AdvisorRuleViolation[] = [];
+    const seenRuleKeys = new Set<string>();
+    let emittedAnyChunk = false;
 
     addProgress("advisor-check", {
         title: t("advisor.checking"),
@@ -59,14 +107,58 @@ async function check() {
     });
 
     try {
-        const result = await advisorService.value.validate(
+        const stream = advisorService.value.validate(
             props.text,
             selectedDocs.value.map((doc) => doc.file),
+            abortController.signal,
         );
 
-        validationResult.value = result;
+        for await (const chunk of stream) {
+            emittedAnyChunk = true;
+
+            if (!chunk?.rules?.length) {
+                if (!validationResult.value) {
+                    validationResult.value = { rules: [] };
+                }
+                continue;
+            }
+
+            let rulesChanged = false;
+
+            for (const rule of chunk.rules) {
+                const key = createRuleKey(rule);
+                if (seenRuleKeys.has(key)) {
+                    continue;
+                }
+
+                seenRuleKeys.add(key);
+                aggregatedRules.push(rule);
+                rulesChanged = true;
+            }
+
+            if (rulesChanged || !validationResult.value) {
+                validationResult.value = {
+                    rules: aggregatedRules.map((rule) => ({ ...rule })),
+                };
+            }
+        }
+
+        if (!emittedAnyChunk) {
+            validationResult.value = { rules: [] };
+        } else if (!validationResult.value) {
+            validationResult.value = {
+                rules: aggregatedRules.map((rule) => ({ ...rule })),
+            };
+        }
     } catch (error) {
         console.error(error);
+
+        if (
+            error instanceof ApiError &&
+            error.errorId === "request_aborted"
+        ) {
+            return;
+        }
 
         if (error instanceof Error) {
             toast.add({
@@ -76,6 +168,9 @@ async function check() {
             });
         }
     } finally {
+        if (currentValidationAbort.value === abortController) {
+            currentValidationAbort.value = null;
+        }
         removeProgress("advisor-check");
         isLoading.value = false;
     }
@@ -102,7 +197,7 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
 <template>
     <div v-if="advisorService" class="p-2 flex flex-col h-full">
         <!-- Header section with subtle background and spacing -->
-        <div class="mb-4 flex-shrink-0">
+        <div class="mb-4 shrink-0">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
                 {{ t('advisor.title') || 'Document Advisor' }}
             </h3>
@@ -127,7 +222,7 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
         <div v-if="validationResult" class="flex flex-col">
             <!-- Results header -->
             <div
-                class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 shrink-0">
                 <h4 class="font-medium text-gray-800 dark:text-gray-200">
                     {{ t('advisor.results') || 'Results' }}
                 </h4>
@@ -141,12 +236,11 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
         <div class="grow flex flex-col">
             <div v-if="currentRule" class="relative">
                 <AnimatePresence mode="popLayout">
-                    <div class="flex gap-2 absolute top-0 right-0">
+                    <div class="flex gap-2 absolute top-0 right-0 z-10">
                         <UButton icon="i-lucide-chevron-left" variant="link" :disabled="selectedRuleIndex === 0"
-                            @click="selectedRuleIndex--"></UButton>
+                            @click="changeRuleIndex(-1)"></UButton>
                         <UButton icon="i-lucide-chevron-right" variant="link"
-                            :disabled="selectedRuleIndex >= (validationResult?.rules.length || 0) - 1"
-                            @click="selectedRuleIndex++"></UButton>
+                            :disabled="selectedRuleIndex >= ruleCount - 1" @click="changeRuleIndex(1)"></UButton>
                     </div>
                     <motion.div class="flex justify-between" :key="`rule-${selectedRuleIndex}`"
                         :initial="{ opacity: 0, x: -20 }" :animate="{ opacity: 1, x: 0 }" :exit="{ opacity: 0, x: 20 }">
