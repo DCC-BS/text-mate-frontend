@@ -15,10 +15,10 @@ export default defineBackendHandler({
     },
     async fetcher({ url, method, body, headers, event }) {
         const signal = getAbortSignal(event);
-        
+
         // Ensure Content-Type is set for JSON payloads
         const fetchHeaders = {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...headers,
         };
 
@@ -39,10 +39,10 @@ export default defineBackendHandler({
 
             return response;
         } catch (error) {
-            if (error.name === 'AbortError') {
+            if (error instanceof Error && error.name === "AbortError") {
                 throw createError({
                     statusCode: 499,
-                    statusMessage: 'Request aborted',
+                    statusMessage: "Request aborted",
                 });
             }
             throw error;
