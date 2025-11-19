@@ -23,6 +23,17 @@ const alternativeSentences = ref<string[]>();
 const isRewritingWord = ref<boolean>(false);
 const isRewritingSentence = ref<boolean>(false);
 
+const bubbleMenuOptions = computed(() => ({
+    strategy: "fixed" as const,
+    placement: "bottom" as const,
+}));
+
+const bubbleMenuAppendTo = () =>
+    // BubbleMenu expects an HTMLElement or a function returning one.
+    // On the server, document is not defined, but this function will only be
+    // called in the browser.
+    document.body;
+
 watch(
     () => props.focusedWord,
     (newValue, oldValue) => {
@@ -126,7 +137,8 @@ async function applyAlternativeSentence(sentence: string) {
 </script>
 
 <template>
-    <bubble-menu :editor="editor" :options="{ placement: 'bottom' }" :should-show="() => true">
+    <bubble-menu :editor="editor" :options="bubbleMenuOptions" :append-to="bubbleMenuAppendTo"
+        :should-show="() => true">
         <div class="p-2 bg-white rounded-md ring-1 ring-gray-400 flex gap-2" v-if="focusedSentence || focusedWord">
             <div v-if="focusedWord">
                 <UButton @click="findWordSynonym" :loading="isRewritingWord"

@@ -84,7 +84,7 @@ function handleFileSelect(event: Event): void {
                 :editor="editor" />
 
             <!-- Main editor area -->
-            <div ref="dropZoneRef" class="w-full h-full overflow-y-auto relative mb-[35px]">
+            <div ref="dropZoneRef" class="w-full h-full overflow-y-auto overflow-x-hidden relative mb-[35px]">
                 <!-- Drop zone overlay -->
                 <div v-if="isOverDropZone" class="absolute inset-0 bg-gray-100/80 dark:bg-gray-800/80 border-2 border-dashed border-primary-500 rounded-lg 
                        flex flex-col items-center justify-center z-10 transition-all duration-200 backdrop-blur-sm">
