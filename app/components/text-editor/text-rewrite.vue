@@ -2,6 +2,7 @@
 import type { Editor } from "@tiptap/vue-3";
 import { BubbleMenu } from "@tiptap/vue-3/menus";
 import { ApplyTextCommand } from "~/assets/models/commands";
+import { getWordSynonym } from "~/composables/word_synonym";
 
 interface InputProps {
     text: string;
@@ -21,6 +22,17 @@ const wordSynonyms = ref<string[]>();
 const alternativeSentences = ref<string[]>();
 const isRewritingWord = ref<boolean>(false);
 const isRewritingSentence = ref<boolean>(false);
+
+const bubbleMenuOptions = computed(() => ({
+    strategy: "fixed" as const,
+    placement: "bottom" as const,
+}));
+
+const bubbleMenuAppendTo = () =>
+    // BubbleMenu expects an HTMLElement or a function returning one.
+    // On the server, document is not defined, but this function will only be
+    // called in the browser.
+    document.body;
 
 watch(
     () => props.focusedWord,
@@ -52,7 +64,7 @@ async function findWordSynonym() {
 
     addProgress("finding-synonym", {
         title: t("text-editor.finding-synonym"),
-        icon: "i-heroicons-magnifying-glass",
+        icon: "i-lucide-search",
     });
     isRewritingWord.value = true;
 
@@ -91,7 +103,7 @@ async function findAlternativeSentence() {
 
     addProgress("finding-alternative-sentence", {
         title: t("text-editor.finding-alternative-sentence"),
-        icon: "i-heroicons-magnifying-glass",
+        icon: "i-lucide-search",
     });
     isRewritingSentence.value = true;
 
@@ -125,51 +137,37 @@ async function applyAlternativeSentence(sentence: string) {
 </script>
 
 <template>
-        <bubble-menu
-            :editor="editor"
-            :options="{ placement: 'bottom'}"
-            :should-show="() => true">
-            <div
-                class="bg-gray-100 p-2 rounded-lg flex gap-2 border border-gray-300"
-                v-if="focusedSentence || focusedWord">
-                <div v-if="focusedWord">
-                        <UButton
-                            @click="findWordSynonym"
-                            :loading="isRewritingWord"
-                            :disabled="isRewritingWord || isRewritingSentence"
-                            variant="subtle">
-                            {{ t("text-editor.rewrite-word") }}
-                        </UButton>
+    <bubble-menu :editor="editor" :options="bubbleMenuOptions" :append-to="bubbleMenuAppendTo"
+        :should-show="() => true">
+        <div class="p-2 bg-white rounded-md ring-1 ring-gray-400 flex gap-2" v-if="focusedSentence || focusedWord">
+            <div v-if="focusedWord">
+                <UButton @click="findWordSynonym" :loading="isRewritingWord"
+                    :disabled="isRewritingWord || isRewritingSentence" variant="link" color="primary">
+                    {{ t("text-editor.rewrite-word") }}
+                </UButton>
 
-                        <div class="flex gap-1 flex-col pt-1">
-                            <UButton
-                                v-for="synonym in wordSynonyms"
-                                :key="synonym"
-                                @click="applyWordSynonym(synonym)">
-                                {{ synonym }}
-                            </UButton>
-                        </div>
-                </div>
-                <div v-if="focusedSentence">
-                    <UButton
-                        @click="findAlternativeSentence"
-                        :loading="isRewritingSentence"
-                        :disabled="isRewritingSentence || isRewritingWord"
-                        variant="subtle">
-                        {{ t("text-editor.rewrite-sentence") }}
+                <div class="flex gap-1 flex-col pt-1">
+                    <UButton v-for="synonym in wordSynonyms" :key="synonym" @click="applyWordSynonym(synonym)"
+                        variant="link" color="neutral">
+                        {{ synonym }}
                     </UButton>
-
-                    <div class="flex gap-1 flex-col pt-1">
-                        <UButton
-                            v-for="sentence in alternativeSentences"
-                            :key="sentence"
-                            @click="applyAlternativeSentence(sentence)">
-                            {{ sentence }}
-                        </UButton>
-                    </div>
                 </div>
             </div>
-        </bubble-menu>
+            <div v-if="focusedSentence">
+                <UButton @click="findAlternativeSentence" :loading="isRewritingSentence"
+                    :disabled="isRewritingSentence || isRewritingWord" variant="link" color="primary">
+                    {{ t("text-editor.rewrite-sentence") }}
+                </UButton>
+
+                <div class="flex gap-1 flex-col pt-1">
+                    <UButton v-for="sentence in alternativeSentences" :key="sentence"
+                        @click="applyAlternativeSentence(sentence)" variant="link" color="neutral">
+                        {{ sentence }}
+                    </UButton>
+                </div>
+            </div>
+        </div>
+    </bubble-menu>
 </template>
 
 <style scoped>

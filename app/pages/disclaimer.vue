@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { DisclaimerPage } from "@dcc-bs/common-ui.bs.js";
-
 definePageMeta({
     layout: false,
 });

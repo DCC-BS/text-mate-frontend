@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { SplitView } from "@dcc-bs/common-ui.bs.js";
+import { AnimatePresence, motion } from "motion-v";
 import {
     Cmds,
     InvalidateCorrectionCommand,
     type SwitchCorrectionLanguageCommand,
     type ToggleEditableEditorCommand,
+    type ToolSwitchCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./text-editor.vue";
@@ -16,9 +17,11 @@ const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
 const isEditorLocked = ref(false);
 
+const currentTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
+const tourIsActive = ref(false);
+
 // composables
 const router = useRouter();
-const viewport = useViewport();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { onCommand } = useCommandBus();
@@ -58,7 +61,7 @@ watch(userText, (newText, oldText) => {
 // functions
 async function correctText(text: string, signal: AbortSignal) {
     addProgress("correcting", {
-        icon: "i-heroicons-pencil",
+        icon: "i-lucide-pencil",
         title: t("status.correctingText"),
     });
     try {
@@ -91,6 +94,10 @@ onCommand(
     },
 );
 
+onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
+    currentTool.value = cmd.tool;
+});
+
 async function handleInvalidate(_: InvalidateCorrectionCommand) {
     taskScheduler.abortRunningTask();
     await correctionService.invalidateAll();
@@ -101,23 +108,38 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
 </script>
 
 <template>
-    <div class="h-[90vh]">
-        <SplitView :is-horizontal="viewport.isLessThan('md')" a-pane-style="min-w-[250px] min-h-[200px]"
-            b-pane-style="min-w-[300px] min-h-[200px]">
-            <template #a>
-                <client-only>
-                    <div class="w-full h-full relative">
-                        <TextEditor v-model="userText" v-model:selectedText="selectedText" />
-                    </div>
-                </client-only>
+    <div class="p-2 w-full h-full">
+        <SplitContainer>
+            <template #header>
+                <div class="flex items-center w-full flex-1">
+                    <div class="flex-1"></div>
+                    <ToolSelectView class="flex-1" />
+                    <OptionsBar class="flex-1" />
+                </div>
+
+                <AnimatePresence>
+                    <motion.div data-allow-mismatch v-show="currentTool === 'rewrite'" class="quick-action-panel"
+                        :layout="true" :initial="{ height: 0, opacity: 0 }" :animate="{ height: 'auto', opacity: 1 }"
+                        :exit="{ height: 0, opacity: 0 }" :transition="{
+                            height: { type: 'spring', stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 }
+                        }" style="overflow: hidden;" />
+                </AnimatePresence>
             </template>
-            <template #b>
-                <div>
-                    <ToolPanel :text="userText" :selectedText="selectedText" />
+
+            <template #left>
+                <div class="w-full md:h-full relative h-[400px]">
+                    <TextEditor v-model="userText" v-model:selectedText="selectedText" />
                 </div>
             </template>
-        </SplitView>
+
+            <template #right>
+                <ToolPanel :text="userText" :selectedText="selectedText" />
+            </template>
+        </SplitContainer>
     </div>
+
+
     <div class="fixed bottom-5 left-0 right-0">
         <ProgressIndication />
     </div>

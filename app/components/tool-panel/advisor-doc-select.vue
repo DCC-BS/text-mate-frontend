@@ -18,10 +18,11 @@ const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
 
 <template>
   <div class="w-full">
-    <USelectMenu :items="docs" v-model="selectedDocs[0]" :filter-fields="['title', 'description', 'author', 'edition']" class="w-full">
+    <USelectMenu :items="docs" v-model="selectedDocs[0]" :filter-fields="['title', 'description', 'author', 'edition']"
+      class="w-full">
       <template #default>
         <div v-if="selectedDocs.length > 0">
-          {{ selectedDocs.map((doc) => doc.title).join(", ") }}
+          {{selectedDocs.map((doc) => doc.title).join(", ")}}
         </div>
         <div v-else>
           <p class="text-gray-500">
@@ -43,6 +44,4 @@ const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
 
 
 
-<style>
-
-</style>
+<style></style>

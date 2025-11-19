@@ -27,7 +27,8 @@
         "languages": "Sprachen",
         "undo": "Rückgängig",
         "redo": "Wiederholen",
-        "signOut": "Abmelden"
+        "signOut": "Abmelden",
+        "app": "Text Mate"
     },
     "tools": {
         "problems": "Probleme",
@@ -43,8 +44,9 @@
         "loading": "Wird geladen..."
     },
     "problems": {
-        "title": "Probleme",
-        "noProblems": "Keine Probleme gefunden"
+        "title": "Rechtsschreibungs- und Grammatikprobleme",
+        "noProblems": "Keine Probleme gefunden",
+        "addToDictionary": "{ word } zum Wörterbuch hinzufügen"
     },
     "text-editor": {
         "addWordToDictionary": "Zum Wörterbuch hinzufügen",
@@ -64,51 +66,9 @@
         "bullet_points": "Aufzählungspunkte",
         "summarize": "Zusammenfassung",
         "social_mediafy": "Social Media Format",
-        "plain_language": "Lesefreundliche Sprache"
-    },
-    "rewrite": {
-        "writing_style": {
-            "general": "Allgemein",
-            "simple": "Einfach",
-            "professional": "Professionell",
-            "casual": "Locker",
-            "academic": "Akademisch",
-            "technical": "Technisch"
-        },
-        "target_audience": {
-            "general": "Allgemein",
-            "young": "Junge Erwachsene",
-            "adult": "Erwachsene",
-            "children": "Kinder",
-            "journalists": "Journalisten",
-            "scientists": "Wissenschaftler"
-        },
-        "intend": {
-            "general": "Allgemein",
-            "persuasive": "Überzeugend",
-            "informative": "Informativ",
-            "descriptive": "Beschreibend",
-            "narrative": "Erzählend",
-            "entertaining": "Unterhaltsam"
-        },
-        "medium": {
-            "general": "Allgemein",
-            "official letter": "Behördenbrief",
-            "email": "E-Mail",
-            "report": "Bericht",
-            "presentation": "Präsentation",
-            "website": "Webseite"
-        },
-        "writingStyleLabel": "Schreibstil",
-        "targetAudienceLabel": "Zielgruppe",
-        "intendLabel": "Absicht",
-        "mediumLabel": "Medium",
-        "apply": "Anwenden",
-        "rewrite": "Umschreiben",
-        "noRewrite": "Text auswählen und auf \"Umschreiben\" klicken, um ihn umzuschreiben.",
-        "advancedOptionsLabel": "Hier können Sie Ihre benutzerdefinierten Umschreibungsregeln verfassen",
-        "hideAdvanced": "Einfach",
-        "showAdvanced": "Erweitert"
+        "plain_language": "Lesefreundliche Sprache",
+        "formality": "Formalität",
+        "medium": "Medium"
     },
     "advisor": {
         "check": "Text überprüfen",
@@ -129,7 +89,12 @@
             "example": "Beispiel",
             "fix": "Vorgeschlagene Korrektur"
         },
-        "selectDocs": "Dokumente auswählen"
+        "selectDocs": "Dokumente auswählen",
+        "ignore": "Ignorieren"
+    },
+    "actions": {
+        "custom": "Benutzerdefiniert",
+        "apply": "Anwenden"
     },
     "user-dictionary": {
         "title": "Wörterbuch",
@@ -142,7 +107,34 @@
         "en-US": "Auf Englisch (US) übersetzen",
         "en-GB": "Auf Englisch (GB) übersetzen",
         "fr": "Auf Französisch übersetzen",
-        "it": "Auf Italienisch übersetzen"
+        "it": "Auf Italienisch übersetzen",
+        "summarize": {
+            "sentence": "Satz",
+            "three_sentence": "Drei Sätze",
+            "paragraph": "Absatz",
+            "page": "Seite",
+            "management_summary": "Management Zusammenfassung"
+        },
+        "social-mediafy": {
+            "bluesky": "Bluesky",
+            "instagram": "Instagram",
+            "linkedin": "LinkedIn",
+            "x": "X"
+        },
+        "custom": {
+            "label": "Benutzerdefinierte Anweisungen",
+            "placeholder": "Geben Sie hier Ihre benutzerdefinierten Umschreibanweisungen ein..."
+        },
+        "formality": {
+            "formal": "Formell",
+            "informal": "Informell"
+        },
+        "medium": {
+            "email": "E-Mail",
+            "official_letter": "Behördenbrief",
+            "presentation": "Präsentation",
+            "report": "Bericht"
+        }
     },
     "flesch-score": {
         "easy": "Einfach",
@@ -179,5 +171,89 @@
         "errorDescription": "Fehler beim Hochladen der Datei. Versuchen Sie es erneut oder melden Sie sich bei uns.",
         "dismiss": "Schliessen",
         "fileConvertedSuccess": "Datei erfolgreich konvertiert"
+    },
+    "rewrite-diff-viewer": {
+        "changes": "Änderungen",
+        "clickToUndo": "Klicken Sie auf die Änderungen, um sie rückgängig zu machen",
+        "undo": "Rückgängig",
+        "noChangesYet": "Noch keine Änderungen. Wenn der Text von Textmate umgeschrieben wird, werden die Änderungen hier hervorgehoben."
+    },
+    "tour": {
+        "welcome": {
+            "title": "Willkommen bei Text Mate!",
+            "content": "Text Mate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Sie können mit Text Mate auch besondere Personendaten und Daten, die der Geheimhaltungspflicht unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von Text Mate."
+        },
+        "functions": {
+            "title": "Text Mate hat drei Hauptfunktionen",
+            "content": "Hier kannst Du zwischen den drei Hauptfunktionen wechseln: Umschreiben zur Nutzung von KI für Textverbesserungen, Probleme zum Anzeigen und Beheben von Grammatik- und Rechtschreibfehlern und Überprüfen zur Überprüfung Deines Texts anhand von Richtlinien."
+        },
+        "problemsIntro": {
+            "title": "Rechtsschreibungs- und Grammatikprobleme",
+            "content": "Textmate hilft Dir, Grammatik- und Rechtschreibfehler in Deinem Text zu finden und zu beheben."
+        },
+        "language": {
+            "title": "Sprachauswahl",
+            "content": "Wähle die Korrektursprache für Deinen Text. Dies hilft der Grammatik- und Rechtschreibprüfung, genaue Vorschläge für die ausgewählte Sprache zu liefern."
+        },
+        "dictionary": {
+            "title": "Persönliches Wörterbuch",
+            "content": "Füge Wörter dem Wörterbuch hinzu, die bei der Rechtschreibprüfung ignoriert werden sollen. Dies ist nützlich für Fachbegriffe, Namen oder Wörter, die nicht im Standardwörterbuch enthalten sind."
+        },
+        "editor": {
+            "title": "Text-Editor",
+            "content": "Hier schreiben und bearbeiten Sie Ihren Text. Der Editor bietet Echtzeit-Grammatik- und Rechtschreibprüfung während Sie tippen."
+        },
+        "wordCount": {
+            "title": "Textstatistiken",
+            "content": "Sehe detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klick hier, um mehr Details über die Lesbarkeit Deines Texts zu sehen."
+        },
+        "restart": "Tutorial neu starten",
+        "problems": {
+            "title": "Probleme-Panel",
+            "content": "Hier siehst Du alle Grammatik- und Rechtschreibprobleme in Deinem Text. Mit den Pfeiltasten kannst Du schnell zu jedem Problem im Text navigieren. Oder fahre mit der Maus über die unterstrichenen Wörter im Text, um Vorschläge zu sehen. Es ist auch möglich, ein Wort direkt ins Wörterbuch hinzuzufügen."
+        },
+        "textEditorToolpanel": {
+            "title": "Text-Editor-Werkzeuge",
+            "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit Text Mate zu bearbeiten."
+        },
+        "rewriteOptions": {
+            "title": "Umschreibungsoptionen",
+            "content": "Definiere hier, wie Dein Text umgeschrieben werden soll. Passen Schreibstil, Zielgruppe, Absicht und Medium an Deine Bedürfnisse an."
+        },
+        "rewriteToolpanel": {
+            "title": "Umschreibaktionen annehmen oder ablehnen",
+            "content": "Hier kanst du die letzte Umschreibaktion rückgängig machen oder alle Änderungen annehmen."
+        },
+        "rewrite": {
+            "title": "KI-Textumschreibung",
+            "content": "Wenn eine Textaktion ausgeführt wird, erscheinen die Änderungen hier. Klick auf eine Änderung, um sie rückgängig zu machen oder auf das Häkchen unten, um alle Änderungen zu übernehmen."
+        },
+        "check": {
+            "title": "Überprüfen",
+            "content": "Überprüfe Deinen Text anhand von Dokumenten."
+        },
+        "advisor": {
+            "title": "Dokumentenberater",
+            "content": "Wähle eine Richtlinie aus nach welcher Du Dein Dokument überprüfen möchtest. Der Dokumentenberater zeigt Dir die von ihm gefundenen Verstösse gegen die ausgewählte Richtlinie an."
+        },
+        "quickActions": {
+            "title": "Umschreibaktionen",
+            "content": "Führe Textaktionen wie Lesefreundliche Sprache oder Zusammenfassungen durch. Wähle eine Aktion aus, um sie auf Deinen Text anzuwenden."
+        },
+        "customQuickAction": {
+            "title": "Benutzerdefinierte Umschreibaktionen",
+            "content": "Füge hier benutzerdefinierte Umschreibanweisungen ein, um Deinen Text nach deinen Wünschen umzuschreiben. Dies ist nützlich, wenn Du spezielle Anforderungen hast, die nicht in den Standardaktionen enthalten sind.",
+            "contentWithLink": "Füge hier benutzerdefinierte Umschreibanweisungen ein, um Deinen Text nach deinen Wünschen umzuschreiben. Dies ist nützlich, wenn Du spezielle Anforderungen hast, die nicht in den Standardaktionen enthalten sind. Tipps für das Erstellen von effektiven Prompts findest Du im {link}.",
+            "linkText": "Prompting-Merkblatt",
+            "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
+        },
+        "conclusion": {
+            "title": "Das war's!",
+            "content": "Du bist jetzt bereit, Text Mate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
+        },
+        "skip": "Überspringen",
+        "next": "Weiter",
+        "prev": "Zurück",
+        "finish": "Beenden"
     }
 }

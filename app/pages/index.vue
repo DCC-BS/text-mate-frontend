@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type GrammarEditor from "~/components/grammar-editor.vue";
+
 const { data } = useAuth();
 const userMail = computed(() => data.value?.user?.email ?? undefined);
 </script>
@@ -6,5 +8,8 @@ const userMail = computed(() => data.value?.user?.email ?? undefined);
 <template>
     <FeedbackControl :default-mail="userMail" />
     <NavigationMenu />
-    <GrammarEditor />
+    <div class="md:h-[calc(100vh-150px)]">
+        <GrammarEditor />
+        <DataBsFooter />
+    </div>
 </template>

@@ -13,11 +13,15 @@ export const Cmds = {
     ToolSwitchCommand: "ToolSwitchCommand",
     SwitchCorrectionLanguageCommand: "SwitchCorrectionLanguageCommand",
     InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
-    RequestChangesCommand: "RequestChangesCommand",
-    CompleteRequestChangeCommand: "CompleteRequestChangeCommand",
     ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
     CorrectionBlockChangedCommand: "CorrectionBlockChangedCommand",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
+    RegisterDiffCommand: "RegisterDiffCommand",
+    ExecuteTextActionCommand: "ExecuteTextActionCommand",
+    RestartTourCommand: "RestartTourCommand",
+    ClearTextCommand: "ClearTextCommand",
+    ShowTextStatsCommand: "ShowTextStatsCommand",
+    HideTextStatsCommand: "HideTextStatsCommand",
 };
 
 export class JumpToBlockCommand implements ICommand {
@@ -35,6 +39,10 @@ export class ApplyCorrectionCommand implements ICommand {
     ) {}
 }
 
+export class ClearTextCommand implements ICommand {
+    readonly $type = "ClearTextCommand";
+}
+
 export class CorrectionBlockChangedCommand implements ICommand {
     readonly $type = "CorrectionBlockChangedCommand";
 
@@ -44,6 +52,9 @@ export class CorrectionBlockChangedCommand implements ICommand {
     ) {}
 }
 
+/**
+ * Command that applies a text change to the text editor
+ */
 export class ApplyTextCommand implements ICommand {
     readonly $type = "ApplyTextCommand";
 
@@ -95,23 +106,29 @@ export class InvalidateCorrectionCommand implements ICommand {
     readonly $type = "InvalidateCorrectionCommand";
 }
 
-export class RequestChangesCommand implements ICommand {
-    readonly $type = "RequestChangesCommand";
+export class ExecuteTextActionCommand implements ICommand {
+    readonly $type = "ExecuteTextActionCommand";
+
+    constructor(public stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {}
+}
+
+export class ShowTextStatsCommand implements ICommand {
+    readonly $type = "ShowTextStatsCommand";
+}
+
+export class HideTextStatsCommand implements ICommand {
+    readonly $type = "HideTextStatsCommand";
+}
+
+/**
+ * Command that applies a text change and can be undone/redone
+ */
+export class RegisterDiffCommand implements ICommand {
+    readonly $type = "RegisterDiffCommand";
 
     constructor(
         public oldText: string,
         public newText: string,
-        public from: number,
-        public to: number,
-    ) {}
-}
-
-export class CompleteRequestChangeCommand implements ICommand {
-    readonly $type = "CompleteRequestChangeCommand";
-
-    constructor(
-        public requestCommand: RequestChangesCommand,
-        public mode: "accept" | "reject",
     ) {}
 }
 
@@ -131,4 +148,8 @@ export class ToggleLockEditorCommand implements ICommand {
     readonly $type = "ToggleLockEditorCommand";
 
     constructor(public locked: boolean) {}
+}
+
+export class RestartTourCommand implements ICommand {
+    readonly $type = "RestartTourCommand";
 }

@@ -1,7 +1,10 @@
+import { fileURLToPath } from "node:url";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
+
     routeRules: {
         "/api/ping": {
             cors: true,
@@ -14,6 +17,9 @@ export default defineNuxtConfig({
                 "Access-Control-Allow-Credentials": "true",
             },
         },
+    },
+    alias: {
+        "#shared": fileURLToPath(new URL("./shared", import.meta.url)),
     },
     app: {
         head: {
@@ -62,6 +68,7 @@ export default defineNuxtConfig({
         "@nuxt/ui",
         "@nuxtjs/i18n",
         "@nuxtjs/mdc",
+        "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/event-system.bs.js",
         "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",
@@ -69,6 +76,7 @@ export default defineNuxtConfig({
         "@dcc-bs/authentication.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
+        "nuxt-tour",
     ],
     "feedback-control.bs.js": {
         repo: "Feedback",
@@ -76,12 +84,28 @@ export default defineNuxtConfig({
         project: "text-mate",
         githubToken: process.env.GITHUB_TOKEN,
     },
+    "authentication.bs.js": {
+        useDummy: process.env.DUMMY === "true",
+    },
     typescript: {
         typeCheck: true,
         strict: true,
     },
     css: ["~/assets/css/main.css"],
     vite: {
+        // Hot reload configuration for dev tunnels
+        server: {
+            watch: {
+                usePolling: true,
+                interval: 100,
+            },
+            hmr: {
+                port: 24678,
+                host: "0.0.0.0",
+                clientPort: 24678,
+                overlay: true,
+            },
+        },
         build: {
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
@@ -149,7 +173,6 @@ export default defineNuxtConfig({
         fallbackBreakpoint: "lg",
     },
     $development: {
-        debug: false,
         devtools: {
             enabled: true,
         },

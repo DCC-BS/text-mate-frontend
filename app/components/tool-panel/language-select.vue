@@ -8,7 +8,7 @@ const { executeCommand } = useCommandBus();
 const languages = [
     {
         key: "auto",
-        icon: "i-heroicons-globe-alt",
+        icon: "i-lucide-earth",
     },
     {
         key: "de-CH",
@@ -41,22 +41,16 @@ const items = languages.map(
         }) as SelectMenuItem & { key: string },
 );
 
-const selectedLanguage = ref<SelectMenuItem & { key: string }>(
-    items[0] ?? {
-        key: "auto",
-        icon: "i-heroicons-globe-alt",
-        label: t("language.auto"),
-    },
-);
+const selectedLanguage = useCookie<string>("selected-language", {
+    default: () => "auto",
+});
 
 watch(selectedLanguage, (lang) => {
-    executeCommand(new SwitchCorrectionLanguageCommand(lang.key));
+    executeCommand(new SwitchCorrectionLanguageCommand(lang));
 });
 </script>
 
 <template>
-  <div>
-    <USelectMenu :items="items" v-model="selectedLanguage" class="w-full">
-    </USelectMenu>
-  </div>
+    <USelectMenu variant="ghost" color="neutral" value-key="key" :items="items" v-model="selectedLanguage"
+        class="w-full" data-tour="language-select" />
 </template>

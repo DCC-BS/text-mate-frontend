@@ -1,27 +1,11 @@
 <script lang="ts" setup>
-import type { NavigationMenuItem } from "#ui/components/NavigationMenu.vue";
-import {
-    Cmds,
-    RedoCommand,
-    UndoCommand,
-    type UndoRedoStateChanged,
-} from "~/assets/models/commands";
+import type { DropdownMenuItem } from "@nuxt/ui";
+import { RestartTourCommand } from "~/assets/models/commands";
 
 // Add translation hook
 const { t } = useI18n();
-const { executeCommand, onCommand } = useCommandBus();
 const { data, signOut } = useAuth();
-
-const undoRedoState = reactive({
-    canUndo: false,
-    canRedo: false,
-});
-
-const { locale, locales, setLocale } = useI18n();
-
-const availableLocales = computed(() => {
-    return locales.value.filter((i) => i.code !== locale.value);
-});
+const { executeCommand } = useCommandBus();
 
 const userImage = computed(() => {
     const base64 = data.value?.user?.image;
@@ -29,75 +13,36 @@ const userImage = computed(() => {
 });
 
 // Navigation menu items
-const items = computed<NavigationMenuItem[][]>(() => [
-    [
-        {
-            label: t("navigation.undo"),
-            icon: "i-heroicons-arrow-uturn-left",
-            onSelect: handleUndo,
-            disabled: !undoRedoState.canUndo,
-        },
-        {
-            label: t("navigation.redo"),
-            icon: "i-heroicons-arrow-uturn-right",
-            onSelect: handleRedo,
-            disabled: !undoRedoState.canRedo,
-        },
-    ],
-    [],
-    [
-        {
-            label: t("navigation.languages"),
-            icon: "i-heroicons-language",
-            children: availableLocales.value.map((locale) => ({
-                label: locale.name,
-                onSelect: async () => {
-                    setLocale(locale.code);
-                },
-            })),
-        },
-        {
-            avatar: {
-                src: userImage.value,
-                alt: data.value?.user?.name || "User",
-            },
-            children: [
-                {
-                    label: t("navigation.signOut"),
-                    icon: "i-heroicons-arrow-right-on-rectangle",
-                    onSelect: handleSignOut,
-                },
-            ],
-        },
-    ],
+const items = computed<DropdownMenuItem[]>(() => [
+    {
+        label: t("navigation.signOut"),
+        icon: "i-lucide-sign-out",
+        onSelect: handleSignOut,
+    },
 ]);
-
-onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
-    undoRedoState.canUndo = command.canUndo;
-    undoRedoState.canRedo = command.canRedo;
-});
-
-function handleUndo(): void {
-    executeCommand(new UndoCommand());
-}
-
-function handleRedo(): void {
-    executeCommand(new RedoCommand());
-}
 
 async function handleSignOut(): Promise<void> {
     await signOut();
 }
+
+function handleRestartTour(): void {
+    executeCommand(new RestartTourCommand());
+}
 </script>
 
 <template>
-    <div>
-        <ClientOnly>
-            <UNavigationMenu
-                content-orientation="vertical"
-                :items="items"
-                class="w-full justify-between z-50"
-            />
-        </ClientOnly>
-    </div>
+    <NavigationBar>
+        <template #right>
+            <UTooltip :text="t('tour.restart')" placement="bottom">
+                <UButton data-tour="start-tour" variant="ghost" color="neutral" icon="i-lucide-help-circle"
+                    @click="handleRestartTour">
+                </UButton>
+            </UTooltip>
+            <UDropdownMenu :items="items">
+                <UButton variant="ghost" color="neutral">
+                    <img :src="userImage" class="h-6 w-6 rounded-full" :alt="data?.user?.name || 'User'" />
+                </UButton>
+            </UDropdownMenu>
+        </template>
+    </NavigationBar>
 </template>

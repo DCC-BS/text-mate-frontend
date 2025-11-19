@@ -14,6 +14,8 @@
 
 @import "./partials/typography.css";
 
+@import "./partials/prosemirror-lists.css";
+
 .ProseMirror {
     z-index: 0;
     height: 100%;
@@ -23,10 +25,6 @@
     font-size: large;
 }
 
-.dark .ProseMirror {
-    caret-color: white;
-}
-
 .ProseMirror .selection {
     display: inline;
 }
@@ -34,11 +32,6 @@
 .ProseMirror .selection,
 .ProseMirror *::selection {
     background-color: rgba(0, 0, 0, 0.1);
-}
-
-.dark .ProseMirror .selection,
-.dark .ProseMirror *::selection {
-    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .ProseMirror > .react-renderer {
@@ -77,6 +70,11 @@
     max-width: 42rem;
 }
 
-.dark .ProseMirror .ProseMirror-gapcursor:after {
-    border-top-color: rgba(255, 255, 255, 0.4);
+.nt-highlight {
+    /* outline: var(--color-blue-600) solid 1px; */
+    outline: 0px;
+    outline-offset: 2px;
+    border-radius: 5px;
+    z-index: 1000;
+    background-color: white;
 }

@@ -1,0 +1,62 @@
+/* ProseMirror List Styling */
+
+.ProseMirror ol {
+    list-style-type: decimal;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.ProseMirror ul {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.ProseMirror ol li {
+    margin-bottom: 0.25rem;
+    padding-left: 0.25rem;
+}
+
+.ProseMirror ul li {
+    margin-bottom: 0.25rem;
+    padding-left: 0.25rem;
+}
+
+/* Nested lists */
+.ProseMirror ol ol {
+    list-style-type: lower-alpha;
+    margin-top: 0.25rem;
+}
+
+.ProseMirror ol ol ol {
+    list-style-type: lower-roman;
+}
+
+.ProseMirror ul ul {
+    list-style-type: circle;
+    margin-top: 0.25rem;
+}
+
+.ProseMirror ul ul ul {
+    list-style-type: square;
+}
+
+/* Remove default margins for nested list items */
+.ProseMirror li > ol,
+.ProseMirror li > ul {
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+/* Ensure proper spacing for list paragraphs */
+.ProseMirror li p {
+    margin: 0 0 0.25rem 0;
+}
+
+.ProseMirror li p:last-child {
+    margin-bottom: 0;
+}

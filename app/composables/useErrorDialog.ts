@@ -19,6 +19,6 @@ function sendError(error: string) {
         title: "Error",
         description: error,
         color: "error",
-        icon: "i-heroicons-exclamation-circle",
+        icon: "i-lucide-circle-alert",
     });
 }

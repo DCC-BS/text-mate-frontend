@@ -9,21 +9,13 @@ export const useStreamWriter = () => {
 async function applyStreamToEditor(
     reader: ReadableStreamDefaultReader<Uint8Array>,
     editor: Editor,
-    from: number,
-    to: number,
 ): Promise<string> {
-    const oldText = editor.getHTML();
-
-    editor
-        .chain()
-        .setMeta("addToHistory", false)
-        .deleteRange({ from, to })
-        .run();
+    const oldText = editor.getText();
 
     // Buffer to collect characters for complete words
     let buffer = "";
 
-    editor.chain().focus(from).run();
+    editor.chain().selectAll().run();
 
     while (true) {
         const { done, value } = await reader.read();
@@ -44,9 +36,24 @@ async function applyStreamToEditor(
         buffer += chunk;
     }
 
+    const newBuffer = buffer;
+
+    editor
+        .chain()
+        .setMeta("addToHistory", false)
+        .selectAll()
+        .insertContent(oldText)
+        .run();
+
     // revert changes and apply them again to create one history entry
-    editor.chain().setMeta("addToHistory", false).setContent(oldText).run();
-    editor.chain().setTextSelection({ from, to }).insertContent(buffer).run();
+    editor
+        .chain()
+        .selectAll()
+        .insertContent(newBuffer, {
+            applyInputRules: true,
+            parseOptions: { preserveWhitespace: false },
+        })
+        .run();
 
     return buffer;
 }

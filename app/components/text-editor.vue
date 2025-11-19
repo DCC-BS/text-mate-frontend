@@ -1,356 +1,135 @@
 <script setup lang="ts">
-import { DataBsBanner, DisclaimerButton } from "@dcc-bs/common-ui.bs.js";
-import Bold from "@tiptap/extension-bold";
-import BulletList from "@tiptap/extension-bullet-list";
-import CharacterCount from "@tiptap/extension-character-count";
-import Document from "@tiptap/extension-document";
-import HardBreak from "@tiptap/extension-hard-break";
-import Heading from "@tiptap/extension-heading";
-import History from "@tiptap/extension-history";
-import Italic from "@tiptap/extension-italic";
-import ListItem from "@tiptap/extension-list-item";
-import OrderedList from "@tiptap/extension-ordered-list";
-import Paragraph from "@tiptap/extension-paragraph";
-import Strike from "@tiptap/extension-strike";
-import Text from "@tiptap/extension-text";
-import { EditorContent, useEditor } from "@tiptap/vue-3";
-import {
-    type ApplyTextCommand,
-    Cmds,
-    type RedoCommand,
-    type ToggleEditableEditorCommand,
-    type ToggleLockEditorCommand,
-    type ToolSwitchCommand,
-    type UndoCommand,
-    UndoRedoStateChanged,
-} from "~/assets/models/commands";
-import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
-import { FocusedWordMark } from "~/utils/focused-word-mark";
+import { EditorContent } from "@tiptap/vue-3";
+import { useTextAction } from "~/composables/textAction.composable";
+import { useTextFileUpload } from "~/composables/useFileUpload";
+import { useTextEditor } from "~/composables/useTextEditor";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
+import TextToolbar from "./text-editor/text-toolbar.vue";
 
 const { t } = useI18n();
 
-const {
-    dropZoneRef,
-    isOverDropZone,
-    isConverting,
-    error: conversionError,
-    fileName,
-    handleFileSelect,
-    clearError,
-} = useFileConvert((text: string) => {
-    editor.value?.commands.setContent(text);
-    lockEditor.value = false;
-});
-
-// model
+// Model bindings
 const model = defineModel<string>("modelValue", { required: true });
 const selectedText = defineModel<TextFocus>("selectedText");
 
-// refs
+// Refs
 const container = ref<HTMLElement>();
 const limit = ref(100_000);
-const isTextCorrectionActive = ref(true);
-const isInteractiableFocusActive = ref(false);
 const lockEditor = ref(false);
-const fileInputRef = ref<HTMLInputElement | null>(null);
 
-const undoRedoState = ref({
-    canUndo: false,
-    canRedo: false,
+// Text editor composable
+const {
+    editor,
+    focusedSentence,
+    focusedWord,
+    focusedSelection,
+    hoverBlock,
+    relativeHoverRect,
+    isTextCorrectionActive,
+} = useTextEditor({
+    container,
+    modelValue: model,
+    limit,
+    lockEditor,
 });
 
-// computed
-const characterCountPercentage = computed(() =>
-    Math.round(
-        (100 / limit.value) *
-            (editor.value?.storage.characterCount.characters() ?? 0),
-    ),
-);
+useTextAction(editor);
 
-// composables
-const toast = useToast();
-const { onCommand, executeCommand } = useCommandBus();
-const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
-    useTextFocus(isInteractiableFocusActive);
-const { CorrectionExtension, hoverBlock, relativeHoverRect } =
-    useTextCorrectionMarks(container, isTextCorrectionActive);
-const { trackChangesExtensions } = useTrackChanges();
-
-const editor = useEditor({
-    content: model.value,
-    extensions: [
-        Text,
-        Document,
-        BulletList,
-        ListItem,
-        OrderedList,
-        Paragraph,
-        HardBreak,
-        Bold,
-        Italic,
-        Strike,
-        History,
-        Heading,
-        FocusExtension,
-        CorrectionExtension,
-        ...trackChangesExtensions,
-        CharacterCount.configure({
-            limit: limit.value,
-        }),
-        FocusedSentenceMark,
-        FocusedWordMark,
-    ],
-    enablePasteRules: false,
-    enableInputRules: false,
-    editorProps: {
-        handleKeyDown: (_, event) => {
-            // Check if Ctrl+C is pressed
-            if (event.ctrlKey && event.key === "c") {
-                // Check if there is no text selection
-                if (editor.value?.state.selection.empty) {
-                    // Select all text
-                    editor.value?.commands.selectAll();
-                    toast.add({
-                        title: "Ctrl+C pressed",
-                        description: "Select all text",
-                        color: "info",
-                        icon: "i-heroicons-clipboard-document-list",
-                    });
-                }
-            }
-        },
-    },
-    onUpdate: ({ editor }) => {
-        if (!editor.isEditable) return;
-
-        model.value = getContent();
-
-        const canUndo = editor.can().undo();
-        const canRedo = editor.can().redo();
-
-        if (
-            undoRedoState.value.canUndo !== canUndo ||
-            undoRedoState.value.canRedo !== canRedo
-        ) {
-            undoRedoState.value = { canUndo, canRedo };
-            executeCommand(new UndoRedoStateChanged(canUndo, canRedo));
-        }
+// File upload composable
+const {
+    dropZoneRef,
+    fileInputRef,
+    lockEditor: fileLockEditor,
+    isOverDropZone,
+    isConverting,
+    triggerFileUpload,
+    onFileSelect,
+} = useTextFileUpload({
+    onFileConverted: (text: string) => {
+        editor.value?.commands.setContent(text);
+        lockEditor.value = false;
     },
 });
 
-// lifecycle
-onCommand<ApplyTextCommand>(Cmds.ApplyTextCommand, async (command) => {
-    if (!editor.value) return;
-    const text = command.text;
-    const range = command.range;
-
-    console.log("Applying correction", text, range);
-
-    editor.value
-        .chain()
-        .setTextSelection(range)
-        .insertContent(text)
-        .focus(range.from)
-        .run();
+// Sync lock states
+watch(fileLockEditor, (value) => {
+    lockEditor.value = value;
 });
 
-onCommand<UndoCommand>(Cmds.UndoCommand, async () => {
-    if (!editor.value || !editor.value.can().undo()) return;
-
-    editor.value.commands.undo();
-});
-
-onCommand<RedoCommand>(Cmds.RedoCommand, async () => {
-    if (!editor.value || !editor.value.can().redo()) return;
-
-    editor.value.commands.redo();
-});
-
-onCommand<ToggleEditableEditorCommand>(
-    Cmds.ToggleEditableEditorCommand,
-    async (command) => {
-        if (!editor.value) return;
-
-        editor.value.setEditable(!command.locked, !command.locked);
-        editor.value.isFocused = !command.locked;
-    },
-);
-
-onCommand<ToggleLockEditorCommand>(
-    Cmds.ToggleLockEditorCommand,
-    async (command) => {
-        lockEditor.value = command.locked;
-        if (!editor.value) return;
-    },
-);
-
-onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
-    isTextCorrectionActive.value = command.tool === "correction";
-    isInteractiableFocusActive.value = command.tool === "rewrite";
-});
-
+// Watch for selection changes
 watch(focusedSelection, (value) => {
     selectedText.value = value;
 });
 
-onUnmounted(() => {
-    editor.value?.destroy();
-});
-
-// listeners
-watch(model, (value) => {
-    if (!editor.value) return;
-
-    if (getContent() === value) {
-        return;
-    }
-    editor.value.commands.setContent(value);
-});
-
-watch(isConverting, (value) => {
-    lockEditor.value = value;
-});
-
-/**
- * Watch for error changes to show error toast
- */
-watch(conversionError, (newError) => {
-    if (newError) {
-        toast.add({
-            title: t("upload.error"),
-            description: `${newError}. ${t("upload.errorDescription")}`,
-            color: "error",
-            icon: "i-lucide-alert-circle",
-            duration: 5000,
-            actions: [
-                {
-                    label: t("upload.dismiss"),
-                    onClick: () => clearError(),
-                },
-            ],
-        });
-    }
-});
-
-/**
- * Watch for fileName changes to show success toast
- */
-watch(
-    () => fileName.value,
-    (newFileName, oldFileName) => {
-        if (
-            newFileName &&
-            !conversionError.value &&
-            !isConverting.value &&
-            newFileName !== oldFileName
-        ) {
-            toast.add({
-                title: t("upload.fileConvertedSuccess"),
-                description: newFileName,
-                color: "success",
-                icon: "i-lucide-check-circle",
-                duration: 3000,
-            });
-        }
-    },
-);
-
-// functions
-function getContent() {
-    if (!editor.value) {
-        return "";
-    }
-
-    return editor.value.getText();
-}
-
-function triggerFileUpload(): void {
-    if (fileInputRef.value) {
-        fileInputRef.value.click();
-    }
-}
-
-function onFileSelect(event: Event): void {
-    handleFileSelect(event);
-    // Reset the input so the same file can be selected again
-    if (fileInputRef.value) {
-        fileInputRef.value.value = "";
-    }
+// File input handler
+function handleFileSelect(event: Event): void {
+    onFileSelect(event);
 }
 </script>
 
 <template>
-    <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
-        <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10">
-        </div>
+    <div class="w-full h-full">
+        <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative"
+            data-tour="text-editor">
+            <!-- Lock overlay -->
+            <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10" />
 
-        <QuickActionsPanel :editor="editor" />
+            <!-- Text correction overlay -->
+            <TextCorrection v-if="isTextCorrectionActive" :hover-block="hoverBlock"
+                :relative-hover-rect="relativeHoverRect" />
 
-        <TextCorrection v-if="isTextCorrectionActive" :hover-block="hoverBlock"
-            :relative-hover-rect="relativeHoverRect" />
+            <!-- Text rewrite bubble menu -->
+            <TextRewrite :focused-sentence="focusedSentence" :focused-word="focusedWord" :text="model"
+                :editor="editor" />
 
-        <TextRewrite :focused-sentence="focusedSentence" :focused-word="focusedWord" :text="model" :editor="editor" />
-
-        <div ref="dropZoneRef" class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll relative">
-            <!-- Drop zone overlay -->
-            <div v-if="isOverDropZone" class="absolute inset-0 bg-gray-100/80 dark:bg-gray-800/80 border-2 border-dashed border-primary-500 rounded-lg 
-                    flex flex-col items-center justify-center z-10 transition-all duration-200 backdrop-blur-sm">
-                <div class="text-5xl text-primary-500 mb-2">
-                    <div class="i-lucide-file-down animate-bounce"></div>
+            <!-- Main editor area -->
+            <div ref="dropZoneRef" class="w-full h-full overflow-y-auto overflow-x-hidden relative mb-[35px]">
+                <!-- Drop zone overlay -->
+                <div v-if="isOverDropZone" class="absolute inset-0 bg-gray-100/80 dark:bg-gray-800/80 border-2 border-dashed border-primary-500 rounded-lg 
+                       flex flex-col items-center justify-center z-10 transition-all duration-200 backdrop-blur-sm">
+                    <div class="text-5xl text-primary-500 mb-2">
+                        <div class="i-lucide-file-down animate-bounce" />
+                    </div>
+                    <span class="text-lg font-medium text-primary-600 dark:text-primary-400">
+                        {{ t('upload.dropFileToConvert') }}
+                    </span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ t('upload.supportedFormats') }}
+                    </span>
                 </div>
-                <span class="text-lg font-medium text-primary-600 dark:text-primary-400">
-                    {{ t('upload.dropFileToConvert') }}
-                </span>
-                <span class="text-sm text-gray-500 dark:text-gray-400">{{ t('upload.supportedFormats') }}</span>
-            </div>
-            <!-- Loading overlay -->
-            <div v-if="isConverting"
-                class="absolute inset-0 bg-gray-50/90 dark:bg-gray-900/90 rounded-lg flex flex-col items-center justify-center z-10">
-                <!-- Loading spinner -->
-                <div class="text-4xl text-primary-500 mb-4">
-                    <UIcon name="i-lucide-loader-circle" class="animate-spin-slow" />
+
+                <!-- Loading overlay -->
+                <div v-if="isConverting"
+                    class="absolute inset-0 bg-gray-50/90 dark:bg-gray-900/90 rounded-lg flex flex-col items-center justify-center z-10">
+                    <div class="text-4xl text-primary-500 mb-4">
+                        <UIcon name="i-lucide-loader-circle" class="animate-spin-slow" />
+                    </div>
+                    <span class="text-gray-600 dark:text-gray-300">
+                        {{ t('upload.convertingFile') }}
+                    </span>
                 </div>
-                <span class="text-gray-600 dark:text-gray-300">{{ t('upload.convertingFile') }}</span>
-            </div>
-            <editor-content :editor="editor" spellcheck="false" class="w-full h-full" />
-        </div>
 
-        <div class="flex gap-2 items-start justify-between"
-            :class="{ 'character-count--warning': editor.storage.characterCount.characters() === limit }">
-            <DisclaimerButton variant="ghost" />
-            <UButton size="xs" color="primary" @click="triggerFileUpload" :loading="isConverting"
-                :disabled="isConverting" icon="i-lucide-file-up" variant="soft">
-                {{ isConverting ? t('upload.uploading') : t('upload.uploadFile') }}
-            </UButton>
-            <input type="file" ref="fileInputRef" class="hidden" @change="onFileSelect"
-                            accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
-            <div class="data-bs-banner">
-                <DataBsBanner class="text-center" />
+                <!-- Editor content -->
+                <EditorContent :editor="editor" spellcheck="false" class="w-full h-full" />
             </div>
 
-            <div class="flex items-center gap-2">
-                <svg height="20" width="20" viewBox="0 0 20 20">
-                    <circle r="10" cx="10" cy="10" fill="#e9ecef" />
-                    <circle r="5" cx="10" cy="10" fill="transparent" stroke="currentColor" stroke-width="10"
-                        :stroke-dasharray="`calc(${characterCountPercentage} * 31.4 / 100) 31.4`"
-                        transform="rotate(-90) translate(-20)" />
-                    <circle r="6" cx="10" cy="10" fill="white" />
-                </svg>
-
-                {{ editor.storage.characterCount.characters() }} / {{ limit }} characters
-                <br class="hidden md:block">
-                {{ editor.storage.characterCount.words() }} words
+            <!-- Toolbar -->
+            <div class="absolute bottom-0 inset-x-0">
+                <TextToolbar :text="model" :characters="editor.storage.characterCount.characters()"
+                    :words="editor.storage.characterCount.words()" :limit="limit" @upload-file="triggerFileUpload" />
             </div>
+
+            <input type="file" ref="fileInputRef" class="hidden" @change="handleFileSelect"
+                accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx" />
         </div>
     </div>
 </template>
 
-
 <style lang="css">
 @reference "../assets/css/main.css";
 
+/* Text correction styles */
 .correction {
     text-decoration-line: underline;
     text-decoration-style: solid;
@@ -367,9 +146,9 @@ function onFileSelect(event: Event): void {
     @apply bg-blue-100;
 }
 
+/* Text focus styles */
 .focused-sentence {
     @apply bg-blue-100;
-
     background-color: var(--color-blue-100);
     border-radius: 2px;
     padding: 1px 0;
@@ -379,6 +158,7 @@ function onFileSelect(event: Event): void {
     color: var(--color-blue-500);
 }
 
+/* Text modification styles */
 .text-added {
     @apply bg-green-100;
     background-color: var(--color-green-100);
@@ -389,36 +169,34 @@ function onFileSelect(event: Event): void {
     background-color: var(--color-red-100);
 }
 
+/* Character count warning */
 .character-count--warning {
     @apply text-red-500;
 }
 
-.data-bs-banner {
-    @apply hidden @md:inline max-md:hidden;
-}
-
+/* Responsive design */
 @media screen and (max-height: 600px) {
-    .data-bs-banner {
+    .data.bs-banner {
         @apply hidden;
     }
 }
 
+/* Animations */
 .fade-in {
-  opacity: 0; /* Start completely transparent */
-  animation: fadeIn 2s ease-in forwards; /* Apply the fadeIn animation */
+    opacity: 0;
+    animation: fadeIn 2s ease-in forwards;
 }
 
-/* Keyframes for the fade-in effect */
 @keyframes fadeIn {
-  from {
-    opacity: 0; /* Start transparent */
-  }
-  to {
-    opacity: 1; /* End fully visible */
-  }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
-/* Slower spinning animation for loading spinner */
 .animate-spin-slow {
     animation: spin 2s linear infinite;
 }

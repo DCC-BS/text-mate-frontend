@@ -27,7 +27,8 @@
         "languages": "Languages",
         "undo": "Undo",
         "redo": "Redo",
-        "signOut": "Sign Out"
+        "signOut": "Sign Out",
+        "app": "Text Mate"
     },
     "tools": {
         "problems": "Problems",
@@ -43,8 +44,9 @@
         "loading": "Loading..."
     },
     "problems": {
-        "title": "Problems",
-        "noProblems": "No problems found"
+        "title": "Spelling and Grammar Problems",
+        "noProblems": "No problems found",
+        "addToDictionary": "Add { word } to the dictionary"
     },
     "text-editor": {
         "addWordToDictionary": "Add to Dictionary",
@@ -64,7 +66,9 @@
         "bullet_points": "Bullet Points",
         "summarize": "Summarize",
         "social_mediafy": "Social Media Format",
-        "plain_language": "Plain Language"
+        "plain_language": "Plain Language",
+        "formality": "Formality",
+        "medium": "Medium"
     },
     "rewrite": {
         "writing_style": {
@@ -129,7 +133,12 @@
             "example": "Example",
             "fix": "Suggested Fix"
         },
-        "selectDocs": "select documents"
+        "selectDocs": "select documents",
+        "ignore": "Ignore"
+    },
+    "actions": {
+        "custom": "Custom",
+        "apply": "Apply"
     },
     "user-dictionary": {
         "title": "Dictionary",
@@ -142,7 +151,34 @@
         "en-US": "Translate to English (US)",
         "en-GB": "Translate to English (UK)",
         "fr": "Translate to French",
-        "it": "Translate to Italian"
+        "it": "Translate to Italian",
+        "summarize": {
+            "sentence": "Sentence",
+            "three_sentence": "Three Sentences",
+            "paragraph": "Paragraph",
+            "page": "Page",
+            "management_summary": "Management Summary"
+        },
+        "social-mediafy": {
+            "bluesky": "Bluesky",
+            "instagram": "Instagram",
+            "linkedin": "LinkedIn",
+            "x": "X"
+        },
+        "custom": {
+            "label": "Custom Instructions",
+            "placeholder": "Enter your custom rewrite instructions here..."
+        },
+        "formality": {
+            "formal": "Formal",
+            "informal": "Informal"
+        },
+        "medium": {
+            "email": "Email",
+            "official_letter": "Official Letter",
+            "presentation": "Presentation",
+            "report": "Report"
+        }
     },
     "flesch-score": {
         "easy": "Easy",
@@ -179,5 +215,89 @@
         "errorDescription": "Error uploading file. Please try again or contact us.",
         "dismiss": "Dismiss",
         "fileConvertedSuccess": "File converted successfully"
+    },
+    "rewrite-diff-viewer": {
+        "changes": "Changes",
+        "clickToUndo": "Click on the changes to undo them",
+        "undo": "Undo",
+        "noChangesYet": "No changes yet. When the text is rewritten by textmate, the changes will be highlighted here."
+    },
+    "tour": {
+        "welcome": {
+            "title": "Welcome to Text Mate!",
+            "content": "Text Mate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to confidentiality obligations with Text Mate. I will now show you the main functions of Text Mate."
+        },
+        "functions": {
+            "title": "Text Mate has three main functions",
+            "content": "Here you can switch between the three main functions: Rewrite to leverage AI for text enhancement, Problems to see and fix grammar and spelling errors, and Review to check your text against guideline documents."
+        },
+        "problemsIntro": {
+            "title": "Spelling and Grammar Problems",
+            "content": "Textmate helps you find and fix grammar and spelling errors in your text."
+        },
+        "language": {
+            "title": "Language Selection",
+            "content": "Choose the proofing language for your text. This helps the grammar and spelling checker provide accurate suggestions for the selected language."
+        },
+        "dictionary": {
+            "title": "Personal Dictionary",
+            "content": "Add words that should be ignored during spelling checks. This is useful for specialized terminology, names, or words that are correct but not in the standard dictionary."
+        },
+        "editor": {
+            "title": "Text Editor",
+            "content": "This is where you write and edit your text. The editor provides real-time grammar and spelling checking as you type."
+        },
+        "wordCount": {
+            "title": "Text Statistics",
+            "content": "View detailed information about your text including word count, character count, and Flesch reading ease score. Click on these statistics to see more details about your text's readability."
+        },
+        "restart": "Start Tour",
+        "problems": {
+            "title": "Problems Panel",
+            "content": "Here you can see all grammar and spelling problems in your text. Use the arrow keys to quickly navigate to each problem in the text. Or hover over the underlined words in the text to see suggestions. You can also add a word directly to the dictionary."
+        },
+        "textEditorToolpanel": {
+            "title": "Text Editor Tools",
+            "content": "Here you can undo or redo your changes. Additionally, you can upload a document, which will be converted to text and opened in the editor."
+        },
+        "rewriteOptions": {
+            "title": "Rewrite Options",
+            "content": "Define here how your text should be rewritten. Customize writing style, target audience, intent, and medium to suit your needs."
+        },
+        "rewriteToolpanel": {
+            "title": "Accept or Reject Rewrite Actions",
+            "content": "Here you can undo the last rewrite action or accept all changes."
+        },
+        "rewrite": {
+            "title": "AI Text Rewriting",
+            "content": "When a text action is executed, the changes appear here. Click on a change to undo it or on the checkmark below to accept all changes."
+        },
+        "check": {
+            "title": "Check",
+            "content": "Check your text against documents."
+        },
+        "advisor": {
+            "title": "Document Advisor",
+            "content": "Select a policy according to which you want to check your document. The document advisor will show you the violations it found against the selected policy."
+        },
+        "quickActions": {
+            "title": "Rewrite Actions",
+            "content": "Perform text actions such as summaries or rewrites. Select an action to apply it to your text."
+        },
+        "customQuickAction": {
+            "title": "Custom Rewrite Instructions",
+            "content": "Enter your custom rewrite instructions here to rewrite your text according to your wishes. This is useful when you have special requirements that are not included in the standard actions.",
+            "contentWithLink": "Enter your custom rewrite instructions here to rewrite your text according to your wishes. This is useful when you have special requirements that are not included in the standard actions. For tips on writing effective prompts, visit the {link}.",
+            "linkText": "Prompting Guide",
+            "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
+        },
+        "conclusion": {
+            "title": "That's it!",
+            "content": "You are now ready to make full use of Text Mate. Feel free to restart the tour if you forget something. Have fun writing!"
+        },
+        "skip": "Skip",
+        "next": "Next",
+        "prev": "Back",
+        "finish": "Finish"
     }
 }

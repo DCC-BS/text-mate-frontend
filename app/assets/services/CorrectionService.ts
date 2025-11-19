@@ -259,16 +259,18 @@ export class CorrectionService {
         return { blocks: newBlocks, commands };
     }
 
-    private async lock() {
+    private async lock(): Promise<void> {
         const now = Date.now();
+        const timeout = 10000; // Increased timeout for better reliability
 
         while (this.correction_lock) {
-            if (Date.now() - now > 5000) {
+            if (Date.now() - now > timeout) {
                 this.logger.warn("Lock timeout exceeded, forcing unlock");
+                this.correction_lock = false;
                 break;
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
         this.correction_lock = true;
