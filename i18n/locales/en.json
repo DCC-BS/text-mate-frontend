@@ -133,7 +133,8 @@
             "example": "Example",
             "fix": "Suggested Fix"
         },
-        "selectDocs": "select documents"
+        "selectDocs": "select documents",
+        "ignore": "Ignore"
     },
     "actions": {
         "custom": "Custom",

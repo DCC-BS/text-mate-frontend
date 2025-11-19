@@ -72,6 +72,14 @@ function changeRuleIndex(delta: number) {
     );
 }
 
+function ignoreRule() {
+    if (!validationResult.value || !validationResult.value.rules) {
+        return;
+    }
+
+    validationResult.value.rules.splice(selectedRuleIndex.value, 1);
+}
+
 onMounted(() => {
     useServiceAsync(AdvisorService).then((service) => {
         advisorService.value = service;
@@ -237,6 +245,8 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
             <div v-if="currentRule" class="relative">
                 <AnimatePresence mode="popLayout">
                     <div class="flex gap-2 absolute top-0 right-0 z-10">
+                        <UButton icon="i-lucide-eye-off" variant="ghost" color="neutral" :title="t('advisor.ignore')"
+                            @click="ignoreRule" />
                         <UButton icon="i-lucide-chevron-left" variant="link" :disabled="selectedRuleIndex === 0"
                             @click="changeRuleIndex(-1)"></UButton>
                         <UButton icon="i-lucide-chevron-right" variant="link"

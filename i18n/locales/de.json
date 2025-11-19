@@ -89,7 +89,8 @@
             "example": "Beispiel",
             "fix": "Vorgeschlagene Korrektur"
         },
-        "selectDocs": "Dokumente auswählen"
+        "selectDocs": "Dokumente auswählen",
+        "ignore": "Ignorieren"
     },
     "actions": {
         "custom": "Benutzerdefiniert",
