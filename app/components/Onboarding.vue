@@ -13,8 +13,7 @@ import {
     HideTextStatsCommand,
 } from "~/assets/models/commands";
 
-const exampleText = "Schreibe hier dein text.";
-const exampleRewriteText = "Dein umformulierte Text.";
+const exampleText = "Schreibe hier deinen text.";
 
 const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
