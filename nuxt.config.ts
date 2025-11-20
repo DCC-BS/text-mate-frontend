@@ -79,7 +79,7 @@ export default defineNuxtConfig({
         "nuxt-tour",
     ],
     "common-ui.bs.js": {
-        repo: "feedback-control.bs.js",
+        repo: "text-mate-frontend",
         owner: "DCC-BS",
     },
     "feedback-control.bs.js": {
