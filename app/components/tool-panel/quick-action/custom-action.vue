@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 interface InputProps {
-  actionsAreAvailable: boolean;
+    actionsAreAvailable: boolean;
 }
 
 const props = defineProps<InputProps>();
 
 const emit =
-  defineEmits<
-    (e: "apply-action", action: "custom", config: string) => void
-  >();
+    defineEmits<
+        (e: "apply-action", action: "custom", config: string) => void
+    >();
 
 const { t } = useI18n();
 
@@ -16,8 +16,8 @@ const customText = ref("");
 const isDrawerOpen = ref(false);
 
 function submitAction() {
-  emit("apply-action", "custom", customText.value);
-  isDrawerOpen.value = false;
+    emit("apply-action", "custom", customText.value);
+    isDrawerOpen.value = false;
 }
 </script>
 

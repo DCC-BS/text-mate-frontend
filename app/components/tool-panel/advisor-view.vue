@@ -161,10 +161,7 @@ async function check() {
     } catch (error) {
         console.error(error);
 
-        if (
-            error instanceof ApiError &&
-            error.errorId === "request_aborted"
-        ) {
+        if (error instanceof ApiError && error.errorId === "request_aborted") {
             return;
         }
 
