@@ -78,6 +78,10 @@ export default defineNuxtConfig({
         "@pinia/nuxt",
         "nuxt-tour",
     ],
+    "common-ui.bs.js": {
+        repo: "feedback-control.bs.js",
+        owner: "DCC-BS",
+    },
     "feedback-control.bs.js": {
         repo: "Feedback",
         owner: "DCC-BS",
