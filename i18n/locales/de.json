@@ -28,7 +28,7 @@
         "undo": "Rückgängig",
         "redo": "Wiederholen",
         "signOut": "Abmelden",
-        "app": "Text Mate"
+        "app": "TextMate"
     },
     "tools": {
         "problems": "Probleme",
@@ -180,11 +180,11 @@
     },
     "tour": {
         "welcome": {
-            "title": "Willkommen bei Text Mate!",
-            "content": "Text Mate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Du kannst mit Text Mate auch besondere Personendaten und Daten, die der Geheimhaltungspflicht unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von Text Mate."
+            "title": "Willkommen bei TextMate!",
+            "content": "TextMate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Du kannst mit TextMate auch besondere Personendaten und Daten, die der Geheimhaltungspflicht unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von TextMate."
         },
         "functions": {
-            "title": "Text Mate hat drei Hauptfunktionen",
+            "title": "TextMate hat drei Hauptfunktionen",
             "content": "Hier kannst Du zwischen den drei Hauptfunktionen wechseln: Umschreiben zur Nutzung von KI für Textverbesserungen, Probleme zum Anzeigen und Beheben von Grammatik- und Rechtschreibfehlern und Überprüfen um Rückmledung zu Deinem Text basiedern auf Richtlinien zu erhalten."
         },
         "problemsIntro": {
@@ -214,7 +214,7 @@
         },
         "textEditorToolpanel": {
             "title": "Text-Editor-Werkzeuge",
-            "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit Text Mate zu bearbeiten."
+            "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit TextMate zu bearbeiten."
         },
         "rewriteOptions": {
             "title": "Umschreibungsoptionen",
@@ -249,7 +249,7 @@
         },
         "conclusion": {
             "title": "Das war's!",
-            "content": "Du bist jetzt bereit, Text Mate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
+            "content": "Du bist jetzt bereit, TextMate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
         },
         "skip": "Überspringen",
         "next": "Weiter",
