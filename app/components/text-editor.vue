@@ -80,8 +80,8 @@ function handleFileSelect(event: Event): void {
                 :relative-hover-rect="relativeHoverRect" />
 
             <!-- Text rewrite bubble menu -->
-            <TextRewrite :focused-sentence="focusedSentence" :focused-word="focusedWord" :text="model"
-                :editor="editor" />
+            <TextRewrite v-if="!lockEditor" :focused-sentence="focusedSentence" :focused-word="focusedWord"
+                :text="model" :editor="editor" />
 
             <!-- Main editor area -->
             <div ref="dropZoneRef" class="w-full h-full overflow-y-auto overflow-x-hidden relative mb-[35px]">
