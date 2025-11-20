@@ -1,7 +1,7 @@
-# Project Brief: Text Mate Frontend
+# Project Brief: TextMate Frontend
 
 ## Project Overview
-Text Mate is a modern web application for advanced text editing, correction, and document validation. This repository contains the frontend code built with Nuxt.js and TypeScript, while the backend is a separate Python FastAPI application.
+TextMate is a modern web application for advanced text editing, correction, and document validation. This repository contains the frontend code built with Nuxt.js and TypeScript, while the backend is a separate Python FastAPI application.
 
 ## Core Requirements & Goals
 - **Grammar Correction**: Real-time identification and suggestion of fixes for grammar and spelling issues

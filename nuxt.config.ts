@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     },
     app: {
         head: {
-            titleTemplate: "Text Mate",
+            titleTemplate: "TextMate",
             htmlAttrs: {
                 lang: "de",
             },
@@ -51,11 +51,11 @@ export default defineNuxtConfig({
                 },
                 {
                     name: "apple-mobile-web-app-title",
-                    content: "Text Mate",
+                    content: "TextMate",
                 },
                 {
                     name: "application-name",
-                    content: "Text Mate",
+                    content: "TextMate",
                 },
                 { name: "msapplication-config", content: "/browserconfig.xml" },
             ],

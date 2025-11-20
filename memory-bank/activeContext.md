@@ -1,4 +1,4 @@
-# Active Context: Text Mate Frontend
+# Active Context: TextMate Frontend
 
 ## Current Work Focus
 The project is in a stable, feature-complete state with a mature architecture. The current focus appears to be on maintenance, bug fixes, and potential UI refinements based on the recent activity in the codebase.

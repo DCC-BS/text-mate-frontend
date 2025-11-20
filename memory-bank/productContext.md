@@ -1,7 +1,7 @@
-# Product Context: Text Mate Frontend
+# Product Context: TextMate Frontend
 
 ## Why This Project Exists
-Text Mate addresses the growing need for sophisticated text editing and correction tools in professional and academic environments. Traditional text editors lack advanced AI-powered correction, while specialized tools often require separate workflows. Text Mate integrates these capabilities into a single, cohesive interface.
+TextMate addresses the growing need for sophisticated text editing and correction tools in professional and academic environments. Traditional text editors lack advanced AI-powered correction, while specialized tools often require separate workflows. TextMate integrates these capabilities into a single, cohesive interface.
 
 ## Problems It Solves
 1. **Fragmented Writing Workflows**: Users typically switch between multiple tools for grammar checking, rewriting, and document validation
@@ -45,7 +45,7 @@ Text Mate addresses the growing need for sophisticated text editing and correcti
 - **Error Reduction**: Improvement in text quality metrics over time
 
 ## Competitive Landscape
-Text Mate differentiates itself by:
+TextMate differentiates itself by:
 - Combining multiple text processing capabilities in one interface
 - Real-time processing with sophisticated AI integration
 - Document validation against reference materials

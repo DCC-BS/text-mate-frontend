@@ -1,4 +1,4 @@
-# Progress: Text Mate Frontend
+# Progress: TextMate Frontend
 
 ## What Works
 
