@@ -73,7 +73,6 @@ export default defineNuxtConfig({
     modules: [
         "@nuxt/ui",
         "@nuxtjs/i18n",
-        "@nuxtjs/mdc",
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/event-system.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
