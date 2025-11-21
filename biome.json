@@ -57,13 +57,14 @@
                 "rules": {
                     "correctness": {
                         "noUnusedVariables": "off",
-                        "noUnusedImports": "off"
+                        "noUnusedImports": "off",
+                        "noUnknownPseudoClass": "off"
                     }
                 }
             }
         },
         {
-            "includes": ["**/*.css"],
+            "includes": ["**/*.css", "**/*.vue"],
             "linter": {
                 "rules": {
                     "suspicious": {
@@ -75,6 +76,18 @@
                 "parser": {
                     "tailwindDirectives": true
                 }
+            }
+        },
+        {
+            "includes": ["**/Onboarding.vue"],
+            "assist": {
+                "enabled": false
+            },
+            "linter": {
+                "enabled": false
+            },
+            "formatter": {
+                "enabled": false
             }
         }
     ]

@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { NodeViewWrapper, nodeViewProps } from "@tiptap/vue-3";
+import { nodeViewProps } from "@tiptap/vue-3";
 
 defineProps({
     ...nodeViewProps,

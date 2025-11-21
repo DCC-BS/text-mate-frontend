@@ -31,16 +31,16 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
         <UButton layout :variant="activeTool === 'rewrite' ? 'soft' : 'link'"
             :color="activeTool === 'rewrite' ? 'primary' : 'neutral'" @click="switchTool('rewrite')">
             {{ t('tools.rewrite') }}
-        </UButton layout>
+        </UButton>
 
         <UButton layout :variant="activeTool === 'correction' ? 'soft' : 'link'"
             :color="activeTool === 'correction' ? 'primary' : 'neutral'" @click="switchTool('correction')">
             {{ t('tools.problems') }}
-        </UButton layout>
+        </UButton>
 
         <UButton layout :variant="activeTool === 'advisor' ? 'soft' : 'link'"
             :color="activeTool === 'advisor' ? 'primary' : 'neutral'" @click="switchTool('advisor')">
             {{ t('tools.advisor') }}
-        </UButton layout>
+        </UButton>
     </div>
 </template>

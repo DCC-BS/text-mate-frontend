@@ -3,10 +3,10 @@ import { EditorContent } from "@tiptap/vue-3";
 import { useTextAction } from "~/composables/textAction.composable";
 import { useTextFileUpload } from "~/composables/useFileUpload";
 import { useTextEditor } from "~/composables/useTextEditor";
+import TextClear from "./text-editor/text-clear.vue.vue";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
 import TextToolbar from "./text-editor/text-toolbar.vue";
-import TextClear from "./text-editor/text-clear.vue.vue";
 
 const { t } = useI18n();
 
