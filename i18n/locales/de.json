@@ -27,8 +27,9 @@
         "languages": "Sprachen",
         "undo": "Rückgängig",
         "redo": "Wiederholen",
+        "clearText": "Text leeren",
         "signOut": "Abmelden",
-        "app": "Text Mate"
+        "app": "TextMate"
     },
     "tools": {
         "problems": "Probleme",
@@ -180,15 +181,15 @@
     },
     "tour": {
         "welcome": {
-            "title": "Willkommen bei Text Mate!",
-            "content": "Text Mate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Sie können mit Text Mate auch besondere Personendaten und Daten, die der Geheimhaltungspflicht unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von Text Mate."
+            "title": "Willkommen bei TextMate!",
+            "content": "TextMate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Du kannst mit TextMate auch besondere Personendaten und Daten, die der Geheimhaltungspflicht unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von TextMate."
         },
         "functions": {
-            "title": "Text Mate hat drei Hauptfunktionen",
-            "content": "Hier kannst Du zwischen den drei Hauptfunktionen wechseln: Umschreiben zur Nutzung von KI für Textverbesserungen, Probleme zum Anzeigen und Beheben von Grammatik- und Rechtschreibfehlern und Überprüfen zur Überprüfung Deines Texts anhand von Richtlinien."
+            "title": "TextMate hat drei Hauptfunktionen",
+            "content": "Hier kannst Du zwischen den drei Hauptfunktionen wechseln: Umschreiben zur Nutzung von KI für Textverbesserungen, Probleme zum Anzeigen und Beheben von Grammatik- und Rechtschreibfehlern und Überprüfen um Rückmledung zu Deinem Text basiedern auf Richtlinien zu erhalten."
         },
         "problemsIntro": {
-            "title": "Rechtsschreibungs- und Grammatikprobleme",
+            "title": "Rechtschreibungs- und Grammatikprobleme",
             "content": "Textmate hilft Dir, Grammatik- und Rechtschreibfehler in Deinem Text zu finden und zu beheben."
         },
         "language": {
@@ -201,11 +202,11 @@
         },
         "editor": {
             "title": "Text-Editor",
-            "content": "Hier schreiben und bearbeiten Sie Ihren Text. Der Editor bietet Echtzeit-Grammatik- und Rechtschreibprüfung während Sie tippen."
+            "content": "Hier schreibst und bearbeitest Du Deinen Text. Der Editor bietet Echtzeit-Grammatik- und Rechtschreibprüfung während Du tippst."
         },
         "wordCount": {
-            "title": "Textstatistiken",
-            "content": "Sehe detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klick hier, um mehr Details über die Lesbarkeit Deines Texts zu sehen."
+            "title": "Text-Statistiken",
+            "content": "Erhalte detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klicke hier, um mehr Details über die Lesbarkeit Deines Texts zu sehen."
         },
         "restart": "Tutorial neu starten",
         "problems": {
@@ -214,15 +215,15 @@
         },
         "textEditorToolpanel": {
             "title": "Text-Editor-Werkzeuge",
-            "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit Text Mate zu bearbeiten."
+            "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit TextMate zu bearbeiten."
         },
         "rewriteOptions": {
             "title": "Umschreibungsoptionen",
-            "content": "Definiere hier, wie Dein Text umgeschrieben werden soll. Passen Schreibstil, Zielgruppe, Absicht und Medium an Deine Bedürfnisse an."
+            "content": "Definiere hier, wie Dein Text umgeschrieben werden soll. Lasse den Text in Lesefreundlicher Sprache umschreiben, erhalte eine Zusammenfassung und vieles mehr."
         },
         "rewriteToolpanel": {
             "title": "Umschreibaktionen annehmen oder ablehnen",
-            "content": "Hier kanst du die letzte Umschreibaktion rückgängig machen oder alle Änderungen annehmen."
+            "content": "Hier kanst Du die letzte Umschreibaktion rückgängig machen oder alle Änderungen annehmen."
         },
         "rewrite": {
             "title": "KI-Textumschreibung",
@@ -234,7 +235,7 @@
         },
         "advisor": {
             "title": "Dokumentenberater",
-            "content": "Wähle eine Richtlinie aus nach welcher Du Dein Dokument überprüfen möchtest. Der Dokumentenberater zeigt Dir die von ihm gefundenen Verstösse gegen die ausgewählte Richtlinie an."
+            "content": "Wähle eine Richtlinie aus anhand welcher Du Dein Dokument überprüfen möchtest. Der Dokumentenberater zeigt Dir die von ihm gefundenen Verstösse gegen die ausgewählte Richtlinie an."
         },
         "quickActions": {
             "title": "Umschreibaktionen",
@@ -249,7 +250,7 @@
         },
         "conclusion": {
             "title": "Das war's!",
-            "content": "Du bist jetzt bereit, Text Mate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
+            "content": "Du bist jetzt bereit, TextMate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
         },
         "skip": "Überspringen",
         "next": "Weiter",

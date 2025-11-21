@@ -1,7 +1,7 @@
-# System Patterns: Text Mate Frontend
+# System Patterns: TextMate Frontend
 
 ## System Architecture Overview
-Text Mate follows a modular, event-driven architecture with clear separation of concerns. The system is built around reactive data flows and dependency injection patterns that enable maintainable, testable code.
+TextMate follows a modular, event-driven architecture with clear separation of concerns. The system is built around reactive data flows and dependency injection patterns that enable maintainable, testable code.
 
 ## Core Architectural Patterns
 

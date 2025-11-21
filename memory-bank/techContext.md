@@ -1,4 +1,4 @@
-# Technical Context: Text Mate Frontend
+# Technical Context: TextMate Frontend
 
 ## Technology Stack
 ### Core Framework

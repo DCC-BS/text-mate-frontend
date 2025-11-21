@@ -2,7 +2,7 @@
 
 ## What is the Memory Bank?
 
-The Memory Bank is a structured knowledge repository for the Text Mate Frontend project. It serves as a living documentation system that captures project context, technical decisions, progress, and architectural patterns. Think of it as the project's institutional memory that helps maintain continuity and accelerates onboarding.
+The Memory Bank is a structured knowledge repository for the TextMate Frontend project. It serves as a living documentation system that captures project context, technical decisions, progress, and architectural patterns. Think of it as the project's institutional memory that helps maintain continuity and accelerates onboarding.
 
 ## Memory Bank Structure
 

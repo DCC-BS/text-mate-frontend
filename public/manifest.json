@@ -1,7 +1,7 @@
 {
     "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-    "name": "Text Mate",
-    "short_name": "Text Mate",
+    "name": "TextMate",
+    "short_name": "TextMate",
     "description": "Tool for text manipulation",
     "start_url": "/",
     "icons": [

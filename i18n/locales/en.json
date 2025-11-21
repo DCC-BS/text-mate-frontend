@@ -27,8 +27,9 @@
         "languages": "Languages",
         "undo": "Undo",
         "redo": "Redo",
+        "clearText": "Clear text",
         "signOut": "Sign Out",
-        "app": "Text Mate"
+        "app": "TextMate"
     },
     "tools": {
         "problems": "Problems",
@@ -224,11 +225,11 @@
     },
     "tour": {
         "welcome": {
-            "title": "Welcome to Text Mate!",
-            "content": "Text Mate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to confidentiality obligations with Text Mate. I will now show you the main functions of Text Mate."
+            "title": "Welcome to TextMate!",
+            "content": "TextMate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to confidentiality obligations with TextMate. I will now show you the main functions of TextMate."
         },
         "functions": {
-            "title": "Text Mate has three main functions",
+            "title": "TextMate has three main functions",
             "content": "Here you can switch between the three main functions: Rewrite to leverage AI for text enhancement, Problems to see and fix grammar and spelling errors, and Review to check your text against guideline documents."
         },
         "problemsIntro": {
@@ -293,7 +294,7 @@
         },
         "conclusion": {
             "title": "That's it!",
-            "content": "You are now ready to make full use of Text Mate. Feel free to restart the tour if you forget something. Have fun writing!"
+            "content": "You are now ready to make full use of TextMate. Feel free to restart the tour if you forget something. Have fun writing!"
         },
         "skip": "Skip",
         "next": "Next",

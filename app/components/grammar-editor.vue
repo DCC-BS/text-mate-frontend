@@ -5,6 +5,7 @@ import {
     InvalidateCorrectionCommand,
     type SwitchCorrectionLanguageCommand,
     type ToggleEditableEditorCommand,
+    type ToggleLockEditorCommand,
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
@@ -16,6 +17,7 @@ const userText = ref("");
 const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
 const isEditorLocked = ref(false);
+const isCorrectionSuspended = ref(false);
 
 const currentTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
 const tourIsActive = ref(false);
@@ -45,6 +47,11 @@ onMounted(async () => {
 // listeners
 watch(userText, (newText, oldText) => {
     if (newText === oldText) {
+        return;
+    }
+
+    // Do not trigger corrections while quick actions or other editor locks are active
+    if (isCorrectionSuspended.value) {
         return;
     }
 
@@ -97,6 +104,25 @@ onCommand(
 onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
     currentTool.value = cmd.tool;
 });
+
+// Suspend automatic corrections while the editor is locked by quick actions
+onCommand<ToggleLockEditorCommand>(
+    Cmds.ToggleLockEditorCommand,
+    async (command: ToggleLockEditorCommand) => {
+        isCorrectionSuspended.value = command.locked;
+
+        if (command.locked) {
+            // Abort any running correction task to keep the UI responsive
+            taskScheduler.abortRunningTask();
+            return;
+        }
+
+        // When unlocking, run a single correction pass for the final text
+        taskScheduler.schedule((signal: AbortSignal) =>
+            correctText(userText.value, signal),
+        );
+    },
+);
 
 async function handleInvalidate(_: InvalidateCorrectionCommand) {
     taskScheduler.abortRunningTask();
