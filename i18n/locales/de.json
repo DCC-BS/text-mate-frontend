@@ -27,6 +27,7 @@
         "languages": "Sprachen",
         "undo": "Rückgängig",
         "redo": "Wiederholen",
+        "clearText": "Text leeren",
         "signOut": "Abmelden",
         "app": "TextMate"
     },

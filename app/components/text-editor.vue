@@ -6,6 +6,7 @@ import { useTextEditor } from "~/composables/useTextEditor";
 import TextCorrection from "./text-editor/text-correction.vue";
 import TextRewrite from "./text-editor/text-rewrite.vue";
 import TextToolbar from "./text-editor/text-toolbar.vue";
+import TextClear from "./text-editor/text-clear.vue.vue";
 
 const { t } = useI18n();
 
@@ -66,12 +67,19 @@ watch(focusedSelection, (value) => {
 function handleFileSelect(event: Event): void {
     onFileSelect(event);
 }
+
+
 </script>
 
 <template>
     <div class="w-full h-full">
         <div ref="container" v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative"
             data-tour="text-editor">
+            <!-- Clear text button -->
+            <div class="z-5">
+                <TextClear />
+            </div>
+
             <!-- Lock overlay -->
             <div v-if="lockEditor" class="absolute top-0 left-0 right-0 bottom-0 z-10" />
 

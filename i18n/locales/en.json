@@ -27,6 +27,7 @@
         "languages": "Languages",
         "undo": "Undo",
         "redo": "Redo",
+        "clearText": "Clear text",
         "signOut": "Sign Out",
         "app": "TextMate"
     },
