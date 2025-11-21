@@ -1,5 +1,11 @@
 {
     "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "html": {
+        "experimentalFullSupportEnabled": true,
+        "formatter": {
+            "indentScriptAndStyle": true
+        }
+    },
     "vcs": {
         "enabled": true,
         "clientKind": "git",
