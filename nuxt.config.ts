@@ -139,6 +139,11 @@ export default defineNuxtConfig({
             },
         },
     },
+    fonts: {
+        providers: {
+            bunny: false,
+        }
+    },
     // localization
     i18n: {
         locales: [
