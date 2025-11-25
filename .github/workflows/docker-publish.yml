@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version_bump:
-        description: 'Version bump type'
+        description: "Version bump type"
         required: true
-        default: 'patch'
+        default: "patch"
         type: choice
         options:
           - major
@@ -19,7 +19,7 @@ permissions:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,14 +28,6 @@ jobs:
           fetch-depth: 0
           # Use a token that can push to the repository
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
 
       - name: Configure Git
         run: |
@@ -53,11 +45,11 @@ jobs:
             exit 1
           fi
           echo "$OUTPUT"
-          
+
           # Extract version info and set outputs
           NEW_VERSION=$(echo "$OUTPUT" | grep "new_version=" | cut -d'=' -f2)
           TAG_NAME=$(echo "$OUTPUT" | grep "tag_name=" | cut -d'=' -f2)
-          
+
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 

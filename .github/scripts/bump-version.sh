@@ -14,7 +14,7 @@ if [ -z "$VERSION_BUMP" ]; then
 fi
 
 # Bump version using bun version command, then read new version from package.json using jq
-bun version "$VERSION_BUMP" --no-git-tag-version
+npm version "$VERSION_BUMP" --no-git-tag-version
 NEW_VERSION=$(jq -r .version package.json)
 echo "New version: $NEW_VERSION"
 
