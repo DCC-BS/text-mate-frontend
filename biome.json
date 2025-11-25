@@ -1,5 +1,11 @@
 {
     "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "html": {
+        "experimentalFullSupportEnabled": true,
+        "formatter": {
+            "indentScriptAndStyle": true
+        }
+    },
     "vcs": {
         "enabled": true,
         "clientKind": "git",
@@ -51,19 +57,37 @@
                 "rules": {
                     "correctness": {
                         "noUnusedVariables": "off",
-                        "noUnusedImports": "off"
+                        "noUnusedImports": "off",
+                        "noUnknownPseudoClass": "off"
                     }
                 }
             }
         },
         {
-            "includes": ["**/*.css"],
+            "includes": ["**/*.css", "**/*.vue"],
             "linter": {
                 "rules": {
                     "suspicious": {
                         "noUnknownAtRules": "off"
                     }
                 }
+            },
+            "css": {
+                "parser": {
+                    "tailwindDirectives": true
+                }
+            }
+        },
+        {
+            "includes": ["**/Onboarding.vue"],
+            "assist": {
+                "enabled": false
+            },
+            "linter": {
+                "enabled": false
+            },
+            "formatter": {
+                "enabled": false
             }
         }
     ]

@@ -1,3 +1,4 @@
+import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type {
     WordSynonymInput,
     WordSynonymResult,

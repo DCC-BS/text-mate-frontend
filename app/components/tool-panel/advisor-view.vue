@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ApiError } from "@dcc-bs/communication.bs.js";
 import { AnimatePresence, motion } from "motion-v";
 import type {
     AdvisorDocumentDescription,
@@ -6,7 +7,6 @@ import type {
     ValidationResult,
 } from "~/assets/models/advisor";
 import { AdvisorService } from "~/assets/services/AdvisorService";
-import { ApiError } from "~/utils/apiFetch";
 import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
 
 interface ToolPanelAdvisorViewProps {
@@ -161,10 +161,7 @@ async function check() {
     } catch (error) {
         console.error(error);
 
-        if (
-            error instanceof ApiError &&
-            error.errorId === "request_aborted"
-        ) {
+        if (error instanceof ApiError && error.errorId === "request_aborted") {
             return;
         }
 

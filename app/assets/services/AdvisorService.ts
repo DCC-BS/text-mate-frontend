@@ -1,3 +1,4 @@
+import { apiStreamFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type {
     AdvisorDocumentDescription,
     ValidationResult,
@@ -36,7 +37,7 @@ export class AdvisorService {
         docs: string[],
         signal?: AbortSignal,
     ): AsyncGenerator<ValidationResult, void, void> {
-        const response = await apiStreamfetch("api/advisor/validate", {
+        const response = await apiStreamFetch("api/advisor/validate", {
             method: "POST",
             body: {
                 text,

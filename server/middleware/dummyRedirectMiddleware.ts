@@ -5,7 +5,8 @@ export default defineEventHandler(async (event) => {
         event.node.req.url.startsWith("/api/") &&
         !event.node.req.url.startsWith("/api/auth/") &&
         !event.node.req.url.startsWith("/api/_") &&
-        !event.node.req.url.includes("/dummy/")
+        !event.node.req.url.includes("/dummy/") &&
+        !event.node.req.url.includes("/changelogs")
     ) {
         const originalUrl = event.node.req.url;
         const redirectUrl = originalUrl.replace("/api/", "/api/dummy/");

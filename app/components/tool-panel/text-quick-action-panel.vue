@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { apiStreamFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import {
     Cmds,
     ExecuteTextActionCommand,
@@ -54,7 +55,7 @@ async function applyAction(
     try {
         isLocked.value = true;
 
-        const response = await apiStreamfetch("/api/quick-action", {
+        const response = await apiStreamFetch("/api/quick-action", {
             method: "POST",
             body: {
                 action,

@@ -6,11 +6,11 @@ import {
     ClearTextCommand,
     Cmds,
     ExecuteTextActionCommand,
+    HideTextStatsCommand,
     RegisterDiffCommand,
     type RestartTourCommand,
-    ToolSwitchCommand,
     ShowTextStatsCommand,
-    HideTextStatsCommand,
+    ToolSwitchCommand,
 } from "~/assets/models/commands";
 
 const exampleText = "Schreibe hier deinen text.";
@@ -35,14 +35,14 @@ function startTour(): void {
 function onTourStart(): void {
     tourIsActive.value = true;
     // Add keyboard navigation when tour starts
-    window.addEventListener('keydown', handleKeyboardNavigation);
+    window.addEventListener("keydown", handleKeyboardNavigation);
 }
 
 async function onTourComplete(): Promise<void> {
     tourCompleted.value = true;
     tourIsActive.value = false;
     // Remove keyboard navigation when tour ends
-    window.removeEventListener('keydown', handleKeyboardNavigation);
+    window.removeEventListener("keydown", handleKeyboardNavigation);
     await executeCommand(new ClearTextCommand());
     await executeCommand(new ToolSwitchCommand("correction"));
     await executeCommand(new RegisterDiffCommand("", ""));
@@ -54,22 +54,26 @@ function handleKeyboardNavigation(event: KeyboardEvent): void {
 
     // Check if user is typing in an input field
     const target = event.target as HTMLElement;
-    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+    ) {
         return;
     }
 
     switch (event.key) {
-        case 'ArrowRight':
-        case 'ArrowDown':
+        case "ArrowRight":
+        case "ArrowDown":
             event.preventDefault();
             tour.value?.nextStep();
             break;
-        case 'ArrowLeft':
-        case 'ArrowUp':
+        case "ArrowLeft":
+        case "ArrowUp":
             event.preventDefault();
             tour.value?.prevStep();
             break;
-        case 'Escape':
+        case "Escape":
             event.preventDefault();
             tour.value?.endTour();
             break;
@@ -101,7 +105,7 @@ const steps = [
         target: '[data-tour="custom-quick-action"]',
         title: t("tour.customQuickAction.title"),
         body: t("tour.customQuickAction.contentWithLink", {
-            link: `<a href="${t("tour.customQuickAction.linkUrl")}" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary-600 font-medium">${t("tour.customQuickAction.linkText")}</a>`
+            link: `<a href="${t("tour.customQuickAction.linkUrl")}" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary-600 font-medium">${t("tour.customQuickAction.linkText")}</a>`,
         }),
         onShow: async () => {
             await executeCommand(new ToolSwitchCommand("rewrite"));
@@ -183,13 +187,13 @@ const steps = [
             placement: "top",
         },
         onShow: async () => {
-            await executeCommand(new ShowTextStatsCommand())
+            await executeCommand(new ShowTextStatsCommand());
         },
         onNext: async () => {
-            await executeCommand(new HideTextStatsCommand())
+            await executeCommand(new HideTextStatsCommand());
         },
         onPrev: async () => {
-            await executeCommand(new HideTextStatsCommand())
+            await executeCommand(new HideTextStatsCommand());
         },
     },
     {
@@ -238,7 +242,7 @@ onCommand<RestartTourCommand>(Cmds.RestartTourCommand, async (_) => {
 // Clean up keyboard listener on unmount
 onUnmounted(() => {
     if (tourIsActive.value) {
-        window.removeEventListener('keydown', handleKeyboardNavigation);
+        window.removeEventListener("keydown", handleKeyboardNavigation);
     }
 });
 

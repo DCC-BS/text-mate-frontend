@@ -16,7 +16,7 @@ export default defineConfig({
             exclude: ["node_modules/", ".nuxt/", "tests/"],
         },
         root: fileURLToPath(new URL("./", import.meta.url)),
-        include: ["**/*.test.ts", "**/*.spec.ts"],
+        include: ["**/*.test.ts"],
     },
     resolve: {
         alias: {

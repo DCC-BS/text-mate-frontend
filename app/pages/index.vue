@@ -6,6 +6,7 @@ const userMail = computed(() => data.value?.user?.email ?? undefined);
 </script>
 
 <template>
+    <Changelogs />
     <FeedbackControl :default-mail="userMail" />
     <NavigationMenu />
     <div class="md:h-[calc(100vh-150px)]">
