@@ -21,7 +21,7 @@
     "dependencies": {
         "@dcc-bs/authentication.bs.js": "git+https://github.com/DCC-BS/authentication.bs.js.git#v0.2.21",
         "@dcc-bs/common-ui.bs.js": "git+https://github.com/DCC-BS/common-ui.bs.js.git#v1.1.8",
-        "@dcc-bs/communication.bs.js": "^0.0.3",
+        "@dcc-bs/communication.bs.js": "^0.0.5",
         "@dcc-bs/dependency-injection.bs.js": "git+https://github.com/DCC-BS/dependency-injection.bs.js.git#v0.0.15",
         "@dcc-bs/event-system.bs.js": "git+https://github.com/DCC-BS/event-system.bs.js.git#v1.4.1",
         "@dcc-bs/feedback-control.bs.js": "git+https://github.com/DCC-BS/feedback-control.bs.js.git#v0.1.6",
@@ -29,7 +29,7 @@
         "@iconify-json/flag": "^1.2.10",
         "@iconify-json/lucide": "^1.2.72",
         "@iconify-json/simple-icons": "^1.2.57",
-        "@nuxt/ui": "^4.2.0",
+        "@nuxt/ui": "^4.2.1",
         "@nuxtjs/i18n": "^10.2.0",
         "@nuxtjs/mdc": "0.18.4",
         "@pinia/nuxt": "0.11.3",

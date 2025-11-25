@@ -1,3 +1,4 @@
+import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type { ILogger } from "@dcc-bs/logger.bs.js";
 import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
