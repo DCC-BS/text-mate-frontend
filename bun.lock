@@ -6,6 +6,7 @@
       "dependencies": {
         "@dcc-bs/authentication.bs.js": "git+https://github.com/DCC-BS/authentication.bs.js.git#v0.2.21",
         "@dcc-bs/common-ui.bs.js": "git+https://github.com/DCC-BS/common-ui.bs.js.git#v1.1.8",
+        "@dcc-bs/communication.bs.js": "^0.0.3",
         "@dcc-bs/dependency-injection.bs.js": "git+https://github.com/DCC-BS/dependency-injection.bs.js.git#v0.0.15",
         "@dcc-bs/event-system.bs.js": "git+https://github.com/DCC-BS/event-system.bs.js.git#v1.4.1",
         "@dcc-bs/feedback-control.bs.js": "git+https://github.com/DCC-BS/feedback-control.bs.js.git#v0.1.6",
@@ -154,6 +155,8 @@
     "@dcc-bs/authentication.bs.js": ["@dcc-bs/authentication.bs.js@github:DCC-BS/authentication.bs.js#8ba3dd4", { "dependencies": { "@nuxt/kit": "^4.0.0", "@sidebase/nuxt-auth": "^1.0.0" } }, "DCC-BS-authentication.bs.js-8ba3dd4"],
 
     "@dcc-bs/common-ui.bs.js": ["@dcc-bs/common-ui.bs.js@github:DCC-BS/common-ui.bs.js#4c12a1e", { "dependencies": { "@nuxt/kit": "4.2.1", "@nuxtjs/i18n": "latest", "gray-matter": "^4.0.3", "markdown-it": "^14.1.0", "semver": "^7.7.3", "tailwind-merge": "^3.4.0", "undici": "^7.16.0" }, "peerDependencies": { "@nuxt/ui": "4.2.0", "motion-v": "^1.7.0", "nuxt": "^4.0.0", "typescript": "^5", "zod": "^4.1.12" } }, "DCC-BS-common-ui.bs.js-4c12a1e"],
+
+    "@dcc-bs/communication.bs.js": ["@dcc-bs/communication.bs.js@0.0.3", "", { "dependencies": { "vite": "^7.1.6", "vue": "^3.5.25", "zod": "^4.1.9" }, "peerDependencies": { "typescript": "^5" } }, "sha512-RLAyWhKbUIKcCbbBYPLy7E3zdPgCovpkiAO7B+UHBNtASCWOM4JNKtKYq6ZTAF9zTP0anapqFDXWfXlc7hfvnw=="],
 
     "@dcc-bs/dependency-injection.bs.js": ["@dcc-bs/dependency-injection.bs.js@github:DCC-BS/dependency-injection.bs.js#040f0ee", { "dependencies": { "@nuxt/kit": "^4.0.2" } }, "DCC-BS-dependency-injection.bs.js-040f0ee"],
 
@@ -1027,7 +1030,7 @@
 
     "comma-separated-tokens": ["comma-separated-tokens@2.0.3", "", {}, "sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg=="],
 
-    "commander": ["commander@10.0.1", "", {}, "sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug=="],
+    "commander": ["commander@2.20.3", "", {}, "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ=="],
 
     "commondir": ["commondir@1.0.1", "", {}, "sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg=="],
 
@@ -2549,6 +2552,8 @@
 
     "csso/css-tree": ["css-tree@2.2.1", "", { "dependencies": { "mdn-data": "2.0.28", "source-map-js": "^1.0.1" } }, "sha512-OA0mILzGc1kCOCSJerOeqDxDQ4HOh+G8NbOJFOTgOCzpw7fCBubk0fEyxp8AgOL/jvLgYA/uV0cMbe43ElF1JA=="],
 
+    "editorconfig/commander": ["commander@10.0.1", "", {}, "sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug=="],
+
     "editorconfig/minimatch": ["minimatch@9.0.1", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-0jWhJpD/MdhPXwPuiRkCbfYfSKp2qnn2eOc279qI7f+osl/l+prKSrvhg157zSYvx/1nmgn2NqdT6k2Z7zSH9w=="],
 
     "escodegen/source-map": ["source-map@0.6.1", "", {}, "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g=="],
@@ -2640,8 +2645,6 @@
     "svgo/commander": ["commander@11.1.0", "", {}, "sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ=="],
 
     "tar/yallist": ["yallist@5.0.0", "", {}, "sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw=="],
-
-    "terser/commander": ["commander@2.20.3", "", {}, "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ=="],
 
     "untun/pathe": ["pathe@1.1.2", "", {}, "sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ=="],
 
