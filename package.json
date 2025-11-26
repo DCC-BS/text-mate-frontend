@@ -17,7 +17,9 @@
         "test:coverage": "vitest run --coverage",
         "test:e2e": "playwright test",
         "test:e2e:ui": "playwright test --ui",
-        "e2e:codegen": "playwright codegen http://localhost:3000"
+        "e2e:codegen": "playwright codegen http://localhost:3000",
+        "docker:up": "docker compose -f docker-compose.dev.yml up --build -d",
+        "docker:down": "docker compose -f docker-compose.dev.yml down"
     },
     "dependencies": {
         "@dcc-bs/authentication.bs.js": "git+https://github.com/DCC-BS/authentication.bs.js.git#v0.2.21",
