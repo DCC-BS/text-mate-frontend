@@ -226,7 +226,7 @@
     "tour": {
         "welcome": {
             "title": "Welcome to TextMate!",
-            "content": "TextMate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to confidentiality obligations with TextMate. I will now show you the main functions of TextMate."
+            "content": "TextMate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to professional confidentiality (Erhöhter Schutzbedarf) with TextMate. I will now show you the main functions of TextMate."
         },
         "functions": {
             "title": "TextMate has three main functions",
