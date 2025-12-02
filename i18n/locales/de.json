@@ -182,7 +182,7 @@
     "tour": {
         "welcome": {
             "title": "Willkommen bei TextMate!",
-            "content": "TextMate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Du kannst mit TextMate auch besondere Personendaten und Daten, die der Geheimhaltungspflicht unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von TextMate."
+            "content": "TextMate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Du kannst mit TextMate auch besondere Personendaten und Daten, die dem Amtsgeheimnis (Erhöhter Schutzbedarf) unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von TextMate."
         },
         "functions": {
             "title": "TextMate hat drei Hauptfunktionen",
