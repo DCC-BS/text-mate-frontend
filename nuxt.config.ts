@@ -77,6 +77,7 @@ export default defineNuxtConfig({
         "nuxt-viewport",
         "@pinia/nuxt",
         "nuxt-tour",
+        "@nuxt/eslint",
     ],
     "feedback-control.bs.js": {
         repo: "Feedback",

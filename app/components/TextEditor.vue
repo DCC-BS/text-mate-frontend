@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { EditorContent } from "@tiptap/vue-3";
-import { useTextAction } from "~/composables/textAction.composable";
 import { useTextFileUpload } from "~/composables/useFileUpload";
+import { useTextAction } from "~/composables/useTextAction";
 import { useTextEditor } from "~/composables/useTextEditor";
-import TextClear from "./text-editor/text-clear.vue.vue";
-import TextCorrection from "./text-editor/text-correction.vue";
-import TextRewrite from "./text-editor/text-rewrite.vue";
-import TextToolbar from "./text-editor/text-toolbar.vue";
+import TextToolbar from "./text-editor/TexTtoolbar.vue";
+import TextClear from "./text-editor/TextClear.vue";
+import TextCorrection from "./text-editor/TextCorrection.vue";
+import TextRewrite from "./text-editor/TextRewrite.vue";
 
 const { t } = useI18n();
 

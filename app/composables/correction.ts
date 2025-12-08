@@ -20,9 +20,9 @@ const onAddHandlers = new Set<CorrectionHandler>();
 const onRemoveHandlers = new Set<CorrectionHandler>();
 const onUpdateHandlers = new Set<CorrectionHandler>();
 
-const correctedBlocks = ref<Record<string, TextCorrectionBlock>>({});
+const correctedBlocks = ref<Map<string, TextCorrectionBlock>>(new Map());
 const blocks = computed(() => {
-    return Object.values(correctedBlocks.value).sort((a, b) => {
+    return Array.from(correctedBlocks.value.values()).sort((a, b) => {
         return a.offset - b.offset;
     });
 });
@@ -95,7 +95,7 @@ function handleAddCorrectedSentence(
     }
 
     // Add to state and notify handlers
-    correctedBlocks.value[block.id] = block;
+    correctedBlocks.value.set(block.id, block);
     notifyHandlers(onAddHandlers, block, logger);
 }
 
@@ -118,7 +118,7 @@ function handleRemoveCorrectedSentence(
     }
 
     // Remove from state and notify handlers
-    delete correctedBlocks.value[block.id];
+    correctedBlocks.value.delete(block.id);
     notifyHandlers(onRemoveHandlers, block, logger);
 }
 
@@ -140,7 +140,7 @@ function handleUpdateCorrectedSentence(
     }
 
     // Update state and notify handlers
-    correctedBlocks.value[block.id] = block;
+    correctedBlocks.value.set(block.id, block);
     notifyHandlers(onUpdateHandlers, block, logger);
 }
 

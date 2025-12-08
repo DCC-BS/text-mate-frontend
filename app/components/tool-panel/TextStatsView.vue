@@ -1,22 +1,22 @@
 <script lang="ts" setup>
-import FleschScoreVisualization from "@/components/flesch-score-visualization.vue";
-import { useTextStats } from "@/composables/text-stats";
+import FleschScoreVisualization from "~/components/FleschScoreVisualization.vue";
+import { useTextStats } from "~/composables/useTextStats";
 
 const { t } = useI18n();
 
 const props = defineProps<{
-    text: string;
+  text: string;
 }>();
 
 const text = computed(() => props.text);
 
 const {
-    charCount,
-    wordCount,
-    syllableCount,
-    averageSentenceLength,
-    averageSyllablesPerWord,
-    fleschScore,
+  charCount,
+  wordCount,
+  syllableCount,
+  averageSentenceLength,
+  averageSyllablesPerWord,
+  fleschScore,
 } = useTextStats(text);
 </script>
 

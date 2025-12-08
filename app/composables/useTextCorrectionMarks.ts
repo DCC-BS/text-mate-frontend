@@ -9,7 +9,7 @@ import {
     JumpToBlockCommand,
 } from "~/assets/models/commands";
 import type { TextCorrectionBlock } from "~/assets/models/text-correction";
-import { CorrectionMark } from "~/utils/correction-mark";
+import { CorrectionMark } from "~/utils/correctionMark";
 import { useCorrection } from "./correction";
 
 export function useTextCorrectionMarks(

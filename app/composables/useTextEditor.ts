@@ -1,4 +1,5 @@
 // biome-ignore-all lint/correctness/noUnusedImports: will be used in future edits
+// eslint-disable no-unused-vars
 
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -25,8 +26,8 @@ import {
     type UndoCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
-import { FocusedSentenceMark } from "~/utils/focused-sentence-mark";
-import { FocusedWordMark } from "~/utils/focused-word-mark";
+import { FocusedSentenceMark } from "~/utils/focusedSentenceMark";
+import { FocusedWordMark } from "~/utils/focusedWordMark";
 
 export interface UseTextEditorOptions {
     container: Ref<HTMLElement | undefined>;

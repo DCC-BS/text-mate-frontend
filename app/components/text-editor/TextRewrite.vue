@@ -2,7 +2,7 @@
 import type { Editor } from "@tiptap/vue-3";
 import { BubbleMenu } from "@tiptap/vue-3/menus";
 import { ApplyTextCommand } from "~/assets/models/commands";
-import { getWordSynonym } from "~/composables/word_synonym";
+import { getWordSynonym } from "~/utils/wordSynonym";
 
 interface InputProps {
     text: string;
