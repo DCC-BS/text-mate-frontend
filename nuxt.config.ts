@@ -88,6 +88,9 @@ export default defineNuxtConfig({
     "authentication.bs.js": {
         useDummy: process.env.DUMMY === "true",
     },
+    "common-ui.bs.js": {
+        changelogsPath: "server/changelogs",
+    },
     typescript: {
         typeCheck: true,
         strict: true,
