@@ -6,11 +6,11 @@ import {
     type ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 import type { TextActions } from "~~/shared/text-actions";
-import CustomAction from "./quick-action/custom-action.vue";
-import FormalityAction from "./quick-action/formality-action.vue";
-import MediumAction from "./quick-action/medium-action.vue";
-import SocialMediaAction from "./quick-action/social-media-action.vue";
-import SummarizeAction from "./quick-action/summarize-action.vue";
+import CustomAction from "./quick-action/CustomAction.vue";
+import FormalityAction from "./quick-action/FormalityAction.vue";
+import MediumAction from "./quick-action/MediumAction.vue";
+import SocialMediaAction from "./quick-action/SocialMediaAction.vue";
+import SummarizeAction from "./quick-action/SummarizeAction.vue";
 
 interface InputProps {
     text: string;

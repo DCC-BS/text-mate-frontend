@@ -33,14 +33,23 @@ function handleRestartTour(): void {
 <template>
     <NavigationBar>
         <template #right>
+            <OnlineStatus />
             <UTooltip :text="t('tour.restart')" placement="bottom">
-                <UButton data-tour="start-tour" variant="ghost" color="neutral" icon="i-lucide-help-circle"
-                    @click="handleRestartTour">
-                </UButton>
+                <UButton
+                    data-tour="start-tour"
+                    variant="ghost"
+                    color="neutral"
+                    icon="i-lucide-help-circle"
+                    @click="handleRestartTour"
+                />
             </UTooltip>
             <UDropdownMenu :items="items">
                 <UButton variant="ghost" color="neutral">
-                    <img :src="userImage" class="h-6 w-6 rounded-full" :alt="data?.user?.name || 'User'" />
+                    <img
+                        :src="userImage"
+                        class="h-6 w-6 rounded-full"
+                        :alt="data?.user?.name || 'User'"
+                    />
                 </UButton>
             </UDropdownMenu>
         </template>

@@ -9,8 +9,8 @@ import {
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
-import TextEditor from "./text-editor.vue";
-import ToolPanel from "./tool-panel.vue";
+import TextEditor from "./TextEditor.vue";
+import ToolPanel from "./ToolPanel.vue";
 
 // refs
 const userText = ref("");
