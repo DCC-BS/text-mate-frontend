@@ -87,7 +87,7 @@ function handleAddCorrectedSentence(
     logger: ILogger,
 ): void {
     // Check if sentence already exists
-    if (block.id in correctedBlocks.value) {
+    if (correctedBlocks.value.has(block.id)) {
         logBlockWarning(
             `Corrected sentence with id ${block.id} already exists`,
             logger,
@@ -109,7 +109,7 @@ function handleRemoveCorrectedSentence(
     logger: ILogger,
 ): void {
     // Check if block exists before removing
-    if (!(block.id in correctedBlocks.value)) {
+    if (!correctedBlocks.value.has(block.id)) {
         logBlockWarning(
             `On Remove: Corrected block with id ${block.id} does not exist`,
             logger,
@@ -132,7 +132,7 @@ function handleUpdateCorrectedSentence(
     logger: ILogger,
 ): void {
     // Check if block exists before updating
-    if (!(block.id in correctedBlocks.value)) {
+    if (!correctedBlocks.value.has(block.id)) {
         logBlockWarning(
             `On Update: Corrected block with id ${block.id} does not exist`,
             logger,
@@ -152,7 +152,7 @@ function handleUpdateCorrectedSentence(
 function logBlockWarning(message: string, logger: ILogger): void {
     logger.warn(message);
     logger.debug(
-        `Corrected blocks: ${JSON.stringify(correctedBlocks.value, null, 2)}`,
+        `Corrected blocks: ${JSON.stringify(Array.from(correctedBlocks.value.values()), null, 2)}`,
     );
 }
 
