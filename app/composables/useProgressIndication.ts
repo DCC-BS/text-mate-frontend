@@ -6,7 +6,7 @@ export type EditoreProgress = {
     title: string;
 };
 
-const activeProgresDict = ref<Record<string, EditoreProgress>>({});
+const activeProgresDict = ref<Map<string, EditoreProgress>>(new Map());
 
 /**
  * Provides methods to manage progress indications.
@@ -29,7 +29,7 @@ export const useUseProgressIndication = () => {
  * @returns A function to remove the added progress indication.
  */
 const addProgress = (key: string, progress: EditoreProgress) => {
-    activeProgresDict.value[key] = progress;
+    activeProgresDict.value.set(key, progress);
 
     return () => {
         removeProgress(key);
@@ -42,5 +42,5 @@ const addProgress = (key: string, progress: EditoreProgress) => {
  * @param key - The key to identify the progress indication to remove.
  */
 const removeProgress = (key: string) => {
-    delete activeProgresDict.value[key];
+    activeProgresDict.value.delete(key);
 };

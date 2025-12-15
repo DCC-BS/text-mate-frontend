@@ -9,10 +9,12 @@ const isAuth = computed(() => {
 </script>
 
 <template>
-    <template v-if="!isAuth">
-        <Disclaimer app-name="TextMate" />
-        <Onboarding />
-    </template>
+    <div>
+        <template v-if="!isAuth">
+            <Disclaimer app-name="TextMate" />
+            <Onboarding />
+        </template>
 
-    <slot />
+        <slot />
+    </div>
 </template>
