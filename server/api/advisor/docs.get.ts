@@ -1,3 +1,3 @@
-export default defineBackendHandler({
-    url: "/advisor/docs",
-});
+export default apiHandler
+    .withMethod("GET")
+    .build("/advisor/docs");

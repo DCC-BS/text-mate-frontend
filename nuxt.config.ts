@@ -4,7 +4,11 @@ import { fileURLToPath } from "node:url";
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
-
+    extends: [
+        ["github:DCC-BS/nuxt-layers/auth", { install: true }],
+        ["github:DCC-BS/nuxt-layers/backend_communication", { install: true }],
+        ["github:DCC-BS/nuxt-layers/health_check", { install: true }],
+    ],
     routeRules: {
         "/api/ping": {
             cors: true,
@@ -73,7 +77,6 @@ export default defineNuxtConfig({
         "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
-        "@dcc-bs/authentication.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
         "nuxt-tour",
@@ -83,9 +86,6 @@ export default defineNuxtConfig({
         owner: "DCC-BS",
         project: "text-mate",
         githubToken: process.env.GITHUB_TOKEN,
-    },
-    "authentication.bs.js": {
-        useDummy: process.env.DUMMY === "true",
     },
     typescript: {
         typeCheck: true,

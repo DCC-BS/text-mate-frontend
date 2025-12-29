@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type GrammarEditor from "~/components/grammar-editor.vue";
 
-const { data } = useAuth();
+const { data } = useAppAuth();
 const userMail = computed(() => data.value?.user?.email ?? undefined);
 </script>
 

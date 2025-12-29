@@ -1,7 +1,6 @@
-export default defineBackendHandler({
-    url: "/advisor/validate",
-    method: "POST",
-    async bodyProvider(event) {
+export default apiHandler
+    .withMethod("POST")
+    .withBodyProvider(async (event) => {
         const { text, docs } = await readBody(event);
 
         if (!text || !docs) {
@@ -12,8 +11,8 @@ export default defineBackendHandler({
         }
 
         return { text, docs };
-    },
-    async fetcher({ url, method, body, headers, event }) {
+    })
+    .withFetcher(async ({ url, method, body, headers, event }) => {
         const signal = getAbortSignal(event);
 
         // Ensure Content-Type is set for JSON payloads
@@ -47,5 +46,5 @@ export default defineBackendHandler({
             }
             throw error;
         }
-    },
-});
+    })
+    .build("/advisor/validate");

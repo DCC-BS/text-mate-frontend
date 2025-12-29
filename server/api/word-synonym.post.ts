@@ -1,4 +1,3 @@
-export default defineBackendHandler({
-    url: "/word-synonym",
-    method: "POST",
-});
+export default apiHandler
+    .withMethod("POST")
+    .build("/word-synonym");

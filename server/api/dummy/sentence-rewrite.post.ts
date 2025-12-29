@@ -1,4 +1,6 @@
-export default defineBackendHandler({
-    url: "/sentence-rewrite",
-    method: "POST",
+export default defineEventHandler(async (event) => {
+    const body = await readBody(event);
+    return {
+        rewrittenSentence: `Rewritten Sentence: ${body.sentence}`,
+    };
 });
