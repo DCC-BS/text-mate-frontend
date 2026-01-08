@@ -1,4 +1,3 @@
-import type { ILogger } from "@dcc-bs/logger.bs.js";
 import type { Editor } from "@tiptap/core";
 import type { MarkType, Node } from "@tiptap/pm/model";
 import { Extension, getMarkType } from "@tiptap/vue-3";
@@ -183,7 +182,7 @@ export function useTextCorrectionMarks(
                 );
             }
         } catch (e) {
-            logger.error("Error removing mark", e);
+            logger.error(e, "Error removing mark");
             // ignore
         }
     }
@@ -264,7 +263,7 @@ function addMarks(
     blocks: TextCorrectionBlock[],
     offset: number,
     type: MarkType,
-    logger: ILogger,
+    logger: BaseLogger,
 ) {
     for (const block of blocks) {
         const start = block.offset + offset + 1;

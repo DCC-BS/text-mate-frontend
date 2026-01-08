@@ -44,7 +44,7 @@ export function useFileConvert(onComplete: (text: string) => void) {
             });
 
             if (result && result?.statusMessage === "Failed to convert file") {
-                logger.error("File conversion error:", { extra: result });
+                logger.error({ extra: result }, "File conversion error:");
 
                 useUseErrorDialog().sendError(t("upload.errorDescription"));
                 return;
@@ -67,7 +67,7 @@ export function useFileConvert(onComplete: (text: string) => void) {
                 error.value = err.message ?? err.statusMessage;
             }
 
-            logger.error("File conversion error:", err);
+            logger.error(err, "File conversion error:");
             useUseErrorDialog().sendError(t("upload.errorDescription"));
         } finally {
             isConverting.value = false;

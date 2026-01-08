@@ -1,6 +1,6 @@
 import { Node, type NodeConfig, type NodeViewRenderer } from "@tiptap/core";
 import { VueNodeViewRenderer } from "@tiptap/vue-3";
-import TextRemovedComponent from "~/components/text-editor/text-removed.vue";
+import TextRemovedComponent from "@/components/text-editor/text-removed.vue";
 
 /**
  * TextRemovedNode is a custom node for the Tiptap editor that displays removed text.

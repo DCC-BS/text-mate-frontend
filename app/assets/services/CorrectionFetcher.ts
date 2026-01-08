@@ -1,5 +1,4 @@
 import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
-import type { ILogger } from "@dcc-bs/logger.bs.js";
 import type {
     TextCorrectionBlock,
     TextCorrectionResponse,
@@ -20,7 +19,7 @@ export class CorrectionFetcher implements ICorrectionFetcher {
     static readonly $inject = ["logger", UserDictionaryQuery];
 
     constructor(
-        private readonly logger: ILogger,
+        private readonly logger: BaseLogger,
         private readonly userDictionaryQuery: UserDictionaryQuery,
         public language: string,
     ) {}

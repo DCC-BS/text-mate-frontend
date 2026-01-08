@@ -8,6 +8,7 @@ export default defineNuxtConfig({
         ["github:DCC-BS/nuxt-layers/auth", { install: true }],
         ["github:DCC-BS/nuxt-layers/backend_communication", { install: true }],
         ["github:DCC-BS/nuxt-layers/health_check", { install: true }],
+        ["github:DCC-BS/nuxt-layers/logger"],
     ],
     routeRules: {
         "/api/ping": {
@@ -74,7 +75,6 @@ export default defineNuxtConfig({
         "@nuxtjs/mdc",
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/event-system.bs.js",
-        "@dcc-bs/logger.bs.js",
         "@dcc-bs/feedback-control.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
         "nuxt-viewport",
@@ -93,19 +93,6 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
-        // Hot reload configuration for dev tunnels
-        server: {
-            watch: {
-                usePolling: true,
-                interval: 100,
-            },
-            hmr: {
-                port: 24678,
-                host: "0.0.0.0",
-                clientPort: 24678,
-                overlay: true,
-            },
-        },
         build: {
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
@@ -180,9 +167,6 @@ export default defineNuxtConfig({
     $development: {
         devtools: {
             enabled: true,
-        },
-        "logger.bs.js": {
-            loglevel: "debug",
         },
         sourcemap: {
             server: false,
