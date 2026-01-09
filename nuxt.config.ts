@@ -8,6 +8,7 @@ export default defineNuxtConfig({
         ["github:DCC-BS/nuxt-layers/auth", { install: true }],
         ["github:DCC-BS/nuxt-layers/backend_communication", { install: true }],
         ["github:DCC-BS/nuxt-layers/health_check", { install: true }],
+        ["github:DCC-BS/nuxt-layers/feedback-control", { install: true }],
         ["github:DCC-BS/nuxt-layers/logger"],
     ],
     routeRules: {
@@ -75,18 +76,11 @@ export default defineNuxtConfig({
         "@nuxtjs/mdc",
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/event-system.bs.js",
-        "@dcc-bs/feedback-control.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
         "nuxt-tour",
     ],
-    "feedback-control.bs.js": {
-        repo: "Feedback",
-        owner: "DCC-BS",
-        project: "text-mate",
-        githubToken: process.env.GITHUB_TOKEN,
-    },
     typescript: {
         typeCheck: true,
         strict: true,

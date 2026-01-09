@@ -16,6 +16,7 @@
 
 @import "./partials/prosemirror-lists.css";
 
+
 .ProseMirror {
     z-index: 0;
     height: 100%;
@@ -34,16 +35,16 @@
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-.ProseMirror > .react-renderer {
+.ProseMirror>.react-renderer {
     margin-top: 3rem;
     margin-bottom: 3rem;
 }
 
-.ProseMirror > .react-renderer:first-child {
+.ProseMirror>.react-renderer:first-child {
     margin-top: 0;
 }
 
-.ProseMirror > .react-renderer:last-child {
+.ProseMirror>.react-renderer:last-child {
     margin-bottom: 0;
 }
 
