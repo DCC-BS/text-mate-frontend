@@ -1,7 +1,7 @@
 import { useDropZone } from "@vueuse/core";
 import { FetchError } from "ofetch";
 import type { ConversionResult } from "~/assets/models/conversion-result";
-import { useUseErrorDialog } from "./useErrorDialog";
+import { useUseErrorDialog } from "./useUseErrorDialog";
 /**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted text

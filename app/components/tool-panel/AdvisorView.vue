@@ -7,7 +7,7 @@ import type {
     ValidationResult,
 } from "~/assets/models/advisor";
 import { AdvisorService } from "~/assets/services/AdvisorService";
-import AdvisorPdfViewer from "./advisor-pdf-viewer.client.vue";
+import AdvisorPdfViewer from "./AdvisorPdfViewer.client.vue";
 
 interface ToolPanelAdvisorViewProps {
     text: string;

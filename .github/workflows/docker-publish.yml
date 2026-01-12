@@ -1,101 +1,28 @@
 name: Build and Publish Docker Image
-
 on:
-  workflow_dispatch:
-    inputs:
-      version_bump:
-        description: "Version bump type"
-        required: true
-        default: "patch"
-        type: choice
-        options:
-          - major
-          - minor
-          - patch
+    workflow_dispatch:
+        inputs:
+            version_bump:
+                description: Version bump type
+                required: true
+                default: patch
+                type: choice
+                options: [major, minor, patch]
 
 permissions:
-  contents: write
-  packages: write
+    contents: write
+    packages: write
 
 jobs:
-  build-and-publish:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+    publish:
+        uses: DCC-BS/ci-workflows/.github/workflows/publish-docker.yml@v1
+        secrets: inherit
         with:
-          # Fetch full history to allow version bumping
-          fetch-depth: 0
-          # Use a token that can push to the repository
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure Git
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-
-      - name: Bump version
-        id: version_bump
-        run: |
-          chmod +x .github/scripts/bump-version.sh
-          OUTPUT=$(.github/scripts/bump-version.sh "${{ github.event.inputs.version_bump }}")
-          STATUS=$?
-          if [ $STATUS -ne 0 ]; then
-            echo "Error: bump-version.sh failed with exit code $STATUS"
-            exit 1
-          fi
-          echo "$OUTPUT"
-
-          # Extract version info and set outputs
-          NEW_VERSION=$(echo "$OUTPUT" | grep "new_version=" | cut -d'=' -f2)
-          TAG_NAME=$(echo "$OUTPUT" | grep "tag_name=" | cut -d'=' -f2)
-
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=${{ steps.version_bump.outputs.new_version }}
-            type=raw,value=latest
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
-
-      - name: Summary
-        run: |
-          echo "## ✅ Build and Publish Complete! 🎉" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Version:** \`${{ steps.version_bump.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Tag:** \`${{ steps.version_bump.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Docker Images:**" >> $GITHUB_STEP_SUMMARY
-          echo "- \`ghcr.io/${{ github.repository }}:${{ steps.version_bump.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`ghcr.io/${{ github.repository }}:latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Pull Command:**" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "docker pull ghcr.io/${{ github.repository }}:${{ steps.version_bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            release_type: ${{ inputs.version_bump }} # major|minor|patch
+            version_project_type: "node" # or "python"
+            registry: ghcr.io
+            image_name: ghcr.io/${{ github.repository }}
+            context: .
+            dockerfile: ./Dockerfile
+            platforms: linux/amd64,linux/arm64
+            push: true
