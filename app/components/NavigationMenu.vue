@@ -33,6 +33,8 @@ function handleRestartTour(): void {
 <template>
     <NavigationBar>
         <template #rightPostItems>
+        <template #right>
+            <OnlineStatus />
             <UTooltip :text="t('tour.restart')" placement="bottom">
                 <UButton
                     data-tour="start-tour"
@@ -40,8 +42,7 @@ function handleRestartTour(): void {
                     color="neutral"
                     icon="i-lucide-help-circle"
                     @click="handleRestartTour"
-                >
-                </UButton>
+                />
             </UTooltip>
             <UDropdownMenu v-if="isAuthEnabled" :items="items">
                 <UButton variant="ghost" color="neutral">

@@ -19,9 +19,9 @@ const onAddHandlers = new Set<CorrectionHandler>();
 const onRemoveHandlers = new Set<CorrectionHandler>();
 const onUpdateHandlers = new Set<CorrectionHandler>();
 
-const correctedBlocks = ref<Record<string, TextCorrectionBlock>>({});
+const correctedBlocks = ref<Map<string, TextCorrectionBlock>>(new Map());
 const blocks = computed(() => {
-    return Object.values(correctedBlocks.value).sort((a, b) => {
+    return Array.from(correctedBlocks.value.values()).sort((a, b) => {
         return a.offset - b.offset;
     });
 });
@@ -86,7 +86,7 @@ function handleAddCorrectedSentence(
     logger: BaseLogger,
 ): void {
     // Check if sentence already exists
-    if (block.id in correctedBlocks.value) {
+    if (correctedBlocks.value.has(block.id)) {
         logBlockWarning(
             `Corrected sentence with id ${block.id} already exists`,
             logger,
@@ -94,7 +94,7 @@ function handleAddCorrectedSentence(
     }
 
     // Add to state and notify handlers
-    correctedBlocks.value[block.id] = block;
+    correctedBlocks.value.set(block.id, block);
     notifyHandlers(onAddHandlers, block, logger);
 }
 
@@ -108,7 +108,7 @@ function handleRemoveCorrectedSentence(
     logger: BaseLogger,
 ): void {
     // Check if block exists before removing
-    if (!(block.id in correctedBlocks.value)) {
+    if (!correctedBlocks.value.has(block.id)) {
         logBlockWarning(
             `On Remove: Corrected block with id ${block.id} does not exist`,
             logger,
@@ -117,7 +117,7 @@ function handleRemoveCorrectedSentence(
     }
 
     // Remove from state and notify handlers
-    delete correctedBlocks.value[block.id];
+    correctedBlocks.value.delete(block.id);
     notifyHandlers(onRemoveHandlers, block, logger);
 }
 
@@ -131,7 +131,7 @@ function handleUpdateCorrectedSentence(
     logger: BaseLogger,
 ): void {
     // Check if block exists before updating
-    if (!(block.id in correctedBlocks.value)) {
+    if (!correctedBlocks.value.has(block.id)) {
         logBlockWarning(
             `On Update: Corrected block with id ${block.id} does not exist`,
             logger,
@@ -139,7 +139,7 @@ function handleUpdateCorrectedSentence(
     }
 
     // Update state and notify handlers
-    correctedBlocks.value[block.id] = block;
+    correctedBlocks.value.set(block.id, block);
     notifyHandlers(onUpdateHandlers, block, logger);
 }
 
@@ -151,7 +151,7 @@ function handleUpdateCorrectedSentence(
 function logBlockWarning(message: string, logger: BaseLogger): void {
     logger.warn(message);
     logger.debug(
-        `Corrected blocks: ${JSON.stringify(correctedBlocks.value, null, 2)}`,
+        `Corrected blocks: ${JSON.stringify(Array.from(correctedBlocks.value.values()), null, 2)}`,
     );
 }
 

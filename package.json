@@ -7,6 +7,7 @@
         "dev": "nuxt dev",
         "dummy": "AUTH_LAYER_URI=github:DCC-BS/nuxt-layers/no-auth DUMMY=true nuxt dev",
         "debug": "nuxt dev --inspect",
+        "tsc": "vue-tsc --noEmit -p tsconfig.json",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
@@ -17,7 +18,9 @@
         "test:coverage": "vitest run --coverage",
         "test:e2e": "playwright test",
         "test:e2e:ui": "playwright test --ui",
-        "e2e:codegen": "playwright codegen http://localhost:3000"
+        "e2e:codegen": "playwright codegen http://localhost:3000",
+        "docker:up": "docker compose -f docker-compose.dev.yml up --build -d",
+        "docker:down": "docker compose -f docker-compose.dev.yml down"
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^1.2.0",
