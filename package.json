@@ -33,7 +33,7 @@
         "@iconify-json/flag": "^1.2.10",
         "@iconify-json/lucide": "^1.2.72",
         "@iconify-json/simple-icons": "^1.2.57",
-        "@nuxt/eslint": "1.10.0",
+        "@nuxt/eslint": "1.12.1",
         "@nuxt/ui": "^4.2.1",
         "@nuxtjs/i18n": "^10.2.0",
         "@nuxtjs/mdc": "0.18.4",
