@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import StarterKit from "@tiptap/starter-kit";
-import { EditorContent, useEditor, type AnyExtension } from "@tiptap/vue-3";
+import { type AnyExtension, EditorContent, useEditor } from "@tiptap/vue-3";
 
 interface ComparePanelProps {
     text: string;
