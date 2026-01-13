@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import StarterKit from "@tiptap/starter-kit";
-import { EditorContent, useEditor } from "@tiptap/vue-3";
+import { type AnyExtension, EditorContent, useEditor } from "@tiptap/vue-3";
 
 interface ComparePanelProps {
     text: string;
@@ -22,15 +22,22 @@ watch(
 );
 
 const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit as AnyExtension],
     editable: true,
 });
 </script>
 
 <template>
-  <div v-if="editor" class="w-full h-full flex flex-col gap-2 p-2 @container relative">
-      <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
-            <EditorContent :editor="editor" spellcheck="false" class="w-full h-full" />
+    <div
+        v-if="editor"
+        class="w-full h-full flex flex-col gap-2 p-2 @container relative"
+    >
+        <div class="ring-1 ring-gray-400 w-full h-full overflow-y-scroll">
+            <EditorContent
+                :editor="editor"
+                spellcheck="false"
+                class="w-full h-full"
+            />
         </div>
-  </div>
+    </div>
 </template>

@@ -4,7 +4,7 @@ import { RestartTourCommand } from "~/assets/models/commands";
 
 // Add translation hook
 const { t } = useI18n();
-const { data, signOut } = useAuth();
+const { data, signOut, isAuthEnabled } = useAppAuth();
 const { executeCommand } = useCommandBus();
 
 const userImage = computed(() => {
@@ -32,7 +32,7 @@ function handleRestartTour(): void {
 
 <template>
     <NavigationBar>
-        <template #right>
+        <template #rightPostItems>
             <OnlineStatus />
             <UTooltip :text="t('tour.restart')" placement="bottom">
                 <UButton
@@ -43,7 +43,7 @@ function handleRestartTour(): void {
                     @click="handleRestartTour"
                 />
             </UTooltip>
-            <UDropdownMenu :items="items">
+            <UDropdownMenu v-if="isAuthEnabled" :items="items">
                 <UButton variant="ghost" color="neutral">
                     <img
                         :src="userImage"

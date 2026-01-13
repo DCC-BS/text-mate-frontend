@@ -1,7 +1,6 @@
-export default defineBackendHandler({
-    url: "/convert/doc",
-    method: "POST",
-    bodyProvider: async (event) => {
+export default apiHandler
+    .withMethod("POST")
+    .withBodyProvider<{ file: File }>(async (event) => {
         const inputFormData = await readFormData(event);
         const file = inputFormData.get("file") as File;
         if (!file || !(file instanceof File)) {
@@ -12,8 +11,8 @@ export default defineBackendHandler({
         }
 
         return { file };
-    },
-    fetcher: async ({ url, method, body, headers }) => {
+    })
+    .withFetcher(async ({ url, method, body, headers }) => {
         const formData = new FormData();
 
         formData.append("file", body.file, body.file.name);
@@ -35,5 +34,5 @@ export default defineBackendHandler({
         }
 
         return response.json();
-    },
-});
+    })
+    .build("/convert/doc");

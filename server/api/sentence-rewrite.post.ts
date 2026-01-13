@@ -1,4 +1,1 @@
-export default defineBackendHandler({
-    url: "/sentence-rewrite",
-    method: "POST",
-});
+export default apiHandler.withMethod("POST").build("/sentence-rewrite");

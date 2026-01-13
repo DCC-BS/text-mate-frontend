@@ -1,4 +1,4 @@
-import type { ILogger } from "@dcc-bs/logger.bs.js";
+import type { BaseLogger } from "@dcc-bs/logger.bs.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ICommand } from "#build/types/commands";
 import type { TextCorrectionBlock } from "../../../app/assets/models/text-correction";
@@ -20,7 +20,7 @@ const sampleBlock: TextCorrectionBlock = {
  */
 describe("CorrectionService", () => {
     // Mock dependencies
-    let mockLogger: ILogger;
+    let mockLogger: BaseLogger;
     let mockExecuteCommand: ReturnType<typeof vi.fn>;
     let mockOnError: ReturnType<typeof vi.fn>;
     let mockCorrectionFetcher: ICorrectionFetcher;
@@ -33,7 +33,7 @@ describe("CorrectionService", () => {
             info: vi.fn(),
             warn: vi.fn(),
             error: vi.fn(),
-        } as unknown as ILogger;
+        } as unknown as BaseLogger;
 
         mockExecuteCommand = vi.fn().mockResolvedValue(undefined);
         mockOnError = vi.fn();

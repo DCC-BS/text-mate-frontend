@@ -1,5 +1,4 @@
 import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
-import type { ILogger } from "@dcc-bs/logger.bs.js";
 import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 import { AdvisorService } from "~/assets/services/AdvisorService";
@@ -45,7 +44,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         builder.registerFactory(
             (
-                logger: ILogger,
+                logger: BaseLogger,
                 correctionFetcher: CorrectionFetcher,
                 t: (key: string) => string,
                 onError: (message: string) => void,

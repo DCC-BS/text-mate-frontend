@@ -1,4 +1,1 @@
-export default defineBackendHandler({
-    url: "/text-correction",
-    method: "POST",
-});
+export default apiHandler.withMethod("POST").build("/text-correction");

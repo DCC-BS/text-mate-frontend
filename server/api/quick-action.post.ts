@@ -1,9 +1,8 @@
 import { TextActionInputSchema } from "#shared/text-actions";
 
-export default defineBackendHandler({
-    url: "/quick-action",
-    method: "POST",
-    fetcher: async (options) => {
+export default apiHandler
+    .withMethod("POST")
+    .withFetcher(async (options) => {
         const { url, method, body, headers, event } = options;
 
         const validatedBody = TextActionInputSchema.parse(body);
@@ -16,5 +15,5 @@ export default defineBackendHandler({
             headers: headers,
             signal,
         });
-    },
-});
+    })
+    .build("/quick-action");

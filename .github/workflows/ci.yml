@@ -8,11 +8,16 @@ on:
         branches:
             - main
 
+env:
+    AUTH_LAYER_URI: github:DCC-BS/nuxt-layers/no-auth
+    LOGGER_LAYER_URI: github:DCC-BS/nuxt-layers/pino-logger
+
 jobs:
     build:
         runs-on: ubuntu-latest
         steps:
             - uses: DCC-BS/ci-workflows/actions/node-bun-biome-playwright@v1
+
               with:
                   node_version: "24.x"
                   working_directory: "."

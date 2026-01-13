@@ -4,17 +4,17 @@ import type { ReadableStream } from "node:stream/web";
 export default defineEventHandler(async (event) => {
     const name = getRouterParam(event, "name");
 
-    const handler = defineBackendHandler({
-        url: `/advisor/doc/${name}`,
-        async fetcher(options) {
+    const handler = apiHandler
+        .withMethod("GET")
+        .withFetcher(async (options) => {
             const { url, method, body, headers } = options;
             return await fetch(url, {
                 method,
                 body: JSON.stringify(body),
                 headers,
             });
-        },
-    });
+        })
+        .build(`/advisor/doc/${name}`);
 
     const response = await handler(event);
 

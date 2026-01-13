@@ -1,4 +1,3 @@
-import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { match } from "ts-pattern";
 import {
     Cmds,
@@ -51,7 +50,7 @@ export function useCorrectionService() {
 
 async function handleCorrectedSentenceChangedCommand(
     command: CorrectionBlockChangedCommand,
-    logger: ILogger,
+    logger: BaseLogger,
 ) {
     try {
         match(command.change)
@@ -66,7 +65,7 @@ async function handleCorrectedSentenceChangedCommand(
             })
             .exhaustive();
     } catch (e) {
-        logger.error("Error handling corrected sentence change", e);
+        logger.error(e, "Error handling corrected sentence change");
 
         if (e instanceof Error) {
             logger.debug(e.message);
@@ -84,7 +83,7 @@ async function handleCorrectedSentenceChangedCommand(
  */
 function handleAddCorrectedSentence(
     block: TextCorrectionBlock,
-    logger: ILogger,
+    logger: BaseLogger,
 ): void {
     // Check if sentence already exists
     if (correctedBlocks.value.has(block.id)) {
@@ -106,7 +105,7 @@ function handleAddCorrectedSentence(
  */
 function handleRemoveCorrectedSentence(
     block: TextCorrectionBlock,
-    logger: ILogger,
+    logger: BaseLogger,
 ): void {
     // Check if block exists before removing
     if (!correctedBlocks.value.has(block.id)) {
@@ -129,7 +128,7 @@ function handleRemoveCorrectedSentence(
  */
 function handleUpdateCorrectedSentence(
     block: TextCorrectionBlock,
-    logger: ILogger,
+    logger: BaseLogger,
 ): void {
     // Check if block exists before updating
     if (!correctedBlocks.value.has(block.id)) {
@@ -149,7 +148,7 @@ function handleUpdateCorrectedSentence(
  * @param message - Warning message to log
  * @param logger - Logger instance
  */
-function logBlockWarning(message: string, logger: ILogger): void {
+function logBlockWarning(message: string, logger: BaseLogger): void {
     logger.warn(message);
     logger.debug(
         `Corrected blocks: ${JSON.stringify(Array.from(correctedBlocks.value.values()), null, 2)}`,
@@ -164,7 +163,7 @@ function logBlockWarning(message: string, logger: ILogger): void {
 function notifyHandlers(
     handlers: Set<CorrectionHandler>,
     block: TextCorrectionBlock,
-    logger: ILogger,
+    logger: BaseLogger,
 ): void {
     for (const handler of handlers) {
         try {

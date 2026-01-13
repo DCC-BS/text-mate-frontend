@@ -1,5 +1,5 @@
-import { Node, type NodeConfig, type NodeViewRenderer } from "@tiptap/core";
 import { VueNodeViewRenderer } from "@tiptap/vue-3";
+import { schema } from "prosemirror-schema-basic";
 import TextRemovedComponent from "~/components/text-editor/TextRemoved.vue";
 
 /**
@@ -7,7 +7,7 @@ import TextRemovedComponent from "~/components/text-editor/TextRemoved.vue";
  * It renders removed text as non-selectable, making it easy to see what was deleted
  * without interfering with normal text editing.
  */
-export const TextRemovedNode: NodeConfig = Node.create({
+export const TextRemovedNode = schema.node("inline", {
     name: "textRemoved",
 
     /**
@@ -41,7 +41,7 @@ export const TextRemovedNode: NodeConfig = Node.create({
         return [
             {
                 tag: "span.text-removed",
-                getAttrs: (node) => {
+                getAttrs: (node: unknown) => {
                     if (typeof node === "string") return {};
 
                     const element = node as HTMLElement;
@@ -58,15 +58,15 @@ export const TextRemovedNode: NodeConfig = Node.create({
      * @param {Object} attributes - The node attributes.
      * @returns {Array} The HTML rendering rules.
      */
-    renderHTML({ HTMLAttributes }) {
+    renderHTML({
+        HTMLAttributes,
+    }: {
+        HTMLAttributes: { text: string | undefined };
+    }) {
         return ["span", { class: "text-removed" }, HTMLAttributes.text || ""];
     },
 
-    /**
-     * Adds a custom Vue component as the node view.
-     * @returns {Function} The node view renderer.
-     */
-    addNodeView(): NodeViewRenderer {
+    addNodeView() {
         return VueNodeViewRenderer(TextRemovedComponent);
     },
 });

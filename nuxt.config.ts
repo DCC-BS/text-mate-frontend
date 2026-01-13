@@ -4,7 +4,13 @@ import { fileURLToPath } from "node:url";
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
-
+    extends: [
+        ["github:DCC-BS/nuxt-layers/auth", { install: true }],
+        ["github:DCC-BS/nuxt-layers/backend_communication", { install: true }],
+        ["github:DCC-BS/nuxt-layers/health_check", { install: true }],
+        ["github:DCC-BS/nuxt-layers/feedback-control", { install: true }],
+        ["github:DCC-BS/nuxt-layers/logger"],
+    ],
     routeRules: {
         "/api/ping": {
             cors: true,
@@ -70,46 +76,18 @@ export default defineNuxtConfig({
         "@nuxtjs/mdc",
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/event-system.bs.js",
-        "@dcc-bs/logger.bs.js",
-        "@dcc-bs/feedback-control.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
-        "@dcc-bs/authentication.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
         "nuxt-tour",
         "@nuxt/eslint",
     ],
-    "feedback-control.bs.js": {
-        repo: "Feedback",
-        owner: "DCC-BS",
-        project: "text-mate",
-        githubToken: process.env.GITHUB_TOKEN,
-    },
-    "authentication.bs.js": {
-        useDummy: process.env.DUMMY === "true",
-    },
-    "common-ui.bs.js": {
-        changelogsPath: "server/changelogs",
-    },
     typescript: {
         typeCheck: true,
         strict: true,
     },
     css: ["~/assets/css/main.css"],
     vite: {
-        // Hot reload configuration for dev tunnels
-        server: {
-            watch: {
-                usePolling: true,
-                interval: 100,
-            },
-            hmr: {
-                port: 24678,
-                host: "0.0.0.0",
-                clientPort: 24678,
-                overlay: true,
-            },
-        },
         build: {
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
@@ -137,8 +115,14 @@ export default defineNuxtConfig({
     runtimeConfig: {
         githubToken: process.env.GITHUB_TOKEN,
         apiUrl: process.env.API_URL,
+        feedback: {
+            githubToken: process.env.FEEDBACK_GITHUB_TOKEN,
+            project: "text-mate",
+            repoOwner: "DCC-BS",
+            repo: "Feedback",
+        },
         public: {
-            logger_bs: {
+            logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },
         },
@@ -184,9 +168,6 @@ export default defineNuxtConfig({
     $development: {
         devtools: {
             enabled: true,
-        },
-        "logger.bs.js": {
-            loglevel: "debug",
         },
         sourcemap: {
             server: false,

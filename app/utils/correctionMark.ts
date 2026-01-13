@@ -1,10 +1,10 @@
-import { Mark, mergeAttributes } from "@tiptap/core";
 import type {
     Mark as ProseMirrorMark,
     Node as ProseMirrorNode,
 } from "@tiptap/pm/model";
 import { Plugin } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
+import { Mark, mergeAttributes } from "@tiptap/vue-3";
 
 type CorrectionMarkOptions = {
     onClick: (event: MouseEvent, node: ProseMirrorNode) => void;

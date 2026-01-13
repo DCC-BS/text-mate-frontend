@@ -1,4 +1,4 @@
-import { Mark, mergeAttributes } from "@tiptap/core";
+import { Mark, mergeAttributes } from "@tiptap/vue-3";
 
 /**
  * FocusedSentenceMark is a custom mark for the Tiptap editor that underlines the currently focused sentence.

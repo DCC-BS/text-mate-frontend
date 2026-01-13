@@ -1,4 +1,1 @@
-export default defineBackendHandler({
-    url: "/advisor",
-    method: "POST",
-});
+export default apiHandler.withMethod("POST").build("/advisor");

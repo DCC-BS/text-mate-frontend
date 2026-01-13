@@ -1,5 +1,4 @@
 import { ApiError } from "@dcc-bs/communication.bs.js";
-import type { ILogger } from "@dcc-bs/logger.bs.js";
 import { diffArrays } from "diff";
 import type { ChangeObject } from "diff/lib/types.js";
 import type { ICommand } from "#build/types/commands";
@@ -28,7 +27,7 @@ export class CorrectionService {
     private correction_lock = false;
 
     constructor(
-        private readonly logger: ILogger,
+        private readonly logger: BaseLogger,
         private readonly correctionFetcher: ICorrectionFetcher,
         private readonly executeCommand: (command: ICommand) => Promise<void>,
         private readonly t: (key: string) => string,

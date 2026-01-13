@@ -1,10 +1,11 @@
-import { Mark, mergeAttributes } from "@tiptap/core";
+import { mergeAttributes } from "@tiptap/vue-3";
+import { schema } from "prosemirror-schema-basic";
 
 /**
  * TextRemovedMark is a custom mark for the Tiptap editor that highlights removed text.
  * It provides visual feedback to users about which text has been removed during editing.
  */
-export const TextRemovedMark = Mark.create({
+export const TextRemovedMark = schema.mark("span", {
     name: "textRemoved",
 
     /**
@@ -24,7 +25,11 @@ export const TextRemovedMark = Mark.create({
      * @param {Object} HTMLAttributes - The HTML attributes to be merged.
      * @returns {Array} The HTML rendering rules.
      */
-    renderHTML({ HTMLAttributes }) {
+    renderHTML({
+        HTMLAttributes,
+    }: {
+        HTMLAttributes: Record<string, unknown>;
+    }) {
         return [
             "span",
             mergeAttributes({ class: "text-removed" }, HTMLAttributes),
