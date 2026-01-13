@@ -30,7 +30,7 @@
         "@iconify-json/flag": "^1.2.10",
         "@iconify-json/lucide": "^1.2.72",
         "@iconify-json/simple-icons": "^1.2.57",
-        "@nuxt/ui": "4.2.0",
+        "@nuxt/ui": "4.3.0",
         "@nuxtjs/i18n": "^10.2.0",
         "@nuxtjs/mdc": "0.18.4",
         "@pinia/nuxt": "0.11.3",
