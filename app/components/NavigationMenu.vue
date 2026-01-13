@@ -33,7 +33,6 @@ function handleRestartTour(): void {
 <template>
     <NavigationBar>
         <template #rightPostItems>
-        <template #right>
             <OnlineStatus />
             <UTooltip :text="t('tour.restart')" placement="bottom">
                 <UButton

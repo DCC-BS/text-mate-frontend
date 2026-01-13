@@ -1,5 +1,5 @@
-import type { Editor } from "@tiptap/core";
 import type { MarkType, Node } from "@tiptap/pm/model";
+import type { Editor } from "@tiptap/vue-3";
 import { Extension, getMarkType } from "@tiptap/vue-3";
 import {
     type ApplyCorrectionCommand,
@@ -49,7 +49,7 @@ export function useTextCorrectionMarks(
 
     const CorrectionExtension = Extension.create({
         onCreate(this) {
-            editor.value = this.editor;
+            editor.value = this.editor as Editor;
         },
         name: "correctionExtension",
         addExtensions: () => [

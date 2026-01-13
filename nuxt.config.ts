@@ -115,8 +115,14 @@ export default defineNuxtConfig({
     runtimeConfig: {
         githubToken: process.env.GITHUB_TOKEN,
         apiUrl: process.env.API_URL,
+        feedback: {
+            githubToken: process.env.FEEDBACK_GITHUB_TOKEN,
+            project: "text-mate",
+            repoOwner: "DCC-BS",
+            repo: "Feedback",
+        },
         public: {
-            logger_bs: {
+            logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },
         },

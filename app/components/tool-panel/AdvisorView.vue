@@ -199,7 +199,7 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
 </script>
 
 <template>
-    <div v-if="advisorService" class="p-2 flex flex-col h-full">
+    <div v-if="advisorService" class="p-2 flex flex-col h-full overflow-y-auto">
         <!-- Header section with subtle background and spacing -->
         <div class="mb-4 shrink-0">
             <h3

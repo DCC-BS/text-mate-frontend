@@ -1,4 +1,4 @@
-import { Mark, mergeAttributes } from "@tiptap/core";
+import { Mark, mergeAttributes } from "@tiptap/vue-3";
 
 /**
  * FocusedWordMark is a custom mark for the Tiptap editor that highlights the currently focused word.
