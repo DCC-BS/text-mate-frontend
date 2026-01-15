@@ -2,18 +2,59 @@ import { TextActionInputSchema } from "#shared/text-actions";
 
 export default apiHandler
     .withMethod("POST")
-    .withFetcher(async (options) => {
-        const { url, method, body, headers, event } = options;
+    .withDummyFetcher(async (options) => {
+        const body = TextActionInputSchema.parse(options.body);
 
-        const validatedBody = TextActionInputSchema.parse(body);
+        // Dummy text to stream word by word
+        let dummyText = "";
+        switch (body.action) {
+            case "plain_language":
+                dummyText =
+                    "This is a dummy streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
+                break;
+            default:
+                dummyText = `Action: ${body.action}, Input: ${body.text}, Options: ${body.options}`;
+                break;
+        }
 
-        const signal = getAbortSignal(event);
+        const words = dummyText.split(" ");
 
-        return await fetch(url, {
-            method,
-            body: JSON.stringify(validatedBody),
-            headers: headers,
-            signal,
+        // Create a readable stream
+        const stream = new ReadableStream({
+            async start(controller) {
+                try {
+                    for (let i = 0; i < words.length; i++) {
+                        const word = words[i];
+                        const isLastWord = i === words.length - 1;
+
+                        // Send the word
+                        controller.enqueue(new TextEncoder().encode(word));
+
+                        // Add space unless it's the last word
+                        if (!isLastWord) {
+                            controller.enqueue(new TextEncoder().encode(" "));
+                        }
+
+                        // Small delay to simulate streaming
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, 100),
+                        );
+                    }
+
+                    controller.close();
+                } catch (error) {
+                    controller.error(error);
+                }
+            },
+        });
+
+        return new Response(stream, {
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8",
+                "Transfer-Encoding": "chunked",
+                "Cache-Control": "no-cache",
+                Connection: "keep-alive",
+            },
         });
     })
     .build("/quick-action");
