@@ -1,5 +1,8 @@
+import { unknown } from "zod";
+
 export default apiHandler
     .withMethod("POST")
+    .withFetcher<{ word: string }>()
     .withDummyFetcher((options) => ({
         synonyms: [
             `Synonym1 for: ${(options as any).body.word}`,
