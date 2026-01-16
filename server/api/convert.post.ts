@@ -12,8 +12,4 @@ export default apiHandler
 
         return { file };
     })
-    .withDummyFetcher({
-        html: "<h1> Dummy </h1> <p>This is a dummy response</p>",
-        statusMessage: "",
-    })
     .build("/convert/doc");

@@ -1,8 +1,12 @@
+type BodyType = {
+    sentence: string;
+    context: string;
+};
+
 export default apiHandler
     .withMethod("POST")
-    .withDummyFetcher((options) => {
-        const body = options.body as { sentence: string; context: string };
-
-        return { options: [`${body.sentence} 1`, `${body.sentence} 2`] };
-    })
+    .withBodyProvider<BodyType>()
+    .withDummyFetcher(({ body }) => ({
+        options: [`${body.sentence} 1`, `${body.sentence} 2`],
+    }))
     .build("/sentence-rewrite");

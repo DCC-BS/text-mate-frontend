@@ -8,7 +8,13 @@ type AdvisorDocumentDescription = {
 
 export default apiHandler
     .withMethod("GET")
-    .withDummyFetcher([
+    .withDummyFetcher(getDummyData())
+    .build("/advisor/docs");
+
+// DUMMY
+
+function getDummyData() {
+    return [
         {
             author: "Max Mustermann",
             description:
@@ -25,5 +31,5 @@ export default apiHandler
             file: "anderes-dokument.pdf",
             title: "Anderes Dokument",
         },
-    ] as AdvisorDocumentDescription[])
-    .build("/advisor/docs");
+    ] as AdvisorDocumentDescription[];
+}

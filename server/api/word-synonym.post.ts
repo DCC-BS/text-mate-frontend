@@ -1,13 +1,13 @@
-import { unknown } from "zod";
+type BodyType = { word: string };
 
 export default apiHandler
     .withMethod("POST")
-    .withFetcher<{ word: string }>()
-    .withDummyFetcher((options) => ({
+    .withBodyProvider<BodyType>()
+    .withDummyFetcher(({ body }) => ({
         synonyms: [
-            `Synonym1 for: ${(options as any).body.word}`,
-            `Synonym2 for: ${(options as any).body.word}`,
-            `Synonym3 for: ${(options as any).body.word}`,
+            `Synonym1 for: ${body.word}`,
+            `Synonym2 for: ${body.word}`,
+            `Synonym3 for: ${body.word}`,
         ],
     }))
     .build("/word-synonym");
