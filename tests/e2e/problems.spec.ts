@@ -1,11 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { skipDisclaimer, skipTour, switchTo } from "./utils";
+import { switchTo } from "./utils";
 
 test.beforeEach(async ({ page }) => {
     await page.goto("/");
-
-    await skipDisclaimer(page);
-    await skipTour(page);
+    await page.locator("#confirmation-checkbox").click();
+    await page.locator("#nt-action-skip").click();
     await switchTo(page, "problems");
 });
 

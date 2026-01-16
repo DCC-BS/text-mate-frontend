@@ -26,7 +26,13 @@ export default defineConfig({
             args: [
                 "--use-fake-ui-for-media-stream",
                 "--use-fake-device-for-media-stream",
+                "--disable-web-security",
+                "--disable-features=IsolateOrigins,site-per-process",
             ],
+        },
+        contextOptions: {
+            storageState: undefined,
+            ignoreHTTPSErrors: true,
         },
     },
 

@@ -1,10 +1,41 @@
-import type { Page } from "@playwright/test";
+import type { Page, BrowserContext } from "@playwright/test";
 
 import local from "../../i18n/locales/de.json" with { type: "json" };
 
 const rewriteText = local.tools.rewrite;
 const problemText = local.tools.problems;
 const advisorText = local.tools.advisor;
+
+export async function clearBrowserState(page: Page, context: BrowserContext) {
+    await context.clearCookies();
+    await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+
+        const req = indexedDB.deleteDatabase("*");
+        req.onsuccess = () => {};
+        req.onerror = () => {};
+
+        const databases = indexedDB.databases();
+        if (databases) {
+            databases.then((dbs) => {
+                dbs.forEach((db) => {
+                    if (db.name) {
+                        indexedDB.deleteDatabase(db.name);
+                    }
+                });
+            });
+        }
+    });
+}
+
+export async function setupFreshBrowser(page: Page, context: BrowserContext) {
+    await clearBrowserState(page, context);
+    await page.goto("/");
+    await skipDisclaimer(page);
+    await skipTour(page);
+    await switchTo(page, "rewrite");
+}
 
 export async function skipDisclaimer(page: Page) {
     await page.locator("#confirmation-checkbox").click();

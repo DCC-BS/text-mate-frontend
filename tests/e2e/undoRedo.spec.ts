@@ -1,11 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { skipDisclaimer, skipTour } from "./utils";
 
 test.beforeEach(async ({ page }) => {
     await page.goto("/");
-
-    await skipDisclaimer(page);
-    await skipTour(page);
+    await page.locator("#confirmation-checkbox").click();
+    await page.locator("#nt-action-skip").click();
 });
 
 test("Undo and Redo buttons should be disabled when no action was taken", async ({

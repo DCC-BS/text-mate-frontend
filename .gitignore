@@ -28,3 +28,5 @@ logs
 !.env
 
 .env
+
+test-results/
