@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^1.2.1",
-        "@dcc-bs/communication.bs.js": "^0.0.5",
+        "@dcc-bs/communication.bs.js": "0.1.1",
         "@dcc-bs/dependency-injection.bs.js": "^0.0.16",
         "@dcc-bs/event-system.bs.js": "^1.4.3",
         "@iconify-json/flag": "^1.2.10",
@@ -32,7 +32,7 @@
         "@iconify-json/simple-icons": "^1.2.66",
         "@nuxt/ui": "4.3.0",
         "@nuxtjs/i18n": "^10.2.1",
-        "@nuxtjs/mdc": "0.18.4",
+        "@nuxtjs/mdc": "0.20.0",
         "@pinia/nuxt": "0.11.3",
         "@tiptap/core": "3.14.0",
         "@tiptap/extension-bubble-menu": "3.10.2",
@@ -68,7 +68,7 @@
     "devDependencies": {
         "@biomejs/biome": "^2.3.11",
         "@playwright/test": "^1.57.0",
-        "@types/node": "^24.10.9",
+        "@types/node": "25.0.9",
         "@vitejs/plugin-vue": "^6.0.3",
         "@vitest/coverage-v8": "^4.0.17",
         "@vue/test-utils": "^2.4.6",
