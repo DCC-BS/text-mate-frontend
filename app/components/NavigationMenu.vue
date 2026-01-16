@@ -13,7 +13,7 @@ const userImage = computed(() => {
     return base64 ? base64 : "/LucideCircleUserRound.png";
 });
 
-const onlineCheckFunction = config.useDummyData === "true " ? () => Promise.resolve(true) : undefined;
+const onlineCheckFunction = config.useDummyData === "true" ? () => Promise.resolve(true) : undefined;
 
 // Navigation menu items
 const items = computed<DropdownMenuItem[]>(() => [
