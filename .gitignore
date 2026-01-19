@@ -24,6 +24,9 @@ logs
 !.env.example
 !.env.backend.example
 
+# Custom Docker configuration
+scripts/docker/docker.config.sh
+
 # Don't ignore the symlink
 !.env
 
