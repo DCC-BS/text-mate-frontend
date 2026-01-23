@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^1.2.0",
-        "@dcc-bs/communication.bs.js": "^0.0.5",
+        "@dcc-bs/communication.bs.js": "^0.1.0",
         "@dcc-bs/dependency-injection.bs.js": "^0.0.16",
         "@dcc-bs/event-system.bs.js": "^1.4.3",
         "@iconify-json/flag": "^1.2.10",
