@@ -69,7 +69,8 @@
         "social_mediafy": "Social Media Format",
         "plain_language": "Plain Language",
         "formality": "Formality",
-        "medium": "Medium"
+        "medium": "Medium",
+        "proofread": "Proofread"
     },
     "rewrite": {
         "writing_style": {

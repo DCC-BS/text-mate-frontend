@@ -6,6 +6,7 @@ type BodyType = {
     options: string;
     text: string;
 };
+
 export default apiHandler
     .withMethod("POST")
     .withBodyProvider<BodyType>()

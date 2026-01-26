@@ -85,24 +85,54 @@ async function applyAction(
 <template>
     <div class="flex justify-center gap-2 flex-wrap" data-tour="quick-actions">
         <UPopover mode="hover">
-            <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('plain_language')">
-                {{ t('editor.plain_language') }}
+            <UButton
+                variant="link"
+                :disabled="!actionsAreAvailable"
+                @click="applyAction('plain_language')"
+            >
+                {{ t("editor.plain_language") }}
             </UButton>
             <template #content>
                 <div class="max-w-[50vw] p-2">
                     <div>
-                        {{ t('plain-language.notice') }}
+                        {{ t("plain-language.notice") }}
                     </div>
                 </div>
             </template>
         </UPopover>
-        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('bullet_points')">
-            {{ t('editor.bullet_points') }}
+        <UButton
+            variant="link"
+            :disabled="!actionsAreAvailable"
+            @click="applyAction('bullet_points')"
+        >
+            {{ t("editor.bullet_points") }}
         </UButton>
-        <SummarizeAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
-        <SocialMediaAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
-        <FormalityAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
-        <MediumAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
-        <CustomAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
+        <UButton
+            variant="link"
+            :disabled="!actionsAreAvailable"
+            @click="applyAction('proofread')"
+        >
+            {{ t("editor.proofread") }}
+        </UButton>
+        <SummarizeAction
+            :actions-are-available="actionsAreAvailable"
+            @apply-action="applyAction"
+        />
+        <SocialMediaAction
+            :actions-are-available="actionsAreAvailable"
+            @apply-action="applyAction"
+        />
+        <FormalityAction
+            :actions-are-available="actionsAreAvailable"
+            @apply-action="applyAction"
+        />
+        <MediumAction
+            :actions-are-available="actionsAreAvailable"
+            @apply-action="applyAction"
+        />
+        <CustomAction
+            :actions-are-available="actionsAreAvailable"
+            @apply-action="applyAction"
+        />
     </div>
 </template>

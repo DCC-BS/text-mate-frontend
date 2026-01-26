@@ -69,7 +69,8 @@
         "social_mediafy": "Social Media Format",
         "plain_language": "Lesefreundliche Sprache",
         "formality": "Formalität",
-        "medium": "Medium"
+        "medium": "Medium",
+        "proofread": "Korrigieren"
     },
     "advisor": {
         "check": "Text überprüfen",
