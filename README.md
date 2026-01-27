@@ -24,6 +24,9 @@ TextMate is a modern web application for advanced text editing, correction, and 
 - **Internationalization**: Nuxt I18n
 - **PDF Handling**: Vue PDF Embed
 
+## DCC Documentation
+For detailed documentation on the DCC project, please refer to the [DCC Documentation](https://dcc-bs.github.io/documentation/).
+
 ## Setup
 
 ### Environment Configuration
@@ -31,7 +34,21 @@ TextMate is a modern web application for advanced text editing, correction, and 
 Create a `.env` file in the project root with the required environment variables:
 
 ```
-API_URL=http://localhost:8000
+API_PORT=8000
+API_URL=http://localhost:${API_PORT}
+
+FEEDBACK_GITHUB_TOKEN=TODO
+
+# azure auth
+AUTH_LAYER_URI="github:DCC-BS/nuxt-layers/azure-auth" # for no auth use github:DCC-BS/nuxt-layers/no-auth
+AUTH_ORIGIN=http://localhost:3000/api/auth
+NUXT_AUTH_SECRET="" # Generate one: openssl rand -base64 32
+AZURE_AD_CLIENT_ID="TODD"
+AZURE_AD_TENANT_ID="TODO"
+AZURE_AD_CLIENT_SECRET="TODO"
+AZURE_AD_API_CLIENT_ID="TODO"
+
+LOGGER_LAYER_URI="github:DCC-BS/nuxt-layers/pino-logger"
 LOG_LEVEL=debug
 ```
 
@@ -182,18 +199,6 @@ docker build -t text-mate-frontend .
 # Run the container
 docker run -p 3000:3000 text-mate-frontend
 ```
-
-
-## Project Architecture
-
-- `assets/`: CSS and TypeScript models/services
-- `components/`: Vue components for the UI
-- `composables/`: Reusable Vue composition functions
-- `i18n/`: Internationalization configuration
-- `pages/`: Application pages and routes
-- `server/`: API endpoints and server middleware
-- `stores/`: Pinia stores for state management
-- `utils/`: Utility functions and extensions
 
 ## License
 
