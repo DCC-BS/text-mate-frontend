@@ -35,6 +35,12 @@ function filterExtraNewlines(text: string): string {
     return text.replace(/\n{3,}/g, "\n");
 }
 
+watch(() => props.text, () => {
+    if (props.text.trim() === "") {
+        commandHistory.value = [];
+    }
+});
+
 const changes = computed<ActionChange[]>(() => {
     if (commandHistory.value.length === 0) {
         return [] as ActionChange[];
