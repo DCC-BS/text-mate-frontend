@@ -6,6 +6,14 @@ TextMate is a modern web application for advanced text editing, correction, and 
 
 ![GitHub License](https://img.shields.io/github/license/DCC-BS/text-mate-frontend) [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 
+---
+
+<p align="center">
+  <a href="https://dcc-bs.github.io/documentation/">DCC Documentation & Guidelines</a> | <a href="https://www.bs.ch/daten/databs/dcc">DCC Website</a>
+</p>
+
+---
+
 ## Features
 
 - **Grammar Correction**: Identifies and suggests fixes for grammar and spelling issues
