@@ -141,13 +141,11 @@ To customize the environment loading:
        # Example with dotenvx for encrypted .env files
        envx run -f .env docker/.env.backend -- "$@"
    }
-```
+    ```
 
 The `scripts/docker/docker.config.sh` file is gitignored, allowing team members to use their own configuration while sharing a working default setup.
 
 See [scripts/docker/README.md](scripts/docker/README.md) for detailed documentation.
-
-```bash
 
 ## Testing & Linting
 

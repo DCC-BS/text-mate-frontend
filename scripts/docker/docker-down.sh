@@ -11,7 +11,7 @@ if [[ -f "$SCRIPT_DIR/docker.config.sh" ]]; then
 	source "$SCRIPT_DIR/docker.config.sh"
 else
 	function load_env() {
-		(set -a; source .env 2>/dev/null; set +a; source docker/.env.backend 2>/dev/null; "$@")
+		(set -a; source .env 2>/dev/null; source docker/.env.backend 2>/dev/null; set +a; "$@")
 	}
 fi
 

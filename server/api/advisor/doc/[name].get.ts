@@ -2,6 +2,7 @@ import type { FetcherOptions } from "#layers/backend_communication/server/types/
 
 export default apiHandler
     .withMethod("GET")
+    .withRawFetcher()
     .withDummyFetcher(dummyFetch)
     .build("/advisor/doc/[r:name]");
 

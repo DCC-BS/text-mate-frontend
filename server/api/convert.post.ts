@@ -1,6 +1,6 @@
 export default apiHandler
     .withMethod("POST")
-    .withBodyProvider<{ file: File }>(async (event) => {
+    .withBodyProvider<FormData>(async (event) => {
         const inputFormData = await readFormData(event);
         const file = inputFormData.get("file") as File;
         if (!file || !(file instanceof File)) {
@@ -10,6 +10,8 @@ export default apiHandler
             });
         }
 
-        return { file };
+        const formData = new FormData();
+        formData.append("file", file, file.name);
+        return formData;
     })
     .build("/convert/doc");

@@ -59,8 +59,7 @@ services:
             - "8000"
         environment:
             - OPENAI_API_BASE_URL=${OPENAI_API_BASE_URL}
-            - OPENAI_API_KEY=${OPENAI_API_KEY}
-            - OPENAI_API_KEY=${OPENAI_API_KEY}
+            - LLM_KEY=${LLM_KEY}
             - LLM_MODEL=${LLM_MODEL}
             - LLM_HEALTH_CHECK_URL=${LLM_HEALTH_CHECK_URL}
             - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}

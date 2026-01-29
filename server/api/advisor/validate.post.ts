@@ -16,6 +16,7 @@ export default apiHandler
 
         return { text, docs };
     })
+    .withRawFetcher()
     .withDummyFetcher(dummyFetcher)
     .build("/advisor/validate");
 

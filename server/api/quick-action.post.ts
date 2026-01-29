@@ -10,6 +10,7 @@ type BodyType = {
 export default apiHandler
     .withMethod("POST")
     .withBodyProvider<BodyType>()
+    .withRawFetcher()
     .withDummyFetcher(dummyFetcher)
     .build("/quick-action");
 
