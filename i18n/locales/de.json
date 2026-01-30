@@ -70,7 +70,8 @@
         "plain_language": "Lesefreundliche Sprache",
         "formality": "Formalität",
         "medium": "Medium",
-        "proofread": "Korrigieren"
+        "proofread": "Korrigieren",
+        "character_speech": "Direkte / Indirekte Rede"
     },
     "advisor": {
         "check": "Text überprüfen",
@@ -136,6 +137,10 @@
             "official_letter": "Behördenbrief",
             "presentation": "Präsentation",
             "report": "Bericht"
+        },
+        "character_speech": {
+            "direct": "Direkte Rede",
+            "indirect": "Indirekte Rede"
         }
     },
     "flesch-score": {

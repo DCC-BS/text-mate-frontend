@@ -9,6 +9,7 @@ export const TextActionsSchema = z.enum([
     "medium",
     "custom",
     "proofread",
+    "character_speech"
 ]);
 
 export type TextActions = z.output<typeof TextActionsSchema>;

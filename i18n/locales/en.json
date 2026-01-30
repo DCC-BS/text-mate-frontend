@@ -70,7 +70,8 @@
         "plain_language": "Plain Language",
         "formality": "Formality",
         "medium": "Medium",
-        "proofread": "Proofread"
+        "proofread": "Proofread",
+        "character_speech": "Character Speech"
     },
     "rewrite": {
         "writing_style": {
@@ -180,6 +181,10 @@
             "official_letter": "Official Letter",
             "presentation": "Presentation",
             "report": "Report"
+        },
+        "character_speech": {
+            "direct": "Direct Speech",
+            "indirect": "Indirect Speech"
         }
     },
     "flesch-score": {
