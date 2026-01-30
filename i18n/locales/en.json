@@ -69,7 +69,9 @@
         "social_mediafy": "Social Media Format",
         "plain_language": "Plain Language",
         "formality": "Formality",
-        "medium": "Medium"
+        "medium": "Medium",
+        "proofread": "Proofread",
+        "character_speech": "Character Speech"
     },
     "rewrite": {
         "writing_style": {
@@ -179,6 +181,10 @@
             "official_letter": "Official Letter",
             "presentation": "Presentation",
             "report": "Report"
+        },
+        "character_speech": {
+            "direct": "Direct Speech",
+            "indirect": "Indirect Speech"
         }
     },
     "flesch-score": {

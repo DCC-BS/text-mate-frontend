@@ -1,12 +1,20 @@
 import { expect, test } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-import { skipDisclaimer, skipTour, switchTo } from "./utils";
+import { switchTo, clearBrowserState } from "./utils";
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context }) => {
+    await clearBrowserState(page, context);
     await page.goto("/");
-
-    await skipDisclaimer(page);
-    await skipTour(page);
+    try {
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+    } catch (error) {
+    }
+    await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
+    await page.locator("#confirmation-checkbox").click();
+    await page.locator("#nt-action-skip").click();
     await switchTo(page, "rewrite");
 });
 
@@ -109,7 +117,7 @@ test.beforeEach(async ({ page }) => {
 
         if (secondButtonName) {
             await page
-                .getByRole("button", { name: secondButtonName, exact: true })
+                .getByRole("menuitem", { name: secondButtonName, exact: true })
                 .click();
         }
 
@@ -136,11 +144,11 @@ test("After rewrite, changes are shown on the rigt side", async ({ page }) => {
     await page.waitForTimeout(1000);
 
     await expect(
-        page.locator("span.decoration-green-400:text-is('dummy')"),
+        page.locator("pre.bg-green-100:text-is('dummy')"),
     ).toBeVisible();
 
     await expect(
-        page.locator("span.decoration-red-400:text-is('test')"),
+        page.locator("pre.bg-red-100:text-is('test')"),
     ).toBeVisible();
 });
 

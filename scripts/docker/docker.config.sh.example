@@ -1,0 +1,13 @@
+#!/bin/bash
+# Custom Docker environment configuration
+# Rename this file to docker.config.sh and modify load_env() as needed
+# This file is gitignored, so your setup won't be committed
+
+# Define how environment variables should be loaded for a command
+# $1 - the command to execute with env vars loaded
+# Default: source .env files directly
+# Example for dotenvx: envx run -f .env docker/.env.backend -- "$@"
+function load_env() {
+	# Source the .env files and execute command in same scope (default behavior)
+	(set -a; source .env 2>/dev/null; source docker/.env.backend 2>/dev/null; set +a;  "$@")
+}

@@ -1,11 +1,19 @@
 import { expect, test } from "@playwright/test";
-import { skipDisclaimer, skipTour, switchTo } from "./utils";
+import { switchTo, clearBrowserState } from "./utils";
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context }) => {
+    await clearBrowserState(page, context);
     await page.goto("/");
-
-    await skipDisclaimer(page);
-    await skipTour(page);
+    try {
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+    } catch (error) {
+    }
+    await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
+    await page.locator("#confirmation-checkbox").click();
+    await page.locator("#nt-action-skip").click();
     await switchTo(page, "problems");
 });
 

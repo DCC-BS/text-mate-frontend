@@ -27,7 +27,10 @@ services:
         container_name: llm
         expose:
             - "8000"
-        env_file: ".env.backend"
+        environment:
+            - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+            - HUGGING_FACE_CACHE_DIR=${HUGGING_FACE_CACHE_DIR}
+        # env_file: ".env.backend"
         runtime: nvidia
         deploy:
             resources:
@@ -54,15 +57,27 @@ services:
         image: ghcr.io/dcc-bs/text-mate-backend:latest
         expose:
             - "8000"
-        env_file:
-            - .env.backend
+        environment:
+            - OPENAI_API_BASE_URL=${OPENAI_API_BASE_URL}
+            - LLM_KEY=${LLM_KEY}
+            - LLM_MODEL=${LLM_MODEL}
+            - LLM_HEALTH_CHECK_URL=${LLM_HEALTH_CHECK_URL}
+            - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+            - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+            - AZURE_FRONTEND_CLIENT_ID=${AZURE_FRONTEND_CLIENT_ID}
+            - SCOPE_DESCRIPTION=${SCOPE_DESCRIPTION}
+            - HMAC_SECRET=${HMAC_SECRET}
+            - LOG_LEVEL=${LOG_LEVEL}
+            - PORT=${PORT}
+            - LANGUAGE_TOOL_PORT=${LANGUAGE_TOOL_PORT}
+            - LANGUAGE_TOOL_API_URL=${LANGUAGE_TOOL_API_URL}
 
     textmate-frontend:
         container_name: textmate-frontend
         build:
             context: ..
             dockerfile: ./Dockerfile
-        env_file: "../.env"
+        # env_file: "../.env"
         environment:
             - NUXT_AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID:-}
             - NUXT_AZURE_AD_TENANT_ID=${AZURE_AD_TENANT_ID:-}

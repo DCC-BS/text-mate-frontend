@@ -110,6 +110,7 @@ export default defineNuxtConfig({
         },
         optimizeDeps: {
             include: ["vue-pdf-embed"],
+            exclude: ["@vueuse/core"],
         },
     },
     runtimeConfig: {
@@ -122,6 +123,7 @@ export default defineNuxtConfig({
             repo: "Feedback",
         },
         public: {
+            useDummyData: process.env.DUMMY,
             logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },
