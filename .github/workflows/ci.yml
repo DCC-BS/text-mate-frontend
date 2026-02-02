@@ -19,7 +19,7 @@ jobs:
             - uses: DCC-BS/ci-workflows/actions/node-bun-biome-playwright@v7
 
               with:
-                  node_version: "24.x"
+                  node_version: "25.x"
                   working_directory: "."
                   run_biome: "true"
                   run_playwright: "false"
