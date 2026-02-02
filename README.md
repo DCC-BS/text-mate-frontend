@@ -196,15 +196,31 @@ bun run preview
 
 ## Docker Deployment
 
-The application includes a multi-stage Dockerfile for production deployment:
+The application includes a multi-stage Dockerfile for production deployment.
+
+### Docker Build Arguments
+
+The Dockerfile accepts the following build-time arguments to configure Nuxt layers:
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `AUTH_LAYER_URI` | `github:DCC-BS/nuxt-layers/azure-auth` | Authentication layer implementation. Use `github:DCC-BS/nuxt-layers/no-auth` for development without Azure AD. |
+| `LOGGER_LAYER_URI` | `github:DCC-BS/nuxt-layers/pino-logger` | Logging layer implementation. |
+
+These are resolved during `nuxt build` and must be passed as build arguments:
 
 ```bash
-# Build the Docker image
+# Build with default auth (Azure AD)
 docker build -t text-mate-frontend .
+
+# Build with no-auth for development
+docker build --build-arg AUTH_LAYER_URI=github:DCC-BS/nuxt-layers/no-auth -t text-mate-frontend .
 
 # Run the container
 docker run -p 3000:3000 text-mate-frontend
 ```
+
+For more details, see the [Auth Layer](https://dcc-bs.github.io/documentation/nuxt-layers/auth.html) and [Logger Layer](https://dcc-bs.github.io/documentation/nuxt-layers/logger.html) documentation.
 
 ## License
 
