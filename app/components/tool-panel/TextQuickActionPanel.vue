@@ -6,6 +6,7 @@ import {
     type ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 import type { TextActions } from "~~/shared/text-actions";
+import CharacterSpeechAction from "./quick-action/CharacterSpeechAction.vue";
 import CustomAction from "./quick-action/CustomAction.vue";
 import FormalityAction from "./quick-action/FormalityAction.vue";
 import MediumAction from "./quick-action/MediumAction.vue";
@@ -86,20 +87,24 @@ async function applyAction(
     <div class="flex justify-center gap-2 flex-wrap" data-tour="quick-actions">
         <UPopover mode="hover">
             <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('plain_language')">
-                {{ t('editor.plain_language') }}
+                {{ t("editor.plain_language") }}
             </UButton>
             <template #content>
                 <div class="max-w-[50vw] p-2">
                     <div>
-                        {{ t('plain-language.notice') }}
+                        {{ t("plain-language.notice") }}
                     </div>
                 </div>
             </template>
         </UPopover>
         <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('bullet_points')">
-            {{ t('editor.bullet_points') }}
+            {{ t("editor.bullet_points") }}
+        </UButton>
+        <UButton variant="link" :disabled="!actionsAreAvailable" @click="applyAction('proofread')">
+            {{ t("editor.proofread") }}
         </UButton>
         <SummarizeAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
+        <CharacterSpeechAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
         <SocialMediaAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
         <FormalityAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />
         <MediumAction :actions-are-available="actionsAreAvailable" @apply-action="applyAction" />

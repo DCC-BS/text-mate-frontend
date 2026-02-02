@@ -6,6 +6,14 @@ TextMate is a modern web application for advanced text editing, correction, and 
 
 ![GitHub License](https://img.shields.io/github/license/DCC-BS/text-mate-frontend) [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 
+---
+
+<p align="center">
+  <a href="https://dcc-bs.github.io/documentation/">DCC Documentation & Guidelines</a> | <a href="https://www.bs.ch/daten/databs/dcc">DCC Website</a>
+</p>
+
+---
+
 ## Features
 
 - **Grammar Correction**: Identifies and suggests fixes for grammar and spelling issues
@@ -76,7 +84,7 @@ bun run debug
 
 ### Backend Setup
 
-Create a `.env.backend` file in the root directory with the required environment variables:
+Create a `.env.backend` file in the `docker/` directory with the required environment variables:
 
 ```
 LLM_API_PORT=8001
@@ -97,15 +105,47 @@ HUGGING_FACE_CACHE_DIR=~/.cache/huggingface
 
 > **Note:** The `HF_AUTH_TOKEN` is required for Hugging Face API access. You can create a token [here](https://huggingface.co/settings/tokens).
 
-Start the backend as a Docker container:
+#### Docker Management
+
+The project includes configurable scripts for managing Docker containers with flexible environment variable loading:
 
 ```bash
-sudo docker compose --env-file ./.env.backend up --build
+# Start backend containers
+bun run docker:up
+
+# Stop backend containers
+bun run docker:down
 ```
 
-Alternative clone the backend repository [text-mate-backend](https://github.com/DCC-BS/text-mate-backend) and run it locally.
+#### Custom Environment Loading
 
-```bash
+The Docker scripts support customizable environment variable loading methods:
+
+- **Default**: Uses `source` to load `.env` and `docker/.env.backend` files
+- **Custom**: Configure alternative methods (e.g., dotenvx, pass-cli) for encrypted secrets
+
+To customize the environment loading:
+
+1. Copy the example configuration:
+   ```bash
+   cp scripts/docker/docker.config.sh.example scripts/docker/docker.config.sh
+   ```
+
+2. Edit `scripts/docker/docker.config.sh` to define your `load_env()` function:
+   ```bash
+   function envx() {
+       pass-cli run --env-file .env.keys -- dotenvx "$@"
+   }
+
+   function load_env() {
+       # Example with dotenvx for encrypted .env files
+       envx run -f .env docker/.env.backend -- "$@"
+   }
+    ```
+
+The `scripts/docker/docker.config.sh` file is gitignored, allowing team members to use their own configuration while sharing a working default setup.
+
+See [scripts/docker/README.md](scripts/docker/README.md) for detailed documentation.
 
 ## Testing & Linting
 

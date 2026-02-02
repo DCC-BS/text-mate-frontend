@@ -6,7 +6,7 @@ export default defineConfig({
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
-    workers: process.env.CI ? 1 : undefined,
+    workers: 1,
     reporter: process.env.CI
         ? [
               ["github"],
@@ -26,7 +26,13 @@ export default defineConfig({
             args: [
                 "--use-fake-ui-for-media-stream",
                 "--use-fake-device-for-media-stream",
+                "--disable-web-security",
+                "--disable-features=IsolateOrigins,site-per-process",
             ],
+        },
+        contextOptions: {
+            storageState: undefined,
+            ignoreHTTPSErrors: true,
         },
     },
 

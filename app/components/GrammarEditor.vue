@@ -20,7 +20,6 @@ const isEditorLocked = ref(false);
 const isCorrectionSuspended = ref(false);
 
 const currentTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
-const tourIsActive = ref(false);
 
 // composables
 const router = useRouter();
@@ -55,13 +54,24 @@ watch(userText, (newText, oldText) => {
         return;
     }
 
-    taskScheduler.schedule((signal: AbortSignal) =>
-        correctText(newText, signal),
-    );
+    if (currentTool.value === "correction") {
+        taskScheduler.schedule((signal: AbortSignal) =>
+            correctText(newText, signal),
+        );
+    }
 
     // ends with any whitespace
     if (newText.endsWith(".") || newText.endsWith("\n")) {
         taskScheduler.executeImmediately();
+    }
+});
+
+watch(currentTool, () => {
+    // When switching to correction tool, run correction on current text
+    if (!isCorrectionSuspended.value && currentTool.value === "correction") {
+        taskScheduler.schedule((signal: AbortSignal) =>
+            correctText(userText.value, signal),
+        );
     }
 });
 
@@ -93,7 +103,7 @@ onCommand(
     async (command: ToggleEditableEditorCommand) => {
         isEditorLocked.value = command.locked;
 
-        if (!command.locked) {
+        if (!command.locked && currentTool.value === "correction") {
             taskScheduler.schedule((signal: AbortSignal) =>
                 correctText(userText.value, signal),
             );
@@ -114,6 +124,10 @@ onCommand<ToggleLockEditorCommand>(
         if (command.locked) {
             // Abort any running correction task to keep the UI responsive
             taskScheduler.abortRunningTask();
+            return;
+        }
+
+        if (currentTool.value !== "correction") {
             return;
         }
 
@@ -147,8 +161,12 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
                     <motion.div data-allow-mismatch v-show="currentTool === 'rewrite'"
                         class="quick-action-panel overflow-hidden" :layout="true" :initial="{ height: 0, opacity: 0 }"
                         :animate="{ height: 'auto', opacity: 1 }" :exit="{ height: 0, opacity: 0 }" :transition="{
-                            height: { type: 'spring', stiffness: 300, damping: 30 },
-                            opacity: { duration: 0.2 }
+                            height: {
+                                type: 'spring',
+                                stiffness: 300,
+                                damping: 30,
+                            },
+                            opacity: { duration: 0.2 },
                         }" />
                 </AnimatePresence>
             </template>
@@ -164,7 +182,6 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
             </template>
         </SplitContainer>
     </div>
-
 
     <div class="fixed bottom-5 left-0 right-0">
         <ProgressIndication />
