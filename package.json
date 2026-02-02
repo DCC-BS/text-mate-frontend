@@ -68,7 +68,7 @@
     "devDependencies": {
         "@biomejs/biome": "^2.3.11",
         "@playwright/test": "^1.57.0",
-        "@types/node": "25.0.9",
+        "@types/node": "24.10.9",
         "@vitejs/plugin-vue": "^6.0.3",
         "@vitest/coverage-v8": "^4.0.17",
         "@vue/test-utils": "^2.4.6",
