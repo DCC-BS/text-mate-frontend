@@ -1,5 +1,4 @@
 // biome-ignore-all lint/correctness/noUnusedImports: will be used in future edits
-// eslint-disable no-unused-vars
 
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
