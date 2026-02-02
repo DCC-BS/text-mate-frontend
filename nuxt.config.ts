@@ -80,7 +80,6 @@ export default defineNuxtConfig({
         "nuxt-viewport",
         "@pinia/nuxt",
         "nuxt-tour",
-        "@nuxt/eslint",
     ],
     typescript: {
         typeCheck: true,
