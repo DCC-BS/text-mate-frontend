@@ -20,7 +20,6 @@ const isEditorLocked = ref(false);
 const isCorrectionSuspended = ref(false);
 
 const currentTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
-const tourIsActive = ref(false);
 
 // composables
 const router = useRouter();
@@ -56,7 +55,6 @@ watch(userText, (newText, oldText) => {
     }
 
     if (currentTool.value === "correction") {
-        console.log("Scheduling correction for text change");
         taskScheduler.schedule((signal: AbortSignal) =>
             correctText(newText, signal),
         );
@@ -70,8 +68,7 @@ watch(userText, (newText, oldText) => {
 
 watch(currentTool, () => {
     // When switching to correction tool, run correction on current text
-    if (currentTool.value === "correction") {
-        console.log("Switching to correction tool");
+    if (!isCorrectionSuspended.value && currentTool.value === "correction") {
         taskScheduler.schedule((signal: AbortSignal) =>
             correctText(userText.value, signal),
         );
