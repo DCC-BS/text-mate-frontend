@@ -19,6 +19,7 @@
         "test:e2e": "playwright test",
         "test:e2e:ui": "playwright test --ui",
         "e2e:codegen": "playwright codegen http://localhost:3000",
+        "generate:env-example": "bun scripts/generate-env-example.ts",
         "docker:up": "bash scripts/docker/docker-up.sh",
         "docker:down": "bash scripts/docker/docker-down.sh"
     },
