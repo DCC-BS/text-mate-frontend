@@ -113,7 +113,6 @@ export default defineNuxtConfig({
         },
     },
     runtimeConfig: {
-        githubToken: process.env.GITHUB_TOKEN,
         apiUrl: process.env.API_URL,
         feedback: {
             githubToken: process.env.FEEDBACK_GITHUB_TOKEN,

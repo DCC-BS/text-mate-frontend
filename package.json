@@ -1,14 +1,14 @@
 {
     "name": "nuxt-app",
     "private": true,
-    "version": "0.2.0",
+    "version": "0.2.1",
     "scripts": {
         "build": "nuxt build",
         "dev": "nuxt dev",
         "dummy": "AUTH_LAYER_URI=github:DCC-BS/nuxt-layers/no-auth DUMMY=true nuxt dev",
         "debug": "nuxt dev --inspect",
         "tsc": "vue-tsc --noEmit -p tsconfig.json",
-        "generate": "nuxt generate",
+        "nuxt:prepare": "nuxt prepare",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "lint": "biome format --write",
@@ -19,6 +19,7 @@
         "test:e2e": "playwright test",
         "test:e2e:ui": "playwright test --ui",
         "e2e:codegen": "playwright codegen http://localhost:3000",
+        "generate:env-example": "bun scripts/generate-env-example.ts",
         "docker:up": "bash scripts/docker/docker-up.sh",
         "docker:down": "bash scripts/docker/docker-down.sh"
     },
@@ -81,5 +82,8 @@
         "typescript": "^5.9.3",
         "vitest": "^4.0.17",
         "vue-tsc": "^3.2.2"
-    }
+    },
+    "trustedDependencies": [
+        "@parcel/watcher"
+    ]
 }
