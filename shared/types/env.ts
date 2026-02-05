@@ -7,15 +7,9 @@ const buildTimeSchema = z
             .optional()
             .default("github:DCC-BS/nuxt-layers/azure-auth")
             .describe(
-                "Auth layer URI (build-time only, e.g., github:DCC-BS/nuxt-layers/azure-auth)",
+                "Auth layer URI (build-time only, use github:DCC-BS/nuxt-layers/no-auth to disable auth)",
             ),
-        AUTH_ORIGIN: z
-            .url()
-            .optional()
-            .default("http://localhost:3000/api/auth")
-            .describe(
-                "Auth origin (build-time only, e.g., http://localhost:3000/api/auth)",
-            ),
+
         LOGGER_LAYER_URI: z
             .string()
             .optional()
@@ -29,10 +23,10 @@ const buildTimeSchema = z
 const runtimeSchema = z
     .object({
         API_URL: z
-            .string()
             .url()
             .optional()
-            .describe("API base URL (default: http://localhost:8000)"),
+            .default("http://localhost:8000")
+            .describe("API base URL"),
         FEEDBACK_GITHUB_TOKEN: z
             .string()
             .min(1)
@@ -45,31 +39,39 @@ const runtimeSchema = z
             .describe(
                 "Auth secret for session encryption (generate with: openssl rand -base64 32)",
             ),
-        NUXT_AUTH_AZURE_AD_CLIENT_ID: z
+        NUXT_AZURE_AUTH_CLIENT_ID: z
             .string()
             .min(1)
             .optional()
             .describe("Azure AD client ID"),
-        NUXT_AUTH_AZURE_AD_TENANT_ID: z
+        NUXT_AZURE_AUTH_TENANT_ID: z
             .string()
             .min(1)
             .optional()
             .describe("Azure AD tenant ID"),
-        NUXT_AUTH_AZURE_AD_CLIENT_SECRET: z
+        NUXT_AZURE_AUTH_AZURE_CLIENT_SECRET: z
             .string()
             .min(1)
             .optional()
             .describe("Azure AD client secret"),
-        NUXT_AUTH_AZURE_AD_API_CLIENT_ID: z
+        NUXT_AZURE_AUTH_AZURE_API_CLIENT_ID: z
             .string()
             .min(1)
             .optional()
             .describe("Azure AD API client ID"),
+        NUXT_AZURE_AUTH_ORIGIN: z
+            .url()
+            .optional()
+            .describe("Origin URL for Azure AD authentication"),
         LOG_LEVEL: z
             .enum(["trace", "debug", "info", "warn", "error", "fatal"])
             .default("debug")
             .describe("Logger level (default: debug)"),
-        DUMMY: z.string().optional().describe("Use dummy data (set to 'true')"),
+        DUMMY: z
+            .string()
+            .optional()
+            .default("false")
+            .describe("Use dummy data (default: false)"),
     })
     .strict();
 
@@ -81,15 +83,15 @@ function extractDefaults(schema: z.ZodObject<any>): Record<string, unknown> {
 
     for (const [key, value] of Object.entries(schema.shape)) {
         if (value instanceof z.ZodDefault) {
-            const defaultValue = value._def.defaultValue;
+            const defaultValue = value.def.defaultValue;
             defaults[key] =
                 typeof defaultValue === "function"
                     ? defaultValue()
                     : defaultValue;
         } else if (value instanceof z.ZodOptional) {
-            const innerValue = (value as z.ZodOptional<any>)._def.innerType;
+            const innerValue = (value as z.ZodOptional<any>).def.innerType;
             if (innerValue instanceof z.ZodDefault) {
-                const defaultValue = innerValue._def.defaultValue;
+                const defaultValue = innerValue.def.defaultValue;
                 defaults[key] =
                     typeof defaultValue === "function"
                         ? defaultValue()

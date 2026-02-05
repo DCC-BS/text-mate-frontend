@@ -36,8 +36,8 @@ WORKDIR /app
 USER node
 
 # Environment
-# ENV NODE_ENV=production
-# ENV NITRO_PORT=3000
+ENV NODE_ENV=production
+ENV NITRO_PORT=3000
 
 # Copy the built application from the build stage
 COPY --from=build --chown=node:node /app/.output ./
