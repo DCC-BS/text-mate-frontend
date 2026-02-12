@@ -46,7 +46,7 @@
         "@tiptap/starter-kit": "3.16.0",
         "@tiptap/vue-3": "3.16.0",
         "@types/diff": "^8.0.0",
-        "giget": "^2.0.0",
+        "giget": "^3.0.0",
         "jsdiff": "^1.1.1",
         "motion-v": "^1.9.0",
         "nuxt": "^4.2.2",
