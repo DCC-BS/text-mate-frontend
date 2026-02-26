@@ -33,7 +33,7 @@
         "@iconify-json/simple-icons": "^1.2.66",
         "@nuxt/ui": "4.4.0",
         "@nuxtjs/i18n": "^10.2.1",
-        "@nuxtjs/mdc": "0.20.0",
+        "@nuxtjs/mdc": "0.20.1",
         "@pinia/nuxt": "0.11.3",
         "@tiptap/core": "3.16.0",
         "@tiptap/extension-bubble-menu": "3.16.0",
