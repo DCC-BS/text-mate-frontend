@@ -51,7 +51,7 @@
         "motion-v": "^1.9.0",
         "nuxt": "^4.2.2",
         "nuxt-tour": "^0.0.40",
-        "nuxt-viewport": "2.3.1",
+        "nuxt-viewport": "2.4.0",
         "openid-client": "^6.8.1",
         "pinia": "^3.0.4",
         "pino": "^10.2.0",
