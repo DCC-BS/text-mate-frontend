@@ -1,7 +1,7 @@
 # Stage 1: Build the application
 FROM node:24-alpine AS build
 
-ARG AUTH_LAYER_URI=github:DCC-BS/nuxt-layers/azure-auth
+ARG AUTH_LAYER_URI='github:DCC-BS/nuxt-layers/azure-auth#features/msTeams'
 ARG LOGGER_LAYER_URI=github:DCC-BS/nuxt-layers/pino-logger
 
 # Install bun
