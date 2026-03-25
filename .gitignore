@@ -33,3 +33,6 @@ scripts/docker/docker.config.sh
 .env
 
 test-results/
+
+env.d.ts
+!.env.schema

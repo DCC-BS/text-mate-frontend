@@ -1,12 +1,13 @@
 import { fileURLToPath } from "node:url";
 import Vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vitest/config";
+import { varlockVitePlugin } from '@varlock/vite-integration';
 
 /**
  * Vitest configuration for testing Nuxt components and utilities
  */
 export default defineConfig({
-    plugins: [Vue()],
+    plugins: [Vue(), varlockVitePlugin({ ssrInjectMode: "resolved-env"})],
     test: {
         globals: true,
         environment: "happy-dom",
