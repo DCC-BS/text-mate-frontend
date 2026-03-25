@@ -1,6 +1,5 @@
 import { fileURLToPath } from "node:url";
 import { varlockVitePlugin } from '@varlock/vite-integration';
-import { ENV } from 'varlock/env';
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -89,9 +88,9 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
-        plugins: [varlockVitePlugin()],
+        plugins: [varlockVitePlugin({ ssrInjectMode: "resolved-env" })],
         build: {
-            sourcemap: ENV.NODE_ENV !== "production",
+            sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
             chunkSizeWarningLimit: 800,
             rollupOptions: {
@@ -116,17 +115,17 @@ export default defineNuxtConfig({
         },
     },
     runtimeConfig: {
-        apiUrl: ENV.API_URL,
+        apiUrl: process.env.API_URL,
         feedback: {
-            githubToken: ENV.FEEDBACK_GITHUB_TOKEN,
+            githubToken: process.env.FEEDBACK_GITHUB_TOKEN,
             project: "text-mate",
             repoOwner: "DCC-BS",
             repo: "Feedback",
         },
         public: {
-            useDummyData: ENV.DUMMY,
+            useDummyData: process.env.DUMMY,
             logger: {
-                loglevel: ENV.LOG_LEVEL || "debug",
+                loglevel: process.env.LOG_LEVEL || "debug",
             },
         },
     },

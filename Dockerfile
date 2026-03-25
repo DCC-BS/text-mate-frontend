@@ -3,6 +3,8 @@ FROM node:24-alpine AS build
 
 ARG AUTH_LAYER_URI='github:DCC-BS/nuxt-layers/azure-auth#features/msTeams'
 ARG LOGGER_LAYER_URI=github:DCC-BS/nuxt-layers/pino-logger
+ENV DOCKER_BUILD=true
+ENV NODE_ENV=production
 
 # Install bun
 RUN npm install -g bun
@@ -37,6 +39,7 @@ USER node
 
 # Environment
 ENV NODE_ENV=production
+ENV DOCKER_BUILD=false
 ENV NITRO_PORT=3000
 
 # Copy the built application from the build stage
