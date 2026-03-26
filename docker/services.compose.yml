@@ -19,7 +19,7 @@ services:
             - Java_Xms=512m
             - Java_Xmx=2g
         volumes:
-            - ${HOME}/.cache/languagetool:/ngrams
+            - ${LANGUAGE_TOOL_CACHE_DIR}:/ngrams
 
     llm:
         platform: linux/amd64
@@ -41,7 +41,7 @@ services:
                           capabilities: [gpu]
         ipc: host
         volumes:
-            - ${HOME}/.cache/huggingface:/root/.cache/huggingface
+            - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
         command: >
             Qwen/Qwen3-32B-AWQ
             --port 8000
