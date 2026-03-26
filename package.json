@@ -21,7 +21,8 @@
         "e2e:codegen": "playwright codegen http://localhost:3000",
         "generate:env-example": "bun scripts/generate-env-example.ts",
         "docker:up": "bash scripts/docker/docker-up.sh",
-        "docker:down": "bash scripts/docker/docker-down.sh"
+        "docker:down": "bash scripts/docker/docker-down.sh",
+        "env:check": "pass-cli login && bunx varlock load"
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^1.2.1",
