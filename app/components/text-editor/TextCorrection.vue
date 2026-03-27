@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-// biome-ignore lint/style/useImportType: use in the vue template
 import {
     ApplyCorrectionCommand,
     InvalidateCorrectionCommand,
@@ -40,10 +39,10 @@ async function addWord(word: string) {
     <UPopover :open="!!props.hoverBlock" :content="{ onOpenAutoFocus: (e: Event) => e.preventDefault() }"
         class="absolute">
         <div class="absolute pointer-events-none select-none touch-none" :style="{
-            top: props.relativeHoverRect?.top + 'px',
-            left: props.relativeHoverRect?.left + 'px',
-            width: props.relativeHoverRect?.width + 'px',
-            height: props.relativeHoverRect?.height + 'px',
+            top: `${props.relativeHoverRect?.top}px`,
+            left: `${props.relativeHoverRect?.left}px`,
+            width: `${props.relativeHoverRect?.width}px`,
+            height: `${props.relativeHoverRect?.height}px`,
         }">
         </div>
 

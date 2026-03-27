@@ -78,7 +78,9 @@ const runtimeSchema = z
 export type RuntimeEnv = z.infer<typeof runtimeSchema>;
 export type BuildTimeEnv = z.infer<typeof buildTimeSchema>;
 
-function extractDefaults(schema: z.ZodObject<any>): Record<string, unknown> {
+function extractDefaults(
+    schema: z.ZodObject<z.ZodRawShape>,
+): Record<string, unknown> {
     const defaults: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(schema.shape)) {
@@ -89,7 +91,8 @@ function extractDefaults(schema: z.ZodObject<any>): Record<string, unknown> {
                     ? defaultValue()
                     : defaultValue;
         } else if (value instanceof z.ZodOptional) {
-            const innerValue = (value as z.ZodOptional<any>).def.innerType;
+            const innerValue = (value as z.ZodOptional<z.ZodTypeAny>).def
+                .innerType;
             if (innerValue instanceof z.ZodDefault) {
                 const defaultValue = innerValue.def.defaultValue;
                 defaults[key] =
@@ -105,12 +108,14 @@ function extractDefaults(schema: z.ZodObject<any>): Record<string, unknown> {
     return defaults;
 }
 
-function extractDescriptions(schema: z.ZodObject<any>): Record<string, string> {
+function extractDescriptions(
+    schema: z.ZodObject<z.ZodRawShape>,
+): Record<string, string> {
     const descriptions: Record<string, string> = {};
 
     for (const [key, value] of Object.entries(schema.shape)) {
-        const schemaValue = value as z.ZodType<any>;
-        const description = (schemaValue as any).description;
+        const schemaValue = value as z.ZodTypeAny;
+        const description = schemaValue.description;
         if (typeof description === "string") {
             descriptions[key] = description;
         }
