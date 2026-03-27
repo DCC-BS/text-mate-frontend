@@ -6,7 +6,7 @@
       "name": "nuxt-app",
       "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^1.2.1",
-        "@dcc-bs/communication.bs.js": "0.1.1",
+        "@dcc-bs/communication.bs.js": "0.1.3",
         "@dcc-bs/dependency-injection.bs.js": "^0.0.16",
         "@dcc-bs/event-system.bs.js": "^1.4.3",
         "@iconify-json/flag": "^1.2.10",
@@ -160,7 +160,7 @@
 
     "@dcc-bs/common-ui.bs.js": ["@dcc-bs/common-ui.bs.js@1.2.6", "", { "dependencies": { "@nuxt/kit": "4.3.1", "@nuxtjs/i18n": "10.2.3", "gray-matter": "^4.0.3", "markdown-it": "14.1.1", "semver": "7.7.4", "tailwind-merge": "3.5.0", "typescript": "5.9.3", "undici": "7.24.0" }, "peerDependencies": { "@nuxt/icon": "^2.2.0", "@nuxt/ui": "^4.5.0", "motion-v": "^2.0.0", "nuxt": "^4.3.0", "zod": "^4.3.0" } }, "sha512-Gji6qYf387l5eB8mdJjtKuPuNMakN4zqFB66QelJLZ2Q1v6/NsA3iATV1aBQpftGeq5DVf+MyoaIUfBUNQdIHg=="],
 
-    "@dcc-bs/communication.bs.js": ["@dcc-bs/communication.bs.js@0.1.1", "", { "dependencies": { "vite": "^7.1.6", "vue": "^3.5.25", "zod": "^4.1.9" }, "peerDependencies": { "typescript": "^5" } }, "sha512-RFRcA5B8wK9lPF9P/AhDK2w1PuF4Sod5xv7CDmyRNlAv0yYvXCc+6QzoRcz4VZXeq9jtWKN3jO+hrVzUStZDZA=="],
+    "@dcc-bs/communication.bs.js": ["@dcc-bs/communication.bs.js@0.1.3", "", { "dependencies": { "vite": "^7.1.6", "vue": "^3.5.25", "zod": "^4.1.9" }, "peerDependencies": { "typescript": "^5" } }, "sha512-6lMlGaGy/zJtl544Y0loB5kgaf9MKC5t4OhKb+wPC1Cg5Y08KmYIyp8kfr/TresuhNtSfPIUEs3phWLJuxGSaQ=="],
 
     "@dcc-bs/dependency-injection.bs.js": ["@dcc-bs/dependency-injection.bs.js@0.0.16", "", { "dependencies": { "@nuxt/kit": "^4.0.2" } }, "sha512-CwikPgYCPNckx6IZLNcWoPB21pWcivRtZ8jj/+wRmbnJ5G3n61WWlB+/1RIgicifPJN8Qf8zPABWLnuZ+CF4yA=="],
 
