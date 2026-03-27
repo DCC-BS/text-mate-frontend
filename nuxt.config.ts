@@ -94,9 +94,25 @@ export default defineNuxtConfig({
                 output: {
                     // Use manual chunks to improve chunking
                     manualChunks: (id) => {
-                        if (["vue", "vue-router"].some((pkg) => id.includes(`/node_modules/${pkg}/`))) return "vue-vendor";
-                        if (["@tiptap/vue-3", "@tiptap/starter-kit", "@tiptap/extension-bubble-menu", "@tiptap/extension-character-count"].some((pkg) => id.includes(`/node_modules/${pkg}/`))) return "tiptap-vendor";
-                        if (id.includes("/node_modules/vue-pdf-embed/")) return "pdf-vendor";
+                        if (
+                            ["vue", "vue-router"].some((pkg) =>
+                                id.includes(`/node_modules/${pkg}/`),
+                            )
+                        )
+                            return "vue-vendor";
+                        if (
+                            [
+                                "@tiptap/vue-3",
+                                "@tiptap/starter-kit",
+                                "@tiptap/extension-bubble-menu",
+                                "@tiptap/extension-character-count",
+                            ].some((pkg) =>
+                                id.includes(`/node_modules/${pkg}/`),
+                            )
+                        )
+                            return "tiptap-vendor";
+                        if (id.includes("/node_modules/vue-pdf-embed/"))
+                            return "pdf-vendor";
                     },
                 },
             },
