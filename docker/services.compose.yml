@@ -76,7 +76,7 @@ services:
         container_name: textmate-frontend
         build:
             context: ..
-            dockerfile: ./Dockerfile
+            dockerfile: ../Dockerfile
         # env_file: "../.env"
         environment:
             - NUXT_AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID:-}
