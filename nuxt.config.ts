@@ -1,15 +1,15 @@
 import { fileURLToPath } from "node:url";
-import { varlockVitePlugin } from '@varlock/vite-integration';
+import { varlockVitePlugin } from "@varlock/vite-integration";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
     extends: [
-        ["github:DCC-BS/nuxt-layers/auth", { install: true }],
-        ["github:DCC-BS/nuxt-layers/backend_communication", { install: true }],
-        ["github:DCC-BS/nuxt-layers/health_check", { install: true }],
-        ["github:DCC-BS/nuxt-layers/feedback-control", { install: true }],
+        ["github:DCC-BS/nuxt-layers/auth"],
+        ["github:DCC-BS/nuxt-layers/backend_communication"],
+        ["github:DCC-BS/nuxt-layers/health_check"],
+        ["github:DCC-BS/nuxt-layers/feedback-control"],
         ["github:DCC-BS/nuxt-layers/logger"],
     ],
     routeRules: {
@@ -110,7 +110,28 @@ export default defineNuxtConfig({
             },
         },
         optimizeDeps: {
-            include: ["vue-pdf-embed"],
+            include: [
+                'pino', // CJS
+                'vue-pdf-embed',
+                'motion-v',
+                '@tiptap/vue-3',
+                '@tiptap/extension-bold',
+                '@tiptap/extension-bullet-list',
+                '@tiptap/extension-character-count',
+                '@tiptap/extension-document',
+                '@tiptap/extension-hard-break',
+                '@tiptap/extension-heading',
+                '@tiptap/extension-history',
+                '@tiptap/extension-italic',
+                '@tiptap/extension-list-item',
+                '@tiptap/extension-ordered-list',
+                '@tiptap/extension-paragraph',
+                '@tiptap/extension-strike',
+                '@tiptap/extension-text',
+                '@tiptap/vue-3/menus',
+                '@tiptap/pm/state',
+                "vue-pdf-embed"
+            ],
             exclude: ["@vueuse/core"],
         },
     },

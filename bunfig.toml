@@ -1,1 +1,4 @@
 env = false
+
+[install]
+minimum-release-age = false
