@@ -9,8 +9,8 @@ export default defineNuxtConfig({
         ["github:DCC-BS/nuxt-layers/auth"],
         ["github:DCC-BS/nuxt-layers/backend_communication"],
         ["github:DCC-BS/nuxt-layers/health_check"],
-        ["github:DCC-BS/nuxt-layers/feedback-control"],
         ["github:DCC-BS/nuxt-layers/logger"],
+        process.env.USE_FEEDBACK === "true" ? ["github:DCC-BS/nuxt-layers/feedback-control"] : undefined,
     ],
     routeRules: {
         "/api/ping": {
@@ -144,6 +144,7 @@ export default defineNuxtConfig({
             repo: "Feedback",
         },
         public: {
+            useFeedback: process.env.USE_FEEDBACK ?? true,
             useDummyData: process.env.DUMMY,
             logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",

@@ -42,22 +42,58 @@ For detailed documentation on the DCC project, please refer to the [DCC Document
 Create a `.env` file in the project root with the required environment variables:
 
 ```
+# can be dev, build or prod see https://dcc-bs.github.io/documentation/dev-setup/varlock.html
+APP_MODE=dev
+
+# none or azure
+AUTH_MODE=none
+
+# if AUTH_MODE is azure set this variable too
+NUXT_AZURE_AUTH_SECRET= # use openssl rand -base64 32
+```
+
+We use [varlock](https://varlock.dev) for env validation and for setting variables to a default. If you want to change the defaul or not use valock set these env variables:
+
+```
+## For building the app set these variables
+
+# Auth Layer
+# use github:DCC-BS/nuxt-layers/azure-auth for azure
+# these will be autmatically infered by varlock from the AUTH_MODE
+AUTH_LAYER_URI=github:DCC-BS/nuxt-layers/no-auth
+
+# Currently the only option if you don't want to implement you own logger nuxt layer
+LOGGER_LAYER_URI=github:DCC-BS/nuxt-layers/pino-logger
+
+
+## For runtime set these variables
+
+# can be deug, info, warn, error, fatal
+NUXT_PUBLIC_LOGGER_LOG_LEVEL=debug
+
 API_PORT=8000
-API_URL=http://localhost:${API_PORT}
+NUXT_API_URL=http://localhost:${API_PORT}
 
-FEEDBACK_GITHUB_TOKEN=TODO
+# A Gitbub token so feedbacks can be store to a github repo as issues
+NUXT_FEEDBACK_GITHUB_TOKEN=
 
-# azure auth
-AUTH_LAYER_URI="github:DCC-BS/nuxt-layers/azure-auth" # for no auth use github:DCC-BS/nuxt-layers/no-auth
-AUTH_ORIGIN=http://localhost:3000/api/auth
-NUXT_AUTH_SECRET="" # Generate one: openssl rand -base64 32
-AZURE_AD_CLIENT_ID="TODD"
-AZURE_AD_TENANT_ID="TODO"
-AZURE_AD_CLIENT_SECRET="TODO"
-AZURE_AD_API_CLIENT_ID="TODO"
+# When true no request will be send to the backend and dummy data will be used
+DUMMY=false
 
-LOGGER_LAYER_URI="github:DCC-BS/nuxt-layers/pino-logger"
+# Can be debug, trace, info, warn, error, fatal
 LOG_LEVEL=debug
+
+# When auth mode is azure
+NUXT_AZURE_AUTH_ORIGIN="http://localhost:3000/api/auth"
+
+# Defaults to get from proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_CLIENT_ID
+NUXT_AZURE_AUTH_CLIENT_ID=
+# Defaults to get form proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_TENANT_ID
+NUXT_AZURE_AUTH_TENANT_ID=
+# Defaults to get form proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_CLIENT_SECRET
+NUXT_AZURE_AUTH_CLIENT_SECRET=
+# Defaults to get form proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_API_CLIENT_ID
+NUXT_AZURE_AUTH_API_CLIENT_ID=
 ```
 
 ### Install Dependencies

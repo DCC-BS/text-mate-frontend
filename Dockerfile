@@ -1,9 +1,9 @@
 # Stage 1: Build the application
 FROM node:24-alpine AS build
 
+ENV APP_MODE=build
 ARG AUTH_LAYER_URI="github:DCC-BS/nuxt-layers/azure-auth#features/msTeams"
 ARG LOGGER_LAYER_URI="github:DCC-BS/nuxt-layers/pino-logger"
-ENV APP_MODE=build
 ENV NODE_ENV=production
 
 # Install bun
@@ -29,6 +29,7 @@ RUN bun x nuxi prepare
 RUN bun x nuxi build
 
 # Stage 2: Run the application
+# ------------------------------------------------
 FROM node:24-alpine
 
 # Set the working directory
