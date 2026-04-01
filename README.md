@@ -16,12 +16,28 @@ TextMate is a modern web application for advanced text editing, correction, and 
 
 ## Features
 
+### Core Capabilities
+
 - **Grammar Correction**: Identifies and suggests fixes for grammar and spelling issues
 - **Text Rewriting**: Offers alternative phrasings with customizable style, audience, and intent
 - **Document Advisor**: Validates texts against selected reference documents with PDF preview
-- **Quick Actions**: Various text transformation tools including summarization and format conversion
+- **Word Synonyms**: Intelligent synonym suggestions based on context
+- **Sentence Rewrite**: Context-aware sentence transformation
 - **User Dictionary**: Personal dictionary for storing specialized vocabulary
 - **Multilingual Support**: Available in English and German
+- **MS Teams Integration**: Built-in support for Microsoft Teams platform
+
+### Quick Actions
+
+Eight specialized AI-powered text transformations:
+
+- **Summarize**: Generate concise summaries of long texts
+- **Bullet Points**: Convert paragraphs into structured bullet points
+- **Formality**: Adjust text formality level (formal/informal)
+- **Medium Length**: Optimize text for medium-length output
+- **Social Media**: Optimize content for social media platforms
+- **Character Speech**: Adapt text to character voice and speech patterns
+- **Custom**: Flexible custom text transformations
 
 ## Technology Stack
 
@@ -33,6 +49,7 @@ TextMate is a modern web application for advanced text editing, correction, and 
 - **PDF Handling**: Vue PDF Embed
 
 ## DCC Documentation
+
 For detailed documentation on the DCC project, please refer to the [DCC Documentation](https://dcc-bs.github.io/documentation/).
 
 ## Setup
@@ -41,60 +58,67 @@ For detailed documentation on the DCC project, please refer to the [DCC Document
 
 Create a `.env` file in the project root with the required environment variables:
 
-```
-# can be dev, build or prod see https://dcc-bs.github.io/documentation/dev-setup/varlock.html
-APP_MODE=dev
-
-# none or azure
-AUTH_MODE=none
-
-# if AUTH_MODE is azure set this variable too
-NUXT_AZURE_AUTH_SECRET= # use openssl rand -base64 32
+```bash
+APP_MODE=dev  # can be dev, build or prod see https://dcc-bs.github.io/documentation/dev-setup/varlock.html
+AUTH_MODE=none  # none or azure
 ```
 
-We use [varlock](https://varlock.dev) for env validation and for setting variables to a default. If you want to change the defaul or not use valock set these env variables:
+#### Optional Environment Variables
 
+The following environment variables have defaults and can be overridden as needed:
+
+| Variable | Description | Default | Type |
+|----------|-------------|---------|------|
+| **App Configuration** |
+| `USE_FEEDBACK` | Enable feedback feature | `true` | boolean |
+| `DUMMY` | Use dummy data (no backend requests) | `false` | string |
+| **Build-time Variables** |
+| `AUTH_LAYER_URI` | Auth layer Nuxt module | Auto from `AUTH_MODE` | URL |
+| `LOGGER_LAYER_URI` | Logger layer Nuxt module | `github:DCC-BS/nuxt-layers/pino-logger` | URL |
+| **Runtime Variables** |
+| `API_PORT` | Backend API port | `8000` | port |
+| `NUXT_API_URL` | Backend API URL | `http://localhost:8000` (dev) | URL (public) |
+| `NUXT_FEEDBACK_GITHUB_TOKEN` | GitHub token for feedback | - | string (sensitive, required if `USE_FEEDBACK=true`) |
+| `NUXT_PUBLIC_LOGGER_LOG_LEVEL` | Frontend log level | `debug` (dev), `info` (prod) | enum: trace, debug, info, warn, error, fatal |
+| `LOG_LEVEL` | Server log level | `debug` | enum: debug, trace, info, warn, error, fatal |
+
+> **Note:** Build-time variables (`AUTH_LAYER_URI`, `LOGGER_LAYER_URI`) are resolved during `nuxt build` and must be passed as build arguments in Docker.
+
+#### Azure Environment Variables
+
+When `AUTH_MODE=azure`, the following Azure AD variables are **required**:
+
+| Variable | Description | Default | Type |
+|----------|-------------|---------|------|
+| `NUXT_AZURE_AUTH_SECRET` | Session encryption secret | - | string (sensitive, required) |
+| `NUXT_AZURE_AUTH_CLIENT_ID` | Azure AD client ID | Proton Pass (dev) | UUID (public) |
+| `NUXT_AZURE_AUTH_TENANT_ID` | Azure AD tenant ID | Proton Pass (dev) | UUID (public) |
+| `NUXT_AZURE_AUTH_CLIENT_SECRET` | Azure AD client secret | Proton Pass (dev) | string (sensitive) |
+| `NUXT_AZURE_AUTH_API_CLIENT_ID` | Azure AD API client ID | Proton Pass (dev) | UUID (public) |
+| `NUXT_AZURE_AUTH_ORIGIN` | Auth origin URL | `http://localhost:3000/api/auth` (dev) | URL (public) |
+
+> **Note:** Generate the `NUXT_AZURE_AUTH_SECRET` with: `openssl rand -base64 32`
+
+### Varlock & Secrets Management
+
+We use [varlock](https://varlock.dev/) for environment variable validation and default value management. Varlock integrates with the Docker build process and can optionally fetch secrets from Proton Pass during development.
+
+To validate and load environment variables:
+
+```bash
+varlock load
 ```
-## For building the app set these variables
 
-# Auth Layer
-# use github:DCC-BS/nuxt-layers/azure-auth for azure
-# these will be autmatically infered by varlock from the AUTH_MODE
-AUTH_LAYER_URI=github:DCC-BS/nuxt-layers/no-auth
+#### Proton Pass Integration (Optional)
 
-# Currently the only option if you don't want to implement you own logger nuxt layer
-LOGGER_LAYER_URI=github:DCC-BS/nuxt-layers/pino-logger
+For automatic secret retrieval from Proton Pass, ensure you have:
+1. Install [pass-cli](https://github.com/DCC-BS/pass-cli)
+2. Authenticate with Proton Pass: `pass-cli login`
+3. Validate environment: `varlock load`
 
+> **Note:** Proton Pass integration is optional. If you prefer to set environment variables manually, you can skip the Proton Pass setup and provide values directly in your `.env` file or environment. Varlock will use the manually provided values instead of fetching from Proton Pass.
 
-## For runtime set these variables
-
-# can be deug, info, warn, error, fatal
-NUXT_PUBLIC_LOGGER_LOG_LEVEL=debug
-
-API_PORT=8000
-NUXT_API_URL=http://localhost:${API_PORT}
-
-# A Gitbub token so feedbacks can be store to a github repo as issues
-NUXT_FEEDBACK_GITHUB_TOKEN=
-
-# When true no request will be send to the backend and dummy data will be used
-DUMMY=false
-
-# Can be debug, trace, info, warn, error, fatal
-LOG_LEVEL=debug
-
-# When auth mode is azure
-NUXT_AZURE_AUTH_ORIGIN="http://localhost:3000/api/auth"
-
-# Defaults to get from proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_CLIENT_ID
-NUXT_AZURE_AUTH_CLIENT_ID=
-# Defaults to get form proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_TENANT_ID
-NUXT_AZURE_AUTH_TENANT_ID=
-# Defaults to get form proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_CLIENT_SECRET
-NUXT_AZURE_AUTH_CLIENT_SECRET=
-# Defaults to get form proton pass: pass://DCC-KI/TEXTMATE_FRONTEND/AUTH_API_CLIENT_ID
-NUXT_AZURE_AUTH_API_CLIENT_ID=
-```
+In production (Docker), varlock runs as the container entrypoint, loading secrets at runtime.
 
 ### Install Dependencies
 
@@ -118,70 +142,74 @@ For debugging with inspector:
 bun run debug
 ```
 
-### Backend Setup
+### Dummy Mode
 
-Create a `.env.backend` file in the `docker/` directory with the required environment variables:
-
-```
-LLM_API_PORT=8001
-
-CLIENT_PORT=3000
-CLIENT_URL=http://localhost:${CLIENT_PORT}
-OPENAI_API_BASE_URL=http://vllm_qwen25_32b:${LLM_API_PORT}/v1
-OPENAI_API_KEY=none
-LLM_MODEL=Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4
-
-LANGUAGE_TOOL_PORT=8010
-LANGUAGE_TOOL_API_URL=http://languagetool:${LANGUAGE_TOOL_PORT}/v2
-LANGUAGE_TOOL_CACHE_DIR=~/.cache/languagetool
-
-HF_AUTH_TOKEN=your_hugging_face_token
-HUGGING_FACE_CACHE_DIR=~/.cache/huggingface
-```
-
-> **Note:** The `HF_AUTH_TOKEN` is required for Hugging Face API access. You can create a token [here](https://huggingface.co/settings/tokens).
-
-#### Docker Management
-
-The project includes configurable scripts for managing Docker containers with flexible environment variable loading:
+For development without a backend connection, use dummy mode which returns mock data instead of calling the backend API:
 
 ```bash
-# Start backend containers
-bun run docker:up
+bun run dummy
+```
 
-# Stop backend containers
+This allows frontend development without running the Python backend services.
+
+### Backend Services
+
+This frontend requires the [Text-mate backend](https://github.com/DCC-BS/text-mate-backend) service. The backend and all related services (LLM, LanguageTool) are configured in the `docker/` folder.
+
+#### Development Mode (Backend Only)
+
+Start only the backend services for development:
+
+```bash
+bun run docker:up
+```
+
+Stop backend services:
+
+```bash
 bun run docker:down
 ```
 
-#### Custom Environment Loading
+#### Full Stack with Nginx
 
-The Docker scripts support customizable environment variable loading methods:
+To run all services including the frontend behind an nginx reverse proxy:
 
-- **Default**: Uses `source` to load `.env` and `docker/.env.backend` files
-- **Custom**: Configure alternative methods (e.g., dotenvx, pass-cli) for encrypted secrets
+```bash
+cd docker
+varlock run -- docker compose up
+```
 
-To customize the environment loading:
+This starts:
+- **Frontend** (Nuxt.js app)
+- **Backend** (Python FastAPI)
+- **LLM Service** (vLLM with Qwen model)
+- **LanguageTool** (Grammar checking)
+- **Nginx** (Reverse proxy)
 
-1. Copy the example configuration:
-   ```bash
-   cp scripts/docker/docker.config.sh.example scripts/docker/docker.config.sh
-   ```
+> **Note:** Ensure you have varlock configured with Proton Pass for environment variable management.
 
-2. Edit `scripts/docker/docker.config.sh` to define your `load_env()` function:
-   ```bash
-   function envx() {
-       pass-cli run --env-file .env.keys -- dotenvx "$@"
-   }
+## Project Architecture
 
-   function load_env() {
-       # Example with dotenvx for encrypted .env files
-       envx run -f .env docker/.env.backend -- "$@"
-   }
-    ```
-
-The `scripts/docker/docker.config.sh` file is gitignored, allowing team members to use their own configuration while sharing a working default setup.
-
-See [scripts/docker/README.md](scripts/docker/README.md) for detailed documentation.
+```
+app/
+├── components/       # Vue components (PascalCase)
+│   ├── text-editor/         # Text editor components
+│   └── tool-panel/          # Tool panel components
+├── composables/        # Vue composition functions (useXxx)
+├── utils/               # Utility functions
+├── assets/
+│   ├── models/             # TypeScript models
+│   ├── services/           # API services
+│   └── queries/            # API queries
+shared/
+└── types/               # Shared TypeScript types
+server/
+├── api/                # API endpoints (kebab-case)
+└── plugins/            # Server plugins
+tests/
+├── assets/             # Unit tests (*.test.ts)
+└── e2e/               # E2E tests (*.spec.ts)
+```
 
 ## Testing & Linting
 
@@ -209,6 +237,15 @@ Check and fix code issues:
 ```bash
 bun run check
 ```
+
+### E2E Testing
+
+End-to-end tests cover key features:
+- Undo/Redo operations
+- Text statistics
+- Text rewriting
+- Problem detection
+- Quick actions
 
 ## Production
 

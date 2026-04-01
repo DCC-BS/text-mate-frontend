@@ -10,7 +10,9 @@ export default defineNuxtConfig({
         ["github:DCC-BS/nuxt-layers/backend_communication"],
         ["github:DCC-BS/nuxt-layers/health_check"],
         ["github:DCC-BS/nuxt-layers/logger"],
-        process.env.USE_FEEDBACK === "true" ? ["github:DCC-BS/nuxt-layers/feedback-control"] : undefined,
+        process.env.USE_FEEDBACK === "true"
+            ? ["github:DCC-BS/nuxt-layers/feedback-control"]
+            : undefined,
     ],
     routeRules: {
         "/api/ping": {
@@ -111,26 +113,26 @@ export default defineNuxtConfig({
         },
         optimizeDeps: {
             include: [
-                'pino', // CJS
-                'vue-pdf-embed',
-                'motion-v',
-                '@tiptap/vue-3',
-                '@tiptap/extension-bold',
-                '@tiptap/extension-bullet-list',
-                '@tiptap/extension-character-count',
-                '@tiptap/extension-document',
-                '@tiptap/extension-hard-break',
-                '@tiptap/extension-heading',
-                '@tiptap/extension-history',
-                '@tiptap/extension-italic',
-                '@tiptap/extension-list-item',
-                '@tiptap/extension-ordered-list',
-                '@tiptap/extension-paragraph',
-                '@tiptap/extension-strike',
-                '@tiptap/extension-text',
-                '@tiptap/vue-3/menus',
-                '@tiptap/pm/state',
-                "vue-pdf-embed"
+                "pino", // CJS
+                "vue-pdf-embed",
+                "motion-v",
+                "@tiptap/vue-3",
+                "@tiptap/extension-bold",
+                "@tiptap/extension-bullet-list",
+                "@tiptap/extension-character-count",
+                "@tiptap/extension-document",
+                "@tiptap/extension-hard-break",
+                "@tiptap/extension-heading",
+                "@tiptap/extension-history",
+                "@tiptap/extension-italic",
+                "@tiptap/extension-list-item",
+                "@tiptap/extension-ordered-list",
+                "@tiptap/extension-paragraph",
+                "@tiptap/extension-strike",
+                "@tiptap/extension-text",
+                "@tiptap/vue-3/menus",
+                "@tiptap/pm/state",
+                "vue-pdf-embed",
             ],
             exclude: ["@vueuse/core"],
         },
