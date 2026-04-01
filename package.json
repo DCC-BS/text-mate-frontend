@@ -22,7 +22,7 @@
         "generate:env-example": "bun scripts/generate-env-example.ts",
         "docker:up": "bash scripts/docker/docker-up.sh",
         "docker:down": "bash scripts/docker/docker-down.sh",
-        "env:check": "pass-cli login && (set -a; source .env; set +a; bunx varlock load)"
+        "env:check": "pass-cli login && bunx varlock load"
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "^1.2.1",
@@ -63,7 +63,7 @@
         "tailwindcss": "^4.1.18",
         "ts-pattern": "^5.9.0",
         "unified": "^11.0.5",
-        "varlock": "^0.6.3",
+        "varlock": "^0.7.0",
         "vue": "^3.5.26",
         "vue-pdf-embed": "^2.1.3",
         "vue-router": "^4.6.4",
