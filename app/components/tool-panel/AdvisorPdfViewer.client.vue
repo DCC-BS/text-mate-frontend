@@ -172,26 +172,28 @@ watch(
           <div class="text-sm font-medium text-gray-800 truncate overflow-hidden whitespace-nowrap max-w-[40%]">
             {{ fileName }}
           </div>
-          <button 
+          <button
+            type="button"
             class="p-1 hover:bg-gray-300 rounded-full"
             @click="closeModal"
             aria-label="Close PDF viewer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <title>Close Icon</title>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-        
+
         <!-- PDF Document Container with zoom -->
-        <div 
+        <div
           ref="containerRef"
-          v-if="pdfSource" 
+          v-if="pdfSource"
           class="flex-1 overflow-auto bg-gray-100 p-4"
         >
             <div class="pdf-container" :style="{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }">
                 <PdfEmbed
-                  :source="pdfSource" 
+                  :source="pdfSource"
                   :width="containerRef ? containerRef.clientWidth : 0"
                   :page="currentPage"
                   @loaded="handleDocumentLoaded"
@@ -207,52 +209,60 @@ watch(
             </div>
           </div>
         </div>
-        
+
         <!-- Footer with page navigation and zoom controls -->
         <div v-if="pdfSource" class="flex justify-between items-center p-3 bg-gray-100 border-t border-gray-300">
           <div class="flex items-center gap-2">
             <!-- Zoom controls -->
-            <button 
+            <button
+              type="button"
               class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="zoomLevel <= 50"
               @click="zoomOut"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <title>Zoom icon</title>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
               </svg>
             </button>
             <span class="text-sm">{{ zoomLevel }}%</span>
-            <button 
+            <button
+              type="button"
               class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="zoomLevel >= 300"
               @click="zoomIn"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <title>Zoom in icon</title>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
             </button>
-            <button 
+            <button
+              type="button"
               class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 ml-1"
               @click="resetZoom"
             >
               Reset
             </button>
-            
+
             <!-- Download button -->
-            <button 
+            <button
+              type="button"
               class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 ml-2 flex items-center gap-1"
               @click="downloadPdf"
               aria-label="Download PDF"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <title>Download icon</title>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               Download
             </button>
           </div>
-          
+
           <div class="flex items-center gap-2">
-            <button 
+            <button
+              type="button"
               class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="currentPage <= 1"
               @click="goToPage(currentPage - 1)"
@@ -260,7 +270,8 @@ watch(
               Previous
             </button>
             <span class="mx-2 text-sm">Page {{ currentPage }} of {{ totalPages }}</span>
-            <button 
+            <button
+              type="button"
               class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="currentPage >= totalPages"
               @click="goToPage(currentPage + 1)"

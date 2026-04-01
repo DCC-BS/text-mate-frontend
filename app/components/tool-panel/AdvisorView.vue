@@ -74,7 +74,7 @@ function changeRuleIndex(delta: number) {
 }
 
 function ignoreRule() {
-    if (!validationResult.value || !validationResult.value.rules) {
+    if (!validationResult.value?.rules) {
         return;
     }
 
@@ -226,7 +226,7 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
             <!-- Check button with loading state -->
             <UButton
                 @click="check"
-                :disabled="selectedDocs.length == 0 || props.text.length < 3"
+                :disabled="selectedDocs.length === 0 || props.text.length < 3"
                 :loading="isLoading"
                 block
                 color="primary"

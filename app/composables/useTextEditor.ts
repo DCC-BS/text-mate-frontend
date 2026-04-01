@@ -136,13 +136,13 @@ export function useTextEditor(options: UseTextEditorOptions) {
     });
 
     onCommand<UndoCommand>(Cmds.UndoCommand, async () => {
-        if (!editor.value || !editor.value.can().undo()) return;
+        if (!editor.value?.can().undo()) return;
 
         editor.value.commands.undo();
     });
 
     onCommand<RedoCommand>(Cmds.RedoCommand, async () => {
-        if (!editor.value || !editor.value.can().redo()) return;
+        if (!editor.value?.can().redo()) return;
 
         editor.value.commands.redo();
     });
