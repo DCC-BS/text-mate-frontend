@@ -46,6 +46,7 @@
         "@tiptap/starter-kit": "3.16.0",
         "@tiptap/vue-3": "3.16.0",
         "@types/diff": "^8.0.0",
+        "@varlock/proton-pass-plugin": "^0.0.3",
         "@varlock/vite-integration": "^0.2.7",
         "giget": "^3.0.0",
         "jsdiff": "^1.1.1",

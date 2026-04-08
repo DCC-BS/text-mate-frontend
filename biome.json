@@ -3,7 +3,7 @@
     "html": {
         "experimentalFullSupportEnabled": true,
         "formatter": {
-            "indentScriptAndStyle": true
+            "indentScriptAndStyle": false
         }
     },
     "vcs": {
@@ -53,6 +53,10 @@
     "overrides": [
         {
             "includes": ["**/*.vue"],
+            "formatter": {
+                "enabled": true,
+                "formatWithErrors": true
+            },
             "linter": {
                 "rules": {
                     "correctness": {
