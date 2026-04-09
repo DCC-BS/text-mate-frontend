@@ -9,7 +9,7 @@ const userMail = computed(() => data.value?.user?.email ?? undefined);
 <template>
     <div>
         <Changelogs />
-        <template v-if="config.useFeedback">
+        <template v-if="config. public.useFeedback">
             <FeedbackControl :default-mail="userMail" />
         </template>
         <NavigationMenu />

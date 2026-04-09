@@ -46,7 +46,7 @@ ENV NITRO_PORT=3000
 # Copy the built application from the build stage
 COPY --from=build --chown=node:node /app/.output ./
 COPY --from=build --chown=node:node /app/env.d.ts /app/
-COPY --chown=node:node /.env*.schema /app/
+COPY --chown=node:node .env*.schema /app/
 
 COPY --from=ghcr.io/dmno-dev/varlock:latest --chown=node:node /usr/local/bin/varlock /usr/local/bin/varlock
 

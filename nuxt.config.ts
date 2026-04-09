@@ -142,7 +142,6 @@ export default defineNuxtConfig({
                 "@tiptap/extension-text",
                 "@tiptap/vue-3/menus",
                 "@tiptap/pm/state",
-                "vue-pdf-embed",
             ],
             exclude: ["@vueuse/core"],
         },
@@ -156,7 +155,7 @@ export default defineNuxtConfig({
             repo: "Feedback",
         },
         public: {
-            useFeedback: process.env.USE_FEEDBACK ?? true,
+            useFeedback: process.env.USE_FEEDBACK ?? false,
             useDummyData: process.env.DUMMY,
             logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",
