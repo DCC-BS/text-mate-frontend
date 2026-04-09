@@ -28,18 +28,30 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
 
 <template>
     <div class="flex gap-2 justify-center" data-tour="tool-switch">
-        <UButton layout :variant="activeTool === 'rewrite' ? 'soft' : 'link'"
-            :color="activeTool === 'rewrite' ? 'primary' : 'neutral'" @click="switchTool('rewrite')">
+        <UButton
+            layout
+            :variant="activeTool === 'rewrite' ? 'soft' : 'link'"
+            :color="activeTool === 'rewrite' ? 'primary' : 'neutral'"
+            @click="switchTool('rewrite')"
+        >
             {{ t('tools.rewrite') }}
         </UButton>
 
-        <UButton layout :variant="activeTool === 'correction' ? 'soft' : 'link'"
-            :color="activeTool === 'correction' ? 'primary' : 'neutral'" @click="switchTool('correction')">
+        <UButton
+            layout
+            :variant="activeTool === 'correction' ? 'soft' : 'link'"
+            :color="activeTool === 'correction' ? 'primary' : 'neutral'"
+            @click="switchTool('correction')"
+        >
             {{ t('tools.problems') }}
         </UButton>
 
-        <UButton layout :variant="activeTool === 'advisor' ? 'soft' : 'link'"
-            :color="activeTool === 'advisor' ? 'primary' : 'neutral'" @click="switchTool('advisor')">
+        <UButton
+            layout
+            :variant="activeTool === 'advisor' ? 'soft' : 'link'"
+            :color="activeTool === 'advisor' ? 'primary' : 'neutral'"
+            @click="switchTool('advisor')"
+        >
             {{ t('tools.advisor') }}
         </UButton>
     </div>

@@ -81,10 +81,13 @@ const segmentWidth = computed(() => {
     <!-- Compact progress bar -->
     <div class="flesch-progress-bar">
         <div class="progress-track">
-            <div class="progress-fill" :style="{
+            <div
+                class="progress-fill"
+                :style="{
                 width: scorePosition,
                 backgroundColor: currentLevel.color
-            }"></div>
+            }"
+            ></div>
         </div>
     </div>
 </template>

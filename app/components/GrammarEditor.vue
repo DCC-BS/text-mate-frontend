@@ -158,22 +158,32 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
                 </div>
 
                 <AnimatePresence>
-                    <motion.div data-allow-mismatch v-show="currentTool === 'rewrite'"
-                        class="quick-action-panel overflow-hidden" :layout="true" :initial="{ height: 0, opacity: 0 }"
-                        :animate="{ height: 'auto', opacity: 1 }" :exit="{ height: 0, opacity: 0 }" :transition="{
+                    <motion.div
+                        data-allow-mismatch
+                        v-show="currentTool === 'rewrite'"
+                        class="quick-action-panel overflow-hidden"
+                        :layout="true"
+                        :initial="{ height: 0, opacity: 0 }"
+                        :animate="{ height: 'auto', opacity: 1 }"
+                        :exit="{ height: 0, opacity: 0 }"
+                        :transition="{
                             height: {
                                 type: 'spring',
                                 stiffness: 300,
                                 damping: 30,
                             },
                             opacity: { duration: 0.2 },
-                        }" />
+                        }"
+                    />
                 </AnimatePresence>
             </template>
 
             <template #left>
                 <div class="w-full md:h-full relative h-[400px]">
-                    <TextEditor v-model="userText" v-model:selectedText="selectedText" />
+                    <TextEditor
+                        v-model="userText"
+                        v-model:selectedText="selectedText"
+                    />
                 </div>
             </template>
 
@@ -183,7 +193,5 @@ async function handleInvalidate(_: InvalidateCorrectionCommand) {
         </SplitContainer>
     </div>
 
-    <div class="fixed bottom-5 left-0 right-0">
-        <ProgressIndication />
-    </div>
+    <div class="fixed bottom-5 left-0 right-0"><ProgressIndication /></div>
 </template>

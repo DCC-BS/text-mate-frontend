@@ -208,10 +208,8 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
                 {{ t("advisor.title") || "Document Advisor" }}
             </h3>
             <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {{
-                    t("advisor.description") ||
-                    "Check your text against selected documents"
-                }}
+                {{ t("advisor.description") ||
+                    "Check your text against selected documents" }}
             </p>
 
             <!-- Document selector -->
@@ -350,9 +348,9 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
                                     name="i-lucide-file-search"
                                     class="mr-1 shrink-0"
                                 />
-                                <span class="truncate">{{
-                                    currentRule.file_name
-                                }}</span>
+                                <span class="truncate"
+                                    >{{ currentRule.file_name }}</span
+                                >
                                 <template v-if="currentRule.page_number">
                                     <span
                                         class="mx-1 text-gray-400 dark:text-gray-500"
@@ -397,10 +395,8 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
                         class="i-lucide-file-search text-4xl mb-3 mx-auto opacity-50"
                     ></div>
                     <p>
-                        {{
-                            t("advisor.noResultsYet") ||
-                            "Run a check to see results"
-                        }}
+                        {{ t("advisor.noResultsYet") ||
+                            "Run a check to see results" }}
                     </p>
                 </div>
             </div>

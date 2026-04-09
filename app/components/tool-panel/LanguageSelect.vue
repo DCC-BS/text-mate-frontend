@@ -51,6 +51,13 @@ watch(selectedLanguage, (lang) => {
 </script>
 
 <template>
-    <USelectMenu variant="ghost" color="neutral" value-key="key" :items="items" v-model="selectedLanguage"
-        class="w-full" data-tour="language-select" />
+    <USelectMenu
+        variant="ghost"
+        color="neutral"
+        value-key="key"
+        :items="items"
+        v-model="selectedLanguage"
+        class="w-full"
+        data-tour="language-select"
+    />
 </template>
