@@ -8,6 +8,8 @@ const props = defineProps<{
     text: string;
 }>();
 
+const textRef = computed(() => props.text);
+
 const {
     charCount,
     wordCount,
@@ -15,7 +17,7 @@ const {
     averageSentenceLength,
     averageSyllablesPerWord,
     fleschScore,
-} = useTextStats(props.text);
+} = useTextStats(textRef);
 </script>
 
 <template>

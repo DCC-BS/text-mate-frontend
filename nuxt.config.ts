@@ -76,7 +76,6 @@ export default defineNuxtConfig({
     modules: [
         "@nuxt/ui",
         "@nuxtjs/i18n",
-        "@nuxtjs/mdc",
         "@dcc-bs/common-ui.bs.js",
         "@dcc-bs/event-system.bs.js",
         "@dcc-bs/dependency-injection.bs.js",
@@ -98,15 +97,26 @@ export default defineNuxtConfig({
             rollupOptions: {
                 output: {
                     // Use manual chunks to improve chunking
-                    manualChunks: {
-                        "vue-vendor": ["vue", "vue-router"],
-                        "tiptap-vendor": [
-                            "@tiptap/vue-3",
-                            "@tiptap/starter-kit",
-                            "@tiptap/extension-bubble-menu",
-                            "@tiptap/extension-character-count",
-                        ],
-                        "pdf-vendor": ["vue-pdf-embed"],
+                    manualChunks: (id) => {
+                        if (
+                            ["vue", "vue-router"].some((pkg) =>
+                                id.includes(`/node_modules/${pkg}/`),
+                            )
+                        )
+                            return "vue-vendor";
+                        if (
+                            [
+                                "@tiptap/vue-3",
+                                "@tiptap/starter-kit",
+                                "@tiptap/extension-bubble-menu",
+                                "@tiptap/extension-character-count",
+                            ].some((pkg) =>
+                                id.includes(`/node_modules/${pkg}/`),
+                            )
+                        )
+                            return "tiptap-vendor";
+                        if (id.includes("/node_modules/vue-pdf-embed/"))
+                            return "pdf-vendor";
                     },
                 },
             },
