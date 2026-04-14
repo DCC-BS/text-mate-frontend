@@ -27,9 +27,7 @@ logs
 # Custom Docker configuration
 scripts/docker/docker.config.sh
 
-# Don't ignore the symlink
-!.env
-
-.env
-
 test-results/
+
+env.d.ts
+!.env*.schema

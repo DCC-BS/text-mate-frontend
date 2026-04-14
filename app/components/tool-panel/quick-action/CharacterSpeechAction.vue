@@ -19,13 +19,15 @@ const items = computed<DropdownMenuItem[]>(() => [
         label: t("quick-actions.character_speech.direct"),
         value: "direct_speech",
         icon: "i-lucide-message-square-more",
-        onSelect: () => emit("apply-action", "character_speech", "direct_speech"),
+        onSelect: () =>
+            emit("apply-action", "character_speech", "direct_speech"),
     },
     {
         label: t("quick-actions.character_speech.indirect"),
         value: "indirect_speech",
         icon: "i-lucide-message-square-quote",
-        onSelect: () => emit("apply-action", "character_speech", "indirect_speech"),
+        onSelect: () =>
+            emit("apply-action", "character_speech", "indirect_speech"),
     },
 ]);
 </script>

@@ -27,19 +27,19 @@ const {
             <!-- <div v-if="showDetails"> -->
             <div class="grid grid-cols-2">
                 <span>{{ t("text-stats.character-count") }}</span>
-                <span class="text-end font-bold" data-testid="characterCount">{{
-                    charCount
-                }}</span>
+                <span class="text-end font-bold" data-testid="characterCount"
+                    >{{ charCount }}</span
+                >
 
                 <span>{{ t("text-stats.word-count") }}:</span>
-                <span class="text-end font-bold" data-testid="wordCount">{{
-                    wordCount
-                }}</span>
+                <span class="text-end font-bold" data-testid="wordCount"
+                    >{{ wordCount }}</span
+                >
 
                 <span>{{ t("text-stats.syllable-count") }}</span>
-                <span class="text-end font-bold" data-testid="syllableCount">{{
-                    syllableCount
-                }}</span>
+                <span class="text-end font-bold" data-testid="syllableCount"
+                    >{{ syllableCount }}</span
+                >
 
                 <span>{{ t("text-stats.average-sentence-length") }}</span>
                 <span

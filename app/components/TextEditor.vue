@@ -78,9 +78,7 @@ function handleFileSelect(event: Event): void {
             data-tour="text-editor"
         >
             <!-- Clear text button -->
-            <div class="z-5">
-                <TextClear />
-            </div>
+            <div class="z-5"><TextClear /></div>
 
             <!-- Lock overlay -->
             <div
@@ -168,7 +166,7 @@ function handleFileSelect(event: Event): void {
                 class="hidden"
                 @change="handleFileSelect"
                 accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx"
-            />
+            >
         </div>
     </div>
 </template>

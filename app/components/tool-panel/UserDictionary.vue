@@ -27,7 +27,12 @@ async function removeWord(word: string) {
 <template>
     <div data-tour="dictionary">
         <UPopover>
-            <UButton icon="i-lucide-book-open" color="neutral" variant="link" class="w-full">
+            <UButton
+                icon="i-lucide-book-open"
+                color="neutral"
+                variant="link"
+                class="w-full"
+            >
                 {{ t("user-dictionary.title") }}
             </UButton>
 
@@ -35,22 +40,43 @@ async function removeWord(word: string) {
                 <div class="flex gap-2 flex-col justify-evenly p-2 w-full">
                     <!-- Add new word input area -->
                     <div class="flex items-center gap-2 mb-2">
-                        <UInput v-model="newWord" :placeholder="t('user-dictionary.placeholder')"
-                            @keyup.enter="addNewWord" class="flex-grow" />
-                        <UButton variant="link" color="success" icon="i-lucide-plus" @click="addNewWord">
+                        <UInput
+                            v-model="newWord"
+                            :placeholder="t('user-dictionary.placeholder')"
+                            @keyup.enter="addNewWord"
+                            class="flex-grow"
+                        />
+                        <UButton
+                            variant="link"
+                            color="success"
+                            icon="i-lucide-plus"
+                            @click="addNewWord"
+                        >
                             {{ t("user-dictionary.add") }}
                         </UButton>
                     </div>
 
-                    <div v-if="words.length === 0" class="text-center text-gray-500">
+                    <div
+                        v-if="words.length === 0"
+                        class="text-center text-gray-500"
+                    >
                         {{ t("user-dictionary.empty") }}
                     </div>
 
                     <!-- Word list -->
-                    <div v-for="word in words" :key="word" class="flex items-center justify-between gap-2">
+                    <div
+                        v-for="word in words"
+                        :key="word"
+                        class="flex items-center justify-between gap-2"
+                    >
                         <span>{{ word }}</span>
-                        <UButton :key="word" variant="link" color="error" icon="i-lucide-trash-2"
-                            @click="removeWord(word)" />
+                        <UButton
+                            :key="word"
+                            variant="link"
+                            color="error"
+                            icon="i-lucide-trash-2"
+                            @click="removeWord(word)"
+                        />
                     </div>
                 </div>
             </template>

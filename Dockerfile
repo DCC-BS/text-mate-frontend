@@ -1,8 +1,10 @@
 # Stage 1: Build the application
 FROM node:24-alpine AS build
 
-ARG AUTH_LAYER_URI=github:DCC-BS/nuxt-layers/azure-auth
-ARG LOGGER_LAYER_URI=github:DCC-BS/nuxt-layers/pino-logger
+ENV APP_MODE=build
+ARG AUTH_LAYER_URI="github:DCC-BS/nuxt-layers/azure-auth#features/msTeams"
+ARG LOGGER_LAYER_URI="github:DCC-BS/nuxt-layers/pino-logger"
+ENV NODE_ENV=production
 
 # Install bun
 RUN npm install -g bun
@@ -27,6 +29,7 @@ RUN bun x nuxi prepare
 RUN bun x nuxi build
 
 # Stage 2: Run the application
+# ------------------------------------------------
 FROM node:24-alpine
 
 # Set the working directory
@@ -37,13 +40,18 @@ USER node
 
 # Environment
 ENV NODE_ENV=production
+ENV APP_MODE=prod
 ENV NITRO_PORT=3000
 
 # Copy the built application from the build stage
 COPY --from=build --chown=node:node /app/.output ./
+COPY --from=build --chown=node:node /app/env.d.ts /app/
+COPY --chown=node:node .env*.schema /app/
+
+COPY --from=ghcr.io/dmno-dev/varlock:latest --chown=node:node /usr/local/bin/varlock /usr/local/bin/varlock
 
 # Expose the port the app runs on
 EXPOSE 3000
 
 # Start the application
-ENTRYPOINT ["node", "./server/index.mjs"]
+ENTRYPOINT ["varlock", "run", "--", "node", "./server/index.mjs"]

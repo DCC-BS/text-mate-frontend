@@ -19,7 +19,7 @@ services:
             - Java_Xms=512m
             - Java_Xmx=2g
         volumes:
-            - ${HOME}/.cache/languagetool:/ngrams
+            - ${LANGUAGE_TOOL_CACHE_DIR}:/ngrams
 
     llm:
         platform: linux/amd64
@@ -41,7 +41,7 @@ services:
                           capabilities: [gpu]
         ipc: host
         volumes:
-            - ${HOME}/.cache/huggingface:/root/.cache/huggingface
+            - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
         command: >
             Qwen/Qwen3-32B-AWQ
             --port 8000
@@ -62,13 +62,13 @@ services:
             - LLM_KEY=${LLM_KEY}
             - LLM_MODEL=${LLM_MODEL}
             - LLM_HEALTH_CHECK_URL=${LLM_HEALTH_CHECK_URL}
-            - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
-            - AZURE_TENANT_ID=${AZURE_TENANT_ID}
-            - AZURE_FRONTEND_CLIENT_ID=${AZURE_FRONTEND_CLIENT_ID}
-            - SCOPE_DESCRIPTION=${SCOPE_DESCRIPTION}
+            - AZURE_CLIENT_ID=${BACKEND_AZURE_CLIENT_ID:-}
+            - AZURE_TENANT_ID=${BACKEND_AZURE_TENANT_ID:-}
+            - AZURE_FRONTEND_CLIENT_ID=${AZURE_AD_CLIENT_ID:-}
+            - SCOPE_DESCRIPTION=${SCOPE_DESCRIPTION:-}
             - HMAC_SECRET=${HMAC_SECRET}
             - LOG_LEVEL=${LOG_LEVEL}
-            - PORT=${PORT}
+            - PORT=${BACKEND_PORT}
             - LANGUAGE_TOOL_PORT=${LANGUAGE_TOOL_PORT}
             - LANGUAGE_TOOL_API_URL=${LANGUAGE_TOOL_API_URL}
 
@@ -77,7 +77,6 @@ services:
         build:
             context: ..
             dockerfile: ./Dockerfile
-        # env_file: "../.env"
         environment:
             - NUXT_AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID:-}
             - NUXT_AZURE_AD_TENANT_ID=${AZURE_AD_TENANT_ID:-}

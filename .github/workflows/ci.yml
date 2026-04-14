@@ -9,8 +9,8 @@ on:
             - main
 
 env:
-    AUTH_LAYER_URI: github:DCC-BS/nuxt-layers/no-auth
-    LOGGER_LAYER_URI: github:DCC-BS/nuxt-layers/pino-logger
+    AUTH_MODE: "none"
+    APP_MODE: "ci"
 
 jobs:
     build:

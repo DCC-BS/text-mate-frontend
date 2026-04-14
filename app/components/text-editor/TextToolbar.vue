@@ -93,7 +93,8 @@ function handleRedo(): void {
                 color="neutral"
                 data-testid="characterCountButton"
             >
-                {{ props.characters }} / {{ props.limit }} Zeichen
+                {{ props.characters }}
+                / {{ props.limit }} Zeichen
             </UButton>
 
             <template #content>

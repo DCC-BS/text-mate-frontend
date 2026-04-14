@@ -51,22 +51,40 @@ async function addWord(word: string) {
         <div class="flex justify-between">
             <h3 class="text-lg font-semibold">{{ t('problems.title') }}</h3>
             <div class="flex gap-1">
-                <UButton :disabled="currentBlockIndex === 0" variant="link" color="neutral" icon="i-lucide-chevron-left"
-                    @click="currentBlockIndex = Math.max(0, currentBlockIndex - 1)" />
-                <UButton :disabled="currentBlockIndex >= blocks.length - 1" variant="link" color="neutral"
+                <UButton
+                    :disabled="currentBlockIndex === 0"
+                    variant="link"
+                    color="neutral"
+                    icon="i-lucide-chevron-left"
+                    @click="currentBlockIndex = Math.max(0, currentBlockIndex - 1)"
+                />
+                <UButton
+                    :disabled="currentBlockIndex >= blocks.length - 1"
+                    variant="link"
+                    color="neutral"
                     icon="i-lucide-chevron-right"
-                    @click="currentBlockIndex = Math.min(blocks.length - 1, currentBlockIndex + 1)" />
+                    @click="currentBlockIndex = Math.min(blocks.length - 1, currentBlockIndex + 1)"
+                />
             </div>
         </div>
         <AnimatePresence mode="popLayout">
             <div v-if="currentBlock">
-                <motion.div :key="currentBlock.id" :initial="{ opacity: 0, x: -20 }" :animate="{ opacity: 1, x: 0 }"
-                    :exit="{ opacity: 0, x: 20 }">
-                    <div class="mt-2 text-2xl font-bold">{{ currentBlock.original.replace(/\s/g, '_') }}</div>
+                <motion.div
+                    :key="currentBlock.id"
+                    :initial="{ opacity: 0, x: -20 }"
+                    :animate="{ opacity: 1, x: 0 }"
+                    :exit="{ opacity: 0, x: 20 }"
+                >
+                    <div class="mt-2 text-2xl font-bold">
+                        {{ currentBlock.original.replace(/\s/g, '_') }}
+                    </div>
 
                     <div class="flex gap-2 flex-wrap mt-1">
-                        <UButton v-for="corrected in currentBlock.corrected"
-                            @click="applyBlock(currentBlock, corrected)" variant="link">
+                        <UButton
+                            v-for="corrected in currentBlock.corrected"
+                            @click="applyBlock(currentBlock, corrected)"
+                            variant="link"
+                        >
                             {{ corrected }}
                         </UButton>
                     </div>
@@ -75,8 +93,12 @@ async function addWord(word: string) {
                         {{ currentBlock.explanation }}
                     </div>
 
-                    <UButton variant="link" color="neutral" icon="i-lucide-book-plus"
-                        @click="addWord(currentBlock.original)">
+                    <UButton
+                        variant="link"
+                        color="neutral"
+                        icon="i-lucide-book-plus"
+                        @click="addWord(currentBlock.original)"
+                    >
                         {{ t('problems.addToDictionary', { word: currentBlock.original }) }}
                     </UButton>
                 </motion.div>
