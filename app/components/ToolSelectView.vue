@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import { Cmds, ToolSwitchCommand } from "~/assets/models/commands";
+import type { TextTools } from "~/types/TextTools";
 
 const { t } = useI18n();
 
 const { executeCommand, onCommand } = useCommandBus();
 
-const activeTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
+const activeTool = ref<TextTools>("rewrite");
 
-function switchTool(tool: "correction" | "rewrite" | "advisor") {
+function switchTool(tool: TextTools) {
     activeTool.value = tool;
 }
 
@@ -34,16 +35,7 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
             :color="activeTool === 'rewrite' ? 'primary' : 'neutral'"
             @click="switchTool('rewrite')"
         >
-            {{ t('tools.rewrite') }}
-        </UButton>
-
-        <UButton
-            layout
-            :variant="activeTool === 'correction' ? 'soft' : 'link'"
-            :color="activeTool === 'correction' ? 'primary' : 'neutral'"
-            @click="switchTool('correction')"
-        >
-            {{ t('tools.problems') }}
+            {{ t("tools.rewrite") }}
         </UButton>
 
         <UButton
@@ -52,7 +44,7 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
             :color="activeTool === 'advisor' ? 'primary' : 'neutral'"
             @click="switchTool('advisor')"
         >
-            {{ t('tools.advisor') }}
+            {{ t("tools.advisor") }}
         </UButton>
     </div>
 </template>

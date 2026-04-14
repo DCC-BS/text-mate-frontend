@@ -1,6 +1,7 @@
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
 import type { TextCorrectionBlock } from "./text-correction";
+import type { TextTools } from "~/types/TextTools";
 
 export const Cmds = {
     JumpToBlockCommand: "JumpToBlockCommand",
@@ -93,7 +94,7 @@ export class UndoRedoStateChanged implements ICommand {
 export class ToolSwitchCommand implements ICommand {
     readonly $type = "ToolSwitchCommand";
 
-    constructor(public tool: "correction" | "rewrite" | "advisor") {}
+    constructor(public tool: TextTools) {}
 }
 
 export class SwitchCorrectionLanguageCommand implements ICommand {

@@ -11,6 +11,7 @@ import {
 import { TaskScheduler } from "~/assets/services/TaskScheduler";
 import TextEditor from "./TextEditor.vue";
 import ToolPanel from "./ToolPanel.vue";
+import type { TextTools } from "~/types/TextTools";
 
 // refs
 const userText = ref("");
@@ -19,15 +20,13 @@ const selectedText = ref<TextFocus>();
 const isEditorLocked = ref(false);
 const isCorrectionSuspended = ref(false);
 
-const currentTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
+const currentTool = ref<TextTools>("rewrite");
 
 // composables
 const router = useRouter();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { onCommand } = useCommandBus();
-
-const correctionService = useCorrectionService();
 
 // check if the query param clipboard is true
 const clipboard = router.currentRoute.value.query.clipboard;
@@ -54,44 +53,15 @@ watch(userText, (newText, oldText) => {
         return;
     }
 
-    if (currentTool.value === "correction") {
-        taskScheduler.schedule((signal: AbortSignal) =>
-            correctText(newText, signal),
-        );
-    }
-
     // ends with any whitespace
     if (newText.endsWith(".") || newText.endsWith("\n")) {
         taskScheduler.executeImmediately();
     }
 });
 
-watch(currentTool, () => {
-    // When switching to correction tool, run correction on current text
-    if (!isCorrectionSuspended.value && currentTool.value === "correction") {
-        taskScheduler.schedule((signal: AbortSignal) =>
-            correctText(userText.value, signal),
-        );
-    }
-});
-
-// functions
-async function correctText(text: string, signal: AbortSignal) {
-    addProgress("correcting", {
-        icon: "i-lucide-pencil",
-        title: t("status.correctingText"),
-    });
-    try {
-        await correctionService.correctText(text, signal);
-    } finally {
-        removeProgress("correcting");
-    }
-}
-
 onCommand(
     Cmds.SwitchCorrectionLanguageCommand,
     async (command: SwitchCorrectionLanguageCommand) => {
-        correctionService.switchLanguage(command.language);
         await handleInvalidate(new InvalidateCorrectionCommand());
     },
 );
@@ -102,12 +72,6 @@ onCommand(
     Cmds.ToggleEditableEditorCommand,
     async (command: ToggleEditableEditorCommand) => {
         isEditorLocked.value = command.locked;
-
-        if (!command.locked && currentTool.value === "correction") {
-            taskScheduler.schedule((signal: AbortSignal) =>
-                correctText(userText.value, signal),
-            );
-        }
     },
 );
 
@@ -126,24 +90,11 @@ onCommand<ToggleLockEditorCommand>(
             taskScheduler.abortRunningTask();
             return;
         }
-
-        if (currentTool.value !== "correction") {
-            return;
-        }
-
-        // When unlocking, run a single correction pass for the final text
-        taskScheduler.schedule((signal: AbortSignal) =>
-            correctText(userText.value, signal),
-        );
     },
 );
 
 async function handleInvalidate(_: InvalidateCorrectionCommand) {
     taskScheduler.abortRunningTask();
-    await correctionService.invalidateAll();
-    taskScheduler.schedule((signal: AbortSignal) =>
-        correctText(userText.value, signal),
-    );
 }
 </script>
 

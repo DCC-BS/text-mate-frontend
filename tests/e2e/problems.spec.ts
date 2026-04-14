@@ -9,18 +9,20 @@ test.beforeEach(async ({ page, context }) => {
             localStorage.clear();
             sessionStorage.clear();
         });
-    } catch (error) {
-    }
+    } catch (error) {}
     await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
     await page.locator("#confirmation-checkbox").click();
     await page.locator("#nt-action-skip").click();
-    await switchTo(page, "problems");
+    await switchTo(page, "rewrite");
 });
 
 test("Text should show problems", async ({ page }) => {
     await page.locator(".tiptap").fill("This is a test.");
 
-    await page.locator("span.correction").first().waitFor({ state: 'visible', timeout: 5000 });
+    await page
+        .locator("span.correction")
+        .first()
+        .waitFor({ state: "visible", timeout: 5000 });
 
     const textCorrectionCount = await page.locator("span.correction").all();
 

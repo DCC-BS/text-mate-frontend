@@ -166,7 +166,6 @@ export function useTextEditor(options: UseTextEditorOptions) {
     );
 
     onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
-        isTextCorrectionActive.value = command.tool === "correction";
         isRewriteActive.value = command.tool === "rewrite";
     });
 

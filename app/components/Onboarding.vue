@@ -44,7 +44,7 @@ async function onTourComplete(): Promise<void> {
     // Remove keyboard navigation when tour ends
     window.removeEventListener("keydown", handleKeyboardNavigation);
     await executeCommand(new ClearTextCommand());
-    await executeCommand(new ToolSwitchCommand("correction"));
+    await executeCommand(new ToolSwitchCommand("rewrite"));
     await executeCommand(new RegisterDiffCommand("", ""));
 }
 
@@ -97,9 +97,6 @@ const steps = [
             // also switch tool on next because the user might change tool before clicking next
             await executeCommand(new ToolSwitchCommand("rewrite"));
         },
-        onPrev: async () => {
-            await executeCommand(new ToolSwitchCommand("correction"));
-        },
     },
     {
         target: '[data-tour="custom-quick-action"]',
@@ -129,20 +126,6 @@ const steps = [
         },
     },
     {
-        target: '[data-tour="tool-switch"]',
-        title: t("tour.problemsIntro.title"),
-        body: t("tour.problemsIntro.content"),
-        onShow: async () => {
-            await executeCommand(new ToolSwitchCommand("correction"));
-        },
-        onNext: async () => {
-            await executeCommand(new ToolSwitchCommand("correction"));
-        },
-        onPrev: async () => {
-            await executeCommand(new ToolSwitchCommand("rewrite"));
-        },
-    },
-    {
         target: '[data-tour="language-select"]',
         title: t("tour.language.title"),
         body: t("tour.language.content"),
@@ -165,11 +148,6 @@ const steps = [
         onPrev: async () => {
             await executeCommand(new ClearTextCommand());
         },
-    },
-    {
-        target: '[data-tour="problems"]',
-        title: t("tour.problems.title"),
-        body: t("tour.problems.content"),
     },
     {
         target: '[data-tour="text-editor-toolpanel"]',
@@ -265,11 +243,29 @@ const finishButton: ButtonProp = {
 </script>
 
 <template>
-    <VTour ref="tour" :steps="steps" @onTourStart="onTourStart" @onTourEnd="onTourComplete"
-        @skip="() => { onTourComplete() }" :highlight="true" :jumpOptions="{ duration: 10 }" :skip-button="skipBtn"
-        :next-button="nextBtn" :prev-button="prevButton" :finish-button="finishButton" :trap-focus="trapFocus" />
+    <VTour
+        ref="tour"
+        :steps="steps"
+        @onTourStart="onTourStart"
+        @onTourEnd="onTourComplete"
+        @skip="
+            () => {
+                onTourComplete();
+            }
+        "
+        :highlight="true"
+        :jumpOptions="{ duration: 10 }"
+        :skip-button="skipBtn"
+        :next-button="nextBtn"
+        :prev-button="prevButton"
+        :finish-button="finishButton"
+        :trap-focus="trapFocus"
+    />
 
-    <div class="absolute bg-gray-500 z-99 inset-0 opacity-30" v-if="tourIsActive"></div>
+    <div
+        class="absolute bg-gray-500 z-99 inset-0 opacity-30"
+        v-if="tourIsActive"
+    ></div>
 </template>
 
 <style scoped>
@@ -287,7 +283,8 @@ const finishButton: ButtonProp = {
     @apply bg-primary text-white;
 }
 
-:deep(#nt-action-skip) {}
+:deep(#nt-action-skip) {
+}
 
 :deep(#nt-action-finish) {
     @apply bg-success text-white;
