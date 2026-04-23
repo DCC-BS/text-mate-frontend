@@ -3,7 +3,6 @@ import type { ICommand } from "#build/types/commands";
 import type { TextTools } from "~/types/TextTools";
 
 export const Cmds = {
-    JumpToBlockCommand: "JumpToBlockCommand",
     ApplyTextCommand: "ApplyTextCommand",
     RewriteTextCommand: "RewriteTextCommand",
     UndoCommand: "UndoCommand",
@@ -19,12 +18,6 @@ export const Cmds = {
     ShowTextStatsCommand: "ShowTextStatsCommand",
     HideTextStatsCommand: "HideTextStatsCommand",
 };
-
-export class JumpToBlockCommand implements ICommand {
-    readonly $type = "JumpToBlockCommand";
-
-    constructor(public index: number) {}
-}
 
 export class ClearTextCommand implements ICommand {
     readonly $type = "ClearTextCommand";
