@@ -2,29 +2,23 @@
 import { AnimatePresence, motion } from "motion-v";
 import {
     Cmds,
-    InvalidateCorrectionCommand,
-    type SwitchCorrectionLanguageCommand,
     type ToggleEditableEditorCommand,
     type ToggleLockEditorCommand,
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
-import { TaskScheduler } from "~/assets/services/TaskScheduler";
+import type { TextTools } from "~/types/TextTools";
 import TextEditor from "./TextEditor.vue";
 import ToolPanel from "./ToolPanel.vue";
-import type { TextTools } from "~/types/TextTools";
 
 // refs
 const userText = ref("");
-const taskScheduler = new TaskScheduler();
 const selectedText = ref<TextFocus>();
 const isEditorLocked = ref(false);
-const isCorrectionSuspended = ref(false);
 
 const currentTool = ref<TextTools>("rewrite");
 
 // composables
 const router = useRouter();
-const { addProgress, removeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 const { onCommand } = useCommandBus();
 
@@ -42,32 +36,6 @@ onMounted(async () => {
     }
 });
 
-// listeners
-watch(userText, (newText, oldText) => {
-    if (newText === oldText) {
-        return;
-    }
-
-    // Do not trigger corrections while quick actions or other editor locks are active
-    if (isCorrectionSuspended.value) {
-        return;
-    }
-
-    // ends with any whitespace
-    if (newText.endsWith(".") || newText.endsWith("\n")) {
-        taskScheduler.executeImmediately();
-    }
-});
-
-onCommand(
-    Cmds.SwitchCorrectionLanguageCommand,
-    async (command: SwitchCorrectionLanguageCommand) => {
-        await handleInvalidate(new InvalidateCorrectionCommand());
-    },
-);
-
-onCommand(Cmds.InvalidateCorrectionCommand, handleInvalidate);
-
 onCommand(
     Cmds.ToggleEditableEditorCommand,
     async (command: ToggleEditableEditorCommand) => {
@@ -78,24 +46,6 @@ onCommand(
 onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
     currentTool.value = cmd.tool;
 });
-
-// Suspend automatic corrections while the editor is locked by quick actions
-onCommand<ToggleLockEditorCommand>(
-    Cmds.ToggleLockEditorCommand,
-    async (command: ToggleLockEditorCommand) => {
-        isCorrectionSuspended.value = command.locked;
-
-        if (command.locked) {
-            // Abort any running correction task to keep the UI responsive
-            taskScheduler.abortRunningTask();
-            return;
-        }
-    },
-);
-
-async function handleInvalidate(_: InvalidateCorrectionCommand) {
-    taskScheduler.abortRunningTask();
-}
 </script>
 
 <template>

@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import type { SelectMenuItem } from "@nuxt/ui";
-import { SwitchCorrectionLanguageCommand } from "~/assets/models/commands";
 
 const { t } = useI18n();
-const { executeCommand } = useCommandBus();
 
 const languages = [
     {
@@ -43,10 +41,6 @@ const items = languages.map(
 
 const selectedLanguage = useCookie<string>("selected-language", {
     default: () => "auto",
-});
-
-watch(selectedLanguage, (lang) => {
-    executeCommand(new SwitchCorrectionLanguageCommand(lang));
 });
 </script>
 

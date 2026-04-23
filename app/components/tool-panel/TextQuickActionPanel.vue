@@ -5,6 +5,7 @@ import {
     ExecuteTextActionCommand,
     type ToggleLockEditorCommand,
 } from "~/assets/models/commands";
+import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 import type { TextActions } from "~~/shared/text-actions";
 import CharacterSpeechAction from "./quick-action/CharacterSpeechAction.vue";
 import CustomAction from "./quick-action/CustomAction.vue";
@@ -21,6 +22,7 @@ const props = defineProps<InputProps>();
 
 const { t } = useI18n();
 
+const userDictionaryQuery = useService(UserDictionaryQuery);
 const isLocked = ref<boolean>(false);
 const selectedLanguage = useCookie<string>("selected-language", {
     default: () => "auto",
@@ -56,12 +58,14 @@ async function applyAction(
     try {
         isLocked.value = true;
 
+        const userDictionary = await userDictionaryQuery.getWords();
+
         const response = await apiStreamFetch("/api/quick-action", {
             method: "POST",
             body: {
                 action,
                 text: props.text,
-                options: `${config ?? ""};language code: ${selectedLanguage.value}`,
+                options: `${config ?? ""};language code: ${selectedLanguage.value};user dictionary: ${userDictionary.join(",")}`,
             },
         });
 

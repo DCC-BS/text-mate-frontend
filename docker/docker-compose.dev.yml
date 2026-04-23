@@ -1,9 +1,4 @@
 services:
-  languagetool:
-    extends:
-      file: ./services.compose.yml
-      service: languagetool
-
   llm:
     extends:
       file: ./services.compose.yml

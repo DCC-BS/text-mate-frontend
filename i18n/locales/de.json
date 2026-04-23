@@ -3,7 +3,6 @@
         "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten. Möglicherweise ist der Server nicht erreichbar. Falls der Fehler weiterhin auftritt, nutzen Sie bitte die Feedback-Funktion, um uns eine Nachricht zu senden.",
         "no_document": "Das Dokument wurde nicht gefunden.",
         "check_text_error": "Fehler beim Überprüfen des Textes",
-        "language_tool_error": "Fehler mit dem Sprachtool. Dies ist ein interner Fehler. Falls der Fehler weiterhin auftritt, nutzen Sie bitte die Feedback-Funktion, um uns eine Nachricht zu senden.",
         "rewrite_text_error": "Fehler beim Umschreiben des Textes"
     },
     "loading": "Wird geladen...",
@@ -37,7 +36,6 @@
     },
     "status": {
         "rewritingText": "Text wird umgeschrieben...",
-        "correctingText": "Text wird korrigiert...",
         "advice": "Ratschlag geben...",
         "ready": "Bereit",
         "quickAction": "Schnellaktion wird ausgeführt...",
@@ -190,15 +188,15 @@
         },
         "language": {
             "title": "Sprachauswahl",
-            "content": "Wähle die Korrektursprache für Deinen Text. Dies hilft der Grammatik- und Rechtschreibprüfung, genaue Vorschläge für die ausgewählte Sprache zu liefern."
+            "content": "Wähle die Sprache für Deinen Text. Dies hilft den KI-Werkzeugen, bessere Ergebnisse für die ausgewählte Sprache zu liefern."
         },
         "dictionary": {
             "title": "Persönliches Wörterbuch",
-            "content": "Füge Wörter dem Wörterbuch hinzu, die bei der Rechtschreibprüfung ignoriert werden sollen. Dies ist nützlich für Fachbegriffe, Namen oder Wörter, die nicht im Standardwörterbuch enthalten sind."
+            "content": "Füge Wörter zu Deinem persönlichen Wörterbuch hinzu. Dies ist nützlich für Fachbegriffe, Namen oder Wörter, die Du konsistent verwenden möchtest."
         },
         "editor": {
             "title": "Text-Editor",
-            "content": "Hier schreibst und bearbeitest Du Deinen Text. Der Editor bietet Echtzeit-Grammatik- und Rechtschreibprüfung während Du tippst."
+            "content": "Hier schreibst und bearbeitest Du Deinen Text. Der Editor bietet verschiedene Werkzeuge, um Dein Schreiben zu verbessern und zu transformieren."
         },
         "wordCount": {
             "title": "Text-Statistiken",

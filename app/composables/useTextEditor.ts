@@ -1,5 +1,3 @@
-// biome-ignore-all lint/correctness/noUnusedImports: will be used in future edits
-
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -43,7 +41,6 @@ export function useTextEditor(options: UseTextEditorOptions) {
         canRedo: false,
     });
 
-    const isTextCorrectionActive = ref(false);
     const isRewriteActive = ref(true);
 
     const { onCommand, executeCommand } = useCommandBus();
@@ -51,8 +48,6 @@ export function useTextEditor(options: UseTextEditorOptions) {
 
     const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
         useTextFocus(isRewriteActive);
-    const { CorrectionExtension, hoverBlock, relativeHoverRect } =
-        useTextCorrectionMarks(options.container, isTextCorrectionActive);
 
     const editor = useEditor({
         content: modelValue.value,
@@ -70,7 +65,6 @@ export function useTextEditor(options: UseTextEditorOptions) {
             History,
             // Heading,
             FocusExtension,
-            CorrectionExtension,
             CharacterCount.configure({
                 limit: limit.value,
             }),
@@ -297,10 +291,7 @@ export function useTextEditor(options: UseTextEditorOptions) {
         focusedSentence,
         focusedWord,
         focusedSelection,
-        hoverBlock,
-        relativeHoverRect,
         isRewriteActive,
-        isTextCorrectionActive,
         getContent,
         getCursorInfo,
         insertText,

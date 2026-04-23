@@ -4,7 +4,6 @@ import { useTextFileUpload } from "~/composables/useFileUpload";
 import { useTextAction } from "~/composables/useTextAction";
 import { useTextEditor } from "~/composables/useTextEditor";
 import TextClear from "./text-editor/TextClear.vue";
-import TextCorrection from "./text-editor/TextCorrection.vue";
 import TextRewrite from "./text-editor/TextRewrite.vue";
 import TextToolbar from "./text-editor/TextToolbar.vue";
 
@@ -20,20 +19,13 @@ const limit = ref(100_000);
 const lockEditor = ref(false);
 
 // Text editor composable
-const {
-    editor,
-    focusedSentence,
-    focusedWord,
-    focusedSelection,
-    hoverBlock,
-    relativeHoverRect,
-    isTextCorrectionActive,
-} = useTextEditor({
-    container,
-    modelValue: model,
-    limit,
-    lockEditor,
-});
+const { editor, focusedSentence, focusedWord, focusedSelection } =
+    useTextEditor({
+        container,
+        modelValue: model,
+        limit,
+        lockEditor,
+    });
 
 useTextAction(editor);
 
@@ -84,13 +76,6 @@ function handleFileSelect(event: Event): void {
             <div
                 v-if="lockEditor"
                 class="absolute top-0 left-0 right-0 bottom-0 z-10"
-            />
-
-            <!-- Text correction overlay -->
-            <TextCorrection
-                v-if="isTextCorrectionActive"
-                :hover-block="hoverBlock"
-                :relative-hover-rect="relativeHoverRect"
             />
 
             <!-- Text rewrite bubble menu -->
@@ -173,23 +158,6 @@ function handleFileSelect(event: Event): void {
 
 <style lang="css">
 @reference "../assets/css/main.css";
-
-/* Text correction styles */
-.correction {
-    text-decoration-line: underline;
-    text-decoration-style: solid;
-    text-decoration-thickness: 2px;
-    text-decoration-color: var(--color-red-300);
-    cursor: pointer;
-}
-
-.correction:hover {
-    text-decoration-color: blueviolet;
-}
-
-.correction .active {
-    @apply bg-blue-100;
-}
 
 /* Text focus styles */
 .focused-sentence {

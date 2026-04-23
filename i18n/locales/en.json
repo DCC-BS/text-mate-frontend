@@ -3,7 +3,6 @@
         "unexpected_error": "Unexpected error occurred.  Maybe the server is down, if the error persists. Please use the feedback button to send us a message.",
         "no_document": "The document was not found.",
         "check_text_error": "Error checking text",
-        "language_tool_error": "Error with language tool. This is a internal error, if the error persists. Please use the feedback button to send us a message.",
         "rewrite_text_error": "Error rewriting text"
     },
     "loading": "Loading...",
@@ -37,7 +36,6 @@
     },
     "status": {
         "rewritingText": "Rewriting text...",
-        "correctingText": "Correcting text...",
         "advice": "giving advice...",
         "ready": "Ready",
         "quickAction": "Quick action in progress...",
@@ -234,15 +232,15 @@
         },
         "language": {
             "title": "Language Selection",
-            "content": "Choose the proofing language for your text. This helps the grammar and spelling checker provide accurate suggestions for the selected language."
+            "content": "Choose the language for your text. This helps the AI tools provide better results for the selected language."
         },
         "dictionary": {
             "title": "Personal Dictionary",
-            "content": "Add words that should be ignored during spelling checks. This is useful for specialized terminology, names, or words that are correct but not in the standard dictionary."
+            "content": "Add words to your personal dictionary. This is useful for specialized terminology, names, or words that you want to keep consistent."
         },
         "editor": {
             "title": "Text Editor",
-            "content": "This is where you write and edit your text. The editor provides real-time grammar and spelling checking as you type."
+            "content": "This is where you write and edit your text. The editor provides various tools to enhance and transform your writing."
         },
         "wordCount": {
             "title": "Text Statistics",

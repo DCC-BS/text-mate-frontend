@@ -5,9 +5,9 @@ import {
     type RewriteTextCommand,
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
+import type { TextTools } from "~/types/TextTools";
 import AdvisorView from "./tool-panel/AdvisorView.vue";
 import RewriteView from "./tool-panel/RewriteView.vue";
-import type { TextTools } from "~/types/TextTools";
 
 // definitions
 interface ToolPanelProps {
