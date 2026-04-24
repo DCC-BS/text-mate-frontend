@@ -5,8 +5,8 @@ import {
     type RewriteTextCommand,
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
+import type { TextTools } from "~/types/TextTools";
 import AdvisorView from "./tool-panel/AdvisorView.vue";
-import ProblemsPanel from "./tool-panel/ProblemsPanel.vue";
 import RewriteView from "./tool-panel/RewriteView.vue";
 
 // definitions
@@ -23,7 +23,7 @@ const { onCommand } = useCommandBus();
 
 // refs
 const selectedTab = ref("0");
-const selectedTool = ref<"correction" | "rewrite" | "advisor">("rewrite");
+const selectedTool = ref<TextTools>("rewrite");
 
 // animations
 const initial = { opacity: 0, y: -20 };
@@ -52,17 +52,6 @@ onCommand<RewriteTextCommand>(Cmds.RewriteTextCommand, async (_) => {
                 class="h-full relative"
             >
                 <RewriteView :text="props.text" />
-            </motion.div>
-            <motion.div
-                data-tour="problems"
-                :initial="initial"
-                :animate="animate"
-                :exit="exit"
-                mode="popLayout"
-                v-show="selectedTool === 'correction'"
-                class="h-full relative"
-            >
-                <ProblemsPanel :text="props.text" />
             </motion.div>
             <motion.div
                 data-tour="advisor"

@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { InvalidateCorrectionCommand } from "~/assets/models/commands";
 import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 
 const userDictionaryQuery = useService(UserDictionaryQuery);
-const { executeCommand } = useCommandBus();
 
 const newWord = ref<string>("");
 const words = userDictionaryQuery.getWordsRef();
@@ -14,13 +12,11 @@ async function addNewWord() {
     if (newWord.value.trim() !== "") {
         await userDictionaryQuery.addWord(newWord.value.trim());
         newWord.value = "";
-        await executeCommand(new InvalidateCorrectionCommand());
     }
 }
 
 async function removeWord(word: string) {
     await userDictionaryQuery.removeWord(word);
-    await executeCommand(new InvalidateCorrectionCommand());
 }
 </script>
 

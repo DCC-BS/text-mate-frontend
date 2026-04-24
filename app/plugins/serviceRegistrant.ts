@@ -2,8 +2,6 @@ import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 import { AdvisorService } from "~/assets/services/AdvisorService";
-import { CorrectionFetcher } from "~/assets/services/CorrectionFetcher";
-import { CorrectionService } from "~/assets/services/CorrectionService";
 
 export default defineNuxtPlugin((nuxtApp) => {
     const orchestrator = new ServiceOrchestrator();
@@ -20,7 +18,6 @@ export default defineNuxtPlugin((nuxtApp) => {
         builder.registerInstance("logger", logger);
 
         builder.register(UserDictionaryQuery);
-        builder.register(CorrectionFetcher);
 
         builder.registerAsyncFactory(
             async () => {
@@ -40,29 +37,6 @@ export default defineNuxtPlugin((nuxtApp) => {
             },
             [],
             "advisorService",
-        );
-
-        builder.registerFactory(
-            (
-                logger: BaseLogger,
-                correctionFetcher: CorrectionFetcher,
-                t: (key: string) => string,
-                onError: (message: string) => void,
-                language = "auto",
-            ) => {
-                const { executeCommand } = useCommandBus();
-
-                return new CorrectionService(
-                    logger,
-                    correctionFetcher,
-                    executeCommand,
-                    t,
-                    onError,
-                    language,
-                );
-            },
-            ["logger", CorrectionFetcher, "translate"],
-            "correctionService",
         );
     });
 

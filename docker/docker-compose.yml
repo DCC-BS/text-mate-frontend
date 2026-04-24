@@ -12,13 +12,6 @@ services:
     networks:
       - textmate-network
 
-  languagetool:
-    extends:
-      file: ./services.compose.yml
-      service: languagetool
-    networks:
-      - textmate-network
-
   llm:
     extends:
       file: ./services.compose.yml

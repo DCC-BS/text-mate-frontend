@@ -3,7 +3,6 @@
         "unexpected_error": "Unexpected error occurred.  Maybe the server is down, if the error persists. Please use the feedback button to send us a message.",
         "no_document": "The document was not found.",
         "check_text_error": "Error checking text",
-        "language_tool_error": "Error with language tool. This is a internal error, if the error persists. Please use the feedback button to send us a message.",
         "rewrite_text_error": "Error rewriting text"
     },
     "loading": "Loading...",
@@ -32,22 +31,15 @@
         "app": "TextMate"
     },
     "tools": {
-        "problems": "Problems",
         "rewrite": "Rewrite",
         "advisor": "Review"
     },
     "status": {
         "rewritingText": "Rewriting text...",
-        "correctingText": "Correcting text...",
         "advice": "giving advice...",
         "ready": "Ready",
         "quickAction": "Quick action in progress...",
         "loading": "Loading..."
-    },
-    "problems": {
-        "title": "Spelling and Grammar Problems",
-        "noProblems": "No problems found",
-        "addToDictionary": "Add { word } to the dictionary"
     },
     "text-editor": {
         "addWordToDictionary": "Add to Dictionary",
@@ -235,34 +227,26 @@
             "content": "TextMate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to professional confidentiality (Erhöhter Schutzbedarf) with TextMate. I will now show you the main functions of TextMate."
         },
         "functions": {
-            "title": "TextMate has three main functions",
-            "content": "Here you can switch between the three main functions: Rewrite to leverage AI for text enhancement, Problems to see and fix grammar and spelling errors, and Review to check your text against guideline documents."
-        },
-        "problemsIntro": {
-            "title": "Spelling and Grammar Problems",
-            "content": "Textmate helps you find and fix grammar and spelling errors in your text."
+            "title": "TextMate has two main functions",
+            "content": "Here you can switch between the two main functions: Rewrite to leverage AI for text enhancement, and Review to check your text against guideline documents."
         },
         "language": {
             "title": "Language Selection",
-            "content": "Choose the proofing language for your text. This helps the grammar and spelling checker provide accurate suggestions for the selected language."
+            "content": "Choose the language for your text. This helps the AI tools provide better results for the selected language."
         },
         "dictionary": {
             "title": "Personal Dictionary",
-            "content": "Add words that should be ignored during spelling checks. This is useful for specialized terminology, names, or words that are correct but not in the standard dictionary."
+            "content": "Add words to your personal dictionary. This is useful for specialized terminology, names, or words that you want to keep consistent."
         },
         "editor": {
             "title": "Text Editor",
-            "content": "This is where you write and edit your text. The editor provides real-time grammar and spelling checking as you type."
+            "content": "This is where you write and edit your text. The editor provides various tools to enhance and transform your writing."
         },
         "wordCount": {
             "title": "Text Statistics",
             "content": "View detailed information about your text including word count, character count, and Flesch reading ease score. Click on these statistics to see more details about your text's readability."
         },
         "restart": "Start Tour",
-        "problems": {
-            "title": "Problems Panel",
-            "content": "Here you can see all grammar and spelling problems in your text. Use the arrow keys to quickly navigate to each problem in the text. Or hover over the underlined words in the text to see suggestions. You can also add a word directly to the dictionary."
-        },
         "textEditorToolpanel": {
             "title": "Text Editor Tools",
             "content": "Here you can undo or redo your changes. Additionally, you can upload a document, which will be converted to text and opened in the editor."

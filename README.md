@@ -2,7 +2,7 @@
 
 ![TextMate Screenshot](_imgs/preview_problems.png)
 
-TextMate is a modern web application for advanced text editing, correction, and document validation. Built with Nuxt.js and TypeScript, it provides a rich set of tools to enhance writing experiences. This repository contains only the frontend code; the backend is written in Python FastAPI and available at [https://github.com/DCC-BS/text-mate-backend](https://github.com/DCC-BS/text-mate-backend).
+TextMate is a modern web application for advanced text editing and document validation. Built with Nuxt.js and TypeScript, it provides a rich set of tools to enhance writing experiences. This repository contains only the frontend code; the backend is written in Python FastAPI and available at [https://github.com/DCC-BS/text-mate-backend](https://github.com/DCC-BS/text-mate-backend).
 
 ![GitHub License](https://img.shields.io/github/license/DCC-BS/text-mate-frontend) [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 
@@ -18,7 +18,6 @@ TextMate is a modern web application for advanced text editing, correction, and 
 
 ### Core Capabilities
 
-- **Grammar Correction**: Identifies and suggests fixes for grammar and spelling issues
 - **Text Rewriting**: Offers alternative phrasings with customizable style, audience, and intent
 - **Document Advisor**: Validates texts against selected reference documents with PDF preview
 - **Word Synonyms**: Intelligent synonym suggestions based on context
@@ -154,7 +153,7 @@ This allows frontend development without running the Python backend services.
 
 ### Backend Services
 
-This frontend requires the [Text-mate backend](https://github.com/DCC-BS/text-mate-backend) service. The backend and all related services (LLM, LanguageTool) are configured in the `docker/` folder.
+This frontend requires the [Text-mate backend](https://github.com/DCC-BS/text-mate-backend) service. The backend and all related services (LLM) are configured in the `docker/` folder.
 
 #### Development Mode (Backend Only)
 
@@ -183,7 +182,6 @@ This starts:
 - **Frontend** (Nuxt.js app)
 - **Backend** (Python FastAPI)
 - **LLM Service** (vLLM with Qwen model)
-- **LanguageTool** (Grammar checking)
 - **Nginx** (Reverse proxy)
 
 > **Note:** Ensure you have varlock configured with Proton Pass for environment variable management.
@@ -244,7 +242,6 @@ End-to-end tests cover key features:
 - Undo/Redo operations
 - Text statistics
 - Text rewriting
-- Problem detection
 - Quick actions
 
 ## Production

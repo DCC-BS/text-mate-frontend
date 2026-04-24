@@ -1,20 +1,15 @@
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
-import type { TextCorrectionBlock } from "./text-correction";
+import type { TextTools } from "~/types/TextTools";
 
 export const Cmds = {
-    JumpToBlockCommand: "JumpToBlockCommand",
-    ApplyCorrectionCommand: "ApplyCorrectionCommand",
     ApplyTextCommand: "ApplyTextCommand",
     RewriteTextCommand: "RewriteTextCommand",
     UndoCommand: "UndoCommand",
     RedoCommand: "RedoCommand",
     UndoRedoStateChanged: "UndoRedoStateChanged",
     ToolSwitchCommand: "ToolSwitchCommand",
-    SwitchCorrectionLanguageCommand: "SwitchCorrectionLanguageCommand",
-    InvalidateCorrectionCommand: "InvalidateCorrectionCommand",
     ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
-    CorrectionBlockChangedCommand: "CorrectionBlockChangedCommand",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
     RegisterDiffCommand: "RegisterDiffCommand",
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
@@ -24,32 +19,8 @@ export const Cmds = {
     HideTextStatsCommand: "HideTextStatsCommand",
 };
 
-export class JumpToBlockCommand implements ICommand {
-    readonly $type = "JumpToBlockCommand";
-
-    constructor(public block: TextCorrectionBlock) {}
-}
-
-export class ApplyCorrectionCommand implements ICommand {
-    readonly $type = "ApplyCorrectionCommand";
-
-    constructor(
-        public block: TextCorrectionBlock,
-        public corrected: string,
-    ) {}
-}
-
 export class ClearTextCommand implements ICommand {
     readonly $type = "ClearTextCommand";
-}
-
-export class CorrectionBlockChangedCommand implements ICommand {
-    readonly $type = "CorrectionBlockChangedCommand";
-
-    constructor(
-        public block: TextCorrectionBlock,
-        public change: "add" | "remove" | "update",
-    ) {}
 }
 
 /**
@@ -93,17 +64,7 @@ export class UndoRedoStateChanged implements ICommand {
 export class ToolSwitchCommand implements ICommand {
     readonly $type = "ToolSwitchCommand";
 
-    constructor(public tool: "correction" | "rewrite" | "advisor") {}
-}
-
-export class SwitchCorrectionLanguageCommand implements ICommand {
-    readonly $type = "SwitchCorrectionLanguageCommand";
-
-    constructor(public language: string) {}
-}
-
-export class InvalidateCorrectionCommand implements ICommand {
-    readonly $type = "InvalidateCorrectionCommand";
+    constructor(public tool: TextTools) {}
 }
 
 export class ExecuteTextActionCommand implements ICommand {
