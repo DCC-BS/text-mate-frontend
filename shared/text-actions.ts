@@ -19,3 +19,10 @@ export const TextActionInputSchema = z.object({
     options: z.string(),
     text: z.string(),
 });
+
+export const TextActionGetOutputSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+});
+
+export type TextActionGetOutput = z.output<typeof TextActionGetOutputSchema>;

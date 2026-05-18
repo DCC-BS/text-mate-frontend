@@ -12,6 +12,7 @@ import FormalityAction from "./quick-action/FormalityAction.vue";
 import MediumAction from "./quick-action/MediumAction.vue";
 import SocialMediaAction from "./quick-action/SocialMediaAction.vue";
 import SummarizeAction from "./quick-action/SummarizeAction.vue";
+import UserActions from "./quick-action/UserActions.vue";
 
 interface InputProps {
     text: string;
@@ -40,7 +41,7 @@ onCommand<ToggleLockEditorCommand>(
 );
 
 async function applyAction(
-    action: TextActions,
+    action: TextActions | string,
     config?: string,
 ): Promise<void> {
     if (!actionsAreAvailable.value) {
@@ -55,6 +56,8 @@ async function applyAction(
 
     try {
         isLocked.value = true;
+
+        console.log(action);
 
         const response = await apiStreamFetch("/api/quick-action", {
             method: "POST",
@@ -85,6 +88,10 @@ async function applyAction(
 
 <template>
     <div class="flex justify-center gap-2 flex-wrap" data-tour="quick-actions">
+        <UserActions
+            :actions-are-available="actionsAreAvailable"
+            @apply-action="applyAction"
+        />
         <UPopover mode="hover">
             <UButton
                 variant="link"
