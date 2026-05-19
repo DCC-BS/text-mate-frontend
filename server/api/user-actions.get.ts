@@ -4,13 +4,15 @@ import type { TextActionGetOutput } from "~~/shared/text-actions";
 export default apiHandler
     .withMethod("GET")
     .withDummyFetcher(dummyFetcher)
-    .build("/quick-action");
+    .build("/user-action");
 
-function dummyFetcher(_: FetcherOptions<unknown>): TextActionGetOutput[] {
-    return [
-        {
-            id: "dummy",
-            name: "Dummy",
-        },
-    ];
+function dummyFetcher(_: FetcherOptions<unknown>): TextActionGetOutput {
+    return {
+        actions: [
+            {
+                id: "dummy",
+                name: "Dummy",
+            },
+        ],
+    };
 }

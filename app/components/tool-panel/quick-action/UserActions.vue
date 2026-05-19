@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { z } from "zod";
 import {
-    type TextActionGetOutput,
+    type TextAction,
     TextActionGetOutputSchema,
 } from "~~/shared/text-actions";
 
@@ -17,19 +16,23 @@ const emit = defineEmits<(e: "apply-action", action: string) => void>();
 
 const { t } = useI18n();
 const { showError } = useUserFeedback();
+const logger = useLogger();
 
-const userActions = ref<TextActionGetOutput[]>([]);
+const userActions = ref<TextAction[]>([]);
 
 onMounted(async () => {
     const response = await apiFetch("/api/user-actions", {
         method: "get",
-        schema: z.array(TextActionGetOutputSchema),
+        schema: TextActionGetOutputSchema,
     });
 
+    console.log(response);
+
     if (isApiError(response)) {
+        logger.error(response, "Failed to load user actions");
         showError(response);
     } else {
-        userActions.value = response;
+        userActions.value = response.actions;
     }
 });
 
