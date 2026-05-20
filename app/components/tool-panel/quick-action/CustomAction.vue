@@ -27,7 +27,7 @@ function submitAction() {
             data-tour="custom-quick-action"
             variant="link"
             :disabled="!props.actionsAreAvailable"
-            >{{ t('actions.custom') }}</UButton
+            >{{ t("actions.custom") }}</UButton
         >
         <template #content>
             <div
@@ -45,7 +45,7 @@ function submitAction() {
                     size="sm"
                     @click="submitAction"
                     data-testid="customActionSubmit"
-                    >{{ t('actions.apply') }}</UButton
+                    >{{ t("actions.apply") }}</UButton
                 >
             </div>
         </template>
