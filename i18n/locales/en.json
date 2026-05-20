@@ -63,7 +63,8 @@
         "formality": "Formality",
         "medium": "Medium",
         "proofread": "Proofread",
-        "character_speech": "Character Speech"
+        "character_speech": "Character Speech",
+        "userActions": "My Actions"
     },
     "rewrite": {
         "writing_style": {
