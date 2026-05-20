@@ -40,8 +40,7 @@ function submitAction() {
                     class="w-full"
                     :rows="6"
                     data-testid="customActionTextBox"
-                >
-                </UTextarea>
+                > </UTextarea>
                 <UButton
                     size="sm"
                     @click="submitAction"

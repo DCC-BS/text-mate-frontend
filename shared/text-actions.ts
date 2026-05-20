@@ -15,7 +15,7 @@ export const TextActionsSchema = z.enum([
 export type TextActions = z.output<typeof TextActionsSchema>;
 
 export const TextActionInputSchema = z.object({
-    action: TextActionsSchema,
+    action: z.union([TextActionsSchema, z.string()]),
     options: z.string(),
     text: z.string(),
 });

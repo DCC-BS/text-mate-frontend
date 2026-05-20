@@ -26,8 +26,6 @@ onMounted(async () => {
         schema: TextActionGetOutputSchema,
     });
 
-    console.log(response);
-
     if (isApiError(response)) {
         logger.error(response, "Failed to load user actions");
         showError(response);

@@ -57,8 +57,6 @@ async function applyAction(
     try {
         isLocked.value = true;
 
-        console.log(action);
-
         const response = await apiStreamFetch("/api/quick-action", {
             method: "POST",
             body: {
