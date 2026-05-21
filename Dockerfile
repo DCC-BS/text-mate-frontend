@@ -2,7 +2,7 @@
 FROM node:24-alpine AS build
 
 ENV APP_MODE=build
-ARG AUTH_LAYER_URI="github:DCC-BS/nuxt-layers/azure-auth#features/msTeams"
+ARG AUTH_LAYER_URI="github:DCC-BS/nuxt-layers/azure-auth"
 ARG LOGGER_LAYER_URI="github:DCC-BS/nuxt-layers/pino-logger"
 ENV NODE_ENV=production
 
