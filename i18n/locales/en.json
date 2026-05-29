@@ -130,7 +130,9 @@
             "fix": "Suggested Fix"
         },
         "selectDocs": "select documents",
-        "ignore": "Ignore"
+        "ignore": "Ignore",
+        "limitReached": "Limit Reached",
+        "limitDescription": "You can select up to 5 documents."
     },
     "actions": {
         "custom": "Custom",

@@ -86,7 +86,9 @@
             "fix": "Vorgeschlagene Korrektur"
         },
         "selectDocs": "Dokumente auswählen",
-        "ignore": "Ignorieren"
+        "ignore": "Ignorieren",
+        "limitReached": "Limit erreicht",
+        "limitDescription": "Sie können maximal 5 Dokumente auswählen."
     },
     "actions": {
         "custom": "Benutzerdefiniert",

@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+import { computed } from "vue";
 import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 import type { AdvisorService } from "~/assets/services/AdvisorService";
 
 const { t } = useI18n();
+const toast = useToast();
 
 interface AdvisorDocSelectProps {
     advisorService: AdvisorService;
@@ -14,13 +16,32 @@ const docs = props.advisorService.getDocs();
 const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
     default: [],
 });
+
+const selectedDocsModel = computed({
+    get: () => selectedDocs.value,
+    set: (value: AdvisorDocumentDescription[]) => {
+        if (value.length > 5) {
+            toast.add({
+                title: t("advisor.limitReached") || "Limit reached",
+                description:
+                    t("advisor.limitDescription") ||
+                    "You can select up to 5 documents.",
+                color: "warning",
+            });
+            selectedDocs.value = value.slice(0, 5);
+        } else {
+            selectedDocs.value = value;
+        }
+    },
+});
 </script>
 
 <template>
     <div class="w-full">
         <USelectMenu
+            multiple
             :items="docs"
-            v-model="selectedDocs[0]"
+            v-model="selectedDocsModel"
             :filter-fields="['title', 'description', 'author', 'edition']"
             class="w-full"
         >

@@ -224,7 +224,7 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
             <!-- Check button with loading state -->
             <UButton
                 @click="check"
-                :disabled="selectedDocs.length === 0 || props.text.length < 3"
+                :disabled="selectedDocs.length === 0 || selectedDocs.length > 5 || props.text.length < 3"
                 :loading="isLoading"
                 block
                 color="primary"
