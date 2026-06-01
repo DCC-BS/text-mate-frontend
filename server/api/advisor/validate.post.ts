@@ -31,21 +31,25 @@ type AdvisorRuleViolation = {
     reason: string;
     proposal: string;
     source: string;
+    collection: string;
 };
 
 type ValidationResult = {
     rules: AdvisorRuleViolation[];
+    checked?: number;
+    total?: number;
 };
 
 async function dummyFetcher(options: FetcherOptions<BodyType>) {
     const body = options.body;
     const docs = body.docs as string[];
 
-    const items: ValidationResult[] = docs.includes("beispiel-dokument.pdf")
+    const items: ValidationResult[] = docs.includes("beispiel-collection")
         ? [
               {
                   rules: [
                       {
+                          collection: "beispiel-collection",
                           description:
                               "Vermeiden Sie die Verwendung von Passivkonstruktionen, um den Text klarer und direkter zu gestalten.",
                           example:
@@ -59,14 +63,17 @@ async function dummyFetcher(options: FetcherOptions<BodyType>) {
                           source: "https://www.duden.de/rechtschreibung/passiv",
                       },
                   ],
+                  checked: 5,
+                  total: 10,
               },
               {
                   rules: [
                       {
+                          collection: "beispiel-collection",
                           description:
                               "Vermeiden Sie die Verwendung von Füllwörtern, um den Text prägnanter zu gestalten.",
                           example: "Eigentlich ist das Dokument ziemlich gut.",
-                          file_name: "beispiel-dokument.pdf",
+                          file_name: "beispiel-anhang.pdf",
                           name: "Füllwörter vermeiden",
                           page_number: 2,
                           reason: "Füllwörter können den Text unnötig aufblähen und die Lesbarkeit beeinträchtigen.",
@@ -75,9 +82,11 @@ async function dummyFetcher(options: FetcherOptions<BodyType>) {
                           source: "https://www.duden.de/sprachwissen/sprachratgeber/Fuellwoerter",
                       },
                   ],
+                  checked: 10,
+                  total: 10,
               },
           ]
-        : [{ rules: [] }];
+        : [{ rules: [], checked: 0, total: 0 }];
 
     const stream = toStream(items);
 

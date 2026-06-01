@@ -122,6 +122,7 @@
         "noIssues": "No issues found!",
         "noResultsYet": "Run a check to see results",
         "checking": "Checking your text...",
+        "checkingProgress": "Checking rules...",
         "error": "Error",
         "rule": {
             "title": "Rule Violation",

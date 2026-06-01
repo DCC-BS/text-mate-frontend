@@ -3,7 +3,8 @@ type AdvisorDocumentDescription = {
     description: string;
     author: string;
     edition: string;
-    file: string;
+    id: string;
+    files: string[];
 };
 
 export default apiHandler
@@ -20,7 +21,8 @@ function getDummyData() {
             description:
                 "Ein Beispiel-Dokument zur Demonstration der Advisor-Funktionalität.",
             edition: "1. Auflage",
-            file: "beispiel-dokument.pdf",
+            id: "beispiel-collection",
+            files: ["beispiel-dokument.pdf", "beispiel-anhang.pdf"],
             title: "Beispiel-Dokument",
         },
         {
@@ -28,7 +30,8 @@ function getDummyData() {
             description:
                 "Ein weiteres Beispiel-Dokument mit nützlichen Informationen.",
             edition: "2. Auflage",
-            file: "anderes-dokument.pdf",
+            id: "anderes-collection",
+            files: ["anderes-dokument.pdf"],
             title: "Anderes Dokument",
         },
     ] as AdvisorDocumentDescription[];

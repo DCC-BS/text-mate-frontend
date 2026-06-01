@@ -14,8 +14,12 @@ export class AdvisorService {
         return this.docs;
     }
 
+    getDocById(id: string): AdvisorDocumentDescription | undefined {
+        return this.docs.find((d) => d.id === id);
+    }
+
     async getDocFile(name: string): Promise<Blob> {
-        if (!this.docs.some((d) => d.file === name)) {
+        if (!this.docs.some((d) => d.files.includes(name))) {
             throw new Error("Document not found");
         }
 
