@@ -3,7 +3,8 @@
         "unexpected_error": "Unexpected error occurred.  Maybe the server is down, if the error persists. Please use the feedback button to send us a message.",
         "no_document": "The document was not found.",
         "check_text_error": "Error checking text",
-        "rewrite_text_error": "Error rewriting text"
+        "rewrite_text_error": "Error rewriting text",
+        "text_analysis_error": "Error analyzing text. Please try again later."
     },
     "loading": "Loading...",
     "auth": {
@@ -197,7 +198,17 @@
         "difficult": "Difficult",
         "academic": "Academic",
         "reading-ease": "Reading Ease (Flesch Index)",
-        "score": "Score"
+        "score": "Score",
+        "cefr-level": "Language Level (CEFR)",
+        "cefr-loading": "Calculating CEFR level...",
+        "cefr-description": "The CEFR level (Common European Framework of Reference for Languages) describes linguistic understandability from A1 (very simple) to C2 (very complex).",
+        "cefr-too-short": "Text too short for analysis",
+        "cefr-level-a1": "Very simple",
+        "cefr-level-a2": "Simple",
+        "cefr-level-b1": "Intermediate",
+        "cefr-level-b2": "Upper Intermediate",
+        "cefr-level-c1": "Advanced",
+        "cefr-level-c2": "Very advanced"
     },
     "text-stats": {
         "character-count": "Character Count",
