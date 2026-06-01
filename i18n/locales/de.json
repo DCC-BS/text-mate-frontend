@@ -156,7 +156,7 @@
         "reading-ease": "Lesbarkeit (Flesch Index)",
         "score": "Bewertung",
         "cefr-level": "Sprachniveau (GER)",
-        "cefr-loading": "CEFR-Niveau wird berechnet...",
+        "cefr-loading": "GER-Niveau wird berechnet...",
         "cefr-description": "Das GER-Niveau (Gemeinsamer Europäischer Referenzrahmen) beschreibt die sprachliche Verständlichkeit von A1 (sehr einfach) bis C2 (sehr komplex).",
         "cefr-too-short": "Text zu kurz für Analyse",
         "cefr-level-a1": "Sehr einfach",

@@ -96,18 +96,29 @@ describe("useCefrScore", () => {
         const mockError = new Error("Connection failed");
         vi.mocked(getTextAnalysis).mockRejectedValue(mockError);
 
-        // Act
-        const wrapper = mount(createTestComponent(text));
+        // Spy on console.error to prevent noisy test stderr output
+        const spyError = vi.spyOn(console, "error").mockImplementation(() => {});
 
-        // Wait for async evaluations to finish
-        await nextTick();
-        await nextTick();
-        await nextTick();
+        try {
+            // Act
+            const wrapper = mount(createTestComponent(text));
 
-        // Assert
-        expect(wrapper.vm.isLoading).toBe(false);
-        expect(wrapper.vm.error).toBe("Connection failed");
-        expect(wrapper.vm.cefrLevel).toBeUndefined();
+            // Wait for async evaluations to finish
+            await nextTick();
+            await nextTick();
+            await nextTick();
+
+            // Assert
+            expect(wrapper.vm.isLoading).toBe(false);
+            expect(wrapper.vm.error).toBe("Connection failed");
+            expect(wrapper.vm.cefrLevel).toBeUndefined();
+            expect(spyError).toHaveBeenCalledWith(
+                "Failed to fetch CEFR understandability score:",
+                mockError,
+            );
+        } finally {
+            spyError.mockRestore();
+        }
     });
 
     it("should abort active fetch request and clear timeout when unmounted", async () => {
@@ -115,44 +126,46 @@ describe("useCefrScore", () => {
         vi.useFakeTimers();
         const text = ref("Some text");
         const mockAbort = vi.fn();
-        
+
         // Mock AbortController global to trace abort calls
         const originalAbortController = globalThis.AbortController;
-        globalThis.AbortController = class extends originalAbortController {
-            constructor() {
-                super();
-                this.abort = mockAbort;
-            }
-        };
+        try {
+            globalThis.AbortController = class extends originalAbortController {
+                constructor() {
+                    super();
+                    this.abort = mockAbort;
+                }
+            };
 
-        vi.mocked(getTextAnalysis).mockResolvedValue({
-            zix_score: 1.0,
-            cefr_level: "B2",
-        });
+            vi.mocked(getTextAnalysis).mockResolvedValue({
+                zix_score: 1.0,
+                cefr_level: "B2",
+            });
 
-        const wrapper = mount(createTestComponent(text));
-        
-        // Wait for initial mount fetch
-        await vi.runAllTimersAsync();
-        expect(getTextAnalysis).toHaveBeenCalledTimes(1);
+            const wrapper = mount(createTestComponent(text));
 
-        // Change text (triggers watch + debounce)
-        text.value = "New text";
-        await vi.advanceTimersByTimeAsync(1500); // 1.5s passed
+            // Wait for initial mount fetch
+            await vi.runAllTimersAsync();
+            expect(getTextAnalysis).toHaveBeenCalledTimes(1);
 
-        // Act: Unmount component (which happens when stats popover is closed)
-        wrapper.unmount();
-        
-        // Assert: timeout should be cleared, abort should be called
-        expect(mockAbort).toHaveBeenCalled();
+            // Change text (triggers watch + debounce)
+            text.value = "New text";
+            await vi.advanceTimersByTimeAsync(1500); // 1.5s passed
 
-        // Advance remaining time: should NOT execute the second fetch
-        await vi.advanceTimersByTimeAsync(1500);
-        expect(getTextAnalysis).toHaveBeenCalledTimes(1); // Still 1
+            // Act: Unmount component (which happens when stats popover is closed)
+            wrapper.unmount();
 
-        // Restore global AbortController
-        globalThis.AbortController = originalAbortController;
-        vi.useRealTimers();
+            // Assert: timeout should be cleared, abort should be called
+            expect(mockAbort).toHaveBeenCalled();
+
+            // Advance remaining time: should NOT execute the second fetch
+            await vi.advanceTimersByTimeAsync(1500);
+            expect(getTextAnalysis).toHaveBeenCalledTimes(1); // Still 1
+        } finally {
+            // Restore global AbortController
+            globalThis.AbortController = originalAbortController;
+            vi.useRealTimers();
+        }
     });
 
     it("should abort active fetch request when text changes rapidly", async () => {
@@ -160,38 +173,117 @@ describe("useCefrScore", () => {
         vi.useFakeTimers();
         const text = ref("Initial text");
         const mockAbort = vi.fn();
-        
-        const originalAbortController = globalThis.AbortController;
-        globalThis.AbortController = class extends originalAbortController {
-            constructor() {
-                super();
-                this.abort = mockAbort;
-            }
-        };
 
-        vi.mocked(getTextAnalysis).mockResolvedValue({
-            zix_score: 0.5,
-            cefr_level: "B1",
+        let resolveRequest1: (value: unknown) => void = () => {};
+        const promise1 = new Promise((resolve) => {
+            resolveRequest1 = resolve;
         });
 
-        mount(createTestComponent(text));
-        
-        // Wait for initial mount fetch
-        await vi.runAllTimersAsync();
-        expect(getTextAnalysis).toHaveBeenCalledTimes(1);
+        let callCount = 0;
+        vi.mocked(getTextAnalysis).mockImplementation(() => {
+            callCount++;
+            if (callCount === 1) {
+                return promise1 as any;
+            }
+            return Promise.resolve({
+                zix_score: 0.5,
+                cefr_level: "B1",
+            });
+        });
 
-        // Change text first time
-        text.value = "First change";
-        await vi.advanceTimersByTimeAsync(1000); // 1s passed
+        const originalAbortController = globalThis.AbortController;
+        try {
+            globalThis.AbortController = class extends originalAbortController {
+                constructor() {
+                    super();
+                    this.abort = mockAbort;
+                }
+            };
 
-        // Change text second time (should clear first timeout)
-        text.value = "Second change";
-        await vi.advanceTimersByTimeAsync(3000); // Fired
+            mount(createTestComponent(text));
 
-        // Assert: should clear first timer and start second, calling abort
-        expect(getTextAnalysis).toHaveBeenCalledTimes(2);
+            // Wait for initial mount fetch to start and settle (timers run, but promise1 is pending)
+            await vi.runAllTimersAsync();
+            expect(callCount).toBe(1);
+            expect(mockAbort).not.toHaveBeenCalled();
 
-        globalThis.AbortController = originalAbortController;
-        vi.useRealTimers();
+            // Change text first time (triggers watch + debounce)
+            text.value = "First change";
+
+            // Advance by 3000ms to trigger the debounced evaluateText
+            await vi.advanceTimersByTimeAsync(3000);
+
+            // Assert: evaluateText should abort the in-flight Request 1, so mockAbort is called
+            expect(mockAbort).toHaveBeenCalledTimes(1);
+            expect(callCount).toBe(2);
+
+            // Resolve Request 1 to cleanly settle the first pending promise
+            resolveRequest1({ zix_score: 0.5, cefr_level: "B1" });
+            await vi.runAllTimersAsync();
+        } finally {
+            // Restore global AbortController
+            globalThis.AbortController = originalAbortController;
+            vi.useRealTimers();
+        }
+    });
+
+    it("should not set isLoading to false when a previous request is aborted and completes after a new request starts", async () => {
+        // Arrange
+        vi.useFakeTimers();
+        try {
+            const text = ref("First text for analysis");
+
+            let rejectRequest1: (reason: unknown) => void = () => {};
+            let resolveRequest2: (value: unknown) => void = () => {};
+
+            const promise1 = new Promise((_, reject) => {
+                rejectRequest1 = reject;
+            });
+            const promise2 = new Promise((resolve) => {
+                resolveRequest2 = resolve;
+            });
+
+            let callCount = 0;
+            vi.mocked(getTextAnalysis).mockImplementation(() => {
+                callCount++;
+                if (callCount === 1) {
+                    return promise1 as any;
+                }
+                return promise2 as any;
+            });
+
+            // Mount (starts Request 1)
+            const wrapper = mount(createTestComponent(text));
+
+            // Let Request 1 run
+            await vi.runAllTimersAsync();
+            expect(callCount).toBe(1);
+            expect(wrapper.vm.isLoading).toBe(true);
+
+            // Trigger Request 2 (change text, then advance timers to trigger debounced evaluateText)
+            text.value = "Second text for analysis";
+            await vi.advanceTimersByTimeAsync(3000);
+            expect(callCount).toBe(2);
+            expect(wrapper.vm.isLoading).toBe(true);
+
+            // Reject Request 1 with AbortError (simulate the abortion completion)
+            rejectRequest1(new DOMException("The user aborted a request.", "AbortError"));
+
+            // Wait for promises to settle
+            await vi.runAllTimersAsync();
+
+            // Assert: isLoading should STILL be true because Request 2 is still active
+            expect(wrapper.vm.isLoading).toBe(true);
+
+            // Resolve Request 2
+            resolveRequest2({ zix_score: 2.0, cefr_level: "C1" });
+            await vi.runAllTimersAsync();
+
+            // Assert: isLoading is now false, and success state is set
+            expect(wrapper.vm.isLoading).toBe(false);
+            expect(wrapper.vm.cefrLevel).toBe("C1");
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

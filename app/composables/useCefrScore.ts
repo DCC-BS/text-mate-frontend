@@ -34,15 +34,13 @@ export function useCefrScore(text: Ref<string>) {
             abortController.abort();
         }
 
-        abortController = new AbortController();
+        const controller = new AbortController();
+        abortController = controller;
         isLoading.value = true;
         error.value = undefined;
 
         try {
-            const result = await getTextAnalysis(
-                text.value,
-                abortController.signal,
-            );
+            const result = await getTextAnalysis(text.value, controller.signal);
             zixScore.value =
                 result.zix_score !== null ? result.zix_score : undefined;
             cefrLevel.value =
@@ -60,7 +58,7 @@ export function useCefrScore(text: Ref<string>) {
                 error.value = t("errors.unexpected_error");
             }
         } finally {
-            if (!abortController.signal.aborted) {
+            if (!controller.signal.aborted) {
                 isLoading.value = false;
             }
         }

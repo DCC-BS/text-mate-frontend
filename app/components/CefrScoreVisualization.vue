@@ -23,25 +23,22 @@ const cefrLabelText = computed<string>(() => {
     return t(`flesch-score.cefr-level-${levelKey}`);
 });
 
-// Compute the design-harmonised color mapping depending on CEFR level
-const cefrLevelColor = computed<string>(() => {
+// Compute the design-harmonised Tailwind class name depending on CEFR level
+const cefrLevelClass = computed<string>(() => {
     if (!props.cefrLevel) {
-        return "#6b7280";
+        return "text-gray-400 dark:text-gray-500";
     }
     const level = props.cefrLevel.toUpperCase();
     if (level === "A1" || level === "A2") {
-        return "#10B981"; // Emerald Green
+        return "text-blue-500 dark:text-blue-400"; // blue class
     }
     if (level === "B1" || level === "B2") {
-        return "#F59E0B"; // Amber Orange
+        return "text-orange-500 dark:text-orange-400"; // orange class
     }
-    if (level === "C1") {
-        return "#EF4444"; // Red
+    if (level === "C1" || level === "C2") {
+        return "text-red-500 dark:text-red-400"; // red class
     }
-    if (level === "C2") {
-        return "#8B5CF6"; // Purple (Academic)
-    }
-    return "#6b7280";
+    return "text-gray-400 dark:text-gray-500";
 });
 </script>
 
@@ -86,7 +83,7 @@ const cefrLevelColor = computed<string>(() => {
             </span>
             <span
                 class="text-xs font-bold uppercase tracking-wider"
-                :style="{ color: cefrLevelColor }"
+                :class="cefrLevelClass"
             >
                 {{ cefrLabelText }}
             </span>
