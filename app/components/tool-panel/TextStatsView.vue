@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import { computed } from "vue";
+import CefrScoreVisualization from "~/components/CefrScoreVisualization.vue";
 import FleschScoreVisualization from "~/components/FleschScoreVisualization.vue";
+import { useCefrScore } from "~/composables/useCefrScore";
 import { useTextStats } from "~/composables/useTextStats";
 
 const { t } = useI18n();
@@ -10,6 +13,7 @@ const props = defineProps<{
 
 const textRef = computed(() => props.text);
 
+// Existing client-side statistics
 const {
     charCount,
     wordCount,
@@ -18,13 +22,15 @@ const {
     averageSyllablesPerWord,
     fleschScore,
 } = useTextStats(textRef);
+
+// Consume custom composable for backend CEFR evaluation
+const { isLoading, cefrLevel, error } = useCefrScore(textRef);
 </script>
 
 <template>
     <div class="flex flex-col gap-2">
         <!-- Fancy Flesch Score Visualization -->
         <div class="bg-white border border-gray-200 p-2 rounded-md">
-            <!-- <div v-if="showDetails"> -->
             <div class="grid grid-cols-2">
                 <span>{{ t("text-stats.character-count") }}</span>
                 <span class="text-end font-bold" data-testid="characterCount"
@@ -55,8 +61,15 @@ const {
                     >{{ averageSyllablesPerWord }}</span
                 >
             </div>
-            <FleschScoreVisualization :score="fleschScore" />
+            <!-- Disable FleschScore in favor for CEFR score -->
+            <!-- <FleschScoreVisualization :score="fleschScore" /> -->
+
+            <!-- CEFR Text Understandability Score Visualization -->
+            <CefrScoreVisualization
+                :is-loading="isLoading"
+                :cefr-level="cefrLevel"
+                :error="error"
+            />
         </div>
-        <!-- </div> -->
     </div>
 </template>

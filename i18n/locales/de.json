@@ -3,7 +3,8 @@
         "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten. Möglicherweise ist der Server nicht erreichbar. Falls der Fehler weiterhin auftritt, nutzen Sie bitte die Feedback-Funktion, um uns eine Nachricht zu senden.",
         "no_document": "Das Dokument wurde nicht gefunden.",
         "check_text_error": "Fehler beim Überprüfen des Textes",
-        "rewrite_text_error": "Fehler beim Umschreiben des Textes"
+        "rewrite_text_error": "Fehler beim Umschreiben des Textes",
+        "text_analysis_error": "Fehler bei der Textanalyse. Bitte versuchen Sie es später noch einmal."
     },
     "loading": "Wird geladen...",
     "auth": {
@@ -153,7 +154,17 @@
         "difficult": "Schwer",
         "academic": "Akademisch",
         "reading-ease": "Lesbarkeit (Flesch Index)",
-        "score": "Bewertung"
+        "score": "Bewertung",
+        "cefr-level": "Sprachniveau (GER)",
+        "cefr-loading": "GER-Niveau wird berechnet...",
+        "cefr-description": "Das GER-Niveau (Gemeinsamer Europäischer Referenzrahmen) beschreibt die sprachliche Verständlichkeit von A1 (sehr einfach) bis C2 (sehr komplex).",
+        "cefr-too-short": "Text zu kurz für Analyse",
+        "cefr-level-a1": "Sehr einfach",
+        "cefr-level-a2": "Einfach",
+        "cefr-level-b1": "Mittel",
+        "cefr-level-b2": "Fortgeschritten",
+        "cefr-level-c1": "Stark fortgeschritten",
+        "cefr-level-c2": "Nahezu muttersprachlich"
     },
     "text-stats": {
         "character-count": "Zeichenanzahl",
