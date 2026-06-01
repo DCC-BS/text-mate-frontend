@@ -4,6 +4,8 @@ import {
     ApplyTextCommand,
     Cmds,
     type RegisterDiffCommand,
+    type RejectDiffCommand,
+    RetryQuickActionCommand,
 } from "~/assets/models/commands";
 
 interface Props {
@@ -117,19 +119,31 @@ function applyAllChanges() {
     commandHistory.value = [];
 }
 
-async function undoAllChanges() {
+async function undoAllChanges(addToHistory = true) {
     for (const change of changes.value) {
         if (change.hasChanged) {
             await executeCommand(
-                new ApplyTextCommand(change.oldText, {
-                    from: change.from,
-                    to: change.to,
-                }),
+                new ApplyTextCommand(
+                    change.oldText,
+                    {
+                        from: change.from,
+                        to: change.to,
+                    },
+                    addToHistory,
+                ),
             );
         }
     }
 
     commandHistory.value = [];
+}
+
+onCommand<RejectDiffCommand>(Cmds.RejectDiffCommand, async (cmd) => {
+    await undoAllChanges(cmd.addToHistory);
+});
+
+function retry() {
+    executeCommand(new RetryQuickActionCommand());
 }
 </script>
 
@@ -143,11 +157,20 @@ async function undoAllChanges() {
                     icon="i-lucide-check"
                     @click="applyAllChanges"
                 />
+                <UTooltip :text="$t('rewrite-diff-viewer.retry')">
+                    <UButton
+                        variant="link"
+                        color="neutral"
+                        icon="i-lucide-rotate-ccw"
+                        data-tour="retry-quick-action"
+                        @click="retry"
+                    />
+                </UTooltip>
                 <UButton
                     variant="link"
                     color="neutral"
                     icon="i-lucide-x"
-                    @click="undoAllChanges"
+                    @click="undoAllChanges()"
                 />
             </div>
         </div>

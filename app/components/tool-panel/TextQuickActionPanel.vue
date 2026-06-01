@@ -1,10 +1,5 @@
 <script lang="ts" setup>
-import { apiStreamFetch, isApiError } from "@dcc-bs/communication.bs.js";
-import {
-    Cmds,
-    ExecuteTextActionCommand,
-    type ToggleLockEditorCommand,
-} from "~/assets/models/commands";
+import { Cmds, type ToggleLockEditorCommand } from "~/assets/models/commands";
 import type { TextActions } from "~~/shared/text-actions";
 import CharacterSpeechAction from "./quick-action/CharacterSpeechAction.vue";
 import CustomAction from "./quick-action/CustomAction.vue";
@@ -30,7 +25,8 @@ const selectedLanguage = useCookie<string>("selected-language", {
 const actionsAreAvailable = computed(
     () => !isLocked.value && props.text.trim().length > 0,
 );
-const { executeCommand, onCommand } = useCommandBus();
+const { onCommand } = useCommandBus();
+const { runQuickAction } = useQuickAction();
 const toast = useToast();
 
 onCommand<ToggleLockEditorCommand>(
@@ -57,27 +53,11 @@ async function applyAction(
     try {
         isLocked.value = true;
 
-        const response = await apiStreamFetch("/api/quick-action", {
-            method: "POST",
-            body: {
-                action,
-                text: props.text,
-                options: `${config ?? ""};language code: ${selectedLanguage.value}`,
-            },
+        await runQuickAction({
+            action,
+            text: props.text,
+            options: `${config ?? ""};language code: ${selectedLanguage.value}`,
         });
-
-        if (isApiError(response)) {
-            toast.add({
-                title: "Error",
-                description:
-                    t(`errors.${response.errorId}`) || response.message,
-                color: "error",
-                icon: "i-lucide-circle-alert",
-            });
-            return;
-        }
-
-        executeCommand(new ExecuteTextActionCommand(response));
     } finally {
         isLocked.value = false;
     }

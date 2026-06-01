@@ -3,6 +3,9 @@ import {
     Cmds,
     type ExecuteTextActionCommand,
     RegisterDiffCommand,
+    RejectDiffCommand,
+    type RetryQuickActionCommand,
+    type RunExampleQuickActionCommand,
     ToggleLockEditorCommand,
 } from "~/assets/models/commands";
 
@@ -10,6 +13,7 @@ export function useTextAction(editor: Ref<Editor | undefined>) {
     const { onCommand, executeCommand } = useCommandBus();
     const { applyStreamToEditor } = useStreamWriter();
     const { addProgress, removeProgress } = useUseProgressIndication();
+    const { lastRequest, runQuickAction } = useQuickAction();
     const { t } = useI18n();
 
     onCommand<ExecuteTextActionCommand>(
@@ -40,6 +44,37 @@ export function useTextAction(editor: Ref<Editor | undefined>) {
                 removeProgress("quick-action");
                 await executeCommand(new ToggleLockEditorCommand(false));
             }
+        },
+    );
+
+    onCommand<RetryQuickActionCommand>(
+        Cmds.RetryQuickActionCommand,
+        async () => {
+            if (!editor.value || !lastRequest.value) {
+                return;
+            }
+
+            // Reject the current suggestion first so the editor holds the
+            // original text before the new diff baseline is captured. The revert
+            // is suppressed from history so a retry collapses to a single
+            // undo step.
+            await executeCommand(new RejectDiffCommand(false));
+            await runQuickAction(lastRequest.value);
+        },
+    );
+
+    onCommand<RunExampleQuickActionCommand>(
+        Cmds.RunExampleQuickActionCommand,
+        async () => {
+            if (!editor.value) {
+                return;
+            }
+
+            await runQuickAction({
+                action: "proofread",
+                text: editor.value.getText(),
+                options: ";language code: auto",
+            });
         },
     );
 }

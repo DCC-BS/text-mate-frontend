@@ -222,7 +222,8 @@
         "changes": "Changes",
         "clickToUndo": "Click on the changes to undo them",
         "undo": "Undo",
-        "noChangesYet": "No changes yet. When the text is rewritten by textmate, the changes will be highlighted here."
+        "noChangesYet": "No changes yet. When the text is rewritten by textmate, the changes will be highlighted here.",
+        "retry": "Reject and run this action again on the original text"
     },
     "tour": {
         "welcome": {
@@ -261,6 +262,10 @@
         "rewriteToolpanel": {
             "title": "Accept or Reject Rewrite Actions",
             "content": "Here you can undo the last rewrite action or accept all changes."
+        },
+        "retry": {
+            "title": "Retry an Action",
+            "content": "Not happy with the result? Click here to discard the suggestion and run the same action again on your original text."
         },
         "rewrite": {
             "title": "AI Text Rewriting",

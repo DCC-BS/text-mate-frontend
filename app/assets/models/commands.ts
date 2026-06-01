@@ -1,6 +1,18 @@
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand } from "#build/types/commands";
 import type { TextTools } from "~/types/TextTools";
+import type { TextActions } from "~~/shared/text-actions";
+
+/**
+ * A quick action request that can be re-run (e.g. for retry).
+ */
+export interface QuickActionRequest {
+    action: TextActions | string;
+    /** The original text the action was run against. */
+    text: string;
+    /** Already-composed options string including the language code. */
+    options: string;
+}
 
 export const Cmds = {
     ApplyTextCommand: "ApplyTextCommand",
@@ -12,7 +24,10 @@ export const Cmds = {
     ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
     RegisterDiffCommand: "RegisterDiffCommand",
+    RejectDiffCommand: "RejectDiffCommand",
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
+    RetryQuickActionCommand: "RetryQuickActionCommand",
+    RunExampleQuickActionCommand: "RunExampleQuickActionCommand",
     RestartTourCommand: "RestartTourCommand",
     ClearTextCommand: "ClearTextCommand",
     ShowTextStatsCommand: "ShowTextStatsCommand",
@@ -32,6 +47,7 @@ export class ApplyTextCommand implements ICommand {
     constructor(
         public text: string,
         public range: Range,
+        public addToHistory = true,
     ) {}
 }
 
@@ -73,6 +89,22 @@ export class ExecuteTextActionCommand implements ICommand {
     constructor(public stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {}
 }
 
+/**
+ * Re-runs the last quick action: rejects the current suggestion and applies the
+ * same action to the original text again.
+ */
+export class RetryQuickActionCommand implements ICommand {
+    readonly $type = "RetryQuickActionCommand";
+}
+
+/**
+ * Runs an example quick action on the current editor text. Used by the onboarding
+ * tour to populate the diff viewer with real content.
+ */
+export class RunExampleQuickActionCommand implements ICommand {
+    readonly $type = "RunExampleQuickActionCommand";
+}
+
 export class ShowTextStatsCommand implements ICommand {
     readonly $type = "ShowTextStatsCommand";
 }
@@ -91,6 +123,17 @@ export class RegisterDiffCommand implements ICommand {
         public oldText: string,
         public newText: string,
     ) {}
+}
+
+/**
+ * Rejects the currently pending diff suggestion, reverting the editor to the
+ * original text. Used to trigger the reject flow from outside the diff viewer.
+ */
+export class RejectDiffCommand implements ICommand {
+    readonly $type = "RejectDiffCommand";
+
+    /** When false, the revert is not pushed onto the undo history. */
+    constructor(public addToHistory = true) {}
 }
 
 /**
