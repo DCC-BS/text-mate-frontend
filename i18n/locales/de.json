@@ -78,6 +78,7 @@
         "noIssues": "Keine Probleme gefunden!",
         "noResultsYet": "Führen Sie eine Überprüfung durch, um Ergebnisse zu sehen",
         "checking": "Überprüfe deinen Text...",
+        "checkingProgress": "Regeln werden überprüft...",
         "error": "Fehler",
         "rule": {
             "title": "Regelverletzung",

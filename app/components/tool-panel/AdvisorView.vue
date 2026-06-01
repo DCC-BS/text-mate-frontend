@@ -19,6 +19,8 @@ const { t } = useI18n();
 const { addProgress, removeProgress } = useUseProgressIndication();
 const toast = useToast();
 const isLoading = ref(false);
+const checkedCount = ref(0);
+const totalCount = ref(0);
 const overlay = useOverlay();
 
 const advisorService = ref<AdvisorService>();
@@ -108,6 +110,8 @@ async function check() {
     currentValidationAbort.value?.abort();
 
     isLoading.value = true;
+    checkedCount.value = 0;
+    totalCount.value = 0;
     selectedRuleIndex.value = 0;
     const abortController = new AbortController();
     currentValidationAbort.value = abortController;
@@ -130,30 +134,43 @@ async function check() {
         for await (const chunk of stream) {
             emittedAnyChunk = true;
 
+            if (chunk.checked !== undefined) {
+                checkedCount.value = chunk.checked;
+            }
+            if (chunk.total !== undefined) {
+                totalCount.value = chunk.total;
+            }
+
             if (!chunk?.rules?.length) {
                 if (!validationResult.value) {
                     validationResult.value = { rules: [] };
                 }
-                continue;
-            }
+            } else {
+                let rulesChanged = false;
 
-            let rulesChanged = false;
+                for (const rule of chunk.rules) {
+                    const key = createRuleKey(rule);
+                    if (seenRuleKeys.has(key)) {
+                        continue;
+                    }
 
-            for (const rule of chunk.rules) {
-                const key = createRuleKey(rule);
-                if (seenRuleKeys.has(key)) {
-                    continue;
+                    seenRuleKeys.add(key);
+                    aggregatedRules.push(rule);
+                    rulesChanged = true;
                 }
 
-                seenRuleKeys.add(key);
-                aggregatedRules.push(rule);
-                rulesChanged = true;
+                if (rulesChanged || !validationResult.value) {
+                    validationResult.value = {
+                        rules: aggregatedRules.map((rule) => ({ ...rule })),
+                    };
+                }
             }
 
-            if (rulesChanged || !validationResult.value) {
-                validationResult.value = {
-                    rules: aggregatedRules.map((rule) => ({ ...rule })),
-                };
+            if (
+                totalCount.value > 0 &&
+                checkedCount.value === totalCount.value
+            ) {
+                break;
             }
         }
 
@@ -242,6 +259,27 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
                 ></span>
                 {{ t("advisor.check") }}
             </UButton>
+
+            <!-- Progress indication -->
+            <div v-if="isLoading" class="mt-3 space-y-1">
+                <div
+                    class="flex justify-between text-xs text-gray-500 dark:text-gray-400"
+                >
+                    <span>{{ t("advisor.checkingProgress") }}</span>
+                    <span class="font-medium"
+                        >{{ checkedCount }}
+                        / {{ totalCount }}</span
+                    >
+                </div>
+                <UProgress
+                    v-if="totalCount > 0"
+                    :model-value="checkedCount"
+                    :max="totalCount"
+                    size="sm"
+                    color="primary"
+                />
+                <UProgress v-else size="sm" color="primary" />
+            </div>
         </div>
 
         <div v-if="validationResult" class="flex flex-col">

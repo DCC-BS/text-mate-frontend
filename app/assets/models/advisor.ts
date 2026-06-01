@@ -21,4 +21,6 @@ export type AdvisorRuleViolation = {
 
 export type ValidationResult = {
     rules: AdvisorRuleViolation[];
+    checked?: number;
+    total?: number;
 };

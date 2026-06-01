@@ -36,6 +36,8 @@ type AdvisorRuleViolation = {
 
 type ValidationResult = {
     rules: AdvisorRuleViolation[];
+    checked?: number;
+    total?: number;
 };
 
 async function dummyFetcher(options: FetcherOptions<BodyType>) {
@@ -61,6 +63,8 @@ async function dummyFetcher(options: FetcherOptions<BodyType>) {
                           source: "https://www.duden.de/rechtschreibung/passiv",
                       },
                   ],
+                  checked: 5,
+                  total: 10,
               },
               {
                   rules: [
@@ -78,9 +82,11 @@ async function dummyFetcher(options: FetcherOptions<BodyType>) {
                           source: "https://www.duden.de/sprachwissen/sprachratgeber/Fuellwoerter",
                       },
                   ],
+                  checked: 10,
+                  total: 10,
               },
           ]
-        : [{ rules: [] }];
+        : [{ rules: [], checked: 0, total: 0 }];
 
     const stream = toStream(items);
 
