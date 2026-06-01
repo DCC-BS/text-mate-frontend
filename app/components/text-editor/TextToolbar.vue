@@ -21,6 +21,7 @@ const emit = defineEmits<(e: "upload-file") => void>();
 
 const { executeCommand, onCommand } = useCommandBus();
 const { t } = useI18n();
+const toast = useToast();
 const undoRedoState = reactive({
     canUndo: false,
     canRedo: false,
@@ -28,6 +29,8 @@ const undoRedoState = reactive({
 
 // State to control the popover
 const isStatsPopoverOpen = ref(false);
+
+const copySuccess = ref(false);
 
 onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
     undoRedoState.canUndo = command.canUndo;
@@ -50,6 +53,66 @@ function handleUndo(): void {
 
 function handleRedo(): void {
     executeCommand(new RedoCommand());
+}
+
+async function copyToClipboard(): Promise<void> {
+    if (!props.text || !import.meta.client) {
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(props.text);
+        copySuccess.value = true;
+        setTimeout(() => {
+            copySuccess.value = false;
+        }, 2000);
+        toast.add({
+            title: t("toolbar.copySuccess"),
+            color: "success",
+            icon: "i-lucide-check-circle",
+            duration: 2000,
+        });
+    } catch {
+        toast.add({
+            title: t("toolbar.copyFailed"),
+            color: "error",
+            icon: "i-lucide-alert-circle",
+            duration: 3000,
+        });
+    }
+}
+
+async function downloadWord(): Promise<void> {
+    if (!props.text || !import.meta.client) {
+        return;
+    }
+
+    try {
+        const filename = `textmate-${new Date().toISOString().slice(0, 10)}.docx`;
+        const blob = await markdownToDocx(props.text);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.add({
+            title: t("toolbar.downloadSuccess"),
+            description: filename,
+            color: "success",
+            icon: "i-lucide-check-circle",
+            duration: 3000,
+        });
+    } catch {
+        toast.add({
+            title: t("toolbar.downloadFailed"),
+            color: "error",
+            icon: "i-lucide-alert-circle",
+            duration: 3000,
+        });
+    }
 }
 </script>
 
@@ -82,6 +145,26 @@ function handleRedo(): void {
                     variant="link"
                     color="neutral"
                     @click="emit('upload-file')"
+                />
+            </UTooltip>
+            <UTooltip :text="t('toolbar.copyToClipboard')">
+                <UButton
+                    :icon="copySuccess ? 'i-lucide-check' : 'i-lucide-clipboard'"
+                    variant="link"
+                    :color="copySuccess ? 'success' : 'neutral'"
+                    :disabled="!props.text"
+                    data-testid="copyToClipboardButton"
+                    @click="copyToClipboard"
+                />
+            </UTooltip>
+            <UTooltip :text="t('toolbar.downloadWord')">
+                <UButton
+                    icon="i-lucide-download"
+                    variant="link"
+                    color="neutral"
+                    :disabled="!props.text"
+                    data-testid="downloadWordButton"
+                    @click="downloadWord"
                 />
             </UTooltip>
         </div>

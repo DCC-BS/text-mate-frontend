@@ -30,6 +30,14 @@
         "signOut": "Sign Out",
         "app": "TextMate"
     },
+    "toolbar": {
+        "copyToClipboard": "Copy to clipboard",
+        "copySuccess": "Copied to clipboard",
+        "copyFailed": "Copy failed",
+        "downloadWord": "Download as Word",
+        "downloadSuccess": "Word document downloaded",
+        "downloadFailed": "Download failed"
+    },
     "tools": {
         "rewrite": "Rewrite",
         "advisor": "Review"

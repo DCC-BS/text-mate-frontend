@@ -31,6 +31,7 @@
         "@iconify-json/flag": "^1.2.10",
         "@iconify-json/lucide": "^1.2.85",
         "@iconify-json/simple-icons": "^1.2.66",
+        "@mohtasham/md-to-docx": "git+https://github.com/DCC-BS/md-to-docx.js#v3.0.0",
         "@nuxt/ui": "4.7.1",
         "@nuxtjs/i18n": "^10.2.1",
         "@nuxtjs/mdc": "0.21.1",
