@@ -3,7 +3,8 @@ export type AdvisorDocumentDescription = {
     description: string;
     author: string;
     edition: string;
-    file: string;
+    id: string;
+    files: string[];
 };
 
 export type AdvisorRuleViolation = {
@@ -15,6 +16,7 @@ export type AdvisorRuleViolation = {
     reason: string;
     proposal: string;
     source: string;
+    collection: string;
 };
 
 export type ValidationResult = {

@@ -53,12 +53,17 @@ watch(
 
 function createRuleKey(rule: AdvisorRuleViolation): string {
     return [
+        rule.collection ?? "",
         rule.file_name ?? "",
         rule.page_number ?? "",
         rule.name ?? "",
         rule.description ?? "",
         rule.reason ?? "",
     ].join("|");
+}
+
+function collectionTitle(rule: AdvisorRuleViolation): string {
+    return advisorService.value?.getDocById(rule.collection)?.title ?? "";
 }
 
 function changeRuleIndex(delta: number) {
@@ -118,7 +123,7 @@ async function check() {
     try {
         const stream = advisorService.value.validate(
             props.text,
-            selectedDocs.value.map((doc) => doc.file),
+            selectedDocs.value.map((doc) => doc.id),
             abortController.signal,
         );
 
@@ -337,6 +342,19 @@ async function openPdfView(ruel: AdvisorRuleViolation) {
                                         {{ currentRule.proposal }}
                                     </p>
                                 </div>
+                            </div>
+
+                            <div
+                                v-if="collectionTitle(currentRule)"
+                                class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400"
+                            >
+                                <UIcon
+                                    name="i-lucide-library"
+                                    class="mr-1 shrink-0"
+                                />
+                                <span class="truncate"
+                                    >{{ collectionTitle(currentRule) }}</span
+                                >
                             </div>
 
                             <div
