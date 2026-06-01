@@ -30,6 +30,14 @@
         "signOut": "Abmelden",
         "app": "TextMate"
     },
+    "toolbar": {
+        "copyToClipboard": "In Zwischenablage kopieren",
+        "copySuccess": "In Zwischenablage kopiert",
+        "copyFailed": "Kopieren fehlgeschlagen",
+        "downloadWord": "Als Word herunterladen",
+        "downloadSuccess": "Word-Dokument heruntergeladen",
+        "downloadFailed": "Download fehlgeschlagen"
+    },
     "tools": {
         "rewrite": "Umschreiben",
         "advisor": "Überprüfen"
