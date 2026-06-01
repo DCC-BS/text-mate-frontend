@@ -9,6 +9,7 @@ import {
     HideTextStatsCommand,
     RegisterDiffCommand,
     type RestartTourCommand,
+    RunExampleQuickActionCommand,
     ShowTextStatsCommand,
     ToolSwitchCommand,
 } from "~/assets/models/commands";
@@ -26,9 +27,20 @@ const showTour = ref(false);
 const tourIsActive = ref(false);
 const trapFocus = ref(false);
 
+// Ensures the example quick action runs only once per tour run, even when the
+// user navigates back and forth across the rewrite steps.
+const exampleActionRun = ref(false);
+
+async function runExampleQuickAction(): Promise<void> {
+    if (exampleActionRun.value) return;
+    exampleActionRun.value = true;
+    await executeCommand(new RunExampleQuickActionCommand());
+}
+
 // Tour control functions
 function startTour(): void {
     showTour.value = true;
+    exampleActionRun.value = false;
     tour.value?.startTour();
 }
 
@@ -113,19 +125,6 @@ const steps = [
         },
     },
     {
-        target: '[data-tour="rewrite"]',
-        title: t("tour.rewrite.title"),
-        body: t("tour.rewrite.content"),
-    },
-    {
-        target: '[data-tour="rewrite-toolpanel"]',
-        title: t("tour.rewriteToolpanel.title"),
-        body: t("tour.rewriteToolpanel.content"),
-        popperConfig: {
-            placement: "top",
-        },
-    },
-    {
         target: '[data-tour="language-select"]',
         title: t("tour.language.title"),
         body: t("tour.language.content"),
@@ -172,6 +171,36 @@ const steps = [
         },
         onPrev: async () => {
             await executeCommand(new HideTextStatsCommand());
+        },
+    },
+    {
+        target: '[data-tour="rewrite"]',
+        title: t("tour.rewrite.title"),
+        body: t("tour.rewrite.content"),
+        onShow: async () => {
+            // Make sure the rewrite view is visible and populate the diff with a
+            // real quick action so the following steps have content to point at.
+            await executeCommand(new ToolSwitchCommand("rewrite"));
+            await runExampleQuickAction();
+        },
+        onPrev: async () => {
+            await executeCommand(new ToolSwitchCommand("rewrite"));
+        },
+    },
+    {
+        target: '[data-tour="rewrite-toolpanel"]',
+        title: t("tour.rewriteToolpanel.title"),
+        body: t("tour.rewriteToolpanel.content"),
+        popperConfig: {
+            placement: "top",
+        },
+    },
+    {
+        target: '[data-tour="retry-quick-action"]',
+        title: t("tour.retry.title"),
+        body: t("tour.retry.content"),
+        popperConfig: {
+            placement: "top",
         },
     },
     {

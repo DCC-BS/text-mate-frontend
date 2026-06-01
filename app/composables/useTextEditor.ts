@@ -108,8 +108,12 @@ export function useTextEditor(options: UseTextEditorOptions) {
         const text = command.text;
         const range = command.range;
 
-        editor.value
-            .chain()
+        const chain = editor.value.chain();
+        if (!command.addToHistory) {
+            chain.setMeta("addToHistory", false);
+        }
+
+        chain
             .setTextSelection(range)
             .insertContent(text, { applyInputRules: true })
             .focus(range.from)
