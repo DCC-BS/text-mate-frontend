@@ -49,7 +49,7 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
 </script>
 
 <template>
-    <div class="p-2 w-full h-full">
+    <div class="p-2 w-full md:h-full">
         <SplitContainer>
             <template #header>
                 <div class="flex items-center w-full flex-1">
@@ -89,7 +89,9 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
             </template>
 
             <template #right>
-                <ToolPanel :text="userText" :selectedText="selectedText" />
+                <div class="h-[400px] md:h-full">
+                    <ToolPanel :text="userText" :selectedText="selectedText" />
+                </div>
             </template>
         </SplitContainer>
     </div>
