@@ -14,6 +14,8 @@ TextMate is a modern web application for advanced text editing and document vali
 
 ---
 
+https://github.com/user-attachments/assets/de988b87-5f72-426d-b6d1-4bd19cd43664
+
 ## Features
 
 ### Core Capabilities
