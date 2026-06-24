@@ -1,4 +1,8 @@
 import type { FetcherOptions } from "#layers/backend_communication/server/types/fetcher";
+import type {
+    AdvisorCheckChunk,
+    AdvisorCheckViolation,
+} from "#shared/advisorV2";
 
 type BodyType = { text: string; docs: string[] };
 
@@ -31,24 +35,6 @@ export default apiHandler
     .build("/advisor/check");
 
 // DUMMY
-
-type AdvisorRange = { start: number; end: number };
-
-type AdvisorCheckViolation = {
-    range: AdvisorRange;
-    rule_name: string;
-    collection: string;
-    reason: string;
-    proposal: string;
-    file_name: string;
-    page_number: number;
-};
-
-type AdvisorCheckChunk = {
-    violations: AdvisorCheckViolation[];
-    checked?: number;
-    total?: number;
-};
 
 /**
  * Sample violations modelled on the "Geschlechtergerechte Sprache" leitfaden,

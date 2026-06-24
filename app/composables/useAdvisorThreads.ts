@@ -65,12 +65,6 @@ export function useAdvisorThreads() {
         }
     }
 
-    function bulkSetStatus(status: AdvisorThreadStatus): void {
-        for (const thread of threads.value) {
-            thread.status = status;
-        }
-    }
-
     function deleteThread(id: string): void {
         threads.value = threads.value.filter((t) => t.id !== id);
         if (focusedId.value === id) {
@@ -124,13 +118,6 @@ export function useAdvisorThreads() {
         }
     }
 
-    /** Finds a thread whose range overlaps the given selection, if any. */
-    function findOverlapping(range: AdvisorRange): AdvisorThread | undefined {
-        return threads.value.find(
-            (t) => range.start < t.range.end && range.end > t.range.start,
-        );
-    }
-
     function clear(): void {
         threads.value = [];
         focusedId.value = null;
@@ -145,13 +132,11 @@ export function useAdvisorThreads() {
         setViolations,
         focusThread,
         setStatus,
-        bulkSetStatus,
         deleteThread,
         addUserThread,
         addNote,
         updateNote,
         deleteNote,
-        findOverlapping,
         clear,
     };
 }

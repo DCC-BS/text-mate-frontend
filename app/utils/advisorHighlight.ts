@@ -9,9 +9,7 @@ export interface AdvisorHighlightPayload {
     focusedId: string | null;
 }
 
-export const advisorHighlightKey = new PluginKey<DecorationSet>(
-    "advisorHighlight",
-);
+const advisorHighlightKey = new PluginKey<DecorationSet>("advisorHighlight");
 
 /** Meta key used to push new highlight state into the plugin. */
 const HIGHLIGHT_META = "advisorHighlight";
@@ -78,13 +76,24 @@ function posForOffset(
         return first.pos;
     }
 
-    const entry = map.entries.find((e) => e.offset === offset);
-    if (entry) {
-        return entry.pos;
-    }
-
     if (offset >= map.total) {
         return last.pos + 1;
+    }
+
+    // Exact character boundary: the position immediately before that char.
+    const exact = map.entries.find((e) => e.offset === offset);
+    if (exact) {
+        return exact.pos;
+    }
+
+    // Offset falls between entries (e.g. on a paragraph separator, which has no
+    // entry). Snap to just after the nearest preceding character so the range
+    // still terminates at the end of that text node rather than being dropped.
+    for (let i = map.entries.length - 1; i >= 0; i--) {
+        const candidate = map.entries[i];
+        if (candidate && candidate.offset < offset) {
+            return candidate.pos + 1;
+        }
     }
 
     return undefined;

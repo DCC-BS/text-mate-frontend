@@ -21,6 +21,7 @@ const DEFAULT_TEXT =
 const { t } = useI18n();
 const toast = useToast();
 const overlay = useOverlay();
+const logger = useLogger();
 const { addProgress, removeProgress } = useUseProgressIndication();
 
 // --- Services -----------------------------------------------------------
@@ -147,7 +148,7 @@ async function runCheck(): Promise<void> {
 
         for await (const chunk of stream) {
             for (const violation of chunk.violations) {
-                const key = `${violation.range.start}:${violation.range.end}:${violation.rule_name}`;
+                const key = `${violation.range.start}:${violation.range.end}:${violation.rule_name}:${violation.file_name}:${violation.page_number}`;
                 if (seen.has(key)) {
                     continue;
                 }
@@ -162,7 +163,7 @@ async function runCheck(): Promise<void> {
         if (error instanceof ApiError && error.errorId === "request_aborted") {
             return;
         }
-        console.error(error);
+        logger.error(error, "Advisor v2 check failed");
         toast.add({
             title: t("advisorV2.error"),
             description: error instanceof Error ? error.message : undefined,
@@ -222,7 +223,7 @@ async function applyFix(): Promise<void> {
         if (error instanceof ApiError && error.errorId === "request_aborted") {
             return;
         }
-        console.error(error);
+        logger.error(error, "Advisor v2 fix failed");
         toast.add({
             title: t("advisorV2.error"),
             description: error instanceof Error ? error.message : undefined,
@@ -275,7 +276,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
             onClose: () => pdfModal.close(),
         });
     } catch (error) {
-        console.error(error);
+        logger.error(error, "Advisor v2: failed to open PDF");
     }
 }
 

@@ -1,14 +1,7 @@
 import type { FetcherOptions } from "#layers/backend_communication/server/types/fetcher";
+import type { AdvisorFixThread } from "#shared/advisorV2";
 
-type FixThread = {
-    snippet: string;
-    rule_name?: string;
-    reason?: string;
-    proposal?: string;
-    notes: string[];
-};
-
-type BodyType = { text: string; threads: FixThread[] };
+type BodyType = { text: string; threads: AdvisorFixThread[] };
 
 /**
  * Advisor v2 "fix" endpoint.
@@ -51,7 +44,7 @@ const WORD_FIXES: Record<string, [find: string, replace: string]> = {
     Antragsteller: ["den Antragsteller", "die antragstellende Person"],
 };
 
-function applyFixes(text: string, threads: FixThread[]): string {
+function applyFixes(text: string, threads: AdvisorFixThread[]): string {
     let corrected = text;
 
     for (const thread of threads) {

@@ -22,6 +22,17 @@ interface Props {
 
 const props = defineProps<Props>();
 
+/** Connector line colours (Theme A — quiet). */
+const CONNECTOR_COLOR = "#bababa";
+const CONNECTOR_FOCUS_COLOR = "#a56cc9";
+const CONNECTOR_SKIP_COLOR = "#e3e3e3";
+
+/** Add-comment popover geometry. */
+const POPOVER_WIDTH = 300;
+const POPOVER_HALF_WIDTH = POPOVER_WIDTH / 2;
+/** Minimum left inset so the popover never clips the content edge. */
+const POPOVER_MIN_LEFT = 8;
+
 const emit = defineEmits<{
     focus: [id: string | null];
     setStatus: [id: string, status: AdvisorThreadStatus];
@@ -119,9 +130,9 @@ function layout(): void {
         x1,
         x2,
         focusedId: props.focusedId,
-        connColor: "#bababa",
-        connFocusColor: "#a56cc9",
-        connSkipColor: "#e3e3e3",
+        connColor: CONNECTOR_COLOR,
+        connFocusColor: CONNECTOR_FOCUS_COLOR,
+        connSkipColor: CONNECTOR_SKIP_COLOR,
     });
 
     cardTops.value = result.tops;
@@ -135,23 +146,36 @@ function layout(): void {
     contentMinHeight.value = `${height}px`;
 }
 
+// All layout triggers (reactive changes, window resize, card resize) funnel
+// through one rAF-coalesced scheduler so they collapse into a single measure
+// per frame instead of running layout() multiple times.
+let layoutScheduled = false;
 function scheduleLayout(): void {
-    nextTick(() => requestAnimationFrame(layout));
+    if (layoutScheduled) {
+        return;
+    }
+    layoutScheduled = true;
+    nextTick(() =>
+        requestAnimationFrame(() => {
+            layoutScheduled = false;
+            layout();
+        }),
+    );
 }
 
 let resizeObserver: ResizeObserver | undefined;
 
 onMounted(() => {
     scheduleLayout();
-    window.addEventListener("resize", layout);
+    window.addEventListener("resize", scheduleLayout);
     if (cardsEl.value) {
-        resizeObserver = new ResizeObserver(() => layout());
+        resizeObserver = new ResizeObserver(scheduleLayout);
         resizeObserver.observe(cardsEl.value);
     }
 });
 
 onBeforeUnmount(() => {
-    window.removeEventListener("resize", layout);
+    window.removeEventListener("resize", scheduleLayout);
     resizeObserver?.disconnect();
 });
 
@@ -384,9 +408,10 @@ function cancelPopover(): void {
             <!-- Add-comment popover -->
             <div
                 v-if="popover"
-                class="absolute z-50 w-[300px] rounded-[10px] border border-gray-200 bg-white p-3.5 shadow-lg"
+                class="absolute z-50 rounded-[10px] border border-gray-200 bg-white p-3.5 shadow-lg"
                 :style="{
-                    left: `${Math.max(8, popover.x - 150)}px`,
+                    width: `${POPOVER_WIDTH}px`,
+                    left: `${Math.max(POPOVER_MIN_LEFT, popover.x - POPOVER_HALF_WIDTH)}px`,
                     top: `${popover.y}px`,
                 }"
             >
