@@ -2,6 +2,7 @@ import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type { AdvisorDocumentDescription } from "~/assets/models/advisor";
 import { UserDictionaryQuery } from "~/assets/queries/user_dictionary.query";
 import { AdvisorService } from "~/assets/services/AdvisorService";
+import { AdvisorV2Service } from "~/assets/services/AdvisorV2Service";
 
 export default defineNuxtPlugin((nuxtApp) => {
     const orchestrator = new ServiceOrchestrator();
@@ -38,6 +39,8 @@ export default defineNuxtPlugin((nuxtApp) => {
             [],
             "advisorService",
         );
+
+        builder.register(AdvisorV2Service);
     });
 
     nuxtApp.provide("serviceOrchestrator", orchestrator);
