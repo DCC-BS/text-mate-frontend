@@ -21,7 +21,12 @@ export default apiHandler
     .withBodyProvider<BodyType>(async (event) => {
         const { text, docs } = await readBody(event);
 
-        if (!text || !docs || !Array.isArray(docs) || docs.length > 5) {
+        if (
+            !text ||
+            !Array.isArray(docs) ||
+            docs.length < 1 ||
+            docs.length > 5
+        ) {
             throw createError({
                 statusCode: 400,
                 statusMessage: "Invalid input",

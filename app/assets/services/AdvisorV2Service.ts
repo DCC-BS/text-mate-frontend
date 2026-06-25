@@ -70,6 +70,11 @@ export class AdvisorV2Service {
                 }
                 yield decoder.decode(value, { stream: true });
             }
+
+            const tail = decoder.decode();
+            if (tail) {
+                yield tail;
+            }
         } finally {
             reader.releaseLock();
         }
@@ -109,6 +114,8 @@ export class AdvisorV2Service {
                     separatorIndex = buffer.indexOf("\n\n");
                 }
             }
+
+            buffer += decoder.decode();
 
             if (buffer.trim().length > 0) {
                 const payload = this.parseBlock(buffer, parse);
