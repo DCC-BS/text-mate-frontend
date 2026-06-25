@@ -86,7 +86,7 @@ export function useAdvisorEditor(options: UseAdvisorEditorOptions) {
         if (current.getText() === value) {
             return;
         }
-        current.commands.setContent(textToHtml(value), false);
+        current.commands.setContent(textToHtml(value), { emitUpdate: false });
         nextTick(syncHighlights);
     });
 

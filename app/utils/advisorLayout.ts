@@ -72,13 +72,15 @@ export function computeAdvisorLayout(
         return item;
     };
 
+    const topAt = (index: number): number => tops[index] ?? 0;
+
     if (focusIndex >= 0) {
         tops[focusIndex] = Math.max(0, itemAt(focusIndex).anchor);
 
         for (let i = focusIndex + 1; i < sorted.length; i++) {
             tops[i] = Math.max(
                 itemAt(i).anchor,
-                tops[i - 1] + itemAt(i - 1).height + GAP,
+                topAt(i - 1) + itemAt(i - 1).height + GAP,
             );
         }
 
@@ -87,7 +89,7 @@ export function computeAdvisorLayout(
                 0,
                 Math.min(
                     itemAt(i).anchor,
-                    tops[i + 1] - GAP - itemAt(i).height,
+                    topAt(i + 1) - GAP - itemAt(i).height,
                 ),
             );
         }
@@ -98,7 +100,7 @@ export function computeAdvisorLayout(
                     ? Math.max(0, itemAt(i).anchor)
                     : Math.max(
                           itemAt(i).anchor,
-                          tops[i - 1] + itemAt(i - 1).height + GAP,
+                          topAt(i - 1) + itemAt(i - 1).height + GAP,
                       );
         }
     }

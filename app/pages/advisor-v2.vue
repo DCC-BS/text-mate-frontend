@@ -271,7 +271,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
         const blob = await advisorService.value.getDocFile(thread.file_name);
         pdfModal.open({
             file: blob,
-            page: thread.page_number,
+            page: thread.page_number ?? 1,
             fileName: thread.file_name,
             onClose: () => pdfModal.close(),
         });
