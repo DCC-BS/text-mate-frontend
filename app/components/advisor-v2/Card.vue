@@ -76,13 +76,14 @@ function onReplyKey(event: KeyboardEvent): void {
 <template>
     <div
         :data-card-id="thread.id"
-        class="advisor-card absolute left-0 w-full box-border rounded-[10px] bg-white p-[13px_15px] border transition-[top,box-shadow,opacity] duration-200"
-        :class="[
-            focused
-                ? 'border-purple-300 shadow-md'
-                : 'border-gray-200 shadow-sm',
-            thread.status === 'skip' ? 'opacity-50 grayscale-[0.5]' : '',
-        ]"
+        class="advisor-card absolute left-0 w-full box-border rounded-[10px] p-[13px_15px] border transition-[top,box-shadow] duration-200"
+        :class="
+            thread.status === 'skip'
+                ? 'bg-gray-100 border-gray-200 grayscale'
+                : focused
+                  ? 'bg-white border-purple-300 shadow-md'
+                  : 'bg-white border-gray-200 shadow-sm'
+        "
         @mousedown="emit('focus')"
     >
         <!-- User comment header -->
