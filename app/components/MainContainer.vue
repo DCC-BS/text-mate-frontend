@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { AnimatePresence, motion } from "motion-v";
 import {
     Cmds,
     type ToggleEditableEditorCommand,
-    type ToggleLockEditorCommand,
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
 import type { TextTools } from "~/types/TextTools";
-import TextEditor from "./TextEditor.vue";
-import ToolPanel from "./ToolPanel.vue";
+import { motion, AnimatePresence } from "motion-v";
 
 // refs
 const userText = ref("");
@@ -50,8 +47,10 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
 
 <template>
     <div class="p-2 w-full md:h-full">
-        <SplitContainer>
-            <template #header>
+        <div
+            class="h-full w-full shadow-[2px_2px_1px_1px_#0000000D] ring-1 ring-default rounded-md flex flex-col"
+        >
+            <div class="border-b-1 border-default p-4">
                 <div class="flex items-center w-full flex-1">
                     <div class="flex-1"></div>
                     <ToolSelectView class="flex-1" />
@@ -77,23 +76,20 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
                         }"
                     />
                 </AnimatePresence>
-            </template>
+            </div>
 
-            <template #left>
-                <div class="w-full md:h-full relative h-[400px]">
-                    <TextEditor
-                        v-model="userText"
-                        v-model:selectedText="selectedText"
-                    />
-                </div>
-            </template>
+            <div
+                class="grow overflow-hidden flex flex-col md:flex-row justify-stretch items-stretch"
+            >
+                <RewriteWrapper
+                    v-if="currentTool === 'rewrite'"
+                    v-model="userText"
+                    :selectedText="selectedText"
+                />
 
-            <template #right>
-                <div class="h-[400px] md:h-full">
-                    <ToolPanel :text="userText" :selectedText="selectedText" />
-                </div>
-            </template>
-        </SplitContainer>
+                <AdvisorWrapper v-else v-model="userText" />
+            </div>
+        </div>
     </div>
 
     <div class="fixed bottom-5 left-0 right-0"><ProgressIndication /></div>

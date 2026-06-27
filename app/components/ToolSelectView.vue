@@ -41,7 +41,7 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (command) => {
         <UButton
             layout
             :variant="activeTool === 'advisor' ? 'soft' : 'link'"
-            :color="activeTool === 'advisor' ? 'primary' : 'neutral'"
+            color="neutral"
             @click="switchTool('advisor')"
         >
             {{ t("tools.advisor") }}

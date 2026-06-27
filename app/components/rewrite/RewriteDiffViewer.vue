@@ -176,7 +176,7 @@ function retry() {
         </div>
     </div>
 
-    <div class="overflow-y-auto absolute inset-0 p-1  dark">
+    <div class="overflow-y-auto absolute inset-0 p-1 dark">
         <div>
             <template
                 v-for="change in changes"
@@ -188,15 +188,20 @@ function retry() {
                     >
                         <pre
                             class="bg-red-100 group-hover:bg-red-200 inline text-wrap"
-                        >{{ change.removedText }}</pre>
+                            >{{ change.removedText }}</pre
+                        >
                         <UIcon
                             name="i-lucide-arrow-right"
                             class="mx-2"
-                            v-if="change.removedText.length > 0 && change.addedText.length > 0"
+                            v-if="
+                                change.removedText.length > 0 &&
+                                change.addedText.length > 0
+                            "
                         />
                         <pre
                             class="bg-green-100 group-hover:bg-green-200 inline text-wrap"
-                        >{{ change.addedText }}</pre>
+                            >{{ change.addedText }}</pre
+                        >
                     </span>
                     <template #content>
                         <div class="p-2 ring-1 ring-gray-400 rounded-md">
@@ -206,17 +211,17 @@ function retry() {
                                 icon="i-lucide-undo"
                                 @click="undo(change)"
                             >
-                                {{ $t('rewrite-diff-viewer.undo') }}
+                                {{ $t("rewrite-diff-viewer.undo") }}
                             </UButton>
                         </div>
                     </template>
                 </UPopover>
-                <span v-else class="text-wrap"
-                    >{{ change.diffs.map(x => x.value).join('') }}</span
-                >
+                <span v-else class="text-wrap">{{
+                    change.diffs.map((x) => x.value).join("")
+                }}</span>
             </template>
             <div v-if="!changes.length" class="text-gray-600 text-center mt-5">
-                {{ $t('rewrite-diff-viewer.noChangesYet') }}
+                {{ $t("rewrite-diff-viewer.noChangesYet") }}
             </div>
         </div>
     </div>

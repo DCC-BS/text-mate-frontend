@@ -207,22 +207,11 @@ const steps = [
         target: '[data-tour="tool-switch"]',
         title: t("tour.check.title"),
         body: t("tour.check.content"),
-        onShow: async () => {
-            await executeCommand(new ToolSwitchCommand("advisor"));
-        },
-        onNext: async () => {
-            await executeCommand(new ToolSwitchCommand("advisor"));
-        },
         onPrev: async () => {
             await executeCommand(new ToolSwitchCommand("rewrite"));
         },
     },
 
-    {
-        target: '[data-tour="advisor"]',
-        title: t("tour.advisor.title"),
-        body: t("tour.advisor.content"),
-    },
     {
         target: '[data-tour="start-tour"]',
         title: t("tour.conclusion.title"),

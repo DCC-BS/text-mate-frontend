@@ -1,0 +1,26 @@
+{
+    "kind": "critique-panel",
+    "score": 4,
+    "axes": {
+        "clarity": {
+            "score": 4,
+            "notes": "Faithful to design doc: doc selection → check → threads → diff → apply. Every action is discoverable."
+        },
+        "hierarchy": {
+            "score": 4,
+            "notes": "Split-pane with clear thread card structure. Diff viewer isolates changes with per-hunk bars."
+        },
+        "typography": {
+            "score": 5,
+            "notes": "Inter 14px UI / 18px editor. Mono for metadata. TextMate fallback stack shipped."
+        },
+        "motion": {
+            "score": 4,
+            "notes": "Overlay transitions, toast, float-pop animation. Could add slide transitions for rail/diff."
+        },
+        "brand": {
+            "score": 4,
+            "notes": "TextMate palette strict: 6 tokens + teal secondary. Lucide icons. 6px radius. Read-only badge + mode toggle."
+        }
+    }
+}

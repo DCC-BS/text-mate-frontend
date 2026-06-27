@@ -1,0 +1,98 @@
+/* ─── Advisor inline thread marks ───────────────────────────────────
+   Rendered by the advisorDecorations ProseMirror plugin. Pure visuals —
+   no document markup, so getText() offsets stay authoritative. */
+
+.advisor-mark {
+    background-color: color-mix(
+        in srgb,
+        var(--color-primary-500, #a56cc9) 12%,
+        transparent
+    );
+    border-bottom: 2px solid
+        color-mix(in srgb, var(--color-primary-500, #a56cc9) 40%, transparent);
+    border-radius: 2px;
+    padding: 1px 2px;
+    cursor: pointer;
+    transition: background-color 0.14s ease;
+}
+
+.advisor-mark:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-primary-500, #a56cc9) 22%,
+        transparent
+    );
+}
+
+.advisor-mark--active {
+    background-color: color-mix(
+        in srgb,
+        var(--color-primary-500, #a56cc9) 26%,
+        transparent
+    );
+    border-bottom-color: var(--color-primary-500, #a56cc9);
+    font-weight: 600;
+}
+
+.advisor-mark--skip {
+    background-color: color-mix(
+        in srgb,
+        var(--color-gray-400, #94a3b8) 8%,
+        transparent
+    );
+    border-bottom-color: color-mix(
+        in srgb,
+        var(--color-gray-400, #94a3b8) 20%,
+        transparent
+    );
+    text-decoration: line-through;
+    text-decoration-color: color-mix(
+        in srgb,
+        var(--color-gray-400, #94a3b8) 45%,
+        transparent
+    );
+}
+
+.advisor-mark--user {
+    background-color: color-mix(
+        in srgb,
+        var(--color-secondary-500, #00b590) 12%,
+        transparent
+    );
+    border-bottom: 2px solid
+        color-mix(in srgb, var(--color-secondary-500, #00b590) 40%, transparent);
+}
+
+.advisor-mark--user.advisor-mark--active {
+    background-color: color-mix(
+        in srgb,
+        var(--color-secondary-500, #00b590) 24%,
+        transparent
+    );
+}
+
+/* ─── Advisor diff tokens ─────────────────────────────────────────── */
+
+.advisor-diff-del {
+    text-decoration: line-through;
+    text-decoration-color: var(--color-primary-500, #a56cc9);
+    color: var(--color-gray-500, #64748b);
+    background-color: color-mix(
+        in srgb,
+        var(--color-primary-500, #a56cc9) 14%,
+        transparent
+    );
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+.advisor-diff-add {
+    color: var(--color-secondary-500, #00b590);
+    background-color: color-mix(
+        in srgb,
+        var(--color-secondary-500, #00b590) 14%,
+        transparent
+    );
+    border-radius: 2px;
+    padding: 0 1px;
+}

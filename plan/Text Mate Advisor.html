@@ -43,12 +43,12 @@
 
   <script>
 
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async () => {
   const loading = document.getElementById('__bundler_loading');
   function setStatus(msg) { if (loading) loading.textContent = msg; }
 
   // Error sink persists across replaceWith since it's on window, not the DOM.
-  window.addEventListener('error', function(e) {
+  window.addEventListener('error', (e) => {
     var p = document.body || document.documentElement;
     var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
     d.id = '__bundler_err';
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         s.textContent = await r.text();
         s.removeAttribute('src');
       }
-      const p = s.src ? new Promise(function(r) { s.onload = s.onerror = r; }) : null;
+      const p = s.src ? new Promise((r) => { s.onload = s.onerror = r; }) : null;
       old.replaceWith(s);
       if (p) await p;
     }

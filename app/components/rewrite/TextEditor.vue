@@ -3,9 +3,9 @@ import { EditorContent } from "@tiptap/vue-3";
 import { useTextFileUpload } from "~/composables/useFileUpload";
 import { useTextAction } from "~/composables/useTextAction";
 import { useTextEditor } from "~/composables/useTextEditor";
-import TextClear from "./text-editor/TextClear.vue";
-import TextRewrite from "./text-editor/TextRewrite.vue";
-import TextToolbar from "./text-editor/TextToolbar.vue";
+import TextClear from "./TextClear.vue";
+import TextRewrite from "./TextRewrite.vue";
+import TextToolbar from "./TextToolbar.vue";
 
 const { t } = useI18n();
 
@@ -151,13 +151,13 @@ function handleFileSelect(event: Event): void {
                 class="hidden"
                 @change="handleFileSelect"
                 accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx"
-            >
+            />
         </div>
     </div>
 </template>
 
 <style lang="css">
-@reference "../assets/css/main.css";
+@reference "../../assets/css/main.css";
 
 /* Text focus styles */
 .focused-sentence {

@@ -149,7 +149,9 @@ async function downloadWord(): Promise<void> {
             </UTooltip>
             <UTooltip :text="t('toolbar.copyToClipboard')">
                 <UButton
-                    :icon="copySuccess ? 'i-lucide-check' : 'i-lucide-clipboard'"
+                    :icon="
+                        copySuccess ? 'i-lucide-check' : 'i-lucide-clipboard'
+                    "
                     variant="link"
                     :color="copySuccess ? 'success' : 'neutral'"
                     :disabled="!props.text"

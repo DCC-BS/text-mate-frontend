@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import RewriteDiffViewer from "./RewriteDiffViewer.vue";
+import TextQuickActionPanel from "./TextQuickActionPanel.vue";
+
 interface RewriteViewProps {
     text: string;
 }
@@ -9,11 +12,11 @@ const props = defineProps<RewriteViewProps>();
 <template>
     <Teleport to=".quick-action-panel">
         <div class="flex justify-between">
-            <ToolPanelTextQuickActionPanel :text="text" />
+            <TextQuickActionPanel :text="text" />
         </div>
     </Teleport>
 
     <div class="w-full h-full relative pb-[35px]">
-        <ToolPanelRewriteDiffViewer :text="text" />
+        <RewriteDiffViewer :text="text" />
     </div>
 </template>

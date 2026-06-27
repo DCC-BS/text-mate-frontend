@@ -1,0 +1,186 @@
+<script lang="ts" setup>
+import { EditorContent } from "@tiptap/vue-3";
+import { useAdvisorEditor } from "~/composables/useAdvisorEditor";
+import { useAdvisorStore } from "~/stores/advisor";
+
+const { t } = useI18n();
+const store = useAdvisorStore();
+const { selection, editor } = useAdvisorEditor(store);
+
+const text = defineModel({ default: "" });
+
+watch(
+    text,
+    () => {
+        store.setText(text.value);
+    },
+    { immediate: true },
+);
+
+const containerRef = ref<HTMLElement | null>(null);
+
+type Bubble = { visible: boolean; top: number; left: number };
+const bubble = ref<Bubble>({ visible: false, top: 0, left: 0 });
+
+const isReview = computed(() =>
+    ["review", "diff", "done"].includes(store.phase),
+);
+
+watch(
+    selection,
+    () => {
+        if (!isReview.value || store.phase !== "review") {
+            bubble.value.visible = false;
+            return;
+        }
+        const sel = selection.value;
+        if (!sel || sel.text.trim().length < 1) {
+            bubble.value.visible = false;
+            return;
+        }
+        const rect = selectionRect();
+        if (!rect) {
+            bubble.value.visible = false;
+            return;
+        }
+        bubble.value = {
+            visible: true,
+            top: rect.top - 38,
+            left: rect.left + rect.width / 2,
+        };
+    },
+    { flush: "post" },
+);
+
+function selectionRect(): DOMRect | null {
+    const domSel = window.getSelection();
+    if (!domSel || domSel.rangeCount === 0) {
+        return null;
+    }
+    const range = domSel.getRangeAt(0);
+    if (range.collapsed) {
+        return null;
+    }
+    const containerRect = containerRef.value?.getBoundingClientRect();
+    const rect = range.getBoundingClientRect();
+    if (!containerRect) {
+        return rect;
+    }
+    return new DOMRect(rect.left, rect.top, rect.width, rect.height);
+}
+
+function addNoteOrReply(): void {
+    const sel = selection.value;
+    if (!sel) {
+        return;
+    }
+    const overlapId = store.threadOverlapping(sel.startOffset, sel.endOffset);
+    if (overlapId) {
+        // Overlaps an existing thread — treat as a reply focus.
+        store.setActive(overlapId);
+    } else {
+        store.addUserThread(
+            { start: sel.startOffset, end: sel.endOffset },
+            sel.text,
+        );
+    }
+    window.getSelection()?.removeAllRanges();
+    bubble.value.visible = false;
+}
+
+function clearBubbleOnExternalClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("[data-advisor-bubble]")) {
+        return;
+    }
+    if (target?.closest(".advisor-mark")) {
+        return;
+    }
+    bubble.value.visible = false;
+}
+
+onMounted(() => {
+    document.addEventListener("mousedown", clearBubbleOnExternalClick);
+});
+onBeforeUnmount(() => {
+    document.removeEventListener("mousedown", clearBubbleOnExternalClick);
+});
+
+const wordCount = computed(
+    () => editor.value?.storage.characterCount?.words() ?? 0,
+);
+</script>
+
+<template>
+    <div
+        ref="containerRef"
+        class="relative w-full h-full flex flex-col"
+        data-tour="advisor-editor"
+    >
+        <div
+            class="flex items-center justify-between px-4 py-2 border-b border-default shrink-0"
+        >
+            <div class="flex items-center gap-1.5">
+                <span
+                    class="flex items-center gap-1.5 text-xs font-medium text-toned border-b-2"
+                    :class="isReview ? 'border-primary' : 'border-secondary'"
+                >
+                    <UIcon
+                        :name="
+                            isReview ? 'i-lucide-sparkles' : 'i-lucide-pencil'
+                        "
+                        class="text-sm"
+                    />
+                    {{ isReview ? t("advisor.title") : t("advisor.editMode") }}
+                </span>
+                <span
+                    v-if="isReview"
+                    class="flex items-center gap-1 text-[11px] text-muted bg-muted/40 rounded-full px-2 py-0.5"
+                >
+                    <UIcon name="i-lucide-lock" class="text-xs" />
+                    {{ t("advisor.readonly") }}
+                </span>
+            </div>
+            <span class="text-xs text-muted"
+                >{{ wordCount }} {{ t("advisor.words") }}</span
+            >
+        </div>
+
+        <div class="flex-1 overflow-y-auto">
+            <div class="max-w-3xl mx-auto p-6">
+                <ClientOnly>
+                    <EditorContent
+                        v-if="editor"
+                        :editor="editor"
+                        class="advisor-editor-content text-[17px] leading-relaxed text-toned"
+                    />
+                    <template #fallback>
+                        <div
+                            class="flex items-center justify-center py-20 text-muted"
+                        >
+                            <UIcon
+                                name="i-lucide-loader-circle"
+                                class="animate-spin text-2xl"
+                            />
+                        </div>
+                    </template>
+                </ClientOnly>
+            </div>
+        </div>
+
+        <Teleport to="body">
+            <button
+                v-if="bubble.visible"
+                type="button"
+                data-advisor-bubble
+                class="fixed z-50 -translate-x-1/2 flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary text-inverted text-xs font-medium shadow-md"
+                :style="{ top: `${bubble.top}px`, left: `${bubble.left}px` }"
+                @mousedown.prevent
+                @click="addNoteOrReply"
+            >
+                <UIcon name="i-lucide-message-square-plus" class="text-sm" />
+                {{ t("advisor.addNote") }}
+            </button>
+        </Teleport>
+    </div>
+</template>
