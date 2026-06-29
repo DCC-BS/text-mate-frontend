@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { ApiError } from "@dcc-bs/communication.bs.js";
 import type { AdvisorRuleViolation } from "~/assets/models/advisor";
-import type { FixThread } from "~~/shared/types/advisor";
 import AdvisorPdfViewer from "~/components/tool-panel/AdvisorPdfViewer.client.vue";
 import { useAdvisorStore } from "~/stores/advisor";
+import type { FixThread } from "~~/shared/types/advisor";
 
 definePageMeta({ layout: false });
 
@@ -310,7 +310,8 @@ const showSplit = computed(() =>
                         <div class="flex justify-between text-xs text-muted">
                             <span>{{ t("advisor.checkingProgress") }}</span>
                             <span
-                                >{{ store.checkedCount }} /
+                                >{{ store.checkedCount }}
+                                /
                                 {{ store.totalCount }}</span
                             >
                         </div>

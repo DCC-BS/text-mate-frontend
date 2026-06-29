@@ -5,9 +5,9 @@ import { useAdvisorStore } from "~/stores/advisor";
 
 const { t } = useI18n();
 const store = useAdvisorStore();
-const { selection, editor } = useAdvisorEditor(store);
 
 const text = defineModel({ default: "" });
+const { selection, editor } = useAdvisorEditor(store, text);
 
 watch(
     text,
@@ -141,9 +141,6 @@ const wordCount = computed(
                     {{ t("advisor.readonly") }}
                 </span>
             </div>
-            <span class="text-xs text-muted"
-                >{{ wordCount }} {{ t("advisor.words") }}</span
-            >
         </div>
 
         <div class="flex-1 overflow-y-auto">

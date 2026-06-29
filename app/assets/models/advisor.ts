@@ -1,43 +1,4 @@
-// export type AdvisorDocumentDescription = {
-//     title: string;
-//     description: string;
-//     author: string;
-//     edition: string;
-//     id: string;
-//     files: string[];
-// };
-
-export type AdvisorRuleViolation = {
-    name: string;
-    description: string;
-    file_name: string;
-    page_number: number;
-    example: string;
-    reason: string;
-    proposal: string;
-    source: string;
-    collection: string;
-    /**
-     * Absolute character offsets of the matched `source` snippet within the
-     * validated text. Absent on the legacy backend; the advisor assumes the
-     * validation stream (or DUMMY mode) provides them.
-     */
-    range?: AdvisorRange;
-};
-
-export type ValidationResult = {
-    rules: AdvisorRuleViolation[];
-    checked?: number;
-    total?: number;
-};
-
-/**
- * Half-open character range `[start, end)` into the validated text.
- */
-export type AdvisorRange = {
-    start: number;
-    end: number;
-};
+import type { AdvisorRuleViolation } from "~~/shared/types/advisor";
 
 /**
  * A user-authored reply attached to a thread. The first violation thread
@@ -56,9 +17,20 @@ export type AdvisorNote = {
  */
 export type AdvisorPhase = "edit" | "review" | "diff" | "done";
 
+export type ValidationProgress = {
+    checked?: number;
+    total?: number;
+};
+
 export type AdvisorThreadStatus = "to-fix" | "skip";
 
 export type AdvisorThreadType = "violation" | "user";
+
+export type AdvisorThreadResult = {
+    threads: AdvisorThread[];
+    checked: number;
+    total: number;
+};
 
 /**
  * Unified thread model backing the rail, the inline marks and the fix
@@ -67,19 +39,9 @@ export type AdvisorThreadType = "violation" | "user";
  */
 export type AdvisorThread = {
     id: string;
-    range: AdvisorRange;
+    violation?: AdvisorRuleViolation;
     type: AdvisorThreadType;
     status: AdvisorThreadStatus;
-    // violation-only context
-    rule_name?: string;
-    description?: string;
-    reason?: string;
-    proposal?: string;
-    source?: string;
-    file_name?: string;
-    page_number?: number;
-    collection?: string;
-    // both
     notes: AdvisorNote[];
 };
 

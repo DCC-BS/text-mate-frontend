@@ -27,10 +27,13 @@ export type AdvisorEditor = ReturnType<typeof useAdvisorEditor>;
  * for every thread, surface click-to-focus on a decoration, and expose the
  * current text selection (positions + offsets) for the "Add Note" bubble.
  */
-export function useAdvisorEditor(store: ReturnType<typeof useAdvisorStore>) {
+export function useAdvisorEditor(
+    store: ReturnType<typeof useAdvisorStore>,
+    text: Ref<string>,
+) {
     const editor = useEditor({
         editable: store.phase === "edit",
-        content: store.text,
+        content: text.value,
         extensions: [
             Document,
             Paragraph,
@@ -75,7 +78,7 @@ export function useAdvisorEditor(store: ReturnType<typeof useAdvisorStore>) {
 
     // Reconcile programmatic text mutations (apply / upload) with the editor.
     watch(
-        () => store.text,
+        () => text.value,
         (value) => {
             const ed = editor.value;
             if (!ed) {

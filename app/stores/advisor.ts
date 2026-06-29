@@ -1,8 +1,6 @@
 import type {
     AdvisorNote,
     AdvisorPhase,
-    AdvisorRange,
-    AdvisorRuleViolation,
     AdvisorThread,
     AdvisorThreadStatus,
 } from "~/assets/models/advisor";

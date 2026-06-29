@@ -27,7 +27,7 @@ const editingNoteId = ref<string | null>(null);
 const editingText = ref("");
 
 const sourceSnippet = computed(() => {
-    const src = props.thread.source ?? "";
+    const src = props.thread.violation?.source ?? "";
     return src.length > 96 ? `${src.slice(0, 93)}…` : src;
 });
 
@@ -118,20 +118,26 @@ function openPdf(): void {
                 <UIcon
                     :name="isUser ? 'i-lucide-message-square' : 'i-lucide-zap'"
                     class="text-sm"
-                    :class="isUser ? 'text-secondary' : isSkip ? 'text-muted' : 'text-primary'"
+                    :class="
+                        isUser
+                            ? 'text-secondary'
+                            : isSkip
+                              ? 'text-muted'
+                              : 'text-primary'
+                    "
                 />
-                {{ isUser ? t("advisor.note") : thread.rule_name }}
+                {{ isUser ? t("advisor.note") : thread.violation?.name }}
             </span>
             <button
-                v-if="thread.file_name"
+                v-if="thread.violation"
                 type="button"
                 class="flex items-center gap-1 text-[11px] text-muted hover:text-primary transition-colors font-mono"
-                :title="`${thread.file_name} · p.${thread.page_number}`"
+                :title="`${thread.violation.file_name} · p.${thread.violation.page_number}`"
                 @click.stop="openPdf"
             >
                 <UIcon name="i-lucide-file-search" class="text-xs" />
-                {{ thread.file_name }}
-                · p.{{ thread.page_number }}
+                {{ thread.violation.file_name }}
+                · p.{{ thread.violation.page_number }}
             </button>
         </header>
 
@@ -143,20 +149,20 @@ function openPdf(): void {
         </blockquote>
 
         <p
-            v-if="thread.reason"
+            v-if="thread.violation"
             class="text-[13px] leading-relaxed text-toned mb-2"
         >
-            {{ thread.reason }}
+            {{ thread.violation.reason }}
         </p>
 
         <div
-            v-if="!isUser && thread.proposal"
+            v-if="!isUser && thread.violation?.proposal"
             class="bg-secondary/10 rounded-md p-2 mb-2 text-xs"
         >
             <p class="text-[11px] text-secondary font-semibold mb-0.5">
                 {{ t("advisor.suggestion") }}
             </p>
-            <p class="text-toned">{{ thread.proposal }}</p>
+            <p class="text-toned">{{ thread.violation.proposal }}</p>
         </div>
 
         <ul v-if="thread.notes.length" class="space-y-1 mt-2">
@@ -170,11 +176,17 @@ function openPdf(): void {
                 >
                     <span
                         class="w-[18px] h-[18px] grid place-items-center rounded-full text-[10px] text-inverted"
-                        :class="note.author === 'advisor' ? 'bg-secondary' : 'bg-primary'"
+                        :class="
+                            note.author === 'advisor'
+                                ? 'bg-secondary'
+                                : 'bg-primary'
+                        "
                     >
                         {{ note.author === "advisor" ? "A" : "Y" }}
                     </span>
-                    {{ note.author === "advisor" ? t("advisor.advisor") : t("advisor.you") }}
+                    {{ note.author === "advisor"
+                            ? t("advisor.advisor")
+                            : t("advisor.you") }}
                     <span
                         class="ml-auto flex gap-0.5 opacity-0 hover:opacity-100 transition-opacity"
                     >

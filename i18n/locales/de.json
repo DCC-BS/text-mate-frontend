@@ -89,6 +89,7 @@
         "checking": "Überprüfe deinen Text...",
         "checkingProgress": "Regeln werden überprüft...",
         "error": "Fehler",
+        "checkFailed": "Überprüfung fehlgeschlagen",
         "rule": {
             "title": "Regelverletzung",
             "source": "Quelle",
@@ -100,6 +101,7 @@
         "limitReached": "Limit erreicht",
         "limitDescription": "Sie können maximal 5 Dokumente auswählen.",
         "docCount": "{n} von {max} Dokumenten ausgewählt",
+        "toggleDetails": "Dokumentendetails ein-/ausblenden",
         "toFix": "zu korrigieren",
         "skip": "Überspringen",
         "reply": "Antworten",

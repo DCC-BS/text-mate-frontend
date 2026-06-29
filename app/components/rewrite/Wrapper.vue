@@ -23,7 +23,5 @@ const props = defineProps<InputProps>();
 
     <div class="border-t md:border-l md:border-t-0 border-default"></div>
 
-    <div class="flex-1 h-100 md:h-full">
-        <ToolPanel :text="text" />
-    </div>
+    <div class="flex-1 h-100 md:h-full"><ToolPanel :text="text" /></div>
 </template>

@@ -1,47 +1,35 @@
+import { ApiError } from "@dcc-bs/communication.bs.js";
+import { z } from "zod";
 import type { FetcherOptions } from "#layers/backend_communication/server/types/fetcher";
+import type { ValidationResult } from "~~/shared/types/advisor";
 
 type BodyType = { text: string; docs: string[] };
+
+const InputSchema = z.object({
+    text: z.string().nonempty(),
+    docs: z.array(z.string()).max(5),
+});
 
 export default apiHandler
     .withMethod("POST")
     .withBodyProvider<BodyType>(async (event) => {
-        const { text, docs } = await readBody(event);
+        const body = await readBody(event);
 
-        if (!text || !docs || !Array.isArray(docs) || docs.length > 5) {
-            throw createError({
-                statusCode: 400,
-                statusMessage: "Invalid input",
-            });
+        const result = InputSchema.safeParse(body);
+
+        if (!result.success) {
+            throw new ApiError(
+                "invalid_input",
+                400,
+                z.prettifyError(result.error),
+            );
         }
 
-        return { text, docs };
+        return result.data;
     })
     .withRawFetcher()
     .withDummyFetcher(dummyFetcher)
     .build("/advisor/validate");
-
-// DUMMY
-
-type AdvisorRange = { start: number; end: number };
-
-type AdvisorRuleViolation = {
-    name: string;
-    description: string;
-    file_name: string;
-    page_number: number;
-    example: string;
-    reason: string;
-    proposal: string;
-    source: string;
-    collection: string;
-    range?: AdvisorRange;
-};
-
-type ValidationResult = {
-    rules: AdvisorRuleViolation[];
-    checked?: number;
-    total?: number;
-};
 
 async function dummyFetcher(options: FetcherOptions<BodyType>) {
     const body = options.body;
@@ -63,7 +51,7 @@ async function dummyFetcher(options: FetcherOptions<BodyType>) {
         },
     ];
 
-    const stream = toStream(items);
+    const stream = toJsonlStream(items);
 
     return new Response(stream, {
         headers: {
@@ -138,6 +126,7 @@ function collectDummyViolations(text: string): AdvisorRuleViolation[] {
         const matches = matchAll(text, rule.pattern);
         for (const { start, end, source } of matches) {
             violations.push({
+                id: rule.name,
                 collection: rule.collection,
                 description: rule.description,
                 example: "",
@@ -194,7 +183,12 @@ function sentenceLengthViolations(text: string): AdvisorRuleViolation[] {
         const sentence = m[0];
         const wordCount = (sentence.trim().match(/\S+/g) ?? []).length;
         if (wordCount > 20) {
+            // Skip leading whitespace so the range matches the trimmed source.
+            const leading = sentence.length - sentence.trimStart().length;
+            const trimmed = sentence.trim();
+            const start = m.index + leading;
             out.push({
+                id: "test",
                 collection: "anderes-collection",
                 description:
                     "Lange Sätze sind schwer lesbar. Teilen Sie sie in kürzere Teilsätze.",
@@ -204,8 +198,8 @@ function sentenceLengthViolations(text: string): AdvisorRuleViolation[] {
                 page_number: 4,
                 reason: `Dieser Satz hat ${wordCount} Wörter. Empfohlen werden höchstens 20 Wörter pro Satz.`,
                 proposal: "Teilen Sie den Satz in zwei kürzere Sätze auf.",
-                source: sentence.trim().slice(0, 120),
-                range: { start: m.index, end: m.index + sentence.length },
+                source: trimmed,
+                range: { start, end: start + trimmed.length },
             });
         }
         m = re.exec(text);
@@ -219,6 +213,7 @@ function compoundJargonViolations(text: string): AdvisorRuleViolation[] {
     let m = re.exec(text);
     while (m !== null) {
         out.push({
+            id: "dummy",
             collection: "anderes-collection",
             description:
                 "Lange Komposita sind schwer verständlich. Nutzen Sie kürzere Begriffe.",

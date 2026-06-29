@@ -133,6 +133,7 @@
         "checking": "Checking your text...",
         "checkingProgress": "Checking rules...",
         "error": "Error",
+        "checkFailed": "Validation failed",
         "rule": {
             "title": "Rule Violation",
             "source": "Source",
@@ -144,6 +145,7 @@
         "limitReached": "Limit Reached",
         "limitDescription": "You can select up to 5 documents.",
         "docCount": "{n} of {max} documents selected",
+        "toggleDetails": "Toggle document details",
         "toFix": "to fix",
         "skip": "Skip",
         "reply": "Reply",

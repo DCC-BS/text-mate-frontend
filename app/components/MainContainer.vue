@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { AnimatePresence, motion } from "motion-v";
+import { AdvisorMain } from "#components";
 import {
     Cmds,
     type ToggleEditableEditorCommand,
     type ToolSwitchCommand,
 } from "~/assets/models/commands";
 import type { TextTools } from "~/types/TextTools";
-import { motion, AnimatePresence } from "motion-v";
 
 // refs
 const userText = ref("");
@@ -87,7 +88,7 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
                     :selectedText="selectedText"
                 />
 
-                <AdvisorWrapper v-else v-model="userText" />
+                <AdvisorMain v-else v-model="userText" />
             </div>
         </div>
     </div>

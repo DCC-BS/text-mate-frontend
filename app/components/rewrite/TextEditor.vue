@@ -151,7 +151,7 @@ function handleFileSelect(event: Event): void {
                 class="hidden"
                 @change="handleFileSelect"
                 accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx"
-            />
+            >
         </div>
     </div>
 </template>

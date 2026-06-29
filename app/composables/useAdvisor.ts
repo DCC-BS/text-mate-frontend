@@ -4,11 +4,15 @@ import {
     isApiError,
 } from "@dcc-bs/communication.bs.js";
 import { z } from "zod";
-import type { ValidationResult } from "~/assets/models/advisor";
+import type {
+    AdvisorThread,
+    AdvisorThreadResult,
+} from "~/assets/models/advisor";
 import {
-    AdvisorDocumentDescriptionSchema,
     type AdvisorDocumentDescription,
+    AdvisorDocumentDescriptionSchema,
     type FixThread,
+    ValidationResultSchema,
 } from "~~/shared/types/advisor";
 
 async function getDocs(
@@ -28,12 +32,16 @@ async function getDocs(
     return response;
 }
 
+const docs = ref<AdvisorDocumentDescription[]>([]);
+
 export function useAdvisor() {
     const { t } = useI18n();
 
-    const docs = ref<AdvisorDocumentDescription[]>([]);
-
-    getDocs(t).then((x) => (docs.value = x));
+    // lazy load docs on first use
+    if (docs.value.length === 0) {
+        console.log("Loading advisor docs...");
+        getDocs(t).then((x) => (docs.value = x));
+    }
 
     async function getDocFile(name: string): Promise<Blob> {
         if (!docs.value.some((d) => d.files.includes(name))) {
@@ -57,7 +65,7 @@ export function useAdvisor() {
         text: string,
         docs: string[],
         signal?: AbortSignal,
-    ): AsyncGenerator<ValidationResult, void, void> {
+    ): AsyncGenerator<AdvisorThreadResult, void, void> {
         const response = await apiStreamFetch("api/advisor/validate", {
             method: "POST",
             body: {
@@ -73,29 +81,35 @@ export function useAdvisor() {
 
         const reader = response.getReader();
         const decoder = new TextDecoder();
-        let buffer = "";
 
         try {
-            while (true) {
+            let isDone = false;
+            while (!isDone) {
                 const { value, done } = await reader.read();
+                isDone = done;
 
-                if (done) {
-                    break;
+                const json = decoder.decode(value, { stream: true });
+
+                if (!json) {
+                    continue;
                 }
 
-                buffer += decoder.decode(value, { stream: true });
+                const result = ValidationResultSchema.parse(
+                    JSON.parse(json),
+                ) as ValidationResult;
 
-                const { events, remaining } = extractEventsFromBuffer(buffer);
-                buffer = remaining;
-
-                for (const payload of events) {
-                    yield payload;
-                }
-            }
-
-            const { events } = extractEventsFromBuffer(buffer, true);
-            for (const payload of events) {
-                yield payload;
+                yield {
+                    threads: result.rules.map(
+                        (x) =>
+                            ({
+                                id: x.id,
+                                notes: [],
+                                status: "to-fix",
+                                type: "violation",
+                                violation: x,
+                            }) as AdvisorThread,
+                    ),
+                } as AdvisorThreadResult;
             }
         } finally {
             reader.releaseLock();
@@ -159,68 +173,6 @@ export function useAdvisor() {
         validate,
         fix,
     };
-}
-
-function extractEventsFromBuffer(
-    buffer: string,
-    flush = false,
-): { events: ValidationResult[]; remaining: string } {
-    const events: ValidationResult[] = [];
-    let remaining = buffer;
-
-    while (true) {
-        const separatorIndex = remaining.indexOf("\n\n");
-        if (separatorIndex === -1) {
-            break;
-        }
-
-        const rawEvent = remaining.slice(0, separatorIndex);
-        remaining = remaining.slice(separatorIndex + 2);
-
-        const payload = parseSseEvent(rawEvent);
-        if (payload) {
-            events.push(payload);
-        }
-    }
-
-    if (flush && remaining.trim().length > 0) {
-        const payload = parseSseEvent(remaining);
-        if (payload) {
-            events.push(payload);
-        }
-        remaining = "";
-    }
-
-    return { events, remaining };
-}
-
-function parseSseEvent(block: string): ValidationResult | undefined {
-    const lines = block.replaceAll("\r", "").split("\n");
-
-    for (const line of lines) {
-        if (!line.startsWith("data:")) {
-            continue;
-        }
-
-        const raw = line.slice(5).trim();
-        if (!raw) {
-            continue;
-        }
-
-        try {
-            const parsed = JSON.parse(raw) as ValidationResult;
-            parsed.rules ??= [];
-
-            return {
-                ...parsed,
-                rules: parsed.rules.map((rule) => ({ ...rule })),
-            };
-        } catch {
-            return undefined;
-        }
-    }
-
-    return undefined;
 }
 
 /**
