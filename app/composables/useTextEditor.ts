@@ -6,6 +6,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import { useEditor } from "@tiptap/vue-3";
 import {
+    type ApplyTextAtOffsetCommand,
     type ApplyTextCommand,
     type ClearTextCommand,
     Cmds,
@@ -18,6 +19,7 @@ import {
 } from "~/assets/models/commands";
 import { FocusedSentenceMark } from "~/utils/focusedSentenceMark";
 import { FocusedWordMark } from "~/utils/focusedWordMark";
+import { mapTextOffsetsToDocPositions } from "~/utils/mapTextOffsets";
 
 export interface UseTextEditorOptions {
     container: Ref<HTMLElement | undefined>;
@@ -119,6 +121,31 @@ export function useTextEditor(options: UseTextEditorOptions) {
             .focus(range.from)
             .run();
     });
+
+    onCommand<ApplyTextAtOffsetCommand>(
+        Cmds.ApplyTextAtOffsetCommand,
+        async (command) => {
+            if (!editor.value) return;
+            // Translate the serialised-text offsets into ProseMirror positions
+            // before applying, otherwise node opening tokens shift the range.
+            const { from, to } = mapTextOffsetsToDocPositions(
+                editor.value.state.doc,
+                command.from,
+                command.to,
+            );
+
+            const chain = editor.value.chain();
+            if (!command.addToHistory) {
+                chain.setMeta("addToHistory", false);
+            }
+
+            chain
+                .setTextSelection({ from, to })
+                .insertContent(command.text, { applyInputRules: true })
+                .focus(from)
+                .run();
+        },
+    );
 
     onCommand<ClearTextCommand>(Cmds.ClearTextCommand, async () => {
         if (!editor.value) return;

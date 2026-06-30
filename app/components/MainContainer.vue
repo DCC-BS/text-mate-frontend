@@ -82,7 +82,7 @@ onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
             <div
                 class="grow overflow-hidden flex flex-col md:flex-row justify-stretch items-stretch"
             >
-                <RewriteWrapper
+                <RewriteMain
                     v-if="currentTool === 'rewrite'"
                     v-model="userText"
                     :selectedText="selectedText"

@@ -29,7 +29,8 @@ export default apiHandler
 /**
  * Simulates the fix LLM by substituting each to-fix thread's `source` with
  * its `proposal` (first occurrence), then streams the corrected text back
- * as SSE text-delta events terminated by `event: done`. Works on any text.
+ * as raw UTF-8 text deltas. Completion is signaled by closing the stream;
+ * no SSE framing is used. Works on any text.
  */
 async function dummyFetcher(
     options: FetcherOptions<BodyType>,
@@ -40,9 +41,8 @@ async function dummyFetcher(
 
     return new Response(stream, {
         headers: {
-            "Content-Type": "text/event-stream",
+            "Content-Type": "text/plain; charset=utf-8",
             "Cache-Control": "no-cache",
-            Connection: "keep-alive",
         },
     });
 }
@@ -66,8 +66,8 @@ function applyProposals(text: string, threads: FixThread[]): string {
 }
 
 /**
- * Splits the corrected text into word-sized deltas and emits each as an SSE
- * `data:` line, closing with `event: done`. Mimics token streaming so the
+ * Splits the corrected text into word-sized deltas and enqueues each as a
+ * raw UTF-8 chunk, then closes the stream. Mimics token streaming so the
  * client accumulate-on-completion path is exercised.
  */
 function textDeltaStream(text: string): ReadableStream<Uint8Array> {
@@ -77,10 +77,9 @@ function textDeltaStream(text: string): ReadableStream<Uint8Array> {
     return new ReadableStream({
         async start(controller) {
             for (const chunk of chunks) {
-                controller.enqueue(encoder.encode(`data:${chunk}\n\n`));
+                controller.enqueue(encoder.encode(chunk));
                 await delay(20);
             }
-            controller.enqueue(encoder.encode("event:done\ndata:{}\n\n"));
             controller.close();
         },
     });

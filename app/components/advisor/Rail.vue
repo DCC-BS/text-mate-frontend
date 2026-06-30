@@ -1,17 +1,24 @@
 <script lang="ts" setup>
 import type { AdvisorThread } from "~/assets/models/advisor";
-import { useAdvisorStore } from "~/stores/advisor";
+
+interface InputProps {
+    threads: AdvisorThread[];
+    activeThreadId: string | null;
+}
+
+const props = defineProps<InputProps>();
 
 const { t } = useI18n();
-const store = useAdvisorStore();
 
 const emit = defineEmits<{
     apply: [];
     openPdf: [thread: AdvisorThread];
 }>();
 
-const toFixCount = computed(() => store.toFixThreads.length);
-const skipCount = computed(() => store.skipCount);
+const toFixCount = computed(
+    () => props.threads.filter((x) => x.status === "to-fix").length,
+);
+const skipCount = computed(() => props.threads.length - toFixCount.value);
 </script>
 
 <template>
@@ -34,11 +41,12 @@ const skipCount = computed(() => store.skipCount);
         </header>
 
         <div class="flex-1 overflow-y-auto px-3 py-2 space-y-2">
-            <template v-if="store.threads.length">
+            <template v-if="props.threads.length">
                 <AdvisorThreadCard
-                    v-for="thread in store.sortedThreads"
+                    v-for="thread in props.threads"
                     :key="thread.id"
                     :thread="thread"
+                    :active-thread-id="props.activeThreadId"
                     @open-pdf="emit('openPdf', $event)"
                 />
             </template>

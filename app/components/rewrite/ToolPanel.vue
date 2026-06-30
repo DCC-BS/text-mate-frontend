@@ -16,7 +16,5 @@ const props = defineProps<RewriteViewProps>();
         </div>
     </Teleport>
 
-    <div class="w-full h-full relative pb-[35px]">
-        <RewriteDiffViewer :text="text" />
-    </div>
+    <div class="w-full h-full relative"><RewriteDiffViewer :text="text" /></div>
 </template>

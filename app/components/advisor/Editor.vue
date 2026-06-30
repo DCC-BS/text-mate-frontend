@@ -1,20 +1,31 @@
 <script lang="ts" setup>
 import { EditorContent } from "@tiptap/vue-3";
+import type { AdvisorPhase, AdvisorThread } from "~/assets/models/advisor";
+import {
+    AddUserReviewCommand,
+    ChangeActiveThreadId,
+} from "~/assets/models/commands";
 import { useAdvisorEditor } from "~/composables/useAdvisorEditor";
-import { useAdvisorStore } from "~/stores/advisor";
+
+interface InputProps {
+    phase: AdvisorPhase;
+    threads: AdvisorThread[];
+    activeThreadId: string | null;
+}
+
+const props = defineProps<InputProps>();
 
 const { t } = useI18n();
-const store = useAdvisorStore();
+const { executeCommand } = useCommandBus();
 
-const text = defineModel({ default: "" });
-const { selection, editor } = useAdvisorEditor(store, text);
+const text = defineModel("text", { default: "" });
 
-watch(
+const { selection, editor } = useAdvisorEditor(
+    toRef(props, "threads"),
+    toRef(props, "activeThreadId"),
+    10000,
+    toRef(props, "phase"),
     text,
-    () => {
-        store.setText(text.value);
-    },
-    { immediate: true },
 );
 
 const containerRef = ref<HTMLElement | null>(null);
@@ -23,13 +34,13 @@ type Bubble = { visible: boolean; top: number; left: number };
 const bubble = ref<Bubble>({ visible: false, top: 0, left: 0 });
 
 const isReview = computed(() =>
-    ["review", "diff", "done"].includes(store.phase),
+    ["review", "diff", "done"].includes(props.phase),
 );
 
 watch(
     selection,
     () => {
-        if (!isReview.value || store.phase !== "review") {
+        if (!isReview.value || props.phase !== "review") {
             bubble.value.visible = false;
             return;
         }
@@ -74,16 +85,23 @@ function addNoteOrReply(): void {
     if (!sel) {
         return;
     }
-    const overlapId = store.threadOverlapping(sel.startOffset, sel.endOffset);
+    const overlapId = threadOverlapping(
+        props.threads,
+        sel.startOffset,
+        sel.endOffset,
+    );
     if (overlapId) {
         // Overlaps an existing thread — treat as a reply focus.
-        store.setActive(overlapId);
+        executeCommand(new ChangeActiveThreadId(overlapId));
     } else {
-        store.addUserThread(
-            { start: sel.startOffset, end: sel.endOffset },
-            sel.text,
+        executeCommand(
+            new AddUserReviewCommand({
+                start: sel.startOffset,
+                end: sel.endOffset,
+            }),
         );
     }
+
     window.getSelection()?.removeAllRanges();
     bubble.value.visible = false;
 }

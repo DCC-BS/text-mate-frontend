@@ -1,7 +1,8 @@
 import type { Range } from "@tiptap/vue-3";
-import type { ICommand } from "#build/types/commands";
+import type { ICommand, IReversibleCommand } from "#build/types/commands";
 import type { TextTools } from "~/types/TextTools";
 import type { TextActions } from "~~/shared/text-actions";
+import type { AdvisorThread, AdvisorThreadStatus } from "./advisor";
 
 /**
  * A quick action request that can be re-run (e.g. for retry).
@@ -16,6 +17,7 @@ export interface QuickActionRequest {
 
 export const Cmds = {
     ApplyTextCommand: "ApplyTextCommand",
+    ApplyTextAtOffsetCommand: "ApplyTextAtOffsetCommand",
     RewriteTextCommand: "RewriteTextCommand",
     UndoCommand: "UndoCommand",
     RedoCommand: "RedoCommand",
@@ -32,6 +34,14 @@ export const Cmds = {
     ClearTextCommand: "ClearTextCommand",
     ShowTextStatsCommand: "ShowTextStatsCommand",
     HideTextStatsCommand: "HideTextStatsCommand",
+    AddUserReviewCommand: "AddUserReviewCommand",
+    AddThreadCommand: "AddThreadCommand",
+    RemoveThreadCommand: "RemoveThreadCommand",
+    ChangeActiveThreadId: "ChangeActiveThreadId",
+    SetThreadStatusCommand: "SetThreadStatusCommand",
+    AddThreadNoteCommand: "AddThreadNoteCommand",
+    ChangeThreadNoteCommand: "ChangeThreadNoteCommand",
+    DeleteThreadNoteCommand: "DeleteThreadNoteCommand",
 };
 
 export class ClearTextCommand implements ICommand {
@@ -47,6 +57,23 @@ export class ApplyTextCommand implements ICommand {
     constructor(
         public text: string,
         public range: Range,
+        public addToHistory = true,
+    ) {}
+}
+
+/**
+ * Like {@link ApplyTextCommand}, but the range is expressed as character
+ * offsets within `editor.getText()` rather than ProseMirror positions. The
+ * editor-side handler translates the offsets before applying. Used by callers
+ * that diff the serialised text (e.g. the diff viewer).
+ */
+export class ApplyTextAtOffsetCommand implements ICommand {
+    readonly $type = "ApplyTextAtOffsetCommand";
+
+    constructor(
+        public text: string,
+        public from: number,
+        public to: number,
         public addToHistory = true,
     ) {}
 }
@@ -156,4 +183,90 @@ export class ToggleLockEditorCommand implements ICommand {
 
 export class RestartTourCommand implements ICommand {
     readonly $type = "RestartTourCommand";
+}
+
+export class AddUserReviewCommand implements ICommand {
+    readonly $type = "AddUserReviewCommand";
+
+    constructor(public range: AdvisorRange) {}
+}
+
+export class AddThreadCommand implements IReversibleCommand {
+    readonly $type = "AddThreadCommand";
+
+    $undoCommand: ICommand | undefined;
+
+    constructor(public thread: Omit<AdvisorThread, "id">) {}
+
+    public setThread(thread: AdvisorThread) {
+        this.$undoCommand = new RemoveThreadCommand(thread);
+    }
+}
+
+/**
+ * Remove a thread form the advisor revision.
+ */
+export class RemoveThreadCommand implements IReversibleCommand {
+    readonly $type = Cmds.RemoveThreadCommand;
+
+    $undoCommand: ICommand | undefined;
+
+    constructor(public thread: AdvisorThread) {
+        this.$undoCommand = new AddThreadCommand(thread);
+    }
+}
+
+export class ChangeActiveThreadId implements ICommand {
+    readonly $type = "ChangeActiveThreadId";
+
+    constructor(public threadId: string | null) {}
+}
+
+/**
+ * Sets the lifecycle status of an advisor thread (e.g. `to-fix` or `skip`).
+ */
+export class SetThreadStatusCommand implements ICommand {
+    readonly $type = "SetThreadStatusCommand";
+
+    constructor(
+        public threadId: string,
+        public status: AdvisorThreadStatus,
+    ) {}
+}
+
+/**
+ * Appends a user reply note to an existing advisor thread.
+ */
+export class AddThreadNoteCommand implements ICommand {
+    readonly $type = "AddThreadNoteCommand";
+
+    constructor(
+        public threadId: string,
+        public replyText: string,
+    ) {}
+}
+
+/**
+ * Replaces the text of an existing note within an advisor thread.
+ */
+export class ChangeThreadNoteCommand implements ICommand {
+    readonly $type = "ChangeThreadNoteCommand";
+
+    constructor(
+        public threadId: string,
+        public noteId: string,
+        public newText: string,
+    ) {}
+}
+
+/**
+ * Removes a single note from an advisor thread.
+ */
+export class DeleteThreadNoteCommand implements ICommand {
+    readonly $type = "DeleteThreadNoteCommand";
+
+    constructor(
+        public threadId: string,
+        public noteId: string,
+    ) {}
 }

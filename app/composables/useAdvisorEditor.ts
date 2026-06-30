@@ -5,7 +5,8 @@ import History from "@tiptap/extension-history";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import { useEditor } from "@tiptap/vue-3";
-import type { useAdvisorStore } from "~/stores/advisor";
+import type { AdvisorPhase, AdvisorThread } from "~/assets/models/advisor";
+import { ChangeActiveThreadId } from "~/assets/models/commands";
 import {
     advisorDecorationKey,
     createAdvisorDecorationExtension,
@@ -28,11 +29,16 @@ export type AdvisorEditor = ReturnType<typeof useAdvisorEditor>;
  * current text selection (positions + offsets) for the "Add Note" bubble.
  */
 export function useAdvisorEditor(
-    store: ReturnType<typeof useAdvisorStore>,
+    threads: Ref<AdvisorThread[]>,
+    activeThreadId: Ref<string | null>,
+    limit: number,
+    phase: Ref<AdvisorPhase>,
     text: Ref<string>,
 ) {
+    const { executeCommand } = useCommandBus();
+
     const editor = useEditor({
-        editable: store.phase === "edit",
+        editable: phase.value === "edit",
         content: text.value,
         extensions: [
             Document,
@@ -40,24 +46,24 @@ export function useAdvisorEditor(
             Text,
             HardBreak,
             History,
-            CharacterCount.configure({ limit: store.limit }),
+            CharacterCount.configure({ limit: limit }),
             createAdvisorDecorationExtension({
-                getThreads: () => store.threads,
-                getActiveId: () => store.activeThreadId,
-                onSelect: (id) => store.setActive(id),
+                getThreads: () => threads.value as AdvisorThread[],
+                getActiveId: () => activeThreadId.value,
+                onSelect: (id) => executeCommand(new ChangeActiveThreadId(id)),
             }),
         ],
         onUpdate: ({ editor }) => {
             if (!editor.isEditable) {
                 return;
             }
-            store.setText(serializeAdvisorText(editor.state.doc));
+            text.value = serializeAdvisorText(editor.state.doc);
         },
     });
 
     // Reflect phase changes in the editor's editable flag.
     watch(
-        () => store.phase,
+        () => phase.value,
         (phase) => {
             editor.value?.setEditable(phase === "edit");
         },
@@ -65,7 +71,7 @@ export function useAdvisorEditor(
 
     // Rebuild decorations whenever threads or the focused thread change.
     watch(
-        [() => store.threads, () => store.activeThreadId],
+        [threads, activeThreadId],
         () => {
             const view = editor.value?.view;
             if (!view) {

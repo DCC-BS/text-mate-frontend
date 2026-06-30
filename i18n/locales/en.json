@@ -159,6 +159,10 @@
         "applyInfo": "{n} threads selected for fixing",
         "reviewChanges": "Review Changes",
         "noChanges": "No changes to review.",
+        "diffTitle": "Preview of corrections",
+        "progress": "{accepted} of {total} changes applied",
+        "acceptAll": "Accept all",
+        "discardAll": "Discard all",
         "diffProgress": "{resolved} of {total} changes reviewed",
         "acceptRemaining": "Accept {n} remaining & apply",
         "applyChanges": "Apply Changes",
@@ -279,7 +283,12 @@
         "clickToUndo": "Click on the changes to undo them",
         "undo": "Undo",
         "noChangesYet": "No changes yet. When the text is rewritten by textmate, the changes will be highlighted here.",
-        "retry": "Reject and run this action again on the original text"
+        "retry": "Reject and run this action again on the original text",
+        "title": "Preview of revision",
+        "progress": "{accepted} of {total} changes applied",
+        "acceptAll": "Accept all",
+        "discardAll": "Discard all",
+        "noChanges": "No changes."
     },
     "tour": {
         "welcome": {

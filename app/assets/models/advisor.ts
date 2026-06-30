@@ -15,7 +15,13 @@ export type AdvisorNote = {
  * Advisor lifecycle phase. The page editor is editable in `edit`, locked
  * read-only (but selectable) from `review` onward.
  */
-export type AdvisorPhase = "edit" | "review" | "diff" | "done";
+export type AdvisorPhase =
+    | "edit"
+    | "reviewing"
+    | "review"
+    | "fixing"
+    | "diff"
+    | "done";
 
 export type ValidationProgress = {
     checked?: number;
@@ -43,19 +49,8 @@ export type AdvisorThread = {
     type: AdvisorThreadType;
     status: AdvisorThreadStatus;
     notes: AdvisorNote[];
+    range: AdvisorRange;
 };
-
-/**
- * Payload sent to `/advisor/fix`. Only `to-fix` threads are shipped; rule
- * definitions are intentionally omitted — the fix LLM receives the text
- * plus per-thread `source` + `proposal`/`reason` + notes only.
- */
-// export type FixThread = {
-//     source: string;
-//     proposal?: string;
-//     reason?: string;
-//     notes: string[];
-// };
 
 export type FixRequest = {
     text: string;

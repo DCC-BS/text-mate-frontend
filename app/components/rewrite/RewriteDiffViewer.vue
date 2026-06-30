@@ -1,228 +1,145 @@
 <script lang="ts" setup>
-import { type ChangeObject, diffWords } from "diff";
 import {
-    ApplyTextCommand,
+    ApplyTextAtOffsetCommand,
     Cmds,
     type RegisterDiffCommand,
     type RejectDiffCommand,
     RetryQuickActionCommand,
 } from "~/assets/models/commands";
+import type { DiffHunk } from "~/types/diff";
+import DiffViewer from "../diff/DiffViewer.vue";
 
 interface Props {
     text: string;
 }
 
-type ActionChange = {
-    diffs: ChangeObject<string>[];
-    hasChanged: boolean;
-    from: number;
-    to: number;
-    addedText: string;
-    removedText: string;
-    oldText: string;
-};
-
 const props = defineProps<Props>();
 
 const { onCommand, executeCommand } = useCommandBus();
 
-const commandHistory = ref<RegisterDiffCommand[]>([]);
-
 /**
- * Filters a string to replace sequences of more than one newline with a single newline.
- * @param text The input string to filter.
- * @returns The filtered string.
+ * Snapshot of the editor text captured at the moment a rewrite was registered
+ * (i.e. before the streaming rewrite mutated it). Acts as the diff baseline.
  */
-function filterExtraNewlines(text: string): string {
-    return text.replace(/\n{3,}/g, "\n");
-}
+const originalText = ref("");
+/**
+ * Bumped on every `RegisterDiffCommand` to remount the core `DiffViewer` and
+ * guarantee a fresh accept/reject state — even when two consecutive rewrites
+ * share the same original text (e.g. a retry).
+ */
+const revision = ref(0);
+
+const diffViewerRef = ref<InstanceType<typeof DiffViewer> | null>(null);
 
 watch(
     () => props.text,
     () => {
         if (props.text.trim() === "") {
-            commandHistory.value = [];
+            originalText.value = "";
         }
     },
 );
 
-const changes = computed<ActionChange[]>(() => {
-    if (commandHistory.value.length === 0) {
-        return [] as ActionChange[];
-    }
-
-    const lastCommand = commandHistory.value[commandHistory.value.length - 1];
-
-    if (!lastCommand) {
-        return [];
-    }
-
-    const diffs = diffWords(lastCommand.newText, props.text);
-    const changes = [] as ActionChange[];
-    let currentPos = 0;
-
-    for (let i = 0; i < diffs.length; i++) {
-        const current = diffs[i] as ChangeObject<string>;
-        const next = diffs[i + 1] as ChangeObject<string> | undefined;
-
-        if (current.removed && next?.added) {
-            changes.push({
-                diffs: [next, current],
-                from: currentPos,
-                hasChanged: true,
-                to: currentPos + next.value.length,
-                addedText: next.value,
-                removedText: current.value,
-                oldText: filterExtraNewlines(current.value),
-            });
-
-            i++; // Skip the next one as it's already processed
-
-            currentPos += next.value.length + 1;
-            continue;
-        }
-
-        changes.push({
-            diffs: [current],
-            from: currentPos,
-            hasChanged: current.added || current.removed,
-            to: currentPos + current.value.length,
-            addedText: current?.added ? filterExtraNewlines(current.value) : "",
-            removedText: current?.removed
-                ? filterExtraNewlines(current.value)
-                : "",
-            oldText: filterExtraNewlines(current.value),
-        });
-
-        if (!current.removed) {
-            currentPos += current.value.length + 1;
-        }
-    }
-
-    return changes;
+onCommand<RegisterDiffCommand>(Cmds.RegisterDiffCommand, async (cmd) => {
+    originalText.value = cmd.oldText;
+    revision.value++;
 });
 
-function undo(change: ActionChange): void {
+onCommand<RejectDiffCommand>(Cmds.RejectDiffCommand, async (cmd) => {
+    // Full revert of the whole rewrite back to the original text: replay every
+    // change hunk in reverse document order so earlier offsets stay valid as
+    // later spans are restored.
+    const hunks = diffViewerRef.value?.getAllChangeHunks() ?? [];
+    for (const hunk of [...hunks].sort((a, b) => b.from - a.from)) {
+        await executeCommand(
+            new ApplyTextAtOffsetCommand(
+                hunk.removedText,
+                hunk.from,
+                hunk.to,
+                cmd.addToHistory,
+            ),
+        );
+    }
+    originalText.value = "";
+});
+
+/**
+ * Reverts a single hunk in the editor. The live `text` prop then updates, the
+ * core rebuilds its segments, and the reverted span disappears from the diff
+ * while remaining counted in the progress subtitle.
+ */
+function onRejectHunk(hunk: DiffHunk): void {
     executeCommand(
-        new ApplyTextCommand(change.oldText, {
-            from: change.from,
-            to: change.to,
-        }),
+        new ApplyTextAtOffsetCommand(hunk.removedText, hunk.from, hunk.to),
     );
 }
 
-onCommand<RegisterDiffCommand>(Cmds.RegisterDiffCommand, async (cmd) => {
-    commandHistory.value.push(cmd);
-});
-
-function applyAllChanges() {
-    commandHistory.value = [];
-}
-
-async function undoAllChanges(addToHistory = true) {
-    for (const change of changes.value) {
-        if (change.hasChanged) {
-            await executeCommand(
-                new ApplyTextCommand(
-                    change.oldText,
-                    {
-                        from: change.from,
-                        to: change.to,
-                    },
-                    addToHistory,
-                ),
-            );
-        }
+function onRejectAll(hunks: DiffHunk[]): void {
+    // Reset the view immediately for instant feedback, then revert each hunk
+    // against the already-captured offsets. Reverse document order keeps the
+    // earlier ranges valid as later spans are restored.
+    originalText.value = "";
+    for (const hunk of [...hunks].sort((a, b) => b.from - a.from)) {
+        executeCommand(
+            new ApplyTextAtOffsetCommand(hunk.removedText, hunk.from, hunk.to),
+        );
     }
-
-    commandHistory.value = [];
 }
 
-onCommand<RejectDiffCommand>(Cmds.RejectDiffCommand, async (cmd) => {
-    await undoAllChanges(cmd.addToHistory);
-});
+/**
+ * Accepting is a no-op for the editor: the rewrite was already applied live,
+ * so "accept" simply means "keep the corrected text as-is".
+ */
+function onAcceptHunk(_hunk: DiffHunk): void {
+    // intentionally empty
+}
 
-function retry() {
+/**
+ * All changes are kept as-is; reset the diff view to end the review session.
+ */
+function onAcceptAll(_hunks: DiffHunk[]): void {
+    originalText.value = "";
+}
+
+function retry(): void {
     executeCommand(new RetryQuickActionCommand());
 }
 </script>
 
 <template>
-    <div class="absolute -bottom-2 -inset-x-2 z-10">
-        <div class="flex justify-between">
-            <div v-if="changes.length" data-tour="rewrite-toolpanel">
-                <UButton
-                    variant="link"
-                    color="neutral"
-                    icon="i-lucide-check"
-                    @click="applyAllChanges"
-                />
+    <div
+        class="absolute inset-0 overflow-y-auto p-1"
+        data-tour="rewrite-toolpanel"
+    >
+        <DiffViewer
+            v-if="originalText"
+            :key="revision"
+            ref="diffViewerRef"
+            :original-text="originalText"
+            :corrected-text="text"
+            i18n-prefix="rewrite-diff-viewer"
+            :title="$t('rewrite-diff-viewer.title')"
+            @accept-hunk="onAcceptHunk"
+            @reject-hunk="onRejectHunk"
+            @accept-all="onAcceptAll"
+            @reject-all="onRejectAll"
+        >
+            <template #actions>
                 <UTooltip :text="$t('rewrite-diff-viewer.retry')">
                     <UButton
-                        variant="link"
+                        variant="outline"
                         color="neutral"
+                        size="xs"
+                        square
                         icon="i-lucide-rotate-ccw"
                         data-tour="retry-quick-action"
                         @click="retry"
                     />
                 </UTooltip>
-                <UButton
-                    variant="link"
-                    color="neutral"
-                    icon="i-lucide-x"
-                    @click="undoAllChanges()"
-                />
-            </div>
-        </div>
-    </div>
-
-    <div class="overflow-y-auto absolute inset-0 p-1 dark">
-        <div>
-            <template
-                v-for="change in changes"
-                :key="`${change.from}${change.oldText}`"
-            >
-                <UPopover v-if="change.hasChanged">
-                    <span
-                        class="group cursor-pointer hover:bg-info-300 inline-block align-top"
-                    >
-                        <pre
-                            class="bg-red-100 group-hover:bg-red-200 inline text-wrap"
-                            >{{ change.removedText }}</pre
-                        >
-                        <UIcon
-                            name="i-lucide-arrow-right"
-                            class="mx-2"
-                            v-if="
-                                change.removedText.length > 0 &&
-                                change.addedText.length > 0
-                            "
-                        />
-                        <pre
-                            class="bg-green-100 group-hover:bg-green-200 inline text-wrap"
-                            >{{ change.addedText }}</pre
-                        >
-                    </span>
-                    <template #content>
-                        <div class="p-2 ring-1 ring-gray-400 rounded-md">
-                            <UButton
-                                variant="link"
-                                color="neutral"
-                                icon="i-lucide-undo"
-                                @click="undo(change)"
-                            >
-                                {{ $t("rewrite-diff-viewer.undo") }}
-                            </UButton>
-                        </div>
-                    </template>
-                </UPopover>
-                <span v-else class="text-wrap">{{
-                    change.diffs.map((x) => x.value).join("")
-                }}</span>
             </template>
-            <div v-if="!changes.length" class="text-gray-600 text-center mt-5">
-                {{ $t("rewrite-diff-viewer.noChangesYet") }}
-            </div>
+        </DiffViewer>
+        <div v-else class="text-center text-muted mt-6 text-sm">
+            {{ $t("rewrite-diff-viewer.noChangesYet") }}
         </div>
     </div>
 </template>

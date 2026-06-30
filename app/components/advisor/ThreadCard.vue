@@ -1,9 +1,16 @@
 <script lang="ts" setup>
 import type { AdvisorThread } from "~/assets/models/advisor";
-import { useAdvisorStore } from "~/stores/advisor";
+import {
+    AddThreadNoteCommand,
+    ChangeActiveThreadId,
+    ChangeThreadNoteCommand,
+    DeleteThreadNoteCommand,
+    SetThreadStatusCommand,
+} from "~/assets/models/commands";
 
 interface ThreadCardProps {
     thread: AdvisorThread;
+    activeThreadId: string | null;
 }
 
 const props = defineProps<ThreadCardProps>();
@@ -11,9 +18,9 @@ const emit = defineEmits<{
     openPdf: [thread: AdvisorThread];
 }>();
 const { t } = useI18n();
-const store = useAdvisorStore();
+const { executeCommand } = useCommandBus();
 
-const isActive = computed(() => store.activeThreadId === props.thread.id);
+const isActive = computed(() => props.activeThreadId === props.thread.id);
 const isSkip = computed(() => props.thread.status === "skip");
 const isUser = computed(() => props.thread.type === "user");
 
@@ -31,8 +38,24 @@ const sourceSnippet = computed(() => {
     return src.length > 96 ? `${src.slice(0, 93)}…` : src;
 });
 
+onMounted(async () => {
+    if (!props.thread.violation && props.thread.notes.length === 0) {
+        await executeCommand(new AddThreadNoteCommand(props.thread.id, ""));
+
+        const newNote = props.thread.notes[0];
+        if (newNote) {
+            editingNoteId.value = newNote.id;
+            nextTick(() => {
+                document
+                    .getElementById(`advisor-note-edit-${newNote.id}`)
+                    ?.focus();
+            });
+        }
+    }
+});
+
 function activate(): void {
-    store.setActive(props.thread.id);
+    executeCommand(new ChangeActiveThreadId(props.thread.id));
 }
 
 function scrollCardIntoView(): void {
@@ -44,7 +67,7 @@ function scrollCardIntoView(): void {
 // When the store marks this thread active from elsewhere (editor mark
 // click), scroll the card into view.
 watch(
-    () => store.activeThreadId,
+    () => props.activeThreadId,
     (id) => {
         if (id === props.thread.id) {
             scrollCardIntoView();
@@ -58,8 +81,8 @@ onMounted(() => {
     }
 });
 
-function setStatus(status: AdvisorThread["status"]): void {
-    store.setStatus(props.thread.id, status);
+async function setStatus(status: AdvisorThread["status"]) {
+    await executeCommand(new SetThreadStatusCommand(props.thread.id, status));
 }
 
 function openReply(): void {
@@ -69,11 +92,14 @@ function openReply(): void {
     });
 }
 
-function submitReply(): void {
+async function submitReply() {
     if (replyText.value.trim() === "") {
         return;
     }
-    store.addNote(props.thread.id, replyText.value);
+
+    await executeCommand(
+        new AddThreadNoteCommand(props.thread.id, replyText.value),
+    );
     replyText.value = "";
     replyOpen.value = false;
 }
@@ -83,16 +109,22 @@ function startEdit(noteId: string, text: string): void {
     editingText.value = text;
 }
 
-function saveEdit(): void {
+async function saveEdit() {
     if (editingNoteId.value) {
-        store.editNote(props.thread.id, editingNoteId.value, editingText.value);
+        await executeCommand(
+            new ChangeThreadNoteCommand(
+                props.thread.id,
+                editingNoteId.value,
+                editingText.value,
+            ),
+        );
     }
     editingNoteId.value = null;
     editingText.value = "";
 }
 
-function deleteNote(noteId: string): void {
-    store.deleteNote(props.thread.id, noteId);
+async function deleteNote(noteId: string) {
+    await executeCommand(new DeleteThreadNoteCommand(props.thread.id, noteId));
 }
 
 function openPdf(): void {
@@ -187,9 +219,7 @@ function openPdf(): void {
                     {{ note.author === "advisor"
                             ? t("advisor.advisor")
                             : t("advisor.you") }}
-                    <span
-                        class="ml-auto flex gap-0.5 opacity-0 hover:opacity-100 transition-opacity"
-                    >
+                    <span class="ml-auto flex gap-0.5 transition-opacity">
                         <UButton
                             icon="i-lucide-pencil"
                             size="xs"
@@ -210,6 +240,7 @@ function openPdf(): void {
                 </div>
                 <div v-if="editingNoteId === note.id" class="flex gap-1 mt-1">
                     <UInput
+                        :id="`advisor-note-edit-${note.id}`"
                         v-model="editingText"
                         size="xs"
                         class="flex-1"

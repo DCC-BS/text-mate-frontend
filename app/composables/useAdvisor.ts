@@ -12,6 +12,7 @@ import {
     type AdvisorDocumentDescription,
     AdvisorDocumentDescriptionSchema,
     type FixThread,
+    type ValidationResult,
     ValidationResultSchema,
 } from "~~/shared/types/advisor";
 
@@ -107,6 +108,7 @@ export function useAdvisor() {
                                 status: "to-fix",
                                 type: "violation",
                                 violation: x,
+                                range: x.range,
                             }) as AdvisorThread,
                     ),
                 } as AdvisorThreadResult;
@@ -137,30 +139,16 @@ export function useAdvisor() {
         const reader = response.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
-        let accumulated = "";
 
         try {
-            while (true) {
+            let isDone = false;
+            while (!isDone) {
                 const { value, done } = await reader.read();
-                if (done) {
-                    break;
-                }
+                isDone = done;
 
                 buffer += decoder.decode(value, { stream: true });
 
-                const { deltas, remaining } = extractTextDeltas(buffer);
-                buffer = remaining;
-
-                for (const delta of deltas) {
-                    accumulated += delta;
-                    yield accumulated;
-                }
-            }
-
-            const { deltas } = extractTextDeltas(buffer, true);
-            for (const delta of deltas) {
-                accumulated += delta;
-                yield accumulated;
+                yield buffer;
             }
         } finally {
             reader.releaseLock();
