@@ -5,6 +5,7 @@ import {
     type AddUserReviewCommand,
     type ChangeActiveThreadId,
     type ChangeThreadNoteCommand,
+    type ClearThreadsCommand,
     Cmds,
     type DeleteThreadNoteCommand,
     RemoveThreadCommand,
@@ -153,6 +154,11 @@ export function useAdvisorRevision() {
             }
         },
     );
+
+    onCommand<ClearThreadsCommand>(Cmds.ClearThreadsCommand, async () => {
+        threadsMap.value.clear();
+        activeThreadId.value = null;
+    });
 
     function addThread(thread: AdvisorThread) {
         threadsMap.value.set(thread.id, thread);

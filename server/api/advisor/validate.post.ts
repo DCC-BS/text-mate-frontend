@@ -40,12 +40,12 @@ async function dummyFetcher(options: FetcherOptions<BodyType>) {
     const midpoint = Math.ceil(rules.length / 2);
     const items: ValidationResult[] = [
         {
-            rules: rules.slice(0, midpoint),
+            violations: rules.slice(0, midpoint),
             checked: midpoint,
             total: rules.length,
         },
         {
-            rules: rules.slice(midpoint),
+            violations: rules.slice(midpoint),
             checked: rules.length,
             total: rules.length,
         },
@@ -126,12 +126,9 @@ function collectDummyViolations(text: string): AdvisorRuleViolation[] {
         const matches = matchAll(text, rule.pattern);
         for (const { start, end, source } of matches) {
             violations.push({
-                id: rule.name,
                 collection: rule.collection,
-                description: rule.description,
-                example: "",
                 file_name: rule.file_name,
-                name: rule.name,
+                rule_name: rule.name,
                 page_number: rule.page_number,
                 reason: rule.reason,
                 proposal: rule.proposal,
@@ -188,13 +185,9 @@ function sentenceLengthViolations(text: string): AdvisorRuleViolation[] {
             const trimmed = sentence.trim();
             const start = m.index + leading;
             out.push({
-                id: "test",
                 collection: "anderes-collection",
-                description:
-                    "Lange Sätze sind schwer lesbar. Teilen Sie sie in kürzere Teilsätze.",
-                example: "",
                 file_name: "beispiel-anhang.pdf",
-                name: "Satzlänge prüfen",
+                rule_name: "Satzlänge prüfen",
                 page_number: 4,
                 reason: `Dieser Satz hat ${wordCount} Wörter. Empfohlen werden höchstens 20 Wörter pro Satz.`,
                 proposal: "Teilen Sie den Satz in zwei kürzere Sätze auf.",
@@ -213,13 +206,9 @@ function compoundJargonViolations(text: string): AdvisorRuleViolation[] {
     let m = re.exec(text);
     while (m !== null) {
         out.push({
-            id: "dummy",
             collection: "anderes-collection",
-            description:
-                "Lange Komposita sind schwer verständlich. Nutzen Sie kürzere Begriffe.",
-            example: "",
             file_name: "beispiel-anhang.pdf",
-            name: "Fachjargon vermeiden",
+            rule_name: "Fachjargon vermeiden",
             page_number: 5,
             reason: `„${m[0]}“ ist ein sehr langes Kompositum (${m[0].length} Zeichen).`,
             proposal: "Verwenden Sie einen kürzeren, geläufigeren Begriff.",

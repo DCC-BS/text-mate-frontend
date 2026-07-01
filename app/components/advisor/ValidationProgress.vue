@@ -7,16 +7,24 @@ interface InputProps {
 
 const props = defineProps<InputProps>();
 
+const current = computed(() => props.progress.checked ?? 0);
+
 const { t } = useI18n();
 </script>
 
 <template>
     <div>
-        <div>{{ t("advisor.checkingProgress") }}</div>
         <UProgress
-            v-model="props.progress.checked"
-            :max="props.progress.total"
+            v-model:modelValue="current"
+            :max="props.progress.total ?? 1"
             status
-        />
+        >
+            <template #status>
+                <div>
+                    {{ t("advisor.checkingProgress") }}
+                    {{ `${props.progress.checked}/${props.progress.total}` }}
+                </div>
+            </template>
+        </UProgress>
     </div>
 </template>

@@ -4,7 +4,7 @@ import type { AdvisorDocumentDescription } from "#shared/types/advisor";
 const { t } = useI18n();
 const { docs } = useAdvisor();
 
-const selectedIds = ref<string[]>([]);
+const selectedIds = defineModel<string[]>({ default: [] });
 /** Tracks which doc cards are expanded to reveal details. */
 const expandedIds = ref<string[]>([]);
 
@@ -29,16 +29,16 @@ function toggleExpand(id: string): void {
         : [...expandedIds.value, id];
 }
 
-const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
-    default: [],
-    get: () =>
-        docs.value.filter((doc) =>
-            selectedIds.value.includes(doc.id),
-        ) as AdvisorDocumentDescription[],
-    set: (value: AdvisorDocumentDescription[]) => {
-        selectedIds.value = value.map((doc) => doc.id);
-    },
-});
+// const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
+//     default: [],
+//     get: () =>
+//         docs.value.filter((doc) =>
+//             selectedIds.value.includes(doc.id),
+//         ) as AdvisorDocumentDescription[],
+//     set: (value: AdvisorDocumentDescription[]) => {
+//         selectedIds.value = value.map((doc) => doc.id);
+//     },
+// });
 </script>
 
 <template>

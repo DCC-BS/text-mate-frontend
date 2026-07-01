@@ -100,10 +100,12 @@ export function useAdvisor() {
                 ) as ValidationResult;
 
                 yield {
-                    threads: result.rules.map(
+                    checked: result.checked,
+                    total: result.total,
+                    threads: result.violations.map(
                         (x) =>
                             ({
-                                id: x.id,
+                                id: `t-${crypto.randomUUID()}`,
                                 notes: [],
                                 status: "to-fix",
                                 type: "violation",
@@ -138,7 +140,6 @@ export function useAdvisor() {
 
         const reader = response.getReader();
         const decoder = new TextDecoder();
-        let buffer = "";
 
         try {
             let isDone = false;
@@ -146,9 +147,7 @@ export function useAdvisor() {
                 const { value, done } = await reader.read();
                 isDone = done;
 
-                buffer += decoder.decode(value, { stream: true });
-
-                yield buffer;
+                yield decoder.decode(value, { stream: true });
             }
         } finally {
             reader.releaseLock();
@@ -161,51 +160,4 @@ export function useAdvisor() {
         validate,
         fix,
     };
-}
-
-/**
- * Extracts plain-text deltas from an SSE buffer. Lines carrying an
- * `event:` field (e.g. the terminal `done` frame) are skipped; only
- * `data:` payloads are returned as text.
- */
-function extractTextDeltas(
-    buffer: string,
-    flush = false,
-): { deltas: string[]; remaining: string } {
-    const deltas: string[] = [];
-    let remaining = buffer;
-
-    while (true) {
-        const separatorIndex = remaining.indexOf("\n\n");
-        if (separatorIndex === -1) {
-            break;
-        }
-
-        const rawEvent = remaining.slice(0, separatorIndex);
-        remaining = remaining.slice(separatorIndex + 2);
-
-        // Terminal control frame — no text payload.
-        if (rawEvent.startsWith("event:")) {
-            continue;
-        }
-
-        for (const line of rawEvent.replaceAll("\r", "").split("\n")) {
-            if (line.startsWith("data:")) {
-                deltas.push(line.slice(5));
-            }
-        }
-    }
-
-    if (flush && remaining.trim().length > 0) {
-        if (!remaining.startsWith("event:")) {
-            for (const line of remaining.replaceAll("\r", "").split("\n")) {
-                if (line.startsWith("data:")) {
-                    deltas.push(line.slice(5));
-                }
-            }
-        }
-        remaining = "";
-    }
-
-    return { deltas, remaining };
 }

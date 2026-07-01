@@ -50,6 +50,7 @@ export function useAdvisorEditor(
             createAdvisorDecorationExtension({
                 getThreads: () => threads.value as AdvisorThread[],
                 getActiveId: () => activeThreadId.value,
+                getPhase: () => phase.value,
                 onSelect: (id) => executeCommand(new ChangeActiveThreadId(id)),
             }),
         ],
@@ -69,9 +70,10 @@ export function useAdvisorEditor(
         },
     );
 
-    // Rebuild decorations whenever threads or the focused thread change.
+    // Rebuild decorations whenever threads, the focused thread, or the phase
+    // change (decorations are phase-gated to reviewing/review).
     watch(
-        [threads, activeThreadId],
+        [threads, activeThreadId, phase],
         () => {
             const view = editor.value?.view;
             if (!view) {

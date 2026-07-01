@@ -158,7 +158,7 @@ function openPdf(): void {
                               : 'text-primary'
                     "
                 />
-                {{ isUser ? t("advisor.note") : thread.violation?.name }}
+                {{ isUser ? t("advisor.note") : thread.violation?.rule_name }}
             </span>
             <button
                 v-if="thread.violation"

@@ -151,7 +151,13 @@ function getResolvedText(): string {
     return result;
 }
 
-defineExpose({ getAllChangeHunks, getResolvedText });
+function areAllHunksResolved(): boolean {
+    return segments.value
+        .filter((x) => x.kind === "change")
+        .every((x) => x.hunk.status !== "pending");
+}
+
+defineExpose({ getAllChangeHunks, getResolvedText, areAllHunksResolved });
 </script>
 
 <template>
@@ -222,7 +228,10 @@ defineExpose({ getAllChangeHunks, getResolvedText });
                             >{{ segment.hunk.removedText }}</span
                         >
                         <span
-                            v-if="segment.hunk.removedText && segment.hunk.addedText"
+                            v-if="
+                                segment.hunk.removedText &&
+                                segment.hunk.addedText
+                            "
                             class="text-gray-400 dark:text-gray-500 mx-[3px]"
                             >→</span
                         >

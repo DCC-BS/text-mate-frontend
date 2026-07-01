@@ -1,15 +1,23 @@
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { Extension } from "@tiptap/vue-3";
-import type { AdvisorThread } from "~/assets/models/advisor";
+import type { AdvisorPhase, AdvisorThread } from "~/assets/models/advisor";
 import { buildDecorationSpecs, type DecorationSpec } from "~/utils/advisorText";
 
 export const advisorDecorationKey: PluginKey<DecorationSet> =
     new PluginKey<DecorationSet>("advisorDecorations");
 
+// Phases in which inline thread decorations are rendered. Outside these the
+// editor shows plain text (e.g. during `edit` or after `review`).
+const DECORATED_PHASES: ReadonlySet<AdvisorPhase> = new Set([
+    "reviewing",
+    "review",
+]);
+
 export type AdvisorDecorationOptions = {
     getThreads: () => AdvisorThread[];
     getActiveId: () => string | null;
+    getPhase: () => AdvisorPhase;
     onSelect: (threadId: string) => void;
 };
 
@@ -17,7 +25,8 @@ export type AdvisorDecorationOptions = {
  * Inline ProseMirror decoration plugin that renders every thread range as a
  * highlight span. Uses decorations (not Marks) so `getText()` stays free of
  * markup and backend offsets remain authoritative. Decorations rebuild on
- * the `advisorDecorationKey` meta (thread/focus change) or any doc change.
+ * the `advisorDecorationKey` meta (thread/focus/phase change) or any doc
+ * change, but are only emitted while the phase is `reviewing` or `review`.
  */
 export function createAdvisorDecorationExtension(
     options: AdvisorDecorationOptions,
@@ -71,6 +80,10 @@ export function createAdvisorDecorationExtension(
     function build(state: {
         doc: Parameters<typeof buildDecorationSpecs>[0];
     }): DecorationSet {
+        // Decorations are only visible in the reviewing/review phases.
+        if (!DECORATED_PHASES.has(options.getPhase())) {
+            return DecorationSet.empty;
+        }
         const specs = buildDecorationSpecs(
             state.doc,
             options.getThreads(),

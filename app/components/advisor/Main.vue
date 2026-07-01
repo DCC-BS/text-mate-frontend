@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type {
-    AdvisorDocumentDescription,
-    FixThread,
-} from "#shared/types/advisor";
+import type { FixThread } from "#shared/types/advisor";
 import type {
     AdvisorPhase,
     AdvisorThreadResult,
 } from "~/assets/models/advisor";
+import {
+    ClearTextCommand,
+    ClearThreadsCommand,
+} from "~/assets/models/commands";
 import AdvisorDiffViewer from "./DiffViewer.vue";
 import Rail from "./Rail.vue";
 
@@ -14,9 +15,10 @@ const { t } = useI18n();
 const { validate, fix } = useAdvisor();
 const toast = useToast();
 const { threads, activeThreadId, addThread } = useAdvisorRevision();
+const { executeCommand } = useCommandBus();
 
 const text = defineModel<string>({ default: "" });
-const selectedDocs = ref<AdvisorDocumentDescription[]>([]);
+const selectedDocs = ref<string[]>([]);
 
 const phase = ref<AdvisorPhase>("edit");
 
@@ -26,31 +28,26 @@ const phase = ref<AdvisorPhase>("edit");
  */
 const diffOriginalText = ref("");
 
-const threadResults = ref([
-    {
-        checked: 0,
-        total: 1,
-        threads: [],
-    },
-] as AdvisorThreadResult[]);
+const lastResult = ref<Omit<AdvisorThreadResult, "threads">>({
+    checked: 0,
+    total: 1,
+});
 
 async function onCheck() {
     phase.value = "reviewing";
 
     try {
-        const results = validate(
-            text.value,
-            selectedDocs.value.map((x) => x.id),
-        );
+        const results = validate(text.value, selectedDocs.value);
 
         for await (const result of results) {
-            threadResults.value.push(result);
+            lastResult.value = {
+                checked: result.checked,
+                total: result.total,
+            };
 
             for (const thread of result.threads) {
                 addThread(thread);
             }
-
-            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
         phase.value = "review";
@@ -95,6 +92,8 @@ async function onApplyRevision() {
     )) {
         text.value += chunk;
     }
+
+    await executeCommand(new ClearThreadsCommand());
     phase.value = "diff";
 }
 
@@ -125,15 +124,13 @@ function onDiffApply(resolvedText: string): void {
             <div v-if="phase === 'edit'">
                 <AdvisorDocSelect v-model="selectedDocs" />
 
-                <UButton variant="ghost" @click="onCheck"
-                    >{{ t("advisor.check") }}</UButton
-                >
+                <UButton variant="ghost" @click="onCheck">{{
+                    t("advisor.check")
+                }}</UButton>
             </div>
 
             <div v-if="phase === 'reviewing'">
-                <AdvisorValidationProgress
-                    :progress="threadResults.at(-1) as AdvisorThreadResult"
-                />
+                <AdvisorValidationProgress :progress="lastResult" />
             </div>
 
             <div
@@ -143,6 +140,7 @@ function onDiffApply(resolvedText: string): void {
                 <Rail
                     :threads="threads"
                     :activeThreadId="activeThreadId"
+                    :phase="phase"
                     @apply="onApplyRevision"
                 />
             </div>

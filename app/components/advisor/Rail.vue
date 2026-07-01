@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import type { AdvisorThread } from "~/assets/models/advisor";
+import type { AdvisorPhase, AdvisorThread } from "~/assets/models/advisor";
 
 interface InputProps {
     threads: AdvisorThread[];
     activeThreadId: string | null;
+    phase: AdvisorPhase;
 }
 
 const props = defineProps<InputProps>();
@@ -75,7 +76,8 @@ const skipCount = computed(() => props.threads.length - toFixCount.value);
                 color="primary"
                 icon="i-lucide-download"
                 :label="`${t('advisor.apply')} (${toFixCount})`"
-                :disabled="toFixCount === 0"
+                :disabled="toFixCount === 0 || props.phase === 'reviewing'"
+                :loading="props.phase === 'reviewing'"
                 @click="emit('apply')"
             />
         </footer>

@@ -33,12 +33,9 @@ export const AdvisorRangeSchema = z
 export type AdvisorRange = z.infer<typeof AdvisorRangeSchema>;
 
 export const AdvisorRuleViolationSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    description: z.string(),
+    rule_name: z.string(),
     file_name: z.string(),
     page_number: z.number(),
-    example: z.string(),
     reason: z.string(),
     proposal: z.string(),
     source: z.string(),
@@ -49,7 +46,7 @@ export const AdvisorRuleViolationSchema = z.object({
 export type AdvisorRuleViolation = z.infer<typeof AdvisorRuleViolationSchema>;
 
 export const ValidationResultSchema = z.object({
-    rules: z.array(AdvisorRuleViolationSchema),
+    violations: z.array(AdvisorRuleViolationSchema),
     checked: z.number(),
     total: z.number(),
 });

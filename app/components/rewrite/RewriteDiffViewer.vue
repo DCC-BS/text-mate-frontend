@@ -72,6 +72,10 @@ function onRejectHunk(hunk: DiffHunk): void {
     executeCommand(
         new ApplyTextAtOffsetCommand(hunk.removedText, hunk.from, hunk.to),
     );
+
+    if (diffViewerRef.value?.areAllHunksResolved()) {
+        originalText.value = "";
+    }
 }
 
 function onRejectAll(hunks: DiffHunk[]): void {
@@ -92,6 +96,10 @@ function onRejectAll(hunks: DiffHunk[]): void {
  */
 function onAcceptHunk(_hunk: DiffHunk): void {
     // intentionally empty
+
+    if (diffViewerRef.value?.areAllHunksResolved()) {
+        originalText.value = "";
+    }
 }
 
 /**
