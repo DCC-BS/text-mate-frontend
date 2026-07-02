@@ -67,11 +67,9 @@ const skipCount = computed(() => props.threads.length - toFixCount.value);
 
         <footer class="px-3 py-2 border-t border-default shrink-0">
             <p class="text-[11px] text-muted text-center mb-1.5">
-                {{
-                    t("advisor.applyInfo", {
+                {{ t("advisor.applyInfo", {
                         n: toFixCount,
-                    })
-                }}
+                    }) }}
             </p>
             <UButton
                 block

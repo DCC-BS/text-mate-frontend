@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { EditorContent } from "@tiptap/vue-3";
 import type { AdvisorPhase, AdvisorThread } from "~/assets/models/advisor";
 import {
     AddUserReviewCommand,
     ChangeActiveThreadId,
 } from "~/assets/models/commands";
+import BaseEditor from "~/components/editor/BaseEditor.vue";
 import { useAdvisorEditor } from "~/composables/useAdvisorEditor";
+import { selectionInfo } from "~/utils/advisorText";
+import { threadOverlapping } from "~/utils/advisorThreads";
 
 interface InputProps {
     phase: AdvisorPhase;
@@ -28,8 +30,6 @@ const { selection, editor } = useAdvisorEditor(
     text,
 );
 
-const containerRef = ref<HTMLElement | null>(null);
-
 type Bubble = { visible: boolean; top: number; left: number };
 const bubble = ref<Bubble>({ visible: false, top: 0, left: 0 });
 
@@ -38,8 +38,8 @@ const isReview = computed(() =>
 );
 
 // Scroll the active thread's decoration into view when it changes from
-// elsewhere (e.g. selecting a ThreadCard). Decorations are rebuilt async
-// by the composable's watch, so wait for the DOM to update first.
+// elsewhere (e.g. selecting a ThreadCard). Decorations live inside the
+// ProseMirror DOM, so query the editor's view directly.
 watch(
     () => props.activeThreadId,
     (id) => {
@@ -47,7 +47,7 @@ watch(
             return;
         }
         nextTick(() => {
-            const el = containerRef.value?.querySelector(
+            const el = editor.value?.view.dom.querySelector(
                 `[data-thread-id="${CSS.escape(id)}"]`,
             ) as HTMLElement | null;
             el?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -90,23 +90,23 @@ function selectionRect(): DOMRect | null {
     if (range.collapsed) {
         return null;
     }
-    const containerRect = containerRef.value?.getBoundingClientRect();
-    const rect = range.getBoundingClientRect();
-    if (!containerRect) {
-        return rect;
-    }
-    return new DOMRect(rect.left, rect.top, rect.width, rect.height);
+    return range.getBoundingClientRect();
 }
 
 function addNoteOrReply(): void {
     const sel = selection.value;
-    if (!sel) {
+    const ed = editor.value;
+    if (!sel || !ed) {
+        return;
+    }
+    const info = selectionInfo(ed.state.doc, sel.from, sel.to);
+    if (!info) {
         return;
     }
     const overlapId = threadOverlapping(
         props.threads,
-        sel.startOffset,
-        sel.endOffset,
+        info.startOffset,
+        info.endOffset,
     );
     if (overlapId) {
         // Overlaps an existing thread — treat as a reply focus.
@@ -114,8 +114,8 @@ function addNoteOrReply(): void {
     } else {
         executeCommand(
             new AddUserReviewCommand({
-                start: sel.startOffset,
-                end: sel.endOffset,
+                start: info.startOffset,
+                end: info.endOffset,
             }),
         );
     }
@@ -141,53 +141,35 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener("mousedown", clearBubbleOnExternalClick);
 });
-
-const wordCount = computed(
-    () => editor.value?.storage.characterCount?.words() ?? 0,
-);
 </script>
 
 <template>
-    <div
-        ref="containerRef"
-        class="relative w-full h-full flex flex-col"
-        data-tour="advisor-editor"
+    <BaseEditor
+        :editor="editor"
+        :text="text"
+        :limit="10000"
+        :selection="selection"
+        :readonly="phase !== 'edit'"
+        tour="advisor-editor"
     >
-        <div class="flex-1 overflow-y-auto">
-            <div class="p-2">
-                <ClientOnly>
-                    <EditorContent
-                        v-if="editor"
-                        :editor="editor"
-                        class="advisor-editor-content text-[17px] leading-relaxed text-toned"
+        <template #bubble>
+            <Teleport to="body">
+                <button
+                    v-if="bubble.visible"
+                    type="button"
+                    data-advisor-bubble
+                    class="fixed z-50 -translate-x-1/2 flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary text-inverted text-xs font-medium shadow-md"
+                    :style="{ top: `${bubble.top}px`, left: `${bubble.left}px` }"
+                    @mousedown.prevent
+                    @click="addNoteOrReply"
+                >
+                    <UIcon
+                        name="i-lucide-message-square-plus"
+                        class="text-sm"
                     />
-                    <template #fallback>
-                        <div
-                            class="flex items-center justify-center py-20 text-muted"
-                        >
-                            <UIcon
-                                name="i-lucide-loader-circle"
-                                class="animate-spin text-2xl"
-                            />
-                        </div>
-                    </template>
-                </ClientOnly>
-            </div>
-        </div>
-
-        <Teleport to="body">
-            <button
-                v-if="bubble.visible"
-                type="button"
-                data-advisor-bubble
-                class="fixed z-50 -translate-x-1/2 flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary text-inverted text-xs font-medium shadow-md"
-                :style="{ top: `${bubble.top}px`, left: `${bubble.left}px` }"
-                @mousedown.prevent
-                @click="addNoteOrReply"
-            >
-                <UIcon name="i-lucide-message-square-plus" class="text-sm" />
-                {{ t("advisor.addNote") }}
-            </button>
-        </Teleport>
-    </div>
+                    {{ t("advisor.addNote") }}
+                </button>
+            </Teleport>
+        </template>
+    </BaseEditor>
 </template>

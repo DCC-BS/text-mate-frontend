@@ -15,6 +15,8 @@ const props = defineProps<{
     characters: number;
     words: number;
     limit: number;
+    /** When true, mutating actions (undo/redo/upload) are disabled. */
+    readonly?: boolean;
 }>();
 
 const emit = defineEmits<(e: "upload-file") => void>();
@@ -124,7 +126,7 @@ async function downloadWord(): Promise<void> {
                     icon="i-lucide-undo"
                     variant="link"
                     color="neutral"
-                    :disabled="!undoRedoState.canUndo"
+                    :disabled="readonly || !undoRedoState.canUndo"
                     data-testid="undo-button"
                     @click="handleUndo"
                 />
@@ -134,7 +136,7 @@ async function downloadWord(): Promise<void> {
                     icon="i-lucide-redo"
                     variant="link"
                     color="neutral"
-                    :disabled="!undoRedoState.canRedo"
+                    :disabled="readonly || !undoRedoState.canRedo"
                     data-testid="redo-button"
                     @click="handleRedo"
                 />
@@ -144,6 +146,7 @@ async function downloadWord(): Promise<void> {
                     icon="i-lucide-upload"
                     variant="link"
                     color="neutral"
+                    :disabled="readonly"
                     @click="emit('upload-file')"
                 />
             </UTooltip>

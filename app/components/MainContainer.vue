@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { AnimatePresence, motion } from "motion-v";
 import { AdvisorMain } from "#components";
-import {
-    Cmds,
-    type ToggleEditableEditorCommand,
-    type ToolSwitchCommand,
-} from "~/assets/models/commands";
+import { Cmds, type ToolSwitchCommand } from "~/assets/models/commands";
 import type { TextTools } from "~/types/TextTools";
 
 // refs
 const userText = ref("");
 const selectedText = ref<TextFocus>();
-const isEditorLocked = ref(false);
 
 const currentTool = ref<TextTools>("rewrite");
 
@@ -33,13 +28,6 @@ onMounted(async () => {
         userText.value = text;
     }
 });
-
-onCommand(
-    Cmds.ToggleEditableEditorCommand,
-    async (command: ToggleEditableEditorCommand) => {
-        isEditorLocked.value = command.locked;
-    },
-);
 
 onCommand<ToolSwitchCommand>(Cmds.ToolSwitchCommand, async (cmd) => {
     currentTool.value = cmd.tool;

@@ -145,9 +145,9 @@ async function onOpenPdf(thread: AdvisorThread) {
             <div v-if="phase === 'edit'">
                 <AdvisorDocSelect v-model="selectedDocs" />
 
-                <UButton variant="ghost" @click="onCheck">{{
-                    t("advisor.check")
-                }}</UButton>
+                <UButton variant="ghost" @click="onCheck"
+                    >{{ t("advisor.check") }}</UButton
+                >
             </div>
 
             <!-- PHASE 2: reviewing -->

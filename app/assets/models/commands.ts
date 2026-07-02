@@ -23,7 +23,6 @@ export const Cmds = {
     RedoCommand: "RedoCommand",
     UndoRedoStateChanged: "UndoRedoStateChanged",
     ToolSwitchCommand: "ToolSwitchCommand",
-    ToggleEditableEditorCommand: "ToggleEditableEditorCommand",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
     RegisterDiffCommand: "RegisterDiffCommand",
     RejectDiffCommand: "RejectDiffCommand",
@@ -162,15 +161,6 @@ export class RejectDiffCommand implements ICommand {
 
     /** When false, the revert is not pushed onto the undo history. */
     constructor(public addToHistory = true) {}
-}
-
-/**
- * Prevent edits to the editor
- */
-export class ToggleEditableEditorCommand implements ICommand {
-    readonly $type = Cmds.ToggleEditableEditorCommand;
-
-    constructor(public locked: boolean) {}
 }
 
 /**
