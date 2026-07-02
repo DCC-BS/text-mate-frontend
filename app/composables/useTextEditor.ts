@@ -20,6 +20,7 @@ import {
 import { FocusedSentenceMark } from "~/utils/focusedSentenceMark";
 import { FocusedWordMark } from "~/utils/focusedWordMark";
 import { mapTextOffsetsToDocPositions } from "~/utils/mapTextOffsets";
+import { plainTextToEditorHtml } from "~/utils/plainTextToEditorHtml";
 
 export interface UseTextEditorOptions {
     container: Ref<HTMLElement | undefined>;
@@ -45,20 +46,15 @@ export function useTextEditor(options: UseTextEditorOptions) {
         useTextFocus(isRewriteActive);
 
     const editor = useEditor({
-        content: modelValue.value,
+        // Parse through HTML so paragraph boundaries (`\n\n`) and hard breaks
+        // survive the initial render instead of being collapsed as whitespace.
+        content: plainTextToEditorHtml(modelValue.value),
         extensions: [
             Document,
             Paragraph,
             Text,
-            // BulletList,
-            // ListItem,
-            // OrderedList,
             HardBreak,
-            // Bold,
-            // Italic,
-            // Strike,
             History,
-            // Heading,
             FocusExtension,
             CharacterCount.configure({
                 limit: limit.value,
@@ -194,7 +190,9 @@ export function useTextEditor(options: UseTextEditorOptions) {
         if (getContent() === value) {
             return;
         }
-        editor.value.commands.setContent(value);
+        // Parse via HTML so paragraph boundaries (`\n\n`) and hard breaks
+        // (`\n`) are preserved instead of being collapsed as whitespace.
+        editor.value.commands.setContent(plainTextToEditorHtml(value));
     });
 
     onUnmounted(() => {
@@ -306,7 +304,7 @@ export function useTextEditor(options: UseTextEditorOptions) {
             formattedText += sentence;
         }
 
-        editor.value.commands.setContent(formattedText);
+        editor.value.commands.setContent(plainTextToEditorHtml(formattedText));
     }
 
     return {

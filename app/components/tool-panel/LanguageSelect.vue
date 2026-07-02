@@ -51,7 +51,7 @@ const selectedLanguage = useCookie<string>("selected-language", {
         value-key="key"
         :items="items"
         v-model="selectedLanguage"
-        class="w-full"
+        class="min-w-[200px]"
         data-tour="language-select"
     />
 </template>

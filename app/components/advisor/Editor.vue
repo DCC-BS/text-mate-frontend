@@ -37,6 +37,24 @@ const isReview = computed(() =>
     ["review", "diff", "done"].includes(props.phase),
 );
 
+// Scroll the active thread's decoration into view when it changes from
+// elsewhere (e.g. selecting a ThreadCard). Decorations are rebuilt async
+// by the composable's watch, so wait for the DOM to update first.
+watch(
+    () => props.activeThreadId,
+    (id) => {
+        if (!id) {
+            return;
+        }
+        nextTick(() => {
+            const el = containerRef.value?.querySelector(
+                `[data-thread-id="${CSS.escape(id)}"]`,
+            ) as HTMLElement | null;
+            el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+    },
+);
+
 watch(
     selection,
     () => {
@@ -135,34 +153,8 @@ const wordCount = computed(
         class="relative w-full h-full flex flex-col"
         data-tour="advisor-editor"
     >
-        <div
-            class="flex items-center justify-between px-4 py-2 border-b border-default shrink-0"
-        >
-            <div class="flex items-center gap-1.5">
-                <span
-                    class="flex items-center gap-1.5 text-xs font-medium text-toned border-b-2"
-                    :class="isReview ? 'border-primary' : 'border-secondary'"
-                >
-                    <UIcon
-                        :name="
-                            isReview ? 'i-lucide-sparkles' : 'i-lucide-pencil'
-                        "
-                        class="text-sm"
-                    />
-                    {{ isReview ? t("advisor.title") : t("advisor.editMode") }}
-                </span>
-                <span
-                    v-if="isReview"
-                    class="flex items-center gap-1 text-[11px] text-muted bg-muted/40 rounded-full px-2 py-0.5"
-                >
-                    <UIcon name="i-lucide-lock" class="text-xs" />
-                    {{ t("advisor.readonly") }}
-                </span>
-            </div>
-        </div>
-
         <div class="flex-1 overflow-y-auto">
-            <div class="max-w-3xl mx-auto p-6">
+            <div class="p-2">
                 <ClientOnly>
                     <EditorContent
                         v-if="editor"

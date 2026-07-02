@@ -4,9 +4,8 @@ import { UButton } from "#components";
 
 <template>
     <div>
-        <div class="hidden md:flex gap-2">
+        <div class="hidden md:flex gap-2 justify-end">
             <tool-panel-language-select />
-            <tool-panel-user-dictionary />
         </div>
         <div class="md:hidden flex justify-end">
             <UPopover>
@@ -18,7 +17,6 @@ import { UButton } from "#components";
                 <template #content>
                     <div class="p-2 flex flex-col gap-2">
                         <tool-panel-language-select />
-                        <tool-panel-user-dictionary />
                     </div>
                 </template>
             </UPopover>

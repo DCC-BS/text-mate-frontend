@@ -16,6 +16,7 @@ import {
     selectionInfo,
     serializeAdvisorText,
 } from "~/utils/advisorText";
+import { plainTextToEditorHtml } from "~/utils/plainTextToEditorHtml";
 
 export type AdvisorEditor = ReturnType<typeof useAdvisorEditor>;
 
@@ -39,7 +40,9 @@ export function useAdvisorEditor(
 
     const editor = useEditor({
         editable: phase.value === "edit",
-        content: text.value,
+        // Parse through HTML so paragraph boundaries (`\n\n`) and hard breaks
+        // survive the initial render instead of being collapsed as whitespace.
+        content: plainTextToEditorHtml(text.value),
         extensions: [
             Document,
             Paragraph,
@@ -95,7 +98,7 @@ export function useAdvisorEditor(
             if (serializeAdvisorText(ed.state.doc) === value) {
                 return;
             }
-            ed.commands.setContent(textToParagraphHtml(value || ""));
+            ed.commands.setContent(plainTextToEditorHtml(value || ""));
         },
     );
 
@@ -125,25 +128,8 @@ export function useAdvisorEditor(
     function setContent(text: string): void {
         // Build explicit <p> blocks so `setContent` (which parses as HTML)
         // preserves newlines instead of collapsing them to whitespace.
-        editor.value?.commands.setContent(textToParagraphHtml(text));
+        editor.value?.commands.setContent(plainTextToEditorHtml(text));
     }
 
     return { editor, selection, setContent };
-}
-
-function escapeHtml(value: string): string {
-    return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
-}
-
-function textToParagraphHtml(text: string): string {
-    if (text === "") {
-        return "<p></p>";
-    }
-    return text
-        .split("\n")
-        .map((line) => `<p>${escapeHtml(line)}</p>`)
-        .join("");
 }

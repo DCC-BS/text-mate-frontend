@@ -2,25 +2,27 @@
 import type { FixThread } from "#shared/types/advisor";
 import type {
     AdvisorPhase,
+    AdvisorThread,
     AdvisorThreadResult,
 } from "~/assets/models/advisor";
-import {
-    ClearTextCommand,
-    ClearThreadsCommand,
-} from "~/assets/models/commands";
+import { ClearThreadsCommand } from "~/assets/models/commands";
 import AdvisorDiffViewer from "./DiffViewer.vue";
+import PdfViewerClient from "./PdfViewer.client.vue";
 import Rail from "./Rail.vue";
 
 const { t } = useI18n();
-const { validate, fix } = useAdvisor();
+const { validate, fix, getDocFile } = useAdvisor();
 const toast = useToast();
 const { threads, activeThreadId, addThread } = useAdvisorRevision();
 const { executeCommand } = useCommandBus();
+const logger = useLogger();
+const overlay = useOverlay();
 
 const text = defineModel<string>({ default: "" });
 const selectedDocs = ref<string[]>([]);
 
 const phase = ref<AdvisorPhase>("edit");
+const pdfModal = overlay.create(PdfViewerClient);
 
 /**
  * Snapshot of the document text captured before a revision is applied. Used as
@@ -107,6 +109,24 @@ function onDiffApply(resolvedText: string): void {
     diffOriginalText.value = "";
     phase.value = "edit";
 }
+
+async function onOpenPdf(thread: AdvisorThread) {
+    const violation = thread.violation;
+
+    if (!violation) {
+        logger.error("Cannot open pdf, violation is empty");
+        return;
+    }
+
+    const blob = await getDocFile(violation.file_name);
+
+    pdfModal.open({
+        file: blob,
+        page: violation.page_number,
+        fileName: violation.file_name,
+        onClose: () => pdfModal.close(),
+    });
+}
 </script>
 
 <template>
@@ -120,7 +140,8 @@ function onDiffApply(resolvedText: string): void {
             />
         </div>
 
-        <div class="flex-1 p-2">
+        <div class="flex-1 p-2 flex flex-col">
+            <!-- PHASE 1: edit -->
             <div v-if="phase === 'edit'">
                 <AdvisorDocSelect v-model="selectedDocs" />
 
@@ -129,22 +150,26 @@ function onDiffApply(resolvedText: string): void {
                 }}</UButton>
             </div>
 
+            <!-- PHASE 2: reviewing -->
             <div v-if="phase === 'reviewing'">
                 <AdvisorValidationProgress :progress="lastResult" />
             </div>
 
+            <!-- PHASE 3: reviewing and review (show results while still reviewing) -->
             <div
                 v-if="phase === 'reviewing' || phase === 'review'"
-                class="h-full overflow-y-auto"
+                class="h-full"
             >
                 <Rail
                     :threads="threads"
                     :activeThreadId="activeThreadId"
                     :phase="phase"
                     @apply="onApplyRevision"
+                    @openPdf="onOpenPdf"
                 />
             </div>
 
+            <!-- PHASE 4: diff -->
             <div v-if="phase === 'diff'" class="h-full">
                 <AdvisorDiffViewer
                     :original-text="diffOriginalText"

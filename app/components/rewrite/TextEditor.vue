@@ -3,6 +3,7 @@ import { EditorContent } from "@tiptap/vue-3";
 import { useTextFileUpload } from "~/composables/useFileUpload";
 import { useTextAction } from "~/composables/useTextAction";
 import { useTextEditor } from "~/composables/useTextEditor";
+import { plainTextToEditorHtml } from "~/utils/plainTextToEditorHtml";
 import TextClear from "./TextClear.vue";
 import TextRewrite from "./TextRewrite.vue";
 import TextToolbar from "./TextToolbar.vue";
@@ -40,7 +41,7 @@ const {
     onFileSelect,
 } = useTextFileUpload({
     onFileConverted: (text: string) => {
-        editor.value?.commands.setContent(text);
+        editor.value?.commands.setContent(plainTextToEditorHtml(text));
         lockEditor.value = false;
     },
 });

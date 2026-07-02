@@ -4,10 +4,13 @@ import type { AdvisorThread } from "~/assets/models/advisor";
 /**
  * A run of text in the document paired with its absolute ProseMirror
  * positions. Segments are emitted in document order, paragraph by
- * paragraph, with a synthetic `"\n"` separator between paragraphs and for
- * hard-break nodes. The concatenation of `.text` is exactly the
- * serialization the advisor validates against, so backend/dummy offsets
- * map 1:1 onto character offsets in this stream.
+ * paragraph, with a synthetic `"\n\n"` separator between paragraphs (matching
+ * Tiptap's `editor.getText()` block separator) and a `"\n"` for hard-break
+ * nodes. The concatenation of `.text` is exactly the serialization the
+ * advisor validates against, so backend/dummy offsets map 1:1 onto character
+ * offsets in this stream. Using `\n\n` for paragraphs keeps the advisor
+ * interchange consistent with the rewrite editor, so layout survives
+ * switching between the two tools.
  */
 type Segment = {
     text: string;
@@ -35,7 +38,7 @@ export function advisorSegments(doc: PmNode): Segment[] {
 
         if (paraIndex < doc.childCount - 1) {
             const sep = paraOffset + paragraph.nodeSize;
-            segments.push({ text: "\n", from: sep, to: sep });
+            segments.push({ text: "\n\n", from: sep, to: sep });
         }
     });
 
