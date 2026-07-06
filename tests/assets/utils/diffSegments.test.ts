@@ -92,19 +92,72 @@ describe("buildDiffSegments", () => {
             expect(resolved).toBe(corrected);
         });
 
-        it("reconstructs the original text when every hunk is rejected", () => {
-            const original = "I hav went home and the sistem is bad";
-            const corrected = "I have gone home and the system is good";
+    it("reconstructs the original text when every hunk is rejected", () => {
+        const original = "I hav went home and the sistem is bad";
+        const corrected = "I have gone home and the system is good";
+
+        let resolved = "";
+        for (const segment of buildDiffSegments(original, corrected)) {
+            if (segment.kind === "text") {
+                resolved += segment.value;
+            } else {
+                resolved += segment.hunk.removedText;
+            }
+        }
+        expect(resolved).toBe(original);
+    });
+
+    describe("whitespace-only changes are suppressed", () => {
+        it("hides a trailing-space insertion at the end of the text", () => {
+            const result = hunks("Hello world", "Hello world ");
+
+            expect(result).toHaveLength(0);
+            const [segment] = buildDiffSegments("Hello world", "Hello world ");
+            expect(segment).toEqual({ kind: "text", value: "Hello world " });
+        });
+
+        it("hides a trailing-space deletion at the end of the text", () => {
+            const result = hunks("Hello world ", "Hello world");
+
+            expect(result).toHaveLength(0);
+        });
+
+        it("hides an internal space-count change", () => {
+            const result = hunks("a   b", "a b");
+
+            expect(result).toHaveLength(0);
+        });
+
+        it("still shows a real word swap", () => {
+            const result = hunks("Hello are world", "Hello is world");
+
+            expect(result).toHaveLength(1);
+            expect(result[0].removedText).toBe("are");
+            expect(result[0].addedText).toBe("is");
+        });
+
+        it("still shows a grouped hunk that carries a real edit", () => {
+            // Trailing whitespace is folded into the real grouped change, so
+            // the non-whitespace content differs and the hunk stays visible.
+            const result = hunks("hav  gone", "have gone");
+
+            expect(result).toHaveLength(1);
+        });
+
+        it("reconstructs the corrected text when a whitespace hunk is suppressed", () => {
+            const original = "Hello world ";
+            const corrected = "Hello world";
 
             let resolved = "";
             for (const segment of buildDiffSegments(original, corrected)) {
                 if (segment.kind === "text") {
                     resolved += segment.value;
                 } else {
-                    resolved += segment.hunk.removedText;
+                    resolved += segment.hunk.addedText;
                 }
             }
-            expect(resolved).toBe(original);
+            expect(resolved).toBe(corrected);
         });
     });
+});
 });

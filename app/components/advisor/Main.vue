@@ -39,6 +39,7 @@ async function onCheck() {
     phase.value = "reviewing";
 
     try {
+        lastResult.value.checked = 0;
         const results = validate(text.value, selectedDocs.value);
 
         for await (const result of results) {
@@ -166,6 +167,7 @@ async function onOpenPdf(thread: AdvisorThread) {
                     :phase="phase"
                     @apply="onApplyRevision"
                     @openPdf="onOpenPdf"
+                    @goBack="phase = 'edit'"
                 />
             </div>
 

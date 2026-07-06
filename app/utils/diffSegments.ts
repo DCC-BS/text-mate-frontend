@@ -88,7 +88,7 @@ export function buildDiffSegments(
         pushChange(pendingRemoved, "");
     }
 
-    return groupSegments(raw);
+    return suppressWhitespaceOnlyChanges(groupSegments(raw));
 }
 
 /**
@@ -99,6 +99,56 @@ export function buildDiffSegments(
  */
 function isAbsorbableGap(value: string): boolean {
     return /^\s*$/.test(value);
+}
+
+/**
+ * Returns true when two hunk sides differ only in whitespace — i.e. their
+ * non-whitespace content is identical. Such hunks (extra/missing trailing
+ * spaces, collapsed internal spacing, etc.) are treated as non-changes so the
+ * viewer does not surface them as reviewable edits.
+ */
+function isWhitespaceOnlyChange(
+    removedText: string,
+    addedText: string,
+): boolean {
+    return removedText.replace(/\s/g, "") === addedText.replace(/\s/g, "");
+}
+
+/**
+ * Converts whitespace-only change hunks into plain text segments (flowing the
+ * corrected `addedText` through) and merges them with any adjacent text so the
+ * renderer never sees them as changes. Runs *after* `groupSegments`, so the
+ * existing gap-merging semantics for real edits are preserved: a whitespace-only
+ * hunk folded into a real grouped change keeps the grouped hunk's non-whitespace
+ * content (and is therefore still shown), while standalone whitespace-only
+ * hunks vanish. Offsets baked in during the build pass are untouched because a
+ * suppressed hunk contributes exactly `addedText.length` characters of text.
+ */
+function suppressWhitespaceOnlyChanges(segments: DiffSegment[]): DiffSegment[] {
+    const out: DiffSegment[] = [];
+    for (const segment of segments) {
+        if (
+            segment.kind === "change" &&
+            isWhitespaceOnlyChange(
+                segment.hunk.removedText,
+                segment.hunk.addedText,
+            )
+        ) {
+            const value = segment.hunk.addedText;
+            const last = out[out.length - 1];
+            if (last !== undefined && last.kind === "text") {
+                out[out.length - 1] = {
+                    kind: "text",
+                    value: last.value + value,
+                };
+            } else if (value !== "") {
+                out.push({ kind: "text", value });
+            }
+        } else {
+            out.push(segment);
+        }
+    }
+    return out;
 }
 
 /**

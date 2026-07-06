@@ -36,11 +36,15 @@ function commit(): void {
 // Per-hunk events are intentional no-ops: the core tracks status visually and
 // getResolvedText() reads it back on commit.
 function onAcceptHunk(_hunk: DiffHunk): void {
-    // intentionally empty
+    if (!diffViewerRef.value?.hasPendingHunks()) {
+        commit();
+    }
 }
 
 function onRejectHunk(_hunk: DiffHunk): void {
-    // intentionally empty
+    if (!diffViewerRef.value?.hasPendingHunks()) {
+        commit();
+    }
 }
 </script>
 

@@ -4,7 +4,7 @@ import type { AdvisorDocumentDescription } from "#shared/types/advisor";
 const { t } = useI18n();
 const { docs } = useAdvisor();
 
-const selectedIds = defineModel<string[]>({ default: [] });
+const selectedIds = defineModel<string[]>({ default: () => [] });
 /** Tracks which doc cards are expanded to reveal details. */
 const expandedIds = ref<string[]>([]);
 

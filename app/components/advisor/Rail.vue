@@ -14,12 +14,19 @@ const { t } = useI18n();
 const emit = defineEmits<{
     apply: [];
     openPdf: [thread: AdvisorThread];
+    goBack: [];
 }>();
 
 const toFixCount = computed(
     () => props.threads.filter((x) => x.status === "to-fix").length,
 );
 const skipCount = computed(() => props.threads.length - toFixCount.value);
+
+const emptyMessageKey = computed(() =>
+    props.phase === "reviewing"
+        ? "advisor.noThreadsReviewing"
+        : "advisor.noThreadsReview",
+);
 </script>
 
 <template>
@@ -60,17 +67,17 @@ const skipCount = computed(() => props.threads.length - toFixCount.value);
                         name="i-lucide-file-search"
                         class="text-3xl mb-2 opacity-50"
                     />
-                    <p>{{ t("advisor.noThreadsYet") }}</p>
+                    <p>{{ t(emptyMessageKey) }}</p>
+                    <UButton
+                        @click="emit('goBack')"
+                        v-if="phase === 'review'"
+                        >{{ t("advisor.startNew") }}</UButton
+                    >
                 </div>
             </div>
         </div>
 
         <footer class="px-3 py-2 border-t border-default shrink-0">
-            <p class="text-[11px] text-muted text-center mb-1.5">
-                {{ t("advisor.applyInfo", {
-                        n: toFixCount,
-                    }) }}
-            </p>
             <UButton
                 block
                 color="primary"

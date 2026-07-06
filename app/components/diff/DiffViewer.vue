@@ -157,7 +157,16 @@ function areAllHunksResolved(): boolean {
         .every((x) => x.hunk.status !== "pending");
 }
 
-defineExpose({ getAllChangeHunks, getResolvedText, areAllHunksResolved });
+function hasPendingHunks(): boolean {
+    return pendingHunks.value.length > 0;
+}
+
+defineExpose({
+    getAllChangeHunks,
+    getResolvedText,
+    areAllHunksResolved,
+    hasPendingHunks,
+});
 </script>
 
 <template>
