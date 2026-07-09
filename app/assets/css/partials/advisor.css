@@ -63,10 +63,59 @@
         color-mix(in srgb, var(--color-secondary-500, #00b590) 40%, transparent);
 }
 
+.advisor-mark--user:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-secondary-500, #00b590) 22%,
+        transparent
+    );
+}
+
 .advisor-mark--user.advisor-mark--active {
     background-color: color-mix(
         in srgb,
         var(--color-secondary-500, #00b590) 24%,
+        transparent
+    );
+}
+
+/* Where two thread ranges overlap, a synthetic marker decoration injects
+   this class on exactly the intersection segment (ProseMirror merges active
+   decorations' classes per text segment). A thicker dashed underline signals
+   that more than one element lives here; the smallest range wins the click. */
+.advisor-mark--overlap {
+    border-bottom-style: dashed;
+    border-bottom-width: 3px;
+}
+
+/* Violation + user note overlap. On the merged segment the per-thread
+   classes collide (e.g. selecting the violation brings `--active` while the
+   user note brings `--user`, wrongly firing `.advisor-mark--user.advisor-mark
+   --active`). The overlap marker therefore drives the color itself, using
+   compound selectors (0,2,0) to win over that collision. Default keeps the
+   violation's purple as the background and the user note as a green dashed
+   underline; the `-user`/`-violation` variants reflect the selected thread. */
+.advisor-mark--overlap.advisor-mark--overlap-mixed {
+    background-color: color-mix(
+        in srgb,
+        var(--color-primary-500, #a56cc9) 14%,
+        transparent
+    );
+    border-bottom-color: var(--color-secondary-500, #00b590);
+}
+
+.advisor-mark--overlap.advisor-mark--overlap-mixed-user {
+    background-color: color-mix(
+        in srgb,
+        var(--color-secondary-500, #00b590) 24%,
+        transparent
+    );
+}
+
+.advisor-mark--overlap.advisor-mark--overlap-mixed-violation {
+    background-color: color-mix(
+        in srgb,
+        var(--color-primary-500, #a56cc9) 26%,
         transparent
     );
 }

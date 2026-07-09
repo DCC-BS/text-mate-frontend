@@ -86,6 +86,25 @@ export type DecorationSpec = {
     active: boolean;
     from: number;
     to: number;
+    /**
+     * True for synthetic markers drawn over the intersection of two threads.
+     * They carry no thread id, so click handling ignores them; they only add
+     * the `advisor-mark--overlap` class to the affected segment.
+     */
+    overlapMarker?: boolean;
+    /**
+     * True on an overlap marker whose two threads have different types
+     * (a violation and a user note). Triggers a distinct style so both
+     * colors stay visible in the shared span.
+     */
+    overlapMixed?: boolean;
+    /**
+     * On a mixed overlap marker, the type of whichever of the two threads
+     * is currently active (if any). Drives the active-state color so the
+     * merged segment reflects the actually-selected thread rather than the
+     * accidental combination of `--user` + `--active` classes.
+     */
+    overlapActiveType?: "violation" | "user";
 };
 
 /**
@@ -125,7 +144,40 @@ export function buildDecorationSpecs(
         }
     }
 
-    return specs;
+    // Emit a marker over each intersection of two different threads so the
+    // overlap region is visually distinguishable (see .advisor-mark--overlap).
+    // ProseMirror merges active decorations' classes per text segment, so a
+    // marker active only on the intersection marks exactly the overlap span.
+    const markers: DecorationSpec[] = [];
+    for (let i = 0; i < specs.length; i++) {
+        for (let j = i + 1; j < specs.length; j++) {
+            const a = specs[i];
+            const b = specs[j];
+            if (!a || !b || a.id === b.id) {
+                continue;
+            }
+            const from = Math.max(a.from, b.from);
+            const to = Math.min(a.to, b.to);
+            if (to > from) {
+                const activePiece = a.active ? a : b.active ? b : null;
+                markers.push({
+                    id: `overlap-${i}-${j}`,
+                    type: a.type,
+                    status: a.status,
+                    active: false,
+                    from,
+                    to,
+                    overlapMarker: true,
+                    overlapMixed: a.type !== b.type,
+                    overlapActiveType: activePiece
+                        ? activePiece.type
+                        : undefined,
+                });
+            }
+        }
+    }
+
+    return [...specs, ...markers];
 }
 
 function clampOffset(

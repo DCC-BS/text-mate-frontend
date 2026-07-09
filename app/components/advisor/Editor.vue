@@ -7,7 +7,7 @@ import {
 import BaseEditor from "~/components/editor/BaseEditor.vue";
 import { useAdvisorEditor } from "~/composables/useAdvisorEditor";
 import { selectionInfo } from "~/utils/advisorText";
-import { threadOverlapping } from "~/utils/advisorThreads";
+import { threadWithSameRange } from "~/utils/advisorThreads";
 
 interface InputProps {
     phase: AdvisorPhase;
@@ -36,6 +36,24 @@ const bubble = ref<Bubble>({ visible: false, top: 0, left: 0 });
 const isReview = computed(() =>
     ["review", "diff", "done"].includes(props.phase),
 );
+
+/**
+ * Id of the existing thread whose range is exactly the current selection,
+ * if any. Drives both the bubble label/icon and the reply-vs-new-thread
+ * dispatch in {@link addNoteOrReply}, so the two can never drift apart.
+ */
+const replyTargetId = computed<string | null>(() => {
+    const sel = selection.value;
+    const ed = editor.value;
+    if (!sel || !ed) {
+        return null;
+    }
+    const info = selectionInfo(ed.state.doc, sel.from, sel.to);
+    if (!info) {
+        return null;
+    }
+    return threadWithSameRange(props.threads, info.startOffset, info.endOffset);
+});
 
 // Scroll the active thread's decoration into view when it changes from
 // elsewhere (e.g. selecting a ThreadCard). Decorations live inside the
@@ -96,28 +114,23 @@ function selectionRect(): DOMRect | null {
 function addNoteOrReply(): void {
     const sel = selection.value;
     const ed = editor.value;
-    if (!sel || !ed) {
-        return;
-    }
-    const info = selectionInfo(ed.state.doc, sel.from, sel.to);
-    if (!info) {
-        return;
-    }
-    const overlapId = threadOverlapping(
-        props.threads,
-        info.startOffset,
-        info.endOffset,
-    );
-    if (overlapId) {
-        // Overlaps an existing thread — treat as a reply focus.
-        executeCommand(new ChangeActiveThreadId(overlapId));
-    } else {
+    const targetId = replyTargetId.value;
+    if (targetId) {
+        // Exact-range match with an existing thread — treat as a reply focus.
+        executeCommand(new ChangeActiveThreadId(targetId));
+    } else if (sel && ed) {
+        const info = selectionInfo(ed.state.doc, sel.from, sel.to);
+        if (!info) {
+            return;
+        }
         executeCommand(
             new AddUserReviewCommand({
                 start: info.startOffset,
                 end: info.endOffset,
             }),
         );
+    } else {
+        return;
     }
 
     window.getSelection()?.removeAllRanges();
@@ -164,10 +177,16 @@ onBeforeUnmount(() => {
                     @click="addNoteOrReply"
                 >
                     <UIcon
-                        name="i-lucide-message-square-plus"
+                        :name="
+                            replyTargetId
+                                ? 'i-lucide-message-square'
+                                : 'i-lucide-message-square-plus'
+                        "
                         class="text-sm"
                     />
-                    {{ t("advisor.addNote") }}
+                    {{ replyTargetId
+                            ? t("advisor.reply")
+                            : t("advisor.addNote") }}
                 </button>
             </Teleport>
         </template>

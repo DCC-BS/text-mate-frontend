@@ -60,13 +60,36 @@ export function createAdvisorDecorationExtension(
                             if (!set) {
                                 return false;
                             }
-                            const hit = set
-                                .find(pos, pos)
-                                .find(
-                                    (d) => typeof d.spec?.threadId === "string",
-                                );
-                            if (hit) {
-                                options.onSelect(hit.spec.threadId as string);
+                            const candidateIds = new Set<string>();
+                            for (const d of set.find(pos, pos)) {
+                                if (typeof d.spec?.threadId === "string") {
+                                    candidateIds.add(d.spec.threadId as string);
+                                }
+                            }
+                            if (candidateIds.size === 0) {
+                                return false;
+                            }
+                            // When ranges overlap, prefer the smallest-range
+                            // thread so the inner (smaller) mark is reachable on
+                            // click instead of being shadowed by the larger one.
+                            const threads = options.getThreads();
+                            let best: AdvisorThread | null = null;
+                            for (const id of candidateIds) {
+                                const thread = threads.find((t) => t.id === id);
+                                if (!thread) {
+                                    continue;
+                                }
+                                const size =
+                                    thread.range.end - thread.range.start;
+                                if (
+                                    best === null ||
+                                    size < best.range.end - best.range.start
+                                ) {
+                                    best = thread;
+                                }
+                            }
+                            if (best) {
+                                options.onSelect(best.id);
                                 return true;
                             }
                             return false;
@@ -89,8 +112,20 @@ export function createAdvisorDecorationExtension(
             options.getThreads(),
             options.getActiveId(),
         );
-        const decos = specs.map((spec) =>
-            Decoration.inline(
+        const decos = specs.map((spec) => {
+            if (spec.overlapMarker) {
+                // Overlap markers carry no thread id → click handling skips
+                // them; they only inject the overlap class on the segment.
+                return Decoration.inline(
+                    spec.from,
+                    spec.to,
+                    {
+                        class: decorationClass(spec),
+                    },
+                    {},
+                );
+            }
+            return Decoration.inline(
                 spec.from,
                 spec.to,
                 {
@@ -98,13 +133,28 @@ export function createAdvisorDecorationExtension(
                     "data-thread-id": spec.id,
                 },
                 { threadId: spec.id },
-            ),
-        );
+            );
+        });
         return DecorationSet.create(state.doc, decos);
     }
 }
 
 function decorationClass(spec: DecorationSpec): string {
+    if (spec.overlapMarker) {
+        if (spec.overlapMixed) {
+            const classes = [
+                "advisor-mark--overlap",
+                "advisor-mark--overlap-mixed",
+            ];
+            if (spec.overlapActiveType === "user") {
+                classes.push("advisor-mark--overlap-mixed-user");
+            } else if (spec.overlapActiveType === "violation") {
+                classes.push("advisor-mark--overlap-mixed-violation");
+            }
+            return classes.join(" ");
+        }
+        return "advisor-mark--overlap";
+    }
     const classes = ["advisor-mark"];
     if (spec.type === "user") {
         classes.push("advisor-mark--user");
