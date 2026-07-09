@@ -31,3 +31,9 @@ test-results/
 
 env.d.ts
 !.env*.schema
+
+# Scratch / generated artifacts
+.playwright-mcp/
+plan/
+CONTEXT.md
+*.old

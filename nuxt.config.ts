@@ -142,6 +142,8 @@ export default defineNuxtConfig({
                 "@tiptap/extension-text",
                 "@tiptap/vue-3/menus",
                 "@tiptap/pm/state",
+                "@vue/devtools-core",
+                "@vue/devtools-kit",
             ],
             exclude: ["@vueuse/core"],
         },

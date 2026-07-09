@@ -68,9 +68,7 @@ const emptyMessageKey = computed(() =>
                         class="text-3xl mb-2 opacity-50"
                     />
                     <p>{{ t(emptyMessageKey) }}</p>
-                    <UButton
-                        @click="emit('goBack')"
-                        v-if="phase === 'review'"
+                    <UButton @click="emit('goBack')" v-if="phase === 'review'"
                         >{{ t("advisor.startNew") }}</UButton
                     >
                 </div>

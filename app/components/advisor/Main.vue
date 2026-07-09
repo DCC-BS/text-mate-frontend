@@ -30,12 +30,26 @@ const pdfModal = overlay.create(PdfViewerClient);
  */
 const diffOriginalText = ref("");
 
+/**
+ * Controller for the in-flight fix stream. Aborted on unmount (and when a new
+ * revision starts) so the fetch + text-accumulation loop cannot keep running
+ * after the component is gone.
+ */
+let fixAbortController: AbortController | null = null;
+
+onUnmounted(() => {
+    fixAbortController?.abort();
+});
+
 const lastResult = ref<Omit<AdvisorThreadResult, "threads">>({
     checked: 0,
     total: 1,
 });
 
 async function onCheck() {
+    // Drop any threads left over from a previous run so stale ranges and
+    // duplicates don't accumulate when the user re-checks.
+    await executeCommand(new ClearThreadsCommand());
     phase.value = "reviewing";
 
     try {
@@ -70,22 +84,32 @@ async function onCheck() {
 
 async function onApplyRevision() {
     phase.value = "fixing";
+    // Abort any previous in-flight stream before starting a new one.
+    fixAbortController?.abort();
     const abortController = new AbortController();
+    fixAbortController = abortController;
 
     // Capture the pre-revision text before it is wiped: it is both the backend
     // payload and the diff baseline.
     const originalText = text.value;
     diffOriginalText.value = originalText;
 
-    const fixThreads = threads.value.map(
-        (x) =>
-            ({
-                notes: x.notes.map((x) => x.text),
-                proposal: x.violation?.proposal,
-                reason: x.violation?.reason,
-                source: originalText.slice(x.range.start, x.range.end),
-            }) as FixThread,
-    );
+    // Only `to-fix` threads are shipped; `skip` threads are intentionally
+    // excluded so the user's skip decisions are honoured.
+    const fixThreads = threads.value
+        .filter((thread) => thread.status === "to-fix")
+        .map(
+            (thread) =>
+                ({
+                    notes: thread.notes.map((note) => note.text),
+                    proposal: thread.violation?.proposal,
+                    reason: thread.violation?.reason,
+                    source: originalText.slice(
+                        thread.range.start,
+                        thread.range.end,
+                    ),
+                }) as FixThread,
+        );
 
     text.value = "";
     for await (const chunk of fix(
@@ -93,11 +117,24 @@ async function onApplyRevision() {
         fixThreads,
         abortController.signal,
     )) {
+        if (abortController.signal.aborted) {
+            break;
+        }
         text.value += chunk;
     }
 
     await executeCommand(new ClearThreadsCommand());
     phase.value = "diff";
+}
+
+/**
+ * Returns to the edit phase. Threads are cleared so ranges left over from the
+ * previous validation run (which may no longer line up with edited text) don't
+ * leak into the next fix payload.
+ */
+function onGoBack(): void {
+    executeCommand(new ClearThreadsCommand());
+    phase.value = "edit";
 }
 
 /**
@@ -167,7 +204,7 @@ async function onOpenPdf(thread: AdvisorThread) {
                     :phase="phase"
                     @apply="onApplyRevision"
                     @openPdf="onOpenPdf"
-                    @goBack="phase = 'edit'"
+                    @goBack="onGoBack"
                 />
             </div>
 

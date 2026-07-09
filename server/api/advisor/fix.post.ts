@@ -1,6 +1,5 @@
 import type { FetcherOptions } from "#layers/backend_communication/server/types/fetcher";
 import type { FixRequest } from "~/assets/models/advisor";
-import type { FixThread } from "~~/shared/types/advisor";
 
 type BodyType = FixRequest;
 
@@ -27,17 +26,17 @@ export default apiHandler
 // DUMMY
 
 /**
- * Simulates the fix LLM by substituting each to-fix thread's `source` with
- * its `proposal` (first occurrence), then streams the corrected text back
- * as raw UTF-8 text deltas. Completion is signaled by closing the stream;
- * no SSE framing is used. Works on any text.
+ * Simulates the fix LLM. The real backend rewrites the text from the per-thread
+ * `source` + `proposal`/`reason` + notes context; those `proposal` values are
+ * advisory instructions (e.g. "Formulieren Sie aktiv …"), NOT literal
+ * replacements. Splicing them into the source position would produce nonsense,
+ * so this dummy streams the text back unchanged. The diff viewer therefore
+ * shows no changes — faithful rewiring requires the actual fix model.
  */
 async function dummyFetcher(
     options: FetcherOptions<BodyType>,
 ): Promise<Response> {
-    const body = options.body;
-    const corrected = applyProposals(body.text, body.threads);
-    const stream = textDeltaStream(corrected);
+    const stream = textDeltaStream(options.body.text);
 
     return new Response(stream, {
         headers: {
@@ -45,24 +44,6 @@ async function dummyFetcher(
             "Cache-Control": "no-cache",
         },
     });
-}
-
-function applyProposals(text: string, threads: FixThread[]): string {
-    let result = text;
-    for (const thread of threads) {
-        if (!thread.source || !thread.proposal) {
-            continue;
-        }
-        // Replace only the first occurrence to keep the simulation stable.
-        const idx = result.indexOf(thread.source);
-        if (idx >= 0) {
-            result =
-                result.slice(0, idx) +
-                thread.proposal +
-                result.slice(idx + thread.source.length);
-        }
-    }
-    return result;
 }
 
 /**
