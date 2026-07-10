@@ -1,37 +1,30 @@
-<script lang="ts" setup>
-import type { AdvisorPhase, AdvisorThread } from "~/assets/models/advisor";
+<script setup lang="ts">
+import type { AdvisorThread } from "~/assets/models/advisor";
 
 interface InputProps {
     threads: AdvisorThread[];
     activeThreadId: string | null;
-    phase: AdvisorPhase;
+    /** True while a Check stream is in progress. */
+    checking?: boolean;
 }
 
-const props = defineProps<InputProps>();
+const props = withDefaults(defineProps<InputProps>(), { checking: false });
 
 const { t } = useI18n();
 
 const emit = defineEmits<{
-    apply: [];
     openPdf: [thread: AdvisorThread];
-    goBack: [];
 }>();
 
 const toFixCount = computed(
     () => props.threads.filter((x) => x.status === "to-fix").length,
 );
 const skipCount = computed(() => props.threads.length - toFixCount.value);
-
-const emptyMessageKey = computed(() =>
-    props.phase === "reviewing"
-        ? "advisor.noThreadsReviewing"
-        : "advisor.noThreadsReview",
-);
 </script>
 
 <template>
     <div class="h-full flex flex-col">
-        <header class="px-3 pt-3 pb-2 border-b border-default shrink-0">
+        <!-- <header class="px-3 pt-3 pb-2 border-b border-default shrink-0">
             <h3
                 class="flex items-center gap-1.5 text-sm font-semibold text-toned"
             >
@@ -46,7 +39,7 @@ const emptyMessageKey = computed(() =>
                 <span class="opacity-40">·</span>
                 <span>{{ skipCount }} {{ t("advisor.skip") }}</span>
             </p>
-        </header>
+        </header> -->
 
         <div class="flex-1 overflow-y-auto px-3 py-2 space-y-2">
             <template v-if="props.threads.length">
@@ -67,24 +60,10 @@ const emptyMessageKey = computed(() =>
                         name="i-lucide-file-search"
                         class="text-3xl mb-2 opacity-50"
                     />
-                    <p>{{ t(emptyMessageKey) }}</p>
-                    <UButton @click="emit('goBack')" v-if="phase === 'review'"
-                        >{{ t("advisor.startNew") }}</UButton
-                    >
+                    <p v-if="checking">{{ t("advisor.noThreadsReviewing") }}</p>
+                    <p v-else>{{ t("advisor.noThreadsReview") }}</p>
                 </div>
             </div>
         </div>
-
-        <footer class="px-3 py-2 border-t border-default shrink-0">
-            <UButton
-                block
-                color="primary"
-                icon="i-lucide-download"
-                :label="`${t('advisor.apply')} (${toFixCount})`"
-                :disabled="toFixCount === 0 || props.phase === 'reviewing'"
-                :loading="props.phase === 'reviewing'"
-                @click="emit('apply')"
-            />
-        </footer>
     </div>
 </template>

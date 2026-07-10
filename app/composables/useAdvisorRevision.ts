@@ -1,3 +1,4 @@
+import { v7 } from "uuid";
 import type { AdvisorNote, AdvisorThread } from "~/assets/models/advisor";
 import {
     AddThreadCommand,
@@ -31,7 +32,7 @@ export function useAdvisorRevision() {
         Cmds.AddUserReviewCommand,
         async (command) => {
             const thread: AdvisorThread = {
-                id: `u-${crypto.randomUUID()}`,
+                id: `u-${v7()}`,
                 range: command.range,
                 type: "user",
                 status: "to-fix",
@@ -43,7 +44,7 @@ export function useAdvisorRevision() {
     );
 
     onCommand<AddThreadCommand>(Cmds.AddThreadCommand, async (command) => {
-        const newThread = { id: crypto.randomUUID(), ...command.thread };
+        const newThread = { id: v7(), ...command.thread };
 
         threadsMap.value.set(newThread.id, newThread);
         activeThreadId.value = newThread.id;
@@ -83,7 +84,7 @@ export function useAdvisorRevision() {
             }
 
             const newNote: AdvisorNote = {
-                id: crypto.randomUUID(),
+                id: v7(),
                 author: "you",
                 text: command.replyText,
             };
@@ -160,6 +161,22 @@ export function useAdvisorRevision() {
         activeThreadId.value = null;
     });
 
+    /**
+     * Removes every violation thread, keeping user threads (notes). Used when a
+     * Check re-runs: the new validation replaces the old violations, but the
+     * user's own notes must survive.
+     */
+    function clearViolationThreads(): void {
+        for (const [id, thread] of threadsMap.value) {
+            if (thread.type === "violation") {
+                threadsMap.value.delete(id);
+            }
+        }
+        if (!threadsMap.value.has(activeThreadId.value ?? "")) {
+            activeThreadId.value = null;
+        }
+    }
+
     function addThread(thread: AdvisorThread) {
         threadsMap.value.set(thread.id, thread);
     }
@@ -168,5 +185,6 @@ export function useAdvisorRevision() {
         threads,
         activeThreadId,
         addThread,
+        clearViolationThreads,
     };
 }

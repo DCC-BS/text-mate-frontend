@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { AdvisorDocumentDescription } from "#shared/types/advisor";
-
 const { t } = useI18n();
 const { docs } = useAdvisor();
 
@@ -28,17 +26,6 @@ function toggleExpand(id: string): void {
         ? expandedIds.value.filter((existing) => existing !== id)
         : [...expandedIds.value, id];
 }
-
-// const selectedDocs = defineModel<AdvisorDocumentDescription[]>({
-//     default: [],
-//     get: () =>
-//         docs.value.filter((doc) =>
-//             selectedIds.value.includes(doc.id),
-//         ) as AdvisorDocumentDescription[],
-//     set: (value: AdvisorDocumentDescription[]) => {
-//         selectedIds.value = value.map((doc) => doc.id);
-//     },
-// });
 </script>
 
 <template>
@@ -96,8 +83,6 @@ function toggleExpand(id: string): void {
                         </span>
                     </template>
                 </UCheckbox>
-                <!-- Sibling of UCheckbox (outside the label) so tapping it
-                     expands details without toggling the checkbox -->
                 <UButton
                     :icon="
                         expandedIds.includes(doc.id)

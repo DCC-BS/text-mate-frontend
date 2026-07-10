@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Node as PmNode, Schema } from "prosemirror-model";
+import { Transform } from "prosemirror-transform";
+import type { AdvisorThread } from "../../../app/assets/models/advisor";
 import {
     advisorSegments,
+    reflowAdvisorRanges,
     serializeAdvisorText,
 } from "../../../app/utils/advisorText";
 
@@ -80,5 +83,52 @@ describe("advisorSegments", () => {
         const d = doc(p(text("ab")), p(text("cd")));
         const texts = advisorSegments(d).map((s) => s.text);
         expect(texts.join("")).toBe("ab\n\ncd");
+    });
+});
+
+/** Builds a minimal thread anchored to `[start, end)` over the given doc text. */
+function threadAt(start: number, end: number): AdvisorThread {
+    return {
+        id: `t-${start}-${end}`,
+        type: "violation",
+        status: "to-fix",
+        notes: [],
+        range: { start, end },
+    };
+}
+
+describe("reflowAdvisorRanges", () => {
+    it("keeps a range anchored to its word when text is inserted before it", () => {
+        const oldDoc = doc(p(text("Hello world"))); // "world" = offset 6..11
+        const tr = new Transform(oldDoc).insert(1, schema.text("XX")); // prefix
+        const t = threadAt(6, 11);
+
+        reflowAdvisorRanges(oldDoc, tr.doc, tr.mapping, [t]);
+
+        expect(serializeAdvisorText(tr.doc).slice(t.range.start, t.range.end)).toBe(
+            "world",
+        );
+        expect(t.range.start).toBeGreaterThanOrEqual(0);
+    });
+
+    it("leaves a range unchanged when text is inserted after it", () => {
+        const oldDoc = doc(p(text("Hello world")));
+        const tr = new Transform(oldDoc).insert(12, schema.text("YY")); // after "d"
+        const t = threadAt(6, 11);
+
+        reflowAdvisorRanges(oldDoc, tr.doc, tr.mapping, [t]);
+
+        expect(t.range).toEqual({ start: 6, end: 11 });
+    });
+
+    it("flags a range for auto-dismiss when its text is deleted", () => {
+        const oldDoc = doc(p(text("Hello world")));
+        const tr = new Transform(oldDoc).delete(7, 12); // remove "world"
+        const t = threadAt(6, 11);
+
+        reflowAdvisorRanges(oldDoc, tr.doc, tr.mapping, [t]);
+
+        expect(t.range.start).toBe(-1);
+        expect(t.range.end).toBe(-1);
     });
 });

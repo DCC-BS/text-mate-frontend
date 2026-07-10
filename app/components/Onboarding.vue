@@ -2,22 +2,21 @@
 import type { VTour } from "#components";
 import type { ButtonProp, TourStep } from "#nuxt-tour/props";
 import {
+    AbandonDiffCommand,
     ApplyTextCommand,
     ClearTextCommand,
     Cmds,
-    ExecuteTextActionCommand,
     HideTextStatsCommand,
-    RegisterDiffCommand,
     type RestartTourCommand,
     RunExampleQuickActionCommand,
     ShowTextStatsCommand,
-    ToolSwitchCommand,
 } from "~/assets/models/commands";
 
 const exampleText = "Schreibe hier deinen text.";
 
 const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
+const { setRibbonTab } = useRibbonTab();
 
 const tour = ref<InstanceType<typeof VTour>>();
 
@@ -27,8 +26,7 @@ const showTour = ref(false);
 const tourIsActive = ref(false);
 const trapFocus = ref(false);
 
-// Ensures the example quick action runs only once per tour run, even when the
-// user navigates back and forth across the rewrite steps.
+// Ensures the example quick action runs only once per tour run.
 const exampleActionRun = ref(false);
 
 async function runExampleQuickAction(): Promise<void> {
@@ -41,30 +39,28 @@ async function runExampleQuickAction(): Promise<void> {
 function startTour(): void {
     showTour.value = true;
     exampleActionRun.value = false;
+    setRibbonTab("transform");
     tour.value?.startTour();
 }
 
 function onTourStart(): void {
     tourIsActive.value = true;
-    // Add keyboard navigation when tour starts
     window.addEventListener("keydown", handleKeyboardNavigation);
 }
 
 async function onTourComplete(): Promise<void> {
     tourCompleted.value = true;
     tourIsActive.value = false;
-    // Remove keyboard navigation when tour ends
     window.removeEventListener("keydown", handleKeyboardNavigation);
+    await executeCommand(new AbandonDiffCommand());
     await executeCommand(new ClearTextCommand());
-    await executeCommand(new ToolSwitchCommand("rewrite"));
-    await executeCommand(new RegisterDiffCommand("", ""));
+    setRibbonTab("transform");
 }
 
 // Keyboard navigation handler
 function handleKeyboardNavigation(event: KeyboardEvent): void {
     if (!tourIsActive.value) return;
 
-    // Check if user is typing in an input field
     const target = event.target as HTMLElement;
     if (
         target.tagName === "INPUT" ||
@@ -92,22 +88,26 @@ function handleKeyboardNavigation(event: KeyboardEvent): void {
     }
 }
 
-// Tour steps for onboarding
+// Tour steps for the ribbon-driven workspace
 const steps = [
     {
         title: t("tour.welcome.title"),
         body: t("tour.welcome.content"),
     },
     {
-        target: '[data-tour="tool-switch"]',
-        title: t("tour.functions.title"),
-        body: t("tour.functions.content"),
+        target: '[data-tour="ribbon"]',
+        title: t("tour.ribbon.title"),
+        body: t("tour.ribbon.content"),
         onShow: async () => {
-            await executeCommand(new ToolSwitchCommand("rewrite"));
+            setRibbonTab("transform");
         },
-        onNext: async () => {
-            // also switch tool on next because the user might change tool before clicking next
-            await executeCommand(new ToolSwitchCommand("rewrite"));
+    },
+    {
+        target: '[data-tour="ribbon-transform"]',
+        title: t("tour.transform.title"),
+        body: t("tour.transform.content"),
+        onShow: async () => {
+            setRibbonTab("transform");
         },
     },
     {
@@ -117,27 +117,7 @@ const steps = [
             link: `<a href="${t("tour.customQuickAction.linkUrl")}" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary-600 font-medium">${t("tour.customQuickAction.linkText")}</a>`,
         }),
         onShow: async () => {
-            await executeCommand(new ToolSwitchCommand("rewrite"));
-        },
-        onNext: async () => {
-            // also switch tool on next because the user might change tool before clicking next
-            await executeCommand(new ToolSwitchCommand("rewrite"));
-        },
-    },
-    {
-        target: '[data-tour="language-select"]',
-        title: t("tour.language.title"),
-        body: t("tour.language.content"),
-    },
-    {
-        target: '[data-tour="dictionary"]',
-        title: t("tour.dictionary.title"),
-        body: t("tour.dictionary.content"),
-        onNext: async () => {
-            await executeCommand(new ClearTextCommand());
-            await executeCommand(
-                new ApplyTextCommand(exampleText, { from: 0, to: 0 }),
-            );
+            setRibbonTab("transform");
         },
     },
     {
@@ -152,17 +132,13 @@ const steps = [
         target: '[data-tour="text-editor-toolpanel"]',
         title: t("tour.textEditorToolpanel.title"),
         body: t("tour.textEditorToolpanel.content"),
-        popperConfig: {
-            placement: "top",
-        },
+        popperConfig: { placement: "top" },
     },
     {
         target: '[data-tour="word-count"]',
         title: t("tour.wordCount.title"),
         body: t("tour.wordCount.content"),
-        popperConfig: {
-            placement: "top",
-        },
+        popperConfig: { placement: "top" },
         onShow: async () => {
             await executeCommand(new ShowTextStatsCommand());
         },
@@ -174,54 +150,43 @@ const steps = [
         },
     },
     {
-        target: '[data-tour="rewrite"]',
-        title: t("tour.rewrite.title"),
-        body: t("tour.rewrite.content"),
+        target: '[data-tour="diff-review"]',
+        title: t("tour.diffReview.title"),
+        body: t("tour.diffReview.content"),
+        popperConfig: { placement: "top" },
         onShow: async () => {
-            // Make sure the rewrite view is visible and populate the diff with a
-            // real quick action so the following steps have content to point at.
-            await executeCommand(new ToolSwitchCommand("rewrite"));
+            // Populate the editor then run an example action so the diff
+            // review (which replaces the editor) has content to point at.
+            await executeCommand(new ClearTextCommand());
+            await executeCommand(
+                new ApplyTextCommand(exampleText, { from: 0, to: 0 }),
+            );
             await runExampleQuickAction();
         },
+    },
+    {
+        target: '[data-tour="ribbon-validate"]',
+        title: t("tour.validate.title"),
+        body: t("tour.validate.content"),
+        onShow: async () => {
+            setRibbonTab("validate");
+        },
         onPrev: async () => {
-            await executeCommand(new ToolSwitchCommand("rewrite"));
+            setRibbonTab("transform");
         },
     },
-    {
-        target: '[data-tour="rewrite-toolpanel"]',
-        title: t("tour.rewriteToolpanel.title"),
-        body: t("tour.rewriteToolpanel.content"),
-        popperConfig: {
-            placement: "top",
-        },
-    },
-    {
-        target: '[data-tour="retry-quick-action"]',
-        title: t("tour.retry.title"),
-        body: t("tour.retry.content"),
-        popperConfig: {
-            placement: "top",
-        },
-    },
-    {
-        target: '[data-tour="tool-switch"]',
-        title: t("tour.check.title"),
-        body: t("tour.check.content"),
-        onPrev: async () => {
-            await executeCommand(new ToolSwitchCommand("rewrite"));
-        },
-    },
-
     {
         target: '[data-tour="start-tour"]',
         title: t("tour.conclusion.title"),
         body: t("tour.conclusion.content"),
+        onShow: async () => {
+            setRibbonTab("transform");
+        },
     },
 ] as TourStep[];
 
 // life cycle
 onMounted(async () => {
-    // Wait for next tick to ensure text editor is fully mounted
     await nextTick();
 
     // Auto-start tour for first-time users (delay to ensure UI is ready)
@@ -230,12 +195,11 @@ onMounted(async () => {
     }
 });
 
-onCommand<RestartTourCommand>(Cmds.RestartTourCommand, async (_) => {
+onCommand<RestartTourCommand>(Cmds.RestartTourCommand, async () => {
     tour.value?.resetTour();
     startTour();
 });
 
-// Clean up keyboard listener on unmount
 onUnmounted(() => {
     if (tourIsActive.value) {
         window.removeEventListener("keydown", handleKeyboardNavigation);
@@ -299,9 +263,6 @@ const finishButton: ButtonProp = {
 
 :deep(#nt-action-prev) {
     @apply bg-primary text-white;
-}
-
-:deep(#nt-action-skip) {
 }
 
 :deep(#nt-action-finish) {

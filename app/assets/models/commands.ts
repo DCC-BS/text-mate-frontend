@@ -1,6 +1,5 @@
 import type { Range } from "@tiptap/vue-3";
 import type { ICommand, IReversibleCommand } from "#build/types/commands";
-import type { TextTools } from "~/types/TextTools";
 import type { TextActions } from "~~/shared/text-actions";
 import type { AdvisorThread, AdvisorThreadStatus } from "./advisor";
 
@@ -22,13 +21,11 @@ export const Cmds = {
     UndoCommand: "UndoCommand",
     RedoCommand: "RedoCommand",
     UndoRedoStateChanged: "UndoRedoStateChanged",
-    ToolSwitchCommand: "ToolSwitchCommand",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
-    RegisterDiffCommand: "RegisterDiffCommand",
-    RejectDiffCommand: "RejectDiffCommand",
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
     RetryQuickActionCommand: "RetryQuickActionCommand",
     RunExampleQuickActionCommand: "RunExampleQuickActionCommand",
+    AbandonDiffCommand: "AbandonDiffCommand",
     RestartTourCommand: "RestartTourCommand",
     ClearTextCommand: "ClearTextCommand",
     ShowTextStatsCommand: "ShowTextStatsCommand",
@@ -104,12 +101,6 @@ export class UndoRedoStateChanged implements ICommand {
     ) {}
 }
 
-export class ToolSwitchCommand implements ICommand {
-    readonly $type = Cmds.ToolSwitchCommand;
-
-    constructor(public tool: TextTools) {}
-}
-
 export class ExecuteTextActionCommand implements ICommand {
     readonly $type = Cmds.ExecuteTextActionCommand;
 
@@ -143,24 +134,13 @@ export class HideTextStatsCommand implements ICommand {
 /**
  * Command that applies a text change and can be undone/redone
  */
-export class RegisterDiffCommand implements ICommand {
-    readonly $type = Cmds.RegisterDiffCommand;
-
-    constructor(
-        public oldText: string,
-        public newText: string,
-    ) {}
-}
 
 /**
- * Rejects the currently pending diff suggestion, reverting the editor to the
- * original text. Used to trigger the reject flow from outside the diff viewer.
+ * Abandons an in-progress Diff Review, reverting to the editable state without
+ * committing any of the corrected text. Used by the onboarding tour to reset.
  */
-export class RejectDiffCommand implements ICommand {
-    readonly $type = Cmds.RejectDiffCommand;
-
-    /** When false, the revert is not pushed onto the undo history. */
-    constructor(public addToHistory = true) {}
+export class AbandonDiffCommand implements ICommand {
+    readonly $type = Cmds.AbandonDiffCommand;
 }
 
 /**

@@ -1,4 +1,5 @@
 import type { Node as PmNode } from "@tiptap/pm/model";
+import type { Mapping } from "@tiptap/pm/transform";
 import type { AdvisorThread } from "~/assets/models/advisor";
 
 /**
@@ -294,4 +295,50 @@ function posToOffset(segments: Segment[], pos: number): number | null {
         cursor += seg.text.length;
     }
     return null;
+}
+
+/**
+ * Reflows every thread's plain-text Range through a ProseMirror transaction's
+ * mapping, so edits keep ranges anchored to the right text. Ranges whose text
+ * was deleted or fully replaced collapse and are flagged with `start = -1` so
+ * the caller can auto-dismiss them. Mutates `threads` in place.
+ *
+ * This is what lets the Editor stay editable while violation/user threads are
+ * present (Word-like): ranges follow the text instead of going stale.
+ */
+export function reflowAdvisorRanges(
+    oldDoc: PmNode,
+    newDoc: PmNode,
+    mapping: Mapping,
+    threads: AdvisorThread[],
+): void {
+    const oldSegs = advisorSegments(oldDoc);
+    const newSegs = advisorSegments(newDoc);
+
+    for (const thread of threads) {
+        const fromPos = offsetToPos(oldSegs, thread.range.start);
+        const toPos = offsetToPos(oldSegs, thread.range.end);
+        if (fromPos === null || toPos === null) {
+            continue;
+        }
+
+        const mappedFrom = mapping.map(fromPos.pos);
+        // Map the exclusive end with left-association so an insert exactly at
+        // the boundary is treated as outside the range (it shouldn't grow the
+        // violation/note span).
+        const mappedTo = mapping.map(toPos.pos, -1);
+        const newStart = posToOffset(newSegs, mappedFrom);
+        const newEnd = posToOffset(newSegs, mappedTo);
+
+        if (newStart === null || newEnd === null || newEnd <= newStart) {
+            // The range's text was deleted or fully replaced → auto-dismiss.
+            thread.range = { start: -1, end: -1 };
+            continue;
+        }
+
+        thread.range = {
+            start: Math.min(newStart, newEnd),
+            end: Math.max(newStart, newEnd),
+        };
+    }
 }

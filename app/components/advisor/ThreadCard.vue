@@ -216,9 +216,11 @@ function openPdf(): void {
                     >
                         {{ note.author === "advisor" ? "A" : "Y" }}
                     </span>
-                    {{ note.author === "advisor"
+                    {{
+                        note.author === "advisor"
                             ? t("advisor.advisor")
-                            : t("advisor.you") }}
+                            : t("advisor.you")
+                    }}
                     <span class="ml-auto flex gap-0.5 transition-opacity">
                         <UButton
                             icon="i-lucide-pencil"
@@ -282,6 +284,7 @@ function openPdf(): void {
             class="flex items-center justify-between mt-2 pt-2 border-t border-default"
         >
             <div
+                v-if="!isUser"
                 class="flex border border-default rounded-md p-0.5 gap-0.5 bg-muted/40"
             >
                 <button

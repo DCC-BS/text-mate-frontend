@@ -43,6 +43,33 @@
         "rewrite": "Rewrite",
         "advisor": "Review"
     },
+    "ribbon": {
+        "transform": "Transform",
+        "validate": "Validate",
+        "restructure": "Restructure",
+        "rewriteFor": "Rewrite for",
+        "polish": "Polish",
+        "custom": "Custom",
+        "myActions": "My Actions",
+        "refDocs": "Reference Documents",
+        "refDocsCount": "{n} of {max} selected",
+        "check": "Check",
+        "fix": "Apply Fix",
+        "clear": "Clear",
+        "clearConfirm": "Clear everything?",
+        "clearConfirmDesc": "This removes all violations and notes. This cannot be undone.",
+        "runAction": "Run action"
+    },
+    "workspace": {
+        "diffReview": "Review changes",
+        "diffTitle": "Preview of changes",
+        "checking": "Checking your text…",
+        "generating": "Rewriting your text…",
+        "fixing": "Generating corrected text…",
+        "empty": "Write or paste your text to get started.",
+        "acceptRemaining": "Accept {n} remaining",
+        "noChanges": "No changes to review."
+    },
     "status": {
         "rewritingText": "Rewriting text...",
         "advice": "giving advice...",
@@ -297,13 +324,13 @@
             "title": "Welcome to TextMate!",
             "content": "TextMate is an AI-based text editor that helps you improve your text. All data is processed on local servers of IT BS. You can process special personal data and data that are subject to professional confidentiality (Erhöhter Schutzbedarf) with TextMate. I will now show you the main functions of TextMate."
         },
-        "functions": {
-            "title": "TextMate has two main functions",
-            "content": "Here you can switch between the two main functions: Rewrite to leverage AI for text enhancement, and Review to check your text against guideline documents."
+        "ribbon": {
+            "title": "The Ribbon",
+            "content": "The ribbon groups every action into two tabs: Transform rewrites your text, and Validate checks it against reference documents. Switch tabs to reach the actions you need."
         },
-        "language": {
-            "title": "Language Selection",
-            "content": "Choose the language for your text. This helps the AI tools provide better results for the selected language."
+        "transform": {
+            "title": "Transform Actions",
+            "content": "Here are one-click transformations like Summarize, Formality, or Plain Language. Grouped into Restructure, Rewrite for, and Polish."
         },
         "dictionary": {
             "title": "Personal Dictionary",
@@ -311,7 +338,7 @@
         },
         "editor": {
             "title": "Text Editor",
-            "content": "This is where you write and edit your text. The editor provides various tools to enhance and transform your writing."
+            "content": "This is where you write and edit your text, centered like a page. The editor provides various tools to enhance and transform your writing."
         },
         "wordCount": {
             "title": "Text Statistics",
@@ -322,29 +349,21 @@
             "title": "Text Editor Tools",
             "content": "Here you can undo or redo your changes. Additionally, you can upload a document, which will be converted to text and opened in the editor."
         },
-        "rewriteOptions": {
-            "title": "Rewrite Options",
-            "content": "Define here how your text should be rewritten. Customize writing style, target audience, intent, and medium to suit your needs."
-        },
-        "rewriteToolpanel": {
-            "title": "Accept or Reject Rewrite Actions",
-            "content": "Here you can undo the last rewrite action or accept all changes."
+        "diffReview": {
+            "title": "Accept or Reject Changes",
+            "content": "When a transformation or fix runs, the changes replace the editor here. Accept or reject each change — you must decide all of them before you can edit again."
         },
         "retry": {
             "title": "Retry an Action",
             "content": "Not happy with the result? Click here to discard the suggestion and run the same action again on your original text."
         },
-        "rewrite": {
-            "title": "AI Text Rewriting",
-            "content": "When a text action is executed, the changes appear here. Click on a change to undo it or on the checkmark below to accept all changes."
+        "validate": {
+            "title": "Validate",
+            "content": "Switch to the Validate tab to select reference documents and check your text against them."
         },
         "check": {
-            "title": "Check",
-            "content": "Check your text against documents."
-        },
-        "advisor": {
-            "title": "Document Advisor",
-            "content": "Select a policy according to which you want to check your document. The document advisor will show you the violations it found against the selected policy."
+            "title": "Check Your Text",
+            "content": "Pick reference documents, then run a Check. Violations appear as comments beside your text. You can add your own notes too — before or after checking."
         },
         "quickActions": {
             "title": "Rewrite Actions",

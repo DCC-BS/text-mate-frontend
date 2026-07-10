@@ -15,6 +15,7 @@ import {
     type ValidationResult,
     ValidationResultSchema,
 } from "~~/shared/types/advisor";
+import { v7 as uuid } from "uuid";
 
 async function getDocs(
     t: (key: string) => string,
@@ -38,10 +39,16 @@ const docs = ref<AdvisorDocumentDescription[]>([]);
 export function useAdvisor() {
     const { t } = useI18n();
 
-    // lazy load docs on first use
-    if (docs.value.length === 0) {
+    // lazy load docs on first use (client-only: the fetch needs a browser
+    // origin and the error path uses useToast, neither of which are available
+    // during SSR).
+    if (import.meta.client && docs.value.length === 0) {
         console.log("Loading advisor docs...");
-        getDocs(t).then((x) => (docs.value = x));
+        getDocs(t)
+            .then((x) => (docs.value = x))
+            .catch((err: unknown) =>
+                console.error("Failed to load advisor docs:", err),
+            );
     }
 
     async function getDocFile(name: string): Promise<Blob> {
@@ -105,7 +112,7 @@ export function useAdvisor() {
                     threads: result.violations.map(
                         (x) =>
                             ({
-                                id: `t-${crypto.randomUUID()}`,
+                                id: `t-${uuid()}`,
                                 notes: [],
                                 status: "to-fix",
                                 type: "violation",

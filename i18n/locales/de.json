@@ -43,6 +43,33 @@
         "rewrite": "Umschreiben",
         "advisor": "Überprüfen"
     },
+    "ribbon": {
+        "transform": "Umschreiben",
+        "validate": "Überprüfen",
+        "restructure": "Umstrukturieren",
+        "rewriteFor": "Umschreiben für",
+        "polish": "Verbessern",
+        "custom": "Benutzerdefiniert",
+        "myActions": "Meine Aktionen",
+        "refDocs": "Referenzdokumente",
+        "refDocsCount": "{n} von {max} ausgewählt",
+        "check": "Überprüfen",
+        "fix": "Korrektur anwenden",
+        "clear": "Leeren",
+        "clearConfirm": "Alles leeren?",
+        "clearConfirmDesc": "Dies entfernt alle Verstösse und Notizen. Dies kann nicht rückgängig gemacht werden.",
+        "runAction": "Aktion ausführen"
+    },
+    "workspace": {
+        "diffReview": "Änderungen prüfen",
+        "diffTitle": "Vorschau der Änderungen",
+        "checking": "Dein Text wird überprüft…",
+        "generating": "Dein Text wird umgeschrieben…",
+        "fixing": "Korrigierter Text wird erstellt…",
+        "empty": "Schreibe oder füge deinen Text ein, um loszulegen.",
+        "acceptRemaining": "Verbleibende {n} akzeptieren",
+        "noChanges": "Keine Änderungen zu prüfen."
+    },
     "status": {
         "rewritingText": "Text wird umgeschrieben...",
         "advice": "Ratschlag geben...",
@@ -253,13 +280,13 @@
             "title": "Willkommen bei TextMate!",
             "content": "TextMate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Du kannst mit TextMate auch besondere Personendaten und Daten, die dem Amtsgeheimnis (Erhöhter Schutzbedarf) unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von TextMate."
         },
-        "functions": {
-            "title": "TextMate hat zwei Hauptfunktionen",
-            "content": "Hier kannst Du zwischen den zwei Hauptfunktionen wechseln: Umschreiben zur Nutzung von KI für Textverbesserungen und Überprüfen, um Rückmeldung zu Deinem Text basierend auf Richtlinien zu erhalten."
+        "ribbon": {
+            "title": "Das Menüband",
+            "content": "Das Menüband gruppiert jede Aktion in zwei Registerkarten: Umschreiben verändert deinen Text, und Überprüfen prüft ihn gegen Referenzdokumente. Wechsle die Registerkarten, um die gewünschten Aktionen zu erreichen."
         },
-        "language": {
-            "title": "Sprachauswahl",
-            "content": "Wähle die Sprache für Deinen Text. Dies hilft den KI-Werkzeugen, bessere Ergebnisse für die ausgewählte Sprache zu liefern."
+        "transform": {
+            "title": "Umschreibaktionen",
+            "content": "Hier findest du Ein-Klick-Transformationen wie Zusammenfassen, Formalität oder Lesefreundliche Sprache. Gruppiert in Umstrukturieren, Umschreiben für und Verbessern."
         },
         "dictionary": {
             "title": "Persönliches Wörterbuch",
@@ -267,7 +294,7 @@
         },
         "editor": {
             "title": "Text-Editor",
-            "content": "Hier schreibst und bearbeitest Du Deinen Text. Der Editor bietet verschiedene Werkzeuge, um Dein Schreiben zu verbessern und zu transformieren."
+            "content": "Hier schreibst und bearbeitest Du Deinen Text, zentriert wie eine Seite. Der Editor bietet verschiedene Werkzeuge, um Dein Schreiben zu verbessern und zu transformieren."
         },
         "wordCount": {
             "title": "Text-Statistiken",
@@ -278,29 +305,21 @@
             "title": "Text-Editor-Werkzeuge",
             "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit TextMate zu bearbeiten."
         },
-        "rewriteOptions": {
-            "title": "Umschreibungsoptionen",
-            "content": "Definiere hier, wie Dein Text umgeschrieben werden soll. Lasse den Text in Lesefreundlicher Sprache umschreiben, erhalte eine Zusammenfassung und vieles mehr."
-        },
-        "rewriteToolpanel": {
-            "title": "Umschreibaktionen annehmen oder ablehnen",
-            "content": "Hier kanst Du die letzte Umschreibaktion rückgängig machen oder alle Änderungen annehmen."
+        "diffReview": {
+            "title": "Änderungen annehmen oder ablehnen",
+            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Nimm jede Änderung an oder lehne sie ab — du musst alle entscheiden, bevor du weiterbearbeiten kannst."
         },
         "retry": {
             "title": "Aktion wiederholen",
             "content": "Mit dem Ergebnis unzufrieden? Klick hier, um den Vorschlag zu verwerfen und dieselbe Aktion erneut auf Deinen Originaltext anzuwenden."
         },
-        "rewrite": {
-            "title": "KI-Textumschreibung",
-            "content": "Wenn eine Textaktion ausgeführt wird, erscheinen die Änderungen hier. Klick auf eine Änderung, um sie rückgängig zu machen oder auf das Häkchen unten, um alle Änderungen zu übernehmen."
+        "validate": {
+            "title": "Überprüfen",
+            "content": "Wechsle zur Registerkarte Überprüfen, um Referenzdokumente auszuwählen und deinen Text daran zu prüfen."
         },
         "check": {
-            "title": "Überprüfen",
-            "content": "Überprüfe Deinen Text anhand von Dokumenten."
-        },
-        "advisor": {
-            "title": "Dokumentenberater",
-            "content": "Wähle eine Richtlinie aus anhand welcher Du Dein Dokument überprüfen möchtest. Der Dokumentenberater zeigt Dir die von ihm gefundenen Verstösse gegen die ausgewählte Richtlinie an."
+            "title": "Text überprüfen",
+            "content": "Wähle Referenzdokumente und führe eine Überprüfung durch. Verstösse erscheinen als Kommentare neben deinem Text. Du kannst auch eigene Notizen hinzufügen — vor oder nach der Überprüfung."
         },
         "quickActions": {
             "title": "Umschreibaktionen",

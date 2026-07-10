@@ -1,32 +1,34 @@
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { Extension } from "@tiptap/vue-3";
-import type { AdvisorPhase, AdvisorThread } from "~/assets/models/advisor";
-import { buildDecorationSpecs, type DecorationSpec } from "~/utils/advisorText";
+import type { AdvisorThread } from "~/assets/models/advisor";
+import {
+    buildDecorationSpecs,
+    type DecorationSpec,
+    reflowAdvisorRanges,
+} from "~/utils/advisorText";
 
 export const advisorDecorationKey: PluginKey<DecorationSet> =
     new PluginKey<DecorationSet>("advisorDecorations");
 
-// Phases in which inline thread decorations are rendered. Outside these the
-// editor shows plain text (e.g. during `edit` or after `review`).
-const DECORATED_PHASES: ReadonlySet<AdvisorPhase> = new Set([
-    "reviewing",
-    "review",
-]);
-
 export type AdvisorDecorationOptions = {
     getThreads: () => AdvisorThread[];
     getActiveId: () => string | null;
-    getPhase: () => AdvisorPhase;
+    /** Decorations render only while this returns true (threads exist + editor visible). */
+    getEnabled: () => boolean;
     onSelect: (threadId: string) => void;
+    /** Called (deferred) with the ids of threads whose range collapsed on an edit. */
+    onDismiss?: (threadIds: string[]) => void;
 };
 
 /**
  * Inline ProseMirror decoration plugin that renders every thread range as a
  * highlight span. Uses decorations (not Marks) so `getText()` stays free of
- * markup and backend offsets remain authoritative. Decorations rebuild on
- * the `advisorDecorationKey` meta (thread/focus/phase change) or any doc
- * change, but are only emitted while the phase is `reviewing` or `review`.
+ * markup and backend offsets remain authoritative. Decorations rebuild on the
+ * `advisorDecorationKey` meta (thread/focus change) or any doc change. On a
+ * doc change the thread Ranges are reflowed through the transaction so they
+ * stay anchored to the right text; ranges whose text was deleted/replaced are
+ * auto-dismissed via {@link AdvisorDecorationOptions.onDismiss}.
  */
 export function createAdvisorDecorationExtension(
     options: AdvisorDecorationOptions,
@@ -40,11 +42,28 @@ export function createAdvisorDecorationExtension(
                     key: advisorDecorationKey,
                     state: {
                         init: (_config, state) => build(state),
-                        apply: (tr, prev, _oldState, newState) => {
-                            if (
-                                tr.getMeta(advisorDecorationKey) ||
-                                tr.docChanged
-                            ) {
+                        apply: (tr, prev, oldState, newState) => {
+                            if (tr.docChanged) {
+                                // Keep ranges anchored to their text as the
+                                // user edits, and flag collapsed ones.
+                                const threads = options.getThreads();
+                                reflowAdvisorRanges(
+                                    oldState.doc,
+                                    newState.doc,
+                                    tr.mapping,
+                                    threads,
+                                );
+                                const dismissed = threads
+                                    .filter((t) => t.range.start < 0)
+                                    .map((t) => t.id);
+                                if (dismissed.length && options.onDismiss) {
+                                    const ids = dismissed;
+                                    const cb = options.onDismiss;
+                                    queueMicrotask(() => cb(ids));
+                                }
+                                return build(newState);
+                            }
+                            if (tr.getMeta(advisorDecorationKey)) {
                                 return build(newState);
                             }
                             return prev;
@@ -103,8 +122,8 @@ export function createAdvisorDecorationExtension(
     function build(state: {
         doc: Parameters<typeof buildDecorationSpecs>[0];
     }): DecorationSet {
-        // Decorations are only visible in the reviewing/review phases.
-        if (!DECORATED_PHASES.has(options.getPhase())) {
+        // Decorations render only when enabled (threads exist + editor visible).
+        if (!options.getEnabled()) {
             return DecorationSet.empty;
         }
         const specs = buildDecorationSpecs(
