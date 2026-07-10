@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import type { AdvisorThread } from "~/assets/models/advisor";
 import {
     ClearThreadsCommand,
@@ -6,6 +7,7 @@ import {
 } from "~/assets/models/commands";
 import PdfViewerClient from "~/components/advisor/PdfViewer.client.vue";
 import Rail from "~/components/advisor/Rail.vue";
+import ValidationProgress from "~/components/advisor/ValidationProgress.vue";
 import DiffViewer from "~/components/diff/DiffViewer.vue";
 import type { DiffHunk } from "~/types/diff";
 
@@ -15,6 +17,7 @@ const overlay = useOverlay();
 const logger = useLogger();
 const toast = useToast();
 const { executeCommand } = useCommandBus();
+const breakpoints = useBreakpoints(breakpointsTailwind);
 
 const text = defineModel<string>({ required: true });
 
@@ -26,6 +29,15 @@ const mobileRailOpen = ref(false);
 const clearOpen = ref(false);
 
 const inDiffReview = computed(() => ws.state.value === "diff-review");
+
+/** True while an Advisor Check stream is running. */
+const isChecking = computed(() => ws.progress.value === "checking");
+
+watch(ws.activeThreadId, (value) => {
+    if (value && breakpoints.isSmaller("md")) {
+        openMobileRail();
+    }
+});
 
 /** Commits the resolved diff text back to the Working Text. */
 function commitResolved(): void {
@@ -98,15 +110,18 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                 ws.threads.value.filter((x) => x.status === 'to-fix').length
             "
             @update:selected-docs="ws.selectedDocs.value = $event"
-            @check="ws.check()"
-            @fix="ws.applyFix()"
             @clear="clearOpen = true"
         />
 
         <!-- Main area: centered editor/diff + right rail -->
         <div class="flex-1 min-h-0 flex bg-gray-100">
             <div class="flex-1 min-w-0 flex justify-center overflow-hidden">
-                <div class="w-full max-w-4xl h-full p-2 bg-white shadow">
+                <div
+                    :class="[
+                        'w-full h-full p-2 bg-white shadow relative',
+                        inDiffReview ? '' : 'max-w-4xl',
+                    ]"
+                >
                     <!-- Diff review replaces the editor -->
                     <div
                         v-if="inDiffReview"
@@ -153,13 +168,28 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                         :threads="ws.threads"
                         :active-thread-id="ws.activeThreadId"
                     />
+
+                    <!-- Check progress: pinned below the ribbon, overlays and
+                         blocks the editor until the Advisor check finishes. -->
+                    <template v-if="isChecking">
+                        <div
+                            class="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px]"
+                        />
+                        <div
+                            class="absolute top-0 inset-x-0 z-20 px-4 py-3 border-b border-default bg-white/95 shadow-sm"
+                        >
+                            <ValidationProgress
+                                :progress="ws.checkProgress.value"
+                            />
+                        </div>
+                    </template>
                 </div>
             </div>
 
             <!-- Right rail (desktop): comments/violations margin -->
             <div
                 v-if="ws.threads.value.length"
-                class="hidden lg:flex w-[340px] shrink-0 border-l border-default"
+                class="hidden md:flex w-[380px] shrink-0 border-l border-default"
             >
                 <Rail
                     class="w-full"
@@ -174,7 +204,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
         <!-- Mobile rail toggle -->
         <UButton
             v-if="ws.threads.value.length"
-            class="lg:hidden fixed right-4 bottom-16 z-20 rounded-full shadow-lg"
+            class="md:hidden fixed right-4 bottom-16 z-20 rounded-full shadow-lg"
             color="primary"
             circle
             icon="i-lucide-message-square"

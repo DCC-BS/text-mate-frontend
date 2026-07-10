@@ -1,6 +1,8 @@
 import type { FixThread } from "#shared/types/advisor";
 import {
     type AbandonDiffCommand,
+    type ApplyFixCommand,
+    type CheckCommand,
     ClearThreadsCommand,
     Cmds,
     type ExecuteTextActionCommand,
@@ -150,7 +152,7 @@ export function useWorkspace(text: Ref<string>) {
      * Validation: preserves User Threads (notes), replaces Violation Threads.
      * The editor stays editable throughout.
      */
-    async function check(signal?: AbortSignal): Promise<void> {
+    onCommand<CheckCommand>(Cmds.CheckCommand, async () => {
         clearViolationThreads();
         progress.value = "checking";
         checkProgress.value = { checked: 0, total: 1 };
@@ -159,7 +161,6 @@ export function useWorkspace(text: Ref<string>) {
             for await (const result of validate(
                 text.value,
                 selectedDocs.value,
-                signal,
             )) {
                 checkProgress.value = {
                     checked: result.checked,
@@ -183,14 +184,14 @@ export function useWorkspace(text: Ref<string>) {
         } finally {
             progress.value = "none";
         }
-    }
+    });
 
     /**
      * Generates the corrected Working Text from every to-fix thread and enters
      * the diff review. Threads are cleared once the user commits the diff (the
      * corrected text no longer matches the old ranges).
      */
-    async function applyFix(): Promise<void> {
+    onCommand<ApplyFixCommand>(Cmds.ApplyFixCommand, async () => {
         if (threads.value.filter((x) => x.status === "to-fix").length === 0) {
             return;
         }
@@ -251,7 +252,7 @@ export function useWorkspace(text: Ref<string>) {
             removeProgress("advisor-fix");
             progress.value = "none";
         }
-    }
+    });
 
     /**
      * Commits the resolved text (corrected text with rejected hunks reverted)
@@ -297,8 +298,6 @@ export function useWorkspace(text: Ref<string>) {
         isBusy,
         threads,
         activeThreadId,
-        check,
-        applyFix,
         commitDiff,
     };
 }

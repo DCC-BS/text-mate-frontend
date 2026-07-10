@@ -26,6 +26,9 @@ function submitAction() {
         <UButton
             data-tour="custom-quick-action"
             variant="link"
+            color="neutral"
+            size="sm"
+            icon="i-lucide-circle-ellipsis"
             :disabled="!props.actionsAreAvailable"
             >{{ t("actions.custom") }}</UButton
         >

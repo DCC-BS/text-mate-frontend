@@ -49,6 +49,7 @@
         "@tiptap/vue-3": "^3.27.1",
         "@varlock/proton-pass-plugin": "^2.0.0",
         "@varlock/vite-integration": "^1.2.0",
+        "@vueuse/core": "^14.3.0",
         "giget": "^3.3.0",
         "jsdiff": "^1.1.1",
         "motion-v": "^2.3.0",

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { UButton } from "#components";
 import type { AdvisorThread } from "~/assets/models/advisor";
 
 interface InputProps {
@@ -24,23 +25,6 @@ const skipCount = computed(() => props.threads.length - toFixCount.value);
 
 <template>
     <div class="h-full flex flex-col">
-        <!-- <header class="px-3 pt-3 pb-2 border-b border-default shrink-0">
-            <h3
-                class="flex items-center gap-1.5 text-sm font-semibold text-toned"
-            >
-                <UIcon name="i-lucide-sparkles" class="text-primary" />
-                {{ t("advisor.title") }}
-            </h3>
-            <p class="flex gap-2 text-xs text-muted mt-2">
-                <span>
-                    <strong class="text-toned">{{ toFixCount }}</strong>
-                    {{ t("advisor.toFix") }}
-                </span>
-                <span class="opacity-40">·</span>
-                <span>{{ skipCount }} {{ t("advisor.skip") }}</span>
-            </p>
-        </header> -->
-
         <div class="flex-1 overflow-y-auto px-3 py-2 space-y-2">
             <template v-if="props.threads.length">
                 <AdvisorThreadCard

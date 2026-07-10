@@ -44,8 +44,14 @@ const items = computed<DropdownMenuItem[]>(() => [
 
 <template>
     <UDropdownMenu :items="items">
-        <UButton variant="link" :disabled="!props.actionsAreAvailable">
-            {{ t('editor.medium') }}
+        <UButton
+            variant="link"
+            color="neutral"
+            icon="i-lucide-tv-minimal-play"
+            size="sm"
+            :disabled="!props.actionsAreAvailable"
+        >
+            {{ t("editor.medium") }}
         </UButton>
     </UDropdownMenu>
 </template>

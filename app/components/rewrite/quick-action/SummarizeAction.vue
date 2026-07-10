@@ -50,8 +50,14 @@ const items = computed<DropdownMenuItem[]>(() => [
 
 <template>
     <UDropdownMenu :items="items">
-        <UButton variant="link" :disabled="!props.actionsAreAvailable">
-            {{ t('editor.summarize') }}
+        <UButton
+            variant="link"
+            color="neutral"
+            size="sm"
+            icon="i-lucide-summary"
+            :disabled="!props.actionsAreAvailable"
+        >
+            {{ t("editor.summarize") }}
         </UButton>
     </UDropdownMenu>
 </template>

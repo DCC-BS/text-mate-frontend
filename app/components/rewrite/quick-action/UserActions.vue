@@ -45,7 +45,12 @@ const items = computed<DropdownMenuItem[]>(() =>
 
 <template>
     <UDropdownMenu :items="items" v-if="items.length > 0">
-        <UButton variant="link" :disabled="!props.actionsAreAvailable">
+        <UButton
+            variant="link"
+            color="neutral"
+            size="sm"
+            :disabled="!props.actionsAreAvailable"
+        >
             {{ t("editor.userActions") }}
         </UButton>
     </UDropdownMenu>

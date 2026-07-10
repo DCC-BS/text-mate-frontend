@@ -346,6 +346,10 @@
         "accept": "Akzeptieren",
         "reject": "Ablehnen",
         "edit": "Bearbeiten",
-        "delete": "Löschen"
+        "delete": "Löschen",
+        "diffViewInline": "Inline-Ansicht",
+        "diffViewSplit": "Geteilte Ansicht",
+        "diffOriginal": "Original",
+        "diffCorrected": "Korrigiert"
     }
 }

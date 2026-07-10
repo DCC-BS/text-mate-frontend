@@ -390,6 +390,10 @@
         "accept": "Accept",
         "reject": "Reject",
         "edit": "Edit",
-        "delete": "Delete"
+        "delete": "Delete",
+        "diffViewInline": "Inline view",
+        "diffViewSplit": "Split view",
+        "diffOriginal": "Original",
+        "diffCorrected": "Corrected"
     }
 }

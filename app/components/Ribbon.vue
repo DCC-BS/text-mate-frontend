@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ApplyFixCommand, CheckCommand } from "~/assets/models/commands";
 import type { TextActions } from "~~/shared/text-actions";
 import CharacterSpeechAction from "./rewrite/quick-action/CharacterSpeechAction.vue";
 import CustomAction from "./rewrite/quick-action/CustomAction.vue";
@@ -23,14 +24,13 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-    check: [];
-    fix: [];
     clear: [];
     "update:selectedDocs": [string[]];
 }>();
 
 const { t } = useI18n();
 const { runQuickAction } = useQuickAction();
+const { executeCommand } = useCommandBus();
 const toast = useToast();
 const { ribbonTab: activeTab, setRibbonTab } = useRibbonTab();
 
@@ -96,7 +96,7 @@ const selectedDocsModel = computed({
             <!-- TRANSFORM TAB -->
             <div
                 v-if="activeTab === 'transform'"
-                class="flex justify-center items-stretch gap-3 w-full"
+                class="flex justify-center items-stretch gap-3 w-full flex-wrap"
                 data-tour="quick-actions"
             >
                 <!-- Restructure -->
@@ -199,12 +199,10 @@ const selectedDocsModel = computed({
                         <template #content>
                             <div class="p-2 w-[320px] max-w-[80vw]">
                                 <p class="text-xs text-muted mb-2">
-                                    {{
-                                        t("ribbon.refDocsCount", {
+                                    {{ t("ribbon.refDocsCount", {
                                             n: selectedDocs.length,
                                             max: maxDocs,
-                                        })
-                                    }}
+                                        }) }}
                                 </p>
                                 <AdvisorDocSelect v-model="selectedDocsModel" />
                             </div>
@@ -225,13 +223,13 @@ const selectedDocsModel = computed({
                         :disabled="
                             !editable || busy || selectedDocs.length === 0
                         "
-                        @click="emit('check')"
+                        @click="executeCommand(new CheckCommand())"
                     />
                     <RibbonIconButton
                         :label="t('ribbon.fix')"
                         icon="i-lucide-wrench"
                         :disabled="!editable || busy || toFixCount === 0"
-                        @click="emit('fix')"
+                        @click="executeCommand(new ApplyFixCommand())"
                     />
                 </RibbonGroup>
 

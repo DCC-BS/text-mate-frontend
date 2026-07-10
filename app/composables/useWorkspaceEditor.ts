@@ -50,9 +50,12 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
     const { onCommand, executeCommand } = useCommandBus();
     const toast = useToast();
 
-    // Focus marks are always active in the unified editor — the rewrite bubble
-    // is available whenever the editor is editable.
-    const isRewriteActive = ref(true);
+    // The rewrite-text / rewrite-word selection bubble is temporarily
+    // disabled. When false, useTextFocus clears the focus marks and the
+    // `focusedWord`/`focusedSentence` refs stay undefined, so the rewrite
+    // section of the BubbleMenu (gated on those refs) never renders — only the
+    // Add-Note button remains. Flip back to `true` to re-enable.
+    const isRewriteActive = ref(false);
 
     const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
         useTextFocus(isRewriteActive);

@@ -3,6 +3,7 @@ import {
     apiStreamFetch,
     isApiError,
 } from "@dcc-bs/communication.bs.js";
+import { v7 as uuid } from "uuid";
 import { z } from "zod";
 import type {
     AdvisorThread,
@@ -15,7 +16,6 @@ import {
     type ValidationResult,
     ValidationResultSchema,
 } from "~~/shared/types/advisor";
-import { v7 as uuid } from "uuid";
 
 async function getDocs(
     t: (key: string) => string,

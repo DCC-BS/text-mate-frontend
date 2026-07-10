@@ -26,6 +26,8 @@ export const Cmds = {
     RetryQuickActionCommand: "RetryQuickActionCommand",
     RunExampleQuickActionCommand: "RunExampleQuickActionCommand",
     AbandonDiffCommand: "AbandonDiffCommand",
+    CheckCommand: "CheckCommand",
+    ApplyFixCommand: "ApplyFixCommand",
     RestartTourCommand: "RestartTourCommand",
     ClearTextCommand: "ClearTextCommand",
     ShowTextStatsCommand: "ShowTextStatsCommand",
@@ -141,6 +143,23 @@ export class HideTextStatsCommand implements ICommand {
  */
 export class AbandonDiffCommand implements ICommand {
     readonly $type = Cmds.AbandonDiffCommand;
+}
+
+/**
+ * Runs an Advisor Check (validation) against the selected Reference Documents
+ * on the current Working Text. Preserves User Threads, replaces Violation
+ * Threads. Dispatched from the Validate ribbon tab.
+ */
+export class CheckCommand implements ICommand {
+    readonly $type = Cmds.CheckCommand;
+}
+
+/**
+ * Generates the corrected Working Text from every to-fix thread and enters the
+ * Diff Review. Dispatched from the Validate ribbon tab.
+ */
+export class ApplyFixCommand implements ICommand {
+    readonly $type = Cmds.ApplyFixCommand;
 }
 
 /**

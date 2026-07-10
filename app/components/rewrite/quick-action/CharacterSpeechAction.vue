@@ -34,8 +34,14 @@ const items = computed<DropdownMenuItem[]>(() => [
 
 <template>
     <UDropdownMenu :items="items">
-        <UButton variant="link" :disabled="!props.actionsAreAvailable">
-            {{ t('editor.character_speech') }}
+        <UButton
+            variant="link"
+            color="neutral"
+            size="sm"
+            icon="i-lucide-speech"
+            :disabled="!props.actionsAreAvailable"
+        >
+            {{ t("editor.character_speech") }}
         </UButton>
     </UDropdownMenu>
 </template>

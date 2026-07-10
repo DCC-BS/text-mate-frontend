@@ -35,6 +35,14 @@ const emit = defineEmits<{
  */
 const statusMap = ref<Record<string, HunkStatus>>({});
 
+/**
+ * Current Diff View Mode: "inline" (default, single flowing column) or
+ * "split" (original-left / corrected-right two-column layout). Presentational
+ * only — toggling reuses the same segment list and statusMap, so per-hunk
+ * decisions survive a switch.
+ */
+const viewMode = ref<"inline" | "split">("inline");
+
 const segments = computed<DiffSegment[]>(() => {
     const built = buildDiffSegments(props.originalText, props.correctedText);
     const statuses = statusMap.value;
@@ -89,6 +97,14 @@ const progressText = computed(() =>
 
 function setStatus(key: string, status: HunkStatus): void {
     statusMap.value = { ...statusMap.value, [key]: status };
+}
+
+function setInlineView(): void {
+    viewMode.value = "inline";
+}
+
+function setSplitView(): void {
+    viewMode.value = "split";
 }
 
 function acceptHunk(hunk: DiffHunk): void {
@@ -189,6 +205,24 @@ defineExpose({
                 <slot name="actions" />
                 <template v-if="changeHunks.length">
                     <UButton
+                        icon="i-lucide-align-left"
+                        color="neutral"
+                        size="xs"
+                        :variant="viewMode === 'inline' ? 'solid' : 'outline'"
+                        :title="t('common.diffViewInline')"
+                        :aria-label="t('common.diffViewInline')"
+                        @click="setInlineView"
+                    />
+                    <UButton
+                        icon="i-lucide-columns-2"
+                        color="neutral"
+                        size="xs"
+                        :variant="viewMode === 'split' ? 'solid' : 'outline'"
+                        :title="t('common.diffViewSplit')"
+                        :aria-label="t('common.diffViewSplit')"
+                        @click="setSplitView"
+                    />
+                    <UButton
                         variant="outline"
                         color="neutral"
                         size="xs"
@@ -208,72 +242,206 @@ defineExpose({
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto">
-            <p
-                v-if="changeHunks.length"
-                class="m-0 text-base leading-loose whitespace-pre-wrap break-words text-default"
-            >
-                <template v-for="(segment, i) in segments" :key="i">
-                    <span v-if="segment.kind === 'text'"
-                        >{{ segment.value }}</span
-                    >
-
-                    <span
-                        v-else-if="segment.hunk.status === 'accepted'"
-                        class="bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300 rounded-sm px-[3px]"
-                        >{{ segment.hunk.addedText }}</span
-                    >
-
-                    <span
-                        v-else-if="segment.hunk.status === 'rejected'"
-                        class="line-through text-gray-400 dark:text-gray-600"
-                        >{{ segment.hunk.removedText }}</span
-                    >
-
-                    <span v-else class="inline align-baseline">
-                        <span
-                            v-if="segment.hunk.removedText"
-                            class="line-through text-gray-400 bg-red-50 dark:bg-red-950/40 dark:text-gray-500 rounded-sm px-[2px]"
-                            >{{ segment.hunk.removedText }}</span
+        <div class="flex-1 overflow-auto">
+            <template v-if="changeHunks.length">
+                <!-- Inline View (default): single flowing column -->
+                <p
+                    v-if="viewMode === 'inline'"
+                    class="m-0 text-base leading-loose whitespace-pre-wrap break-words text-default"
+                >
+                    <template v-for="(segment, i) in segments" :key="i">
+                        <span v-if="segment.kind === 'text'"
+                            >{{ segment.value }}</span
                         >
+
                         <span
-                            v-if="
-                                segment.hunk.removedText &&
-                                segment.hunk.addedText
-                            "
-                            class="text-gray-400 dark:text-gray-500 mx-[3px]"
-                            >→</span
-                        >
-                        <span
-                            v-if="segment.hunk.addedText"
+                            v-else-if="segment.hunk.status === 'accepted'"
                             class="bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300 rounded-sm px-[3px]"
                             >{{ segment.hunk.addedText }}</span
                         >
-                        <span class="inline-flex gap-px ml-[5px] align-middle">
-                            <UButton
-                                size="xs"
-                                variant="solid"
-                                color="success"
-                                square
-                                icon="i-lucide-check"
-                                :title="t('common.accept')"
-                                :aria-label="t('common.accept')"
-                                @click="acceptHunk(segment.hunk)"
-                            />
-                            <UButton
-                                size="xs"
-                                variant="soft"
-                                color="neutral"
-                                square
-                                icon="i-lucide-x"
-                                :title="t('common.reject')"
-                                :aria-label="t('common.reject')"
-                                @click="rejectHunk(segment.hunk)"
-                            />
+
+                        <span
+                            v-else-if="segment.hunk.status === 'rejected'"
+                            class="line-through text-gray-400 dark:text-gray-600"
+                            >{{ segment.hunk.removedText }}</span
+                        >
+
+                        <span v-else class="inline align-baseline">
+                            <span
+                                v-if="segment.hunk.removedText"
+                                class="line-through text-gray-400 bg-red-50 dark:bg-red-950/40 dark:text-gray-500 rounded-sm px-[2px]"
+                                >{{ segment.hunk.removedText }}</span
+                            >
+                            <span
+                                v-if="
+                                    segment.hunk.removedText &&
+                                    segment.hunk.addedText
+                                "
+                                class="text-gray-400 dark:text-gray-500 mx-[3px]"
+                                >→</span
+                            >
+                            <span
+                                v-if="segment.hunk.addedText"
+                                class="bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300 rounded-sm px-[3px]"
+                                >{{ segment.hunk.addedText }}</span
+                            >
+                            <span
+                                class="inline-flex gap-px ml-[5px] align-middle"
+                            >
+                                <UButton
+                                    size="xs"
+                                    variant="solid"
+                                    color="success"
+                                    square
+                                    icon="i-lucide-check"
+                                    :title="t('common.accept')"
+                                    :aria-label="t('common.accept')"
+                                    @click="acceptHunk(segment.hunk)"
+                                />
+                                <UButton
+                                    size="xs"
+                                    variant="soft"
+                                    color="neutral"
+                                    square
+                                    icon="i-lucide-x"
+                                    :title="t('common.reject')"
+                                    :aria-label="t('common.reject')"
+                                    @click="rejectHunk(segment.hunk)"
+                                />
+                            </span>
                         </span>
-                    </span>
-                </template>
-            </p>
+                    </template>
+                </p>
+
+                <!--
+                    Split View: original text flows in the left column,
+                    corrected text flows in the right column (each rendered as
+                    one continuous block, not a row per hunk, so prose is not
+                    broken at segment boundaries). Reuses the word-level segment
+                    engine — see ADR 0002.
+                -->
+                <div
+                    v-else
+                    class="grid grid-cols-2 min-w-[640px] text-base leading-loose"
+                >
+                    <!-- Column headers -->
+                    <div
+                        class="sticky top-0 z-10 px-3 py-1.5 text-xs font-semibold text-muted bg-white dark:bg-gray-900 border-b border-default"
+                    >
+                        {{ t("common.diffOriginal") }}
+                    </div>
+                    <div
+                        class="sticky top-0 z-10 px-3 py-1.5 text-xs font-semibold text-muted bg-white dark:bg-gray-900 border-b border-l border-default"
+                    >
+                        {{ t("common.diffCorrected") }}
+                    </div>
+
+                    <!-- Left column: original / removed text (flows) -->
+                    <div
+                        class="px-3 py-1 whitespace-pre-wrap break-words text-default"
+                    >
+                        <template v-for="(segment, i) in segments" :key="i">
+                            <template v-if="segment.kind === 'text'"
+                                >{{ segment.value }}</template
+                            >
+                            <template v-else>
+                                <span
+                                    v-if="segment.hunk.removedText"
+                                    :class="
+                                        segment.hunk.status === 'pending'
+                                            ? 'bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300 rounded-sm px-[3px]'
+                                            : segment.hunk.status === 'accepted'
+                                              ? 'line-through text-gray-400 dark:text-gray-600'
+                                              : 'bg-gray-100 dark:bg-gray-800 text-default rounded-sm px-[3px]'
+                                    "
+                                    >{{ segment.hunk.removedText }}</span
+                                >
+                                <UButton
+                                    v-if="segment.hunk.status === 'pending'"
+                                    size="xs"
+                                    variant="soft"
+                                    color="neutral"
+                                    square
+                                    icon="i-lucide-x"
+                                    class="ml-1 align-middle"
+                                    :title="t('common.reject')"
+                                    :aria-label="t('common.reject')"
+                                    @click="rejectHunk(segment.hunk)"
+                                />
+                                <!-- Pure deletion: no added text on the right,
+                                     so accept must also be reachable here. -->
+                                <UButton
+                                    v-if="
+                                        segment.hunk.status === 'pending' &&
+                                        !segment.hunk.addedText
+                                    "
+                                    size="xs"
+                                    variant="solid"
+                                    color="success"
+                                    square
+                                    icon="i-lucide-check"
+                                    class="ml-px align-middle"
+                                    :title="t('common.accept')"
+                                    :aria-label="t('common.accept')"
+                                    @click="acceptHunk(segment.hunk)"
+                                />
+                            </template>
+                        </template>
+                    </div>
+
+                    <!-- Right column: corrected / added text (flows) -->
+                    <div
+                        class="px-3 py-1 whitespace-pre-wrap break-words text-default border-l border-default"
+                    >
+                        <template v-for="(segment, i) in segments" :key="i">
+                            <template v-if="segment.kind === 'text'"
+                                >{{ segment.value }}</template
+                            >
+                            <template v-else>
+                                <span
+                                    v-if="segment.hunk.addedText"
+                                    :class="
+                                        segment.hunk.status === 'rejected'
+                                            ? 'line-through text-gray-400 dark:text-gray-600'
+                                            : 'bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300 rounded-sm px-[3px]'
+                                    "
+                                    >{{ segment.hunk.addedText }}</span
+                                >
+                                <UButton
+                                    v-if="segment.hunk.status === 'pending'"
+                                    size="xs"
+                                    variant="solid"
+                                    color="success"
+                                    square
+                                    icon="i-lucide-check"
+                                    class="ml-1 align-middle"
+                                    :title="t('common.accept')"
+                                    :aria-label="t('common.accept')"
+                                    @click="acceptHunk(segment.hunk)"
+                                />
+                                <!-- Pure insertion: no removed text on the
+                                     left, so reject must also be reachable
+                                     here. -->
+                                <UButton
+                                    v-if="
+                                        segment.hunk.status === 'pending' &&
+                                        !segment.hunk.removedText
+                                    "
+                                    size="xs"
+                                    variant="soft"
+                                    color="neutral"
+                                    square
+                                    icon="i-lucide-x"
+                                    class="ml-px align-middle"
+                                    :title="t('common.reject')"
+                                    :aria-label="t('common.reject')"
+                                    @click="rejectHunk(segment.hunk)"
+                                />
+                            </template>
+                        </template>
+                    </div>
+                </div>
+            </template>
             <div v-else class="text-center text-muted py-10 text-sm">
                 {{ t(`${i18nPrefix}.noChanges`) }}
             </div>
