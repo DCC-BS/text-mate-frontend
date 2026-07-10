@@ -30,6 +30,16 @@ const clearOpen = ref(false);
 
 const inDiffReview = computed(() => ws.state.value === "diff-review");
 
+/** True while corrected text is streaming into the diff review. */
+const isStreaming = computed(() => ws.progress.value !== "none");
+
+/** Context-aware label for the diff streaming indicator. */
+const streamingLabel = computed(() =>
+    ws.progress.value === "fixing"
+        ? t("workspace.fixing")
+        : t("workspace.generating"),
+);
+
 /** True while an Advisor Check stream is running. */
 const isChecking = computed(() => ws.progress.value === "checking");
 
@@ -39,8 +49,12 @@ watch(ws.activeThreadId, (value) => {
     }
 });
 
-/** Commits the resolved diff text back to the Working Text. */
+/** Commits the resolved diff text back to the Working Text. No-op while the
+    corrected text is still streaming, so the view cannot close mid-stream. */
 function commitResolved(): void {
+    if (isStreaming.value) {
+        return;
+    }
     const resolved = diffViewerRef.value?.getResolvedText();
     if (resolved !== undefined) {
         ws.commitDiff(resolved);
@@ -119,7 +133,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                 <div
                     :class="[
                         'w-full h-full p-2 bg-white shadow relative',
-                        inDiffReview ? '' : 'max-w-4xl',
+                        inDiffReview ? '' : 'max-w-6xl',
                     ]"
                 >
                     <!-- Diff review replaces the editor -->
@@ -133,6 +147,8 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                             ref="diffViewerRef"
                             :original-text="ws.originalText.value"
                             :corrected-text="ws.correctedText.value"
+                            :streaming="isStreaming"
+                            :streaming-label="streamingLabel"
                             i18n-prefix="advisor"
                             :title="t('workspace.diffTitle')"
                             @accept-hunk="onAcceptHunk"
@@ -150,6 +166,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                                         size="xs"
                                         square
                                         icon="i-lucide-rotate-ccw"
+                                        :disabled="isStreaming"
                                         data-tour="retry-quick-action"
                                         @click="retry"
                                     />

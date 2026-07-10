@@ -16,6 +16,18 @@ interface DiffViewerProps {
     i18nPrefix: string;
     /** Optional explicit header title; falls back to `<prefix>.title`. */
     title?: string;
+    /**
+     * True while the corrected text is still streaming in. Disables the bulk
+     * accept/reject buttons so the diff cannot be finalized until the stream
+     * completes.
+     */
+    streaming?: boolean;
+    /**
+     * Label shown next to the streaming spinner (e.g. "Rewriting your text…").
+     * Resolved by the parent so it reflects whether a Transform or Validation
+     * produced the diff.
+     */
+    streamingLabel?: string;
 }
 
 const props = defineProps<DiffViewerProps>();
@@ -227,6 +239,7 @@ defineExpose({
                         color="neutral"
                         size="xs"
                         class="rounded-full"
+                        :disabled="streaming"
                         :label="t(`${i18nPrefix}.discardAll`)"
                         @click="rejectAll"
                     />
@@ -235,12 +248,23 @@ defineExpose({
                         color="primary"
                         size="xs"
                         class="rounded-full"
+                        :disabled="streaming"
                         :label="t(`${i18nPrefix}.acceptAll`)"
                         @click="acceptAll"
                     />
                 </template>
             </div>
         </header>
+
+        <div
+            v-if="streaming"
+            class="flex items-center gap-2 shrink-0 px-1 py-1.5 mb-2 text-xs text-muted border-b border-default"
+            role="status"
+            aria-live="polite"
+        >
+            <UIcon name="i-lucide-loader" class="animate-spin size-3.5" />
+            <span>{{ streamingLabel }}</span>
+        </div>
 
         <div class="flex-1 overflow-auto">
             <template v-if="changeHunks.length">
