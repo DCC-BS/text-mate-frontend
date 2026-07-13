@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { UButton } from "#components";
 import type { AdvisorThread } from "~/assets/models/advisor";
+import { ApplyFixCommand } from "~/assets/models/commands";
 
 interface InputProps {
     threads: AdvisorThread[];
@@ -12,6 +13,7 @@ interface InputProps {
 const props = withDefaults(defineProps<InputProps>(), { checking: false });
 
 const { t } = useI18n();
+const { executeCommand } = useCommandBus();
 
 const emit = defineEmits<{
     openPdf: [thread: AdvisorThread];
@@ -34,6 +36,28 @@ const skipCount = computed(() => props.threads.length - toFixCount.value);
                     :active-thread-id="props.activeThreadId"
                     @open-pdf="emit('openPdf', $event)"
                 />
+
+                <div
+                    class="rounded-lg border p-3 transition-colors bg-default border-default text-[13px] leading-relaxed text-toned"
+                >
+                    <div class="flex flex-col gap-1.5">
+                        <UIcon
+                            name="i-lucide-info"
+                            class="text-sm text-primary"
+                        />
+                        <span>
+                            {{ t('advisor.applyHint') }}
+                        </span>
+                        <UButton
+                            icon="i-lucide-search-check"
+                            color="primary"
+                            variant="soft"
+                            @click="executeCommand(new ApplyFixCommand())"
+                        >
+                            {{ t('ribbon.fix') }}
+                        </UButton>
+                    </div>
+                </div>
             </template>
             <div
                 v-else

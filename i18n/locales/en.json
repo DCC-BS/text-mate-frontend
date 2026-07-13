@@ -187,7 +187,9 @@
         "apply": "Apply",
         "applyInfo": "{n} threads selected for fixing",
         "reviewChanges": "Review Changes",
-        "noChanges": "No changes to review.",
+        "noChanges": "All good! textmate found nothing to change.",
+        "emptyResponse": "Something went wrong. Try again.",
+        "backToText": "Back to text",
         "diffTitle": "Preview of corrections",
         "progress": "{accepted} of {total} changes applied",
         "acceptAll": "Accept all",
@@ -211,7 +213,8 @@
         "allClear": "All clear",
         "allChangesApplied": "All changes applied",
         "allChangesAppliedHint": "Your text has been updated. Run a new check to verify the result.",
-        "insertExample": "Insert example text"
+        "insertExample": "Insert example text",
+        "applyHint": "Add your own notes to existing comments, or select text and choose Add Note. When ready, press the button below to let the AI apply all changes."
     },
     "actions": {
         "custom": "Custom",

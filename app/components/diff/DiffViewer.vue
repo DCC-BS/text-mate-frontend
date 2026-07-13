@@ -38,6 +38,13 @@ const emit = defineEmits<{
     "reject-hunk": [hunk: DiffHunk];
     "accept-all": [hunks: DiffHunk[]];
     "reject-all": [hunks: DiffHunk[]];
+    /**
+     * Fired by the "Back to text" button when the diff has no reviewable
+     * hunks — either a no-op result (corrected === original) or an empty
+     * response (corrected === ""). The parent leaves Diff Review without
+     * altering the Working Text. See ADR 0003.
+     */
+    dismiss: [];
 }>();
 
 /**
@@ -82,6 +89,38 @@ const changeHunks = computed(() =>
 
 const pendingHunks = computed(() =>
     changeHunks.value.filter((hunk) => hunk.status === "pending"),
+);
+
+/**
+ * True when the stream finished but produced no corrected text at all — the
+ * model returned an empty response, which we treat as an error and surface
+ * with a distinct "something went wrong" hint. Gated on !streaming so the
+ * state only resolves once, at stream end. See ADR 0003.
+ */
+const isErrorState = computed(
+    () =>
+        !props.streaming &&
+        props.originalText !== "" &&
+        props.correctedText === "",
+);
+
+/**
+ * True when the stream finished and the corrected text equals the original
+ * (no change hunks). Shown with a positive "nothing to change" hint. The
+ * !streaming guard keeps this from flashing before the first chunk arrives.
+ * See ADR 0003.
+ */
+const isNoChangeState = computed(
+    () =>
+        !props.streaming &&
+        changeHunks.value.length === 0 &&
+        !isErrorState.value,
+);
+
+/** True for either no-result state (no-op or error): both render the
+ * "Back to text" exit button in the header. */
+const isNoResultState = computed(
+    () => isErrorState.value || isNoChangeState.value,
 );
 
 const acceptedCount = computed(
@@ -147,6 +186,15 @@ function rejectAll(): void {
     }
     statusMap.value = next;
     emit("reject-all", pending);
+}
+
+/**
+ * Leaves Diff Review when there are no hunks to review (no-op or empty
+ * response). The parent resets to the editable state without touching the
+ * Working Text. See ADR 0003.
+ */
+function dismiss(): void {
+    emit("dismiss");
 }
 
 /**
@@ -253,6 +301,15 @@ defineExpose({
                         @click="acceptAll"
                     />
                 </template>
+                <UButton
+                    v-else-if="isNoResultState"
+                    variant="solid"
+                    color="primary"
+                    size="xs"
+                    class="rounded-full"
+                    :label="t(`${i18nPrefix}.backToText`)"
+                    @click="dismiss"
+                />
             </div>
         </header>
 
@@ -466,8 +523,30 @@ defineExpose({
                     </div>
                 </div>
             </template>
-            <div v-else class="text-center text-muted py-10 text-sm">
-                {{ t(`${i18nPrefix}.noChanges`) }}
+            <!-- Empty stream: the model returned nothing — treat as error. -->
+            <div
+                v-else-if="isErrorState"
+                class="flex flex-col items-center justify-center gap-3 py-16 text-center"
+                data-tour="diff-empty-error"
+            >
+                <UIcon
+                    name="i-lucide-circle-alert"
+                    class="size-8 text-amber-500"
+                />
+                <p class="m-0 text-sm text-default font-medium">
+                    {{ t(`${i18nPrefix}.emptyResponse`) }}
+                </p>
+            </div>
+            <!-- No-op result: corrected text matched the original. -->
+            <div
+                v-else-if="isNoChangeState"
+                class="flex flex-col items-center justify-center gap-3 py-16 text-center"
+                data-tour="diff-no-changes"
+            >
+                <UIcon name="i-lucide-sparkles" class="size-8 text-primary" />
+                <p class="m-0 text-sm text-default font-medium">
+                    {{ t(`${i18nPrefix}.noChanges`) }}
+                </p>
             </div>
         </div>
     </div>

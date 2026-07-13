@@ -143,7 +143,9 @@
         "apply": "Anwenden",
         "applyInfo": "{n} Threads zur Korrektur ausgewählt",
         "reviewChanges": "Änderungen prüfen",
-        "noChanges": "Keine Änderungen zu prüfen.",
+        "noChanges": "TextMate hat nichts zu ändern gefunden.",
+        "emptyResponse": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+        "backToText": "Zurück zum Text",
         "diffTitle": "Vorschau der Korrektur",
         "progress": "{accepted} von {total} Änderungen übernommen",
         "acceptAll": "Alle übernehmen",
@@ -167,7 +169,8 @@
         "allClear": "Alles in Ordnung",
         "allChangesApplied": "Alle Änderungen angewendet",
         "allChangesAppliedHint": "Ihr Text wurde aktualisiert. Führen Sie eine neue Prüfung durch, um das Ergebnis zu verifizieren.",
-        "insertExample": "Beispieltext einfügen"
+        "insertExample": "Beispieltext einfügen",
+        "applyHint": "Füge Notizen zu bestehenden Kommentaren hinzu, oder markiere Text und wählen Notiz hinzufügen. Wenn bereit, klicken unten, um alle Änderungen anzuwenden."
     },
     "actions": {
         "custom": "Benutzerdefiniert",

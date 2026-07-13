@@ -73,6 +73,14 @@ function onRejectHunk(_hunk: DiffHunk): void {
     }
 }
 
+/**
+ * Leaves Diff Review when the corrected text held no reviewable hunks
+ * (no-op or empty response). See ADR 0003.
+ */
+function onDismissDiff(): void {
+    ws.exitDiffReview();
+}
+
 function retry(): void {
     executeCommand(new RetryQuickActionCommand());
 }
@@ -155,6 +163,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                             @reject-hunk="onRejectHunk"
                             @accept-all="commitResolved"
                             @reject-all="commitResolved"
+                            @dismiss="onDismissDiff"
                         >
                             <template #actions>
                                 <UTooltip

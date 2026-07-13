@@ -98,10 +98,10 @@ export function useWorkspace(text: Ref<string>) {
             } finally {
                 removeProgress("quick-action");
                 progress.value = "none";
-                // A no-op result (no changes) leaves nothing to review — drop
-                // straight back to the editable state so the user isn't stuck
-                // in an empty Diff Review.
-                commitIfUnchanged();
+                // Stay in diff-review even on a no-op or empty result so the
+                // DiffViewer can surface an explicit "no changes" / error
+                // hint instead of vanishing silently. The user leaves via
+                // exitDiffReview() (the "Back to text" button).
             }
         },
     );
@@ -235,7 +235,8 @@ export function useWorkspace(text: Ref<string>) {
                 correctedText.value += chunk;
             }
 
-            commitIfUnchanged();
+            // No commitIfUnchanged() here: a no-op or empty result stays in
+            // diff-review so the DiffViewer can show a hint. See ADR 0003.
         } catch (error: unknown) {
             console.error("Advisor fix failed:", error);
             const message =
@@ -272,17 +273,17 @@ export function useWorkspace(text: Ref<string>) {
     }
 
     /**
-     * If the corrected text equals the original (a no-op result), there are no
-     * hunks to review — commit immediately so the user isn't stuck in an empty
-     * Diff Review with no accept/reject buttons.
+     * Leaves the Diff Review without altering the Working Text. Used by the
+     * "Back to text" button when the corrected text held no changes (no-op)
+     * or came back empty (error). Delegates to commitDiff so cleanup parity
+     * (clearing fix-mode threads, resetting state/original/corrected) is
+     * preserved. See ADR 0003.
      */
-    function commitIfUnchanged(): void {
-        if (
-            state.value === "diff-review" &&
-            correctedText.value === originalText.value
-        ) {
-            commitDiff(originalText.value);
+    function exitDiffReview(): void {
+        if (state.value !== "diff-review") {
+            return;
         }
+        commitDiff(originalText.value);
     }
 
     return {
@@ -299,5 +300,6 @@ export function useWorkspace(text: Ref<string>) {
         threads,
         activeThreadId,
         commitDiff,
+        exitDiffReview,
     };
 }

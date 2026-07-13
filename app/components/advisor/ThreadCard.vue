@@ -158,7 +158,6 @@ function openPdf(): void {
                               : 'text-primary'
                     "
                 />
-                {{ isUser ? t("advisor.note") : thread.violation?.rule_name }}
             </span>
             <button
                 v-if="thread.violation"
@@ -172,13 +171,6 @@ function openPdf(): void {
                 · p.{{ thread.violation.page_number }}
             </button>
         </header>
-
-        <blockquote
-            v-if="sourceSnippet"
-            class="text-[13px] text-muted bg-muted/40 border-l-2 border-default italic px-2.5 py-1.5 mb-2 rounded-r-md"
-        >
-            „{{ sourceSnippet }}“
-        </blockquote>
 
         <p
             v-if="thread.violation"
