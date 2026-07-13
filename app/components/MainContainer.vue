@@ -25,7 +25,7 @@ onMounted(async () => {
         <div
             class="h-full w-full shadow-[2px_2px_1px_1px_#0000000D] ring-1 ring-default rounded-md flex flex-col overflow-hidden"
         >
-            <Workspace v-model="userText" />
+            <WorkspaceContainer v-model="userText" />
         </div>
     </div>
 

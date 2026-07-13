@@ -160,6 +160,7 @@
         "words": "Wörter",
         "editMode": "Bearbeiten",
         "selectDocsTitle": "Dokumente zum Prüfen auswählen",
+        "selectDocsDescription": "Wähle bis zu {maxDocs} Richtlinien, welche überprüft werden sollen.",
         "editText": "Text bearbeiten",
         "recheck": "Erneut prüfen",
         "applying": "Korrigierten Text erstellen",

@@ -12,7 +12,7 @@ const isAuth = computed(() => {
     <div>
         <template v-if="!isAuth">
             <Disclaimer app-name="TextMate" />
-            <Onboarding />
+            <OnboardingView />
         </template>
 
         <slot />

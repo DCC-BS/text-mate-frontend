@@ -61,8 +61,16 @@ async function applyAction(
 
 const selectedDocsModel = computed({
     get: () => props.selectedDocs,
-    set: (value: string[]) => emit("update:selectedDocs", value),
+    set: (value: string[]) => onUpdateDocs(value),
 });
+
+function onUpdateDocs(newValue: string[]) {
+    if (newValue.length > props.maxDocs) {
+        return;
+    }
+
+    emit("update:selectedDocs", newValue);
+}
 </script>
 
 <template>
@@ -182,49 +190,31 @@ const selectedDocsModel = computed({
 
             <!-- VALIDATE TAB -->
             <div v-else class="flex justify-center items-stretch gap-3 w-full">
-                <!-- Reference documents -->
-                <RibbonGroup
-                    :label="t('ribbon.refDocs')"
-                    icon="i-lucide-book-open"
-                >
-                    <UPopover mode="click" :content-align="{ align: 'start' }">
-                        <RibbonIconButton
-                            :label="
-                                selectedDocs.length === 0
-                                    ? t('ribbon.refDocs')
-                                    : `${selectedDocs.length}/${maxDocs}`
-                            "
-                            icon="i-lucide-files"
-                        />
-                        <template #content>
-                            <div class="p-2 w-[320px] max-w-[80vw]">
-                                <p class="text-xs text-muted mb-2">
-                                    {{ t("ribbon.refDocsCount", {
-                                            n: selectedDocs.length,
-                                            max: maxDocs,
-                                        }) }}
-                                </p>
-                                <AdvisorDocSelect v-model="selectedDocsModel" />
-                            </div>
-                        </template>
-                    </UPopover>
-                </RibbonGroup>
-
-                <RibbonDivider />
-
                 <!-- Check / Fix -->
                 <RibbonGroup
                     :label="t('ribbon.validate')"
                     icon="i-lucide-file-search"
                 >
-                    <RibbonIconButton
-                        :label="t('ribbon.check')"
-                        icon="i-lucide-search-check"
-                        :disabled="
-                            !editable || busy || selectedDocs.length === 0
-                        "
-                        @click="executeCommand(new CheckCommand())"
-                    />
+                    <UDrawer>
+                        <RibbonIconButton
+                            :label="t('ribbon.check')"
+                            icon="i-lucide-search-check"
+                            :disabled="!actionsAreAvailable"
+                        />
+                        <template #content >
+                            <div class="flex flex-col justify-center items-center p-2 gap-2">
+                                <div>
+                                    {{ t('advisor.selectDocsDescription', { maxDocs: props.maxDocs }) }}
+                                </div>
+                                <AdvisorDocSelect v-model="selectedDocsModel" />
+                                <UButton @click="executeCommand(new CheckCommand())"
+                                    :disabled="!editable || busy || selectedDocs.length === 0
+                            ">
+                                    APPLY
+                                </UButton>
+                            </div>
+                        </template>
+                    </UDrawer>
                     <RibbonIconButton
                         :label="t('ribbon.fix')"
                         icon="i-lucide-wrench"

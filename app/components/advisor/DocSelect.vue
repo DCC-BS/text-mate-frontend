@@ -32,13 +32,13 @@ function toggleExpand(id: string): void {
     <div class="w-full">
         <!-- Expandable checkbox cards: click card to toggle selection,
              click chevron to reveal document details inline -->
-        <div class="doc-select-list flex w-full flex-col">
-            <div v-for="doc in docs" :key="doc.id" class="relative w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 w-full flex-col">
+            <div v-for="doc in docs" :key="doc.id" class="relative">
                 <UCheckbox
                     :model-value="selectedIds.includes(doc.id)"
                     variant="card"
                     :label="doc.title"
-                    class="w-full pe-10"
+                    class="w-full h-full pe-10"
                     @update:model-value="toggleDoc(doc.id, $event as boolean)"
                 >
                     <template #description>

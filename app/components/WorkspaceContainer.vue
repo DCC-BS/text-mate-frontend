@@ -122,7 +122,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
 
 <template>
     <div class="h-full w-full flex flex-col">
-        <Ribbon
+        <RibbonBar
             :text="text"
             :busy="ws.isBusy.value"
             :editable="ws.editable.value"

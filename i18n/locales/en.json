@@ -204,6 +204,7 @@
         "words": "words",
         "editMode": "Edit",
         "selectDocsTitle": "Select documents to check against",
+        "selectDocsDescription": "Select up to {maxDocs} guidelines to check against.",
         "editText": "Edit text",
         "recheck": "Re-check",
         "applying": "Generating corrected text",
