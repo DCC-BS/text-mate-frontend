@@ -31,7 +31,7 @@ const undoRedoState = reactive({
 
 // State to control the popover
 const isStatsPopoverOpen = ref(false);
-
+const isDismissable = ref(true);
 const copySuccess = ref(false);
 
 onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
@@ -42,11 +42,13 @@ onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
 // Listen for the ShowTextStatsCommand to open the popover
 onCommand<ShowTextStatsCommand>(Cmds.ShowTextStatsCommand, async () => {
     isStatsPopoverOpen.value = true;
+    isDismissable.value = false;
 });
 
 // Listen for the HideTextStatsCommand to close the popover
 onCommand<HideTextStatsCommand>(Cmds.HideTextStatsCommand, async () => {
     isStatsPopoverOpen.value = false;
+    isDismissable.value = true;
 });
 
 function handleUndo(): void {
@@ -174,11 +176,12 @@ async function downloadWord(): Promise<void> {
             </UTooltip>
         </div>
 
-        <UPopover v-model:open="isStatsPopoverOpen" data-tour="word-count">
+        <UPopover v-model:open="isStatsPopoverOpen" :dismissible="isDismissable">
             <UButton
                 class="text-gray-500"
                 variant="link"
                 color="neutral"
+                data-tour="word-count"
                 data-testid="characterCountButton"
             >
                 {{ props.characters }}
@@ -186,7 +189,7 @@ async function downloadWord(): Promise<void> {
             </UButton>
 
             <template #content>
-                <TextStatsView :text="props.text" class="w-[300px]" />
+                <TextStatsView :text="props.text" class="w-[300px]" data-tour="text-stats" />
             </template>
         </UPopover>
     </div>

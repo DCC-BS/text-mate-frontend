@@ -280,6 +280,7 @@ defineExpose({
                         :variant="viewMode === 'split' ? 'solid' : 'outline'"
                         :title="t('common.diffViewSplit')"
                         :aria-label="t('common.diffViewSplit')"
+                        data-tour="diff-split-view"
                         @click="setSplitView"
                     />
                     <UButton
@@ -287,6 +288,7 @@ defineExpose({
                         color="neutral"
                         size="xs"
                         class="rounded-full"
+                        data-tour="diff-discard-all"
                         :disabled="streaming"
                         :label="t(`${i18nPrefix}.discardAll`)"
                         @click="rejectAll"
@@ -296,6 +298,7 @@ defineExpose({
                         color="primary"
                         size="xs"
                         class="rounded-full"
+                        data-tour="diff-accept-all"
                         :disabled="streaming"
                         :label="t(`${i18nPrefix}.acceptAll`)"
                         @click="acceptAll"

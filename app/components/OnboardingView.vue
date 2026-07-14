@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { type Driver, type DriveStep, driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import type { TypeReferenceDirectiveResolutionCache } from "typescript";
+import { P } from "vue-router/dist/index-BQLwgiyK.js";
 import type { AdvisorThread } from "~/assets/models/advisor";
 import {
     AbandonDiffCommand,
@@ -26,9 +28,43 @@ const { setRibbonTab } = useRibbonTab();
 const tourCompleted = useCookie("tour-completed", { default: () => false });
 const driverObj = ref<Driver>();
 
-// Guards the example quick action so it runs at most once per visit to the
-// Custom Action step, allowing back→forward navigation to re-seed the diff.
-const exampleActionRun = ref(false);
+const driveObj = useOnboardingBuilder()
+    .addPhases<'inital' | 'diff' | 'thread' | 'end'>([
+        {
+            name: "inital"
+        },
+        {
+            name: "diff",
+            begin: async () => {
+                await seedEditorText();
+                await runExampleQuickAction();
+                await nextTick();
+            },
+            end: async () => {
+                await executeCommand(new AbandonDiffCommand());
+            }
+        },
+        {
+            name: "thread",
+            begin: async () => {
+                seedDemoThread();
+                await nextTick();
+            },
+            end: async () => {
+                await executeCommand(new ClearThreadsCommand());
+            }
+        },
+        {
+            name: "end"
+        }
+    ])
+    .switchPhase('inital')
+    .addSteps(
+        [
+
+        ]
+    )
+
 
 // --- Tour state side-effects -------------------------------------------------
 
@@ -38,9 +74,26 @@ async function seedEditorText(): Promise<void> {
 }
 
 async function runExampleQuickAction(): Promise<void> {
-    if (exampleActionRun.value) return;
-    exampleActionRun.value = true;
     await executeCommand(new RunExampleQuickActionCommand());
+}
+
+async function startDiffStage() {
+    await seedEditorText();
+    await runExampleQuickAction();
+    await nextTick();
+}
+
+async function endDiffStage() {
+    await executeCommand(new AbandonDiffCommand());
+}
+
+async function startThreadStage() {
+    seedDemoThread();
+    await nextTick();
+}
+
+async function endThreadStage() {
+    await executeCommand(new ClearThreadsCommand());
 }
 
 // Seed a fabricated Violation thread so the Threads rail becomes visible.
@@ -74,17 +127,50 @@ async function cleanupTourState(): Promise<void> {
     await executeCommand(new HideTextStatsCommand());
     await executeCommand(new ClearTextCommand());
     setRibbonTab("transform");
-    exampleActionRun.value = false;
 }
 
 // --- Step definitions --------------------------------------------------------
+
+type OnboardingSteps = DriveStep & { phase?: string };
+
+function* convertToSteps(initPhase: string, steps: OnboardingSteps[]): Generator<DriveStep, undefined, undefined> {
+    let phase = initPhase;
+
+    for (let i = 0; i > steps.length; i++) {
+        if (i > 0) {
+            const prev = steps[i - 1];
+            const current = steps[i];
+
+            if (current?.phase && phase == current.phase && prev) {
+                if (!prev.popover) {
+                    prev.popover = {};
+                }
+
+                let oldAction = prev.popover.onNextClick;
+                prev.popover.onNextClick = async (element, step, options) => {
+
+
+                    if (oldAction) {
+                        oldAction(element, step, options);
+                    } else {
+                        options.driver.moveNext();
+                    }
+
+                }
+            }
+        } else {
+            yield steps[i] as DriveStep;
+        }
+    }
+}
+
 
 function buildSteps(): DriveStep[] {
     // Pre-build the Custom Action link so the description stays readable.
     const promptingLink = `<a href="${t("tour.customQuickAction.linkUrl")}" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary-600 font-medium">${t("tour.customQuickAction.linkText")}</a>`;
 
     return [
-        // 1. Welcome — centered, no target.
+        // Welcome — centered, no target.
         {
             popover: {
                 title: t("tour.welcome.title"),
@@ -93,7 +179,7 @@ function buildSteps(): DriveStep[] {
                 align: "center",
             },
         },
-        // 2. Ribbon overview.
+        // Ribbon overview.
         {
             element: '[data-tour="ribbon"]',
             popover: {
@@ -106,7 +192,7 @@ function buildSteps(): DriveStep[] {
                 setRibbonTab("transform");
             },
         },
-        // 3. Editor — seed example text so later steps have content.
+        // Editor — seed example text so later steps have content.
         {
             element: '[data-tour="text-editor"]',
             popover: {
@@ -119,7 +205,7 @@ function buildSteps(): DriveStep[] {
                 await seedEditorText();
             },
         },
-        // 4. Text Statistics — open the popover while highlighted, close on leave.
+        // Word count button — on next, open the Text Statistics popover.
         {
             element: '[data-tour="word-count"]',
             popover: {
@@ -127,15 +213,27 @@ function buildSteps(): DriveStep[] {
                 description: t("tour.wordCount.content"),
                 side: "top",
                 align: "center",
+                onNextClick: async (_, __, options) => {
+                    await executeCommand(new ShowTextStatsCommand());
+                    options.driver.moveNext();
+                },
             },
-            onHighlightStarted: () => {
-                executeCommand(new ShowTextStatsCommand());
+        },
+        // Text Statistics popover content (opened by the word-count step's
+        // onNextClick); close the popover when leaving.
+        {
+            element: '[data-tour="text-stats"]',
+            popover: {
+                title: t("tour.textStats.title"),
+                description: t("tour.textStats.content"),
+                side: "top",
+                align: "center",
             },
             onDeselected: () => {
                 executeCommand(new HideTextStatsCommand());
             },
         },
-        // 5. Transform tab.
+        // Transform tab.
         {
             element: '[data-tour="ribbon-transform"]',
             popover: {
@@ -148,7 +246,7 @@ function buildSteps(): DriveStep[] {
                 setRibbonTab("transform");
             },
         },
-        // 6. Built-in Quick Actions.
+        // Built-in Quick Actions.
         {
             element: '[data-tour="quick-actions"]',
             popover: {
@@ -161,7 +259,7 @@ function buildSteps(): DriveStep[] {
                 setRibbonTab("transform");
             },
         },
-        // 7. Custom action — on next, seed the diff (async) then advance.
+        // Custom action — on next, seed the diff (async) then advance.
         {
             element: '[data-tour="custom-quick-action"]',
             popover: {
@@ -171,19 +269,19 @@ function buildSteps(): DriveStep[] {
                 }),
                 side: "bottom",
                 align: "center",
-                onNextClick: async (_el, _step, opts) => {
-                    await seedEditorText();
-                    await runExampleQuickAction();
-                    opts.driver.moveNext();
+                onNextClick: async (_el, _step, { driver}) => {
+                    await startDiffStage();
+                    driver.moveNext();
                 },
             },
             onHighlightStarted: () => {
                 setRibbonTab("transform");
-                exampleActionRun.value = false;
             },
         },
-        // 8. Diff Review — element is rendered once the workspace flips to
-        //    diff-review (seeded by step 7's onNextClick). Abandon on leave.
+        // Diff Review intro. Element renders once the workspace flips to
+        // diff-review (seeded by the custom action's onNextClick). The diff
+        // must stay visible for the accept/discard/retry/split-view steps, so
+        // it is only abandoned when leaving the split-view step below.
         {
             element: '[data-tour="diff-review"]',
             popover: {
@@ -191,12 +289,58 @@ function buildSteps(): DriveStep[] {
                 description: t("tour.diffReview.content"),
                 side: "top",
                 align: "center",
-            },
-            onDeselected: () => {
-                executeCommand(new AbandonDiffCommand());
+                onPrevClick: async (_, __, { driver }) => {
+                    await endDiffStage();
+                    driver.movePrevious();
+                },
             },
         },
-        // 9. Validate tab — on next, seed a demo violation thread then advance.
+        // Accept all changes at once.
+        {
+            element: '[data-tour="diff-accept-all"]',
+            popover: {
+                title: t("tour.diffAcceptAll.title"),
+                description: t("tour.diffAcceptAll.content"),
+                side: "bottom",
+                align: "center",
+            },
+        },
+        // Discard all changes at once.
+        {
+            element: '[data-tour="diff-discard-all"]',
+            popover: {
+                title: t("tour.diffDiscardAll.title"),
+                description: t("tour.diffDiscardAll.content"),
+                side: "bottom",
+                align: "center",
+            },
+        },
+        // Retry — re-run the last action on the original text.
+        {
+            element: '[data-tour="retry-quick-action"]',
+            popover: {
+                title: t("tour.retry.title"),
+                description: t("tour.retry.content"),
+                side: "bottom",
+                align: "center",
+            },
+        },
+        // Split view toggle — last diff step; abandon the diff when leaving so
+        // the editor is restored for the Validate steps.
+        {
+            element: '[data-tour="diff-split-view"]',
+            popover: {
+                title: t("tour.diffSplitView.title"),
+                description: t("tour.diffSplitView.content"),
+                side: "bottom",
+                align: "center",
+                onNextClick: async (_, __, { driver }) => {
+                    await endDiffStage()
+                    driver.moveNext();
+                },
+            },
+        },
+        // Validate tab — on next, seed a demo violation thread then advance.
         {
             element: '[data-tour="ribbon-validate"]',
             popover: {
@@ -205,17 +349,21 @@ function buildSteps(): DriveStep[] {
                 side: "bottom",
                 align: "center",
                 onNextClick: async (_el, _step, opts) => {
-                    seedDemoThread();
-                    await nextTick();
+                    await startThreadStage();
                     opts.driver.moveNext();
+                },
+                onPrevClick: async (_, __, { driver }) => {
+                    await endThreadStage();
+                    await startDiffStage()
+                    driver.movePrevious();
                 },
             },
             onHighlightStarted: () => {
                 setRibbonTab("validate");
             },
         },
-        // 10. Threads rail — rendered by v-if once a thread exists (seeded by
-        //     step 9). Clear the demo thread on leave.
+        // Threads rail — rendered by v-if once a thread exists (seeded by the
+        // validate step). Clear the demo thread on leave.
         {
             element: '[data-tour="threads-rail"]',
             popover: {
@@ -224,11 +372,11 @@ function buildSteps(): DriveStep[] {
                 side: "left",
                 align: "start",
             },
-            onDeselected: () => {
-                executeCommand(new ClearThreadsCommand());
+            onDeselected: async () => {
+                await endThreadStage();
             },
         },
-        // 11. Conclusion — the restart button.
+        // Conclusion — the restart button.
         {
             element: '[data-tour="start-tour"]',
             popover: {
@@ -236,6 +384,10 @@ function buildSteps(): DriveStep[] {
                 description: t("tour.conclusion.content"),
                 side: "bottom",
                 align: "center",
+                onPrevClick: async (_, __, { driver }) => {
+                    await startThreadStage();
+                    driver.movePrevious();
+                }
             },
             onHighlightStarted: () => {
                 setRibbonTab("transform");

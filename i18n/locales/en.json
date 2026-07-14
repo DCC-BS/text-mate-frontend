@@ -330,24 +330,44 @@
         },
         "ribbon": {
             "title": "The Ribbon",
-            "content": "The ribbon groups every action into two tabs: Transform rewrites your text, and Validate checks it against reference documents. Switch tabs to reach the actions you need."
+            "content": "The ribbon groups actions into two tabs: Transform rewrites your text, and Validate checks it against reference documents."
         },
         "transform": {
             "title": "Transform Actions",
-            "content": "Here are one-click transformations like Summarize, Formality, or Plain Language. Grouped into Restructure, Rewrite for, and Polish."
+            "content": "Here are one-click transformations like Summarize, Formality, or Plain Language."
         },
         "editor": {
             "title": "Text Editor",
-            "content": "This is where you write and edit your text, centered like a page. Select any passage to rewrite it, suggest synonyms, or add a note."
+            "content": "This is where you write and edit your text. Select a passage to add a note."
         },
         "wordCount": {
+            "title": "Word Count",
+            "content": "Click here to show detailed information about your text."
+        },
+        "textStats": {
             "title": "Text Statistics",
-            "content": "View detailed information about your text including word count, character count, and Flesch reading ease score. Click on these statistics to see more details about your text's readability."
+            "content": "Detailed information about your text including word count, character count, and language level (for German texts)."
         },
         "restart": "Start Tour",
         "diffReview": {
             "title": "Accept or Reject Changes",
-            "content": "When a transformation or fix runs, the changes replace the editor here. Accept or reject each change — you must decide all of them before you can edit again. Use the retry button to discard the suggestion and run the same action again on your original text."
+            "content": "When a transformation or fix runs, the changes replace the editor here. Accept or reject each change — all changes must be accepted or rejected before you can continue. Use the retry button to discard the suggestion and run the same action again on your original text."
+        },
+        "diffAcceptAll": {
+            "title": "Accept All",
+            "content": "Accepts all changes with one click."
+        },
+        "diffDiscardAll": {
+            "title": "Discard All",
+            "content": "Discards all changes with one click and keeps your original text."
+        },
+        "retry": {
+            "title": "Retry Action",
+            "content": "Discards the suggestion and runs the same action again on your original text."
+        },
+        "diffSplitView": {
+            "title": "Switch View",
+            "content": "Switch here between inline and split view to compare changes inline or side by side."
         },
         "validate": {
             "title": "Validate",

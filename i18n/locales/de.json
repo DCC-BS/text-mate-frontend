@@ -294,20 +294,36 @@
         },
         "editor": {
             "title": "Text-Editor",
-            "content": "Hier schreibst und bearbeitest Du Deinen Text, zentriert wie eine Seite. Markiere eine Textstelle, um sie umzuschreiben, Synonyme vorzuschlagen oder eine Notiz hinzuzufügen."
+            "content": "Hier schreibst und bearbeitest Du Deinen Text. Markiere eine Textstelle, um eine Notiz hinzuzufügen."
         },
         "wordCount": {
             "title": "Wortanzahl",
             "content": "Klicke hier um detailiere Information über Deinen Text anzuzeigen."
         },
-        "testStats": {
+        "textStats": {
             "title": "Text-Statistiken",
-            "content": "Erhalte detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klicke hier, um mehr Details über die Lesbarkeit Deines Texts zu sehen."
+            "content":             "Detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Sprachniveau (für deutsche Texte)."
         },
         "restart": "Tutorial neu starten",
         "diffReview": {
             "title": "Änderungen annehmen oder ablehnen",
-            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Nimm jede Änderung an oder lehne sie ab — du musst alle entscheiden, bevor du weiterbearbeiten kannst. Mit dem Wiederholen-Knopf verwirfst du den Vorschlag und startest die Aktion neu auf dem Originaltext."
+            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Nimm jede Änderung an oder lehne sie ab, bevor du weiterbearbeiten kannst müssen alle Änderungen azeptiert oder abgelehnt werden. Mit dem Wiederholen-Knopf verwirfst du den Vorschlag und startest die Aktion neu auf dem Originaltext."
+        },
+        "diffAcceptAll": {
+            "title": "Alle übernehmen",
+            "content": "Übernimmt alle Änderungen auf einen Klick."
+        },
+        "diffDiscardAll": {
+            "title": "Alle verwerfen",
+            "content": "Verwirft alle Änderungen auf einen Klick und behält deinen Originaltext."
+        },
+        "retry": {
+            "title": "Aktion wiederholen",
+            "content": "Verwirft den Vorschlag und führt dieselbe Aktion erneut auf deinem Originaltext aus."
+        },
+        "diffSplitView": {
+            "title": "Ansicht wechseln",
+            "content": "Wechsle hier zwischen der Inline- und der geteilten Ansicht, um die Änderungen im Fliesstext oder nebeneinander zu vergleichen."
         },
         "validate": {
             "title": "Überprüfen",
