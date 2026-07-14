@@ -55,11 +55,11 @@ export async function skipDisclaimer(page: Page) {
 }
 
 export async function skipTour(page: Page) {
-    await page.waitForSelector("#nt-action-skip", {
+    await page.waitForSelector('[data-testid="tour-skip"]', {
         state: "visible",
         timeout: 5000,
     });
-    await page.locator("#nt-action-skip").click();
+    await page.locator('[data-testid="tour-skip"]').click();
 }
 
 export async function switchTo(page: Page, tool: "rewrite" | "advisor") {

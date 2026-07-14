@@ -215,6 +215,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
             <!-- Right rail (desktop): comments/violations margin -->
             <div
                 v-if="ws.threads.value.length"
+                data-tour="threads-rail"
                 class="hidden md:flex w-[380px] shrink-0 border-l border-default"
             >
                 <Rail

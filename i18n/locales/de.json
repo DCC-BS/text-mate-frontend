@@ -286,44 +286,32 @@
         },
         "ribbon": {
             "title": "Das Menüband",
-            "content": "Das Menüband gruppiert jede Aktion in zwei Registerkarten: Umschreiben verändert deinen Text, und Überprüfen prüft ihn gegen Referenzdokumente. Wechsle die Registerkarten, um die gewünschten Aktionen zu erreichen."
+            "content": "Das Menüband gruppiert Aktionen in zwei Registerkarten: Umschreiben verändert deinen Text, und Überprüfen prüft ihn gegen Referenzdokumente."
         },
         "transform": {
             "title": "Umschreibaktionen",
-            "content": "Hier findest du Ein-Klick-Transformationen wie Zusammenfassen, Formalität oder Lesefreundliche Sprache. Gruppiert in Umstrukturieren, Umschreiben für und Verbessern."
-        },
-        "dictionary": {
-            "title": "Persönliches Wörterbuch",
-            "content": "Füge Wörter zu Deinem persönlichen Wörterbuch hinzu. Dies ist nützlich für Fachbegriffe, Namen oder Wörter, die Du konsistent verwenden möchtest."
+            "content": "Hier findest du Ein-Klick-Transformationen wie Zusammenfassen, Formalität oder Lesefreundliche Sprache."
         },
         "editor": {
             "title": "Text-Editor",
-            "content": "Hier schreibst und bearbeitest Du Deinen Text, zentriert wie eine Seite. Der Editor bietet verschiedene Werkzeuge, um Dein Schreiben zu verbessern und zu transformieren."
+            "content": "Hier schreibst und bearbeitest Du Deinen Text, zentriert wie eine Seite. Markiere eine Textstelle, um sie umzuschreiben, Synonyme vorzuschlagen oder eine Notiz hinzuzufügen."
         },
         "wordCount": {
+            "title": "Wortanzahl",
+            "content": "Klicke hier um detailiere Information über Deinen Text anzuzeigen."
+        },
+        "testStats": {
             "title": "Text-Statistiken",
             "content": "Erhalte detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klicke hier, um mehr Details über die Lesbarkeit Deines Texts zu sehen."
         },
         "restart": "Tutorial neu starten",
-        "textEditorToolpanel": {
-            "title": "Text-Editor-Werkzeuge",
-            "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit TextMate zu bearbeiten."
-        },
         "diffReview": {
             "title": "Änderungen annehmen oder ablehnen",
-            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Nimm jede Änderung an oder lehne sie ab — du musst alle entscheiden, bevor du weiterbearbeiten kannst."
-        },
-        "retry": {
-            "title": "Aktion wiederholen",
-            "content": "Mit dem Ergebnis unzufrieden? Klick hier, um den Vorschlag zu verwerfen und dieselbe Aktion erneut auf Deinen Originaltext anzuwenden."
+            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Nimm jede Änderung an oder lehne sie ab — du musst alle entscheiden, bevor du weiterbearbeiten kannst. Mit dem Wiederholen-Knopf verwirfst du den Vorschlag und startest die Aktion neu auf dem Originaltext."
         },
         "validate": {
             "title": "Überprüfen",
             "content": "Wechsle zur Registerkarte Überprüfen, um Referenzdokumente auszuwählen und deinen Text daran zu prüfen."
-        },
-        "check": {
-            "title": "Text überprüfen",
-            "content": "Wähle Referenzdokumente und führe eine Überprüfung durch. Verstösse erscheinen als Kommentare neben deinem Text. Du kannst auch eigene Notizen hinzufügen — vor oder nach der Überprüfung."
         },
         "quickActions": {
             "title": "Umschreibaktionen",
@@ -335,6 +323,14 @@
             "contentWithLink": "Füge hier benutzerdefinierte Umschreibanweisungen ein, um Deinen Text nach deinen Wünschen umzuschreiben. Dies ist nützlich, wenn Du spezielle Anforderungen hast, die nicht in den Standardaktionen enthalten sind. Tipps für das Erstellen von effektiven Prompts findest Du im {link}.",
             "linkText": "Prompting-Merkblatt",
             "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
+        },
+        "threads": {
+            "title": "Verstösse und Notizen",
+            "content": "Wenn du eine Überprüfung ausführst, erscheinen hier die Verstösse gegen deine Referenzdokumente — mit Begründung, Vorschlag und Quellenangabe. Entscheide pro Verstoss, ob du ihn beheben (Erledigen) oder überspringen willst. Mit \"Fix anwenden\" erzeugt der Advisor den korrigierten Text. Du kannst auch eigene Notizen zu beliebigen Textstellen hinzufügen.",
+            "demoRule": "Beispielregel",
+            "demoDoc": "beispiel-dokument.pdf",
+            "demoReason": "Dies ist ein Beispiel-Verstoss, der nur während der Tour angezeigt wird.",
+            "demoProposal": "Hier erscheint der Korrektur-Vorschlag des Advisors."
         },
         "conclusion": {
             "title": "Das war's!",

@@ -336,38 +336,22 @@
             "title": "Transform Actions",
             "content": "Here are one-click transformations like Summarize, Formality, or Plain Language. Grouped into Restructure, Rewrite for, and Polish."
         },
-        "dictionary": {
-            "title": "Personal Dictionary",
-            "content": "Add words to your personal dictionary. This is useful for specialized terminology, names, or words that you want to keep consistent."
-        },
         "editor": {
             "title": "Text Editor",
-            "content": "This is where you write and edit your text, centered like a page. The editor provides various tools to enhance and transform your writing."
+            "content": "This is where you write and edit your text, centered like a page. Select any passage to rewrite it, suggest synonyms, or add a note."
         },
         "wordCount": {
             "title": "Text Statistics",
             "content": "View detailed information about your text including word count, character count, and Flesch reading ease score. Click on these statistics to see more details about your text's readability."
         },
         "restart": "Start Tour",
-        "textEditorToolpanel": {
-            "title": "Text Editor Tools",
-            "content": "Here you can undo or redo your changes. Additionally, you can upload a document, which will be converted to text and opened in the editor."
-        },
         "diffReview": {
             "title": "Accept or Reject Changes",
-            "content": "When a transformation or fix runs, the changes replace the editor here. Accept or reject each change — you must decide all of them before you can edit again."
-        },
-        "retry": {
-            "title": "Retry an Action",
-            "content": "Not happy with the result? Click here to discard the suggestion and run the same action again on your original text."
+            "content": "When a transformation or fix runs, the changes replace the editor here. Accept or reject each change — you must decide all of them before you can edit again. Use the retry button to discard the suggestion and run the same action again on your original text."
         },
         "validate": {
             "title": "Validate",
             "content": "Switch to the Validate tab to select reference documents and check your text against them."
-        },
-        "check": {
-            "title": "Check Your Text",
-            "content": "Pick reference documents, then run a Check. Violations appear as comments beside your text. You can add your own notes too — before or after checking."
         },
         "quickActions": {
             "title": "Rewrite Actions",
@@ -379,6 +363,14 @@
             "contentWithLink": "Enter your custom rewrite instructions here to rewrite your text according to your wishes. This is useful when you have special requirements that are not included in the standard actions. For tips on writing effective prompts, visit the {link}.",
             "linkText": "Prompting Guide",
             "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
+        },
+        "threads": {
+            "title": "Violations & Notes",
+            "content": "When you run a Check, violations against your reference documents appear here — with reason, proposal, and source. Decide per violation whether to fix it or skip it. With \"Apply Fix\" the advisor produces the corrected text. You can also add your own notes to any passage of text.",
+            "demoRule": "Example Rule",
+            "demoDoc": "example-document.pdf",
+            "demoReason": "This is an example violation shown only during the tour.",
+            "demoProposal": "The advisor's correction proposal appears here."
         },
         "conclusion": {
             "title": "That's it!",

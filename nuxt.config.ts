@@ -81,7 +81,6 @@ export default defineNuxtConfig({
         "@dcc-bs/dependency-injection.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
-        "nuxt-tour",
     ],
     typescript: {
         typeCheck: true,
