@@ -1,10 +1,9 @@
-import { popover } from "#build/ui";
-import type { Driver, DriveStep } from "driver.js";
+import type { Config, Driver, DriveStep } from "driver.js";
 
 type OnboardingPhase<Phases> = {
     name: Phases,
-    begin?: () => Promise<void>,
-    end?: () => Promise<void>
+    onEnter?: () => Promise<void>,
+    onExit?: () => Promise<void>,
 }
 
 type OnboadingStepBuilder<Phases> = {
@@ -14,8 +13,33 @@ type OnboadingStepBuilder<Phases> = {
     buildDriver: () => Driver;
 }
 
-export function useOnboardingBuilder() {
+interface State {
+    name: "Initial" | "PhaseSwitched" | "StepsAdded";
+}
+
+class Initial {
+    name = "Initial" as const;
+}
+
+class PhaseSwitched<Phases> implements State {
+    name = "PhaseSwitched" as const;
+
+    constructor(
+        public readonly newPhase?: OnboardingPhase<Phases>,
+        public readonly oldPhase?: OnboardingPhase<Phases>,
+    ) {}
+}
+
+class StepsAdded implements State {
+    name = "StepsAdded" as const;
+
+    constructor(public readonly newSteps: DriveStep[]) { }
+}
+
+
+export function useOnboardingBuilder(config?: Config) {
     const { createDriver } = useDriverFactory();
+    const additionalConfig = { ...config };
 
     function addPhases<Phases>(phases: OnboardingPhase<Phases>[]): OnboadingStepBuilder<Phases> {
         const phaseMap = phases.reduce((map, x) => map.set(x.name, x), new Map<Phases, OnboardingPhase<Phases>>)
@@ -26,60 +50,75 @@ export function useOnboardingBuilder() {
         phaseMap: Map<Phases, OnboardingPhase<Phases>>,
         steps = [] as DriveStep[],
         currentPhase: OnboardingPhase<Phases> | undefined = undefined,
-        prevPhase: undefined | OnboardingPhase<Phases> = undefined,
-
+        state: State = new Initial()
     ): OnboadingStepBuilder<Phases> {
-        function addSteps(steps: DriveStep[]) {
-            if (prevPhase) {
-                const step = steps[0];
+        function addSteps(newSteps: DriveStep[]) {
+            if (!newSteps.length) {
+                throw new Error("steps cannot be empty");
+            }
+
+            if (state instanceof PhaseSwitched) {
+                const step = newSteps[0];
 
                 if (step) {
-                    const pp = prevPhase;
+                    const oldPhase = state.oldPhase;
                     step.popover = {
-                        ...popover,
-                        onPrevClick: async () => {
-                            if (currentPhase?.end) {
-                                await currentPhase?.end();
+                        ...step.popover,
+                        onPrevClick: async (_, __, { driver }) => {
+                            if (currentPhase?.onExit) {
+                                await currentPhase?.onExit();
                             }
 
-                            if (pp.begin) {
-                                await pp.begin();
+                            if (oldPhase?.onEnter) {
+                                await oldPhase.onEnter();
                             }
+
+                            driver.movePrevious();
                         }
                     }
-
-                    prevPhase = undefined;
                 }
             }
 
-            return onboadingStepBuilder(phaseMap, steps.concat(steps), currentPhase, prevPhase);
+            const newState = new StepsAdded(steps);
+            return onboadingStepBuilder(phaseMap, steps.concat(newSteps), currentPhase, newState);
         }
 
         function switchPhase(phase: Phases) {
             const currentStep = steps.at(-1);
             const newPhase = phaseMap.get(phase);
 
-            if (currentStep && newPhase && newPhase !== currentPhase) {
+            // if the switch is an initial switch before any steps.
+            if (steps.length === 0 && newPhase && newPhase.onEnter) {
+                const onEnter = newPhase.onEnter;
+                additionalConfig.onHighlightStarted = async (_, __, { state }) => {
+                    if (!state.previousStep) {
+                        await onEnter();
+                    }
+                }
+            }
+            else if (currentStep && newPhase && newPhase !== currentPhase) {
                 currentStep.popover = {
-                    ...popover,
-                    onNextClick: async() => {
-                        if (currentPhase && currentPhase.end) {
-                            await currentPhase.end();
+                    ...currentStep.popover,
+                    onNextClick: async(_, __, { driver }) => {
+                        if (currentPhase?.onExit) {
+                            await currentPhase.onExit();
                         }
 
-                        if (newPhase.begin) {
-                            await newPhase.begin();
+                        if (newPhase.onEnter) {
+                            await newPhase.onEnter();
                         }
+
+                        driver.moveNext();
                     }
                 }
             }
 
-            // current phase is newPhase, prevPhase is currentPhase
-            return onboadingStepBuilder(phaseMap, steps, newPhase, currentPhase);
+            const newState = new PhaseSwitched(newPhase, currentPhase);
+            return onboadingStepBuilder(phaseMap, steps, newPhase, newState);
         }
 
         function buildDriver() {
-            return createDriver(steps);
+            return createDriver(steps, config);
         }
 
         return {
