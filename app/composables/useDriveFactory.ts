@@ -1,6 +1,6 @@
 // --- Driver factory ----------------------------------------------------------
 
-import { driver, type Config, type DriveStep } from "driver.js";
+import { type Config, type DriveStep, driver } from "driver.js";
 
 // Lucide icon path bodies (stable artwork, inlined to avoid bundling the whole
 // @iconify-json/lucide collection for three icons). Icons in this project render
@@ -64,6 +64,6 @@ export function useDriverFactory() {
 
     return {
         createDriver,
-        tourCompleted
-    }
+        tourCompleted,
+    };
 }

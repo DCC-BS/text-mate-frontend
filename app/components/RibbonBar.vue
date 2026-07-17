@@ -38,6 +38,8 @@ const actionsAreAvailable = computed(
     () => props.editable && !props.busy && props.text.trim().length > 0,
 );
 
+const isDocSelectOpen = ref(false);
+
 async function applyAction(
     action: TextActions | string,
     config?: string,
@@ -70,6 +72,11 @@ function onUpdateDocs(newValue: string[]) {
     }
 
     emit("update:selectedDocs", newValue);
+}
+
+async function onValidate() {
+    isDocSelectOpen.value = false;
+    await executeCommand(new CheckCommand());
 }
 </script>
 
@@ -195,22 +202,29 @@ function onUpdateDocs(newValue: string[]) {
                     :label="t('ribbon.validate')"
                     icon="i-lucide-file-search"
                 >
-                    <UDrawer>
+                    <UDrawer v-model:open="isDocSelectOpen">
                         <RibbonIconButton
                             :label="t('ribbon.check')"
                             icon="i-lucide-search-check"
                             :disabled="!actionsAreAvailable"
                         />
-                        <template #content >
-                            <div class="flex flex-col justify-center items-center p-2 gap-2">
+                        <template #content>
+                            <div
+                                class="flex flex-col justify-center items-center p-2 gap-2"
+                            >
                                 <div>
                                     {{ t('advisor.selectDocsDescription', { maxDocs: props.maxDocs }) }}
                                 </div>
-                                <AdvisorDocSelect v-model="selectedDocsModel" />
-                                <UButton @click="executeCommand(new CheckCommand())"
+                                <AdvisorDocSelect
+                                    v-model="selectedDocsModel"
+                                    :max="props.maxDocs"
+                                />
+                                <UButton
+                                    @click="onValidate"
                                     :disabled="!editable || busy || selectedDocs.length === 0
-                            ">
-                                    APPLY
+                            "
+                                >
+                                    {{ t("advisor.applyDocs") }}
                                 </UButton>
                             </div>
                         </template>

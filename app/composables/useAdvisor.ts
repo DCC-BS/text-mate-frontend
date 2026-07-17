@@ -38,6 +38,7 @@ const docs = ref<AdvisorDocumentDescription[]>([]);
 
 export function useAdvisor() {
     const { t } = useI18n();
+    const logger = useLogger();
 
     // lazy load docs on first use (client-only: the fetch needs a browser
     // origin and the error path uses useToast, neither of which are available
@@ -90,21 +91,42 @@ export function useAdvisor() {
         const reader = response.getReader();
         const decoder = new TextDecoder();
 
+        function tryParse(json: string) : { success: true, data: ValidationResult} | { success: false, error: unknown } {
+            try {
+                const result = ValidationResultSchema.parse(
+                    JSON.parse(json),
+                ) as ValidationResult;
+                return { success: true, data: result };
+            } catch (e) {
+                return { success: false, error: e }
+            }
+        }
+
         try {
             let isDone = false;
+            let buffer = "";
+            let lastError: unknown = undefined;
+
             while (!isDone) {
                 const { value, done } = await reader.read();
                 isDone = done;
 
-                const json = decoder.decode(value, { stream: true });
+                const jsonChunk = decoder.decode(value, { stream: true });
 
-                if (!json) {
+                if (!jsonChunk) {
                     continue;
                 }
 
-                const result = ValidationResultSchema.parse(
-                    JSON.parse(json),
-                ) as ValidationResult;
+                buffer += jsonChunk;
+                const parseResult = tryParse(buffer);
+
+                if (!parseResult.success) {
+                    lastError = parseResult.error;
+                    continue;
+                }
+
+                buffer = "";
+                const result = parseResult.data;
 
                 yield {
                     checked: result.checked,
@@ -122,6 +144,12 @@ export function useAdvisor() {
                     ),
                 } as AdvisorThreadResult;
             }
+
+            if (buffer) {
+                logger.error({ budder: buffer, error: String(lastError) }, "Validate stream resultet in some parse error.");
+                throw new Error(t("errors.unexpected_error"));
+            }
+
         } finally {
             reader.releaseLock();
         }

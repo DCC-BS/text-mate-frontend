@@ -32,14 +32,14 @@ const driverBuilder = useOnboardingBuilder({
     onDestroyed: () => {
         tourCompleted.value = true;
         cleanupTourState();
-    }
+    },
 })
-    .addPhases<'inital' | 'transform' | 'diff' | 'thread' | 'end'>([
+    .addPhases<"inital" | "transform" | "diff" | "thread" | "end">([
         {
             name: "inital",
             onEnter: async () => {
                 seedEditorText();
-            }
+            },
         },
         {
             name: "transform",
@@ -56,7 +56,7 @@ const driverBuilder = useOnboardingBuilder({
             },
             onExit: async () => {
                 await executeCommand(new AbandonDiffCommand());
-            }
+            },
         },
         {
             name: "thread",
@@ -67,122 +67,119 @@ const driverBuilder = useOnboardingBuilder({
             onExit: async () => {
                 setRibbonTab("validate");
                 await executeCommand(new ClearThreadsCommand());
-            }
+            },
         },
         {
             name: "end",
             onEnter: async () => {
                 setRibbonTab("transform");
-            }
-        }
+            },
+        },
     ])
     .switchPhase("inital")
-    .addSteps(
-        [
-            // Welcome — centered, no target.
-            {
-                popover: {
-                    title: t("tour.welcome.title"),
-                    description: t("tour.welcome.content"),
-                    side: "bottom",
-                    align: "center",
-                },
-            }
-        ]
-    )
+    .addSteps([
+        // Welcome — centered, no target.
+        {
+            popover: {
+                title: t("tour.welcome.title"),
+                description: t("tour.welcome.content"),
+                side: "bottom",
+                align: "center",
+            },
+        },
+    ])
     .switchPhase("transform")
     .addSteps([
-            // Ribbon overview.
-            {
-                element: '[data-tour="ribbon"]',
-                popover: {
-                    title: t("tour.ribbon.title"),
-                    description: t("tour.ribbon.content"),
-                    side: "bottom",
-                    align: "center",
+        // Ribbon overview.
+        {
+            element: '[data-tour="ribbon"]',
+            popover: {
+                title: t("tour.ribbon.title"),
+                description: t("tour.ribbon.content"),
+                side: "bottom",
+                align: "center",
+            },
+        },
+        // Editor — seed example text so later steps have content.
+        {
+            element: '[data-tour="text-editor"]',
+            popover: {
+                title: t("tour.editor.title"),
+                description: t("tour.editor.content"),
+                side: "top",
+                align: "center",
+            },
+        },
+        // Word count button — on next, open the Text Statistics popover.
+        {
+            element: '[data-tour="word-count"]',
+            popover: {
+                title: t("tour.wordCount.title"),
+                description: t("tour.wordCount.content"),
+                side: "top",
+                align: "center",
+                onNextClick: async (_, __, options) => {
+                    await executeCommand(new ShowTextStatsCommand());
+                    options.driver.moveNext();
                 },
             },
-            // Editor — seed example text so later steps have content.
-            {
-                element: '[data-tour="text-editor"]',
-                popover: {
-                    title: t("tour.editor.title"),
-                    description: t("tour.editor.content"),
-                    side: "top",
-                    align: "center",
-                },
+        },
+        // Text Statistics popover content (opened by the word-count step's
+        // onNextClick); close the popover when leaving.
+        {
+            element: '[data-tour="text-stats"]',
+            popover: {
+                title: t("tour.textStats.title"),
+                description: t("tour.textStats.content"),
+                side: "top",
+                align: "center",
             },
-            // Word count button — on next, open the Text Statistics popover.
-            {
-                element: '[data-tour="word-count"]',
-                popover: {
-                    title: t("tour.wordCount.title"),
-                    description: t("tour.wordCount.content"),
-                    side: "top",
-                    align: "center",
-                    onNextClick: async (_, __, options) => {
-                        await executeCommand(new ShowTextStatsCommand());
-                        options.driver.moveNext();
-                    },
-                },
+            onDeselected: () => {
+                executeCommand(new HideTextStatsCommand());
             },
-            // Text Statistics popover content (opened by the word-count step's
-            // onNextClick); close the popover when leaving.
-            {
-                element: '[data-tour="text-stats"]',
-                popover: {
-                    title: t("tour.textStats.title"),
-                    description: t("tour.textStats.content"),
-                    side: "top",
-                    align: "center",
-                },
-                onDeselected: () => {
-                    executeCommand(new HideTextStatsCommand());
-                },
+        },
+        // Transform tab.
+        {
+            element: '[data-tour="ribbon-transform"]',
+            popover: {
+                title: t("tour.transform.title"),
+                description: t("tour.transform.content"),
+                side: "bottom",
+                align: "center",
             },
-            // Transform tab.
-            {
-                element: '[data-tour="ribbon-transform"]',
-                popover: {
-                    title: t("tour.transform.title"),
-                    description: t("tour.transform.content"),
-                    side: "bottom",
-                    align: "center",
-                },
-                onHighlightStarted: () => {
-                    setRibbonTab("transform");
-                },
+            onHighlightStarted: () => {
+                setRibbonTab("transform");
             },
-            // Built-in Quick Actions.
-            {
-                element: '[data-tour="quick-actions"]',
-                popover: {
-                    title: t("tour.quickActions.title"),
-                    description: t("tour.quickActions.content"),
-                    side: "bottom",
-                    align: "center",
-                },
-                onHighlightStarted: () => {
-                    setRibbonTab("transform");
-                },
+        },
+        // Built-in Quick Actions.
+        {
+            element: '[data-tour="quick-actions"]',
+            popover: {
+                title: t("tour.quickActions.title"),
+                description: t("tour.quickActions.content"),
+                side: "bottom",
+                align: "center",
             },
-            // Custom action — on next, seed the diff (async) then advance.
-            {
-                element: '[data-tour="custom-quick-action"]',
-                popover: {
-                    title: t("tour.customQuickAction.title"),
-                    description: t("tour.customQuickAction.contentWithLink", {
-                        link: promptingLink,
-                    }),
-                    side: "bottom",
-                    align: "center",
-                },
-                onHighlightStarted: () => {
-                    setRibbonTab("transform");
-                },
+            onHighlightStarted: () => {
+                setRibbonTab("transform");
             },
-        ]
-    )
+        },
+        // Custom action — on next, seed the diff (async) then advance.
+        {
+            element: '[data-tour="custom-quick-action"]',
+            popover: {
+                title: t("tour.customQuickAction.title"),
+                description: t("tour.customQuickAction.contentWithLink", {
+                    link: promptingLink,
+                }),
+                side: "bottom",
+                align: "center",
+            },
+            onHighlightStarted: () => {
+                setRibbonTab("transform");
+            },
+        },
+    ])
     .switchPhase("diff")
     .addSteps([
         // Diff Review intro. Element renders once the workspace flips to

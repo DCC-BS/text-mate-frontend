@@ -176,7 +176,10 @@ async function downloadWord(): Promise<void> {
             </UTooltip>
         </div>
 
-        <UPopover v-model:open="isStatsPopoverOpen" :dismissible="isDismissable">
+        <UPopover
+            v-model:open="isStatsPopoverOpen"
+            :dismissible="isDismissable"
+        >
             <UButton
                 class="text-gray-500"
                 variant="link"
@@ -189,7 +192,11 @@ async function downloadWord(): Promise<void> {
             </UButton>
 
             <template #content>
-                <TextStatsView :text="props.text" class="w-[300px]" data-tour="text-stats" />
+                <TextStatsView
+                    :text="props.text"
+                    class="w-[300px]"
+                    data-tour="text-stats"
+                />
             </template>
         </UPopover>
     </div>

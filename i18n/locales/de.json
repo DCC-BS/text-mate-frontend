@@ -129,6 +129,10 @@
         "limitDescription": "Sie können maximal 5 Dokumente auswählen.",
         "docCount": "{n} von {max} Dokumenten ausgewählt",
         "toggleDetails": "Dokumentendetails ein-/ausblenden",
+        "selectAll": "Alle auswählen",
+        "clear": "Zurücksetzen",
+        "file": "Datei",
+        "files": "Dateien",
         "toFix": "zu korrigieren",
         "skip": "Überspringen",
         "reply": "Antworten",
@@ -161,6 +165,7 @@
         "editMode": "Bearbeiten",
         "selectDocsTitle": "Dokumente zum Prüfen auswählen",
         "selectDocsDescription": "Wähle bis zu {maxDocs} Richtlinien, welche überprüft werden sollen.",
+        "applyDocs": "Anwenden",
         "editText": "Text bearbeiten",
         "recheck": "Erneut prüfen",
         "applying": "Korrigierten Text erstellen",
@@ -302,7 +307,7 @@
         },
         "textStats": {
             "title": "Text-Statistiken",
-            "content":             "Detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Sprachniveau (für deutsche Texte)."
+            "content": "Detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Sprachniveau (für deutsche Texte)."
         },
         "restart": "Tutorial neu starten",
         "diffReview": {

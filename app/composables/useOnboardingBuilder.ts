@@ -1,17 +1,17 @@
 import type { Config, Driver, DriveStep } from "driver.js";
 
 type OnboardingPhase<Phases> = {
-    name: Phases,
-    onEnter?: () => Promise<void>,
-    onExit?: () => Promise<void>,
-}
+    name: Phases;
+    onEnter?: () => Promise<void>;
+    onExit?: () => Promise<void>;
+};
 
 type OnboadingStepBuilder<Phases> = {
     addSteps: (steps: DriveStep[]) => OnboadingStepBuilder<Phases>;
     switchPhase: (phase: Phases) => OnboadingStepBuilder<Phases>;
     currentPhase: undefined | OnboardingPhase<Phases>;
     buildDriver: () => Driver;
-}
+};
 
 interface State {
     name: "Initial" | "PhaseSwitched" | "StepsAdded";
@@ -33,16 +33,20 @@ class PhaseSwitched<Phases> implements State {
 class StepsAdded implements State {
     name = "StepsAdded" as const;
 
-    constructor(public readonly newSteps: DriveStep[]) { }
+    constructor(public readonly newSteps: DriveStep[]) {}
 }
-
 
 export function useOnboardingBuilder(config?: Config) {
     const { createDriver } = useDriverFactory();
     const additionalConfig = { ...config };
 
-    function addPhases<Phases>(phases: OnboardingPhase<Phases>[]): OnboadingStepBuilder<Phases> {
-        const phaseMap = phases.reduce((map, x) => map.set(x.name, x), new Map<Phases, OnboardingPhase<Phases>>)
+    function addPhases<Phases>(
+        phases: OnboardingPhase<Phases>[],
+    ): OnboadingStepBuilder<Phases> {
+        const phaseMap = phases.reduce(
+            (map, x) => map.set(x.name, x),
+            new Map<Phases, OnboardingPhase<Phases>>(),
+        );
         return onboadingStepBuilder<Phases>(phaseMap);
     }
 
@@ -50,7 +54,7 @@ export function useOnboardingBuilder(config?: Config) {
         phaseMap: Map<Phases, OnboardingPhase<Phases>>,
         steps = [] as DriveStep[],
         currentPhase: OnboardingPhase<Phases> | undefined = undefined,
-        state: State = new Initial()
+        state: State = new Initial(),
     ): OnboadingStepBuilder<Phases> {
         function addSteps(newSteps: DriveStep[]) {
             if (!newSteps.length) {
@@ -74,13 +78,18 @@ export function useOnboardingBuilder(config?: Config) {
                             }
 
                             driver.movePrevious();
-                        }
-                    }
+                        },
+                    };
                 }
             }
 
             const newState = new StepsAdded(steps);
-            return onboadingStepBuilder(phaseMap, steps.concat(newSteps), currentPhase, newState);
+            return onboadingStepBuilder(
+                phaseMap,
+                steps.concat(newSteps),
+                currentPhase,
+                newState,
+            );
         }
 
         function switchPhase(phase: Phases) {
@@ -90,16 +99,19 @@ export function useOnboardingBuilder(config?: Config) {
             // if the switch is an initial switch before any steps.
             if (steps.length === 0 && newPhase && newPhase.onEnter) {
                 const onEnter = newPhase.onEnter;
-                additionalConfig.onHighlightStarted = async (_, __, { state }) => {
+                additionalConfig.onHighlightStarted = async (
+                    _,
+                    __,
+                    { state },
+                ) => {
                     if (!state.previousStep) {
                         await onEnter();
                     }
-                }
-            }
-            else if (currentStep && newPhase && newPhase !== currentPhase) {
+                };
+            } else if (currentStep && newPhase && newPhase !== currentPhase) {
                 currentStep.popover = {
                     ...currentStep.popover,
-                    onNextClick: async(_, __, { driver }) => {
+                    onNextClick: async (_, __, { driver }) => {
                         if (currentPhase?.onExit) {
                             await currentPhase.onExit();
                         }
@@ -109,8 +121,8 @@ export function useOnboardingBuilder(config?: Config) {
                         }
 
                         driver.moveNext();
-                    }
-                }
+                    },
+                };
             }
 
             const newState = new PhaseSwitched(newPhase, currentPhase);
@@ -125,11 +137,11 @@ export function useOnboardingBuilder(config?: Config) {
             addSteps,
             switchPhase,
             currentPhase,
-            buildDriver
-        }
+            buildDriver,
+        };
     }
 
     return {
-        addPhases
-    }
+        addPhases,
+    };
 }

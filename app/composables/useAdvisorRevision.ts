@@ -54,8 +54,6 @@ export function useAdvisorRevision() {
     onCommand<RemoveThreadCommand>(
         Cmds.RemoveThreadCommand,
         async (command) => {
-            console.log("remove thread!");
-
             const success = threadsMap.value.delete(command.thread.id);
             if (!success) {
                 logger.warn(
@@ -150,7 +148,6 @@ export function useAdvisorRevision() {
             thread.notes.splice(index, 1);
 
             if (thread.notes.length === 0 && !thread.violation) {
-                console.log("delete note");
                 await executeCommand(new RemoveThreadCommand(thread));
             }
         },

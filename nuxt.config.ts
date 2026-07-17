@@ -7,14 +7,10 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     extends: [
         ["github:DCC-BS/nuxt-layers/auth"],
-        [
-            "github:DCC-BS/nuxt-layers/backend_communication",
-        ],
+        ["github:DCC-BS/nuxt-layers/backend_communication"],
         ["github:DCC-BS/nuxt-layers/health_check"],
         ["github:DCC-BS/nuxt-layers/logger"],
-        [
-            "github:DCC-BS/nuxt-layers/pino-logger",
-        ],
+        ["github:DCC-BS/nuxt-layers/pino-logger"],
         process.env.USE_FEEDBACK === "true"
             ? ["github:DCC-BS/nuxt-layers/feedback-control", { install: true }]
             : undefined,
