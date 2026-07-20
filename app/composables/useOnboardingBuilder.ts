@@ -7,10 +7,19 @@ type OnboardingPhase<Phases> = {
 };
 
 type OnboadingStepBuilder<Phases> = {
-    addSteps: (steps: DriveStep[]) => OnboadingStepBuilder<Phases>;
+    addSteps: (steps: OnboardingStep[]) => OnboadingStepBuilder<Phases>;
     switchPhase: (phase: Phases) => OnboadingStepBuilder<Phases>;
     currentPhase: undefined | OnboardingPhase<Phases>;
     buildDriver: () => Driver;
+};
+
+type tOrFunc<T> = T | (() => T);
+
+export type OnboardingStep = DriveStep | {
+    popover?: {
+        title?: tOrFunc<string>,
+        description?: tOrFunc<string>
+    }
 };
 
 interface State {
@@ -33,7 +42,7 @@ class PhaseSwitched<Phases> implements State {
 class StepsAdded implements State {
     name = "StepsAdded" as const;
 
-    constructor(public readonly newSteps: DriveStep[]) {}
+    constructor(public readonly newSteps: OnboardingStep[]) {}
 }
 
 export function useOnboardingBuilder(config?: Config) {
@@ -52,11 +61,11 @@ export function useOnboardingBuilder(config?: Config) {
 
     function onboadingStepBuilder<Phases>(
         phaseMap: Map<Phases, OnboardingPhase<Phases>>,
-        steps = [] as DriveStep[],
+        steps = [] as OnboardingStep[],
         currentPhase: OnboardingPhase<Phases> | undefined = undefined,
         state: State = new Initial(),
     ): OnboadingStepBuilder<Phases> {
-        function addSteps(newSteps: DriveStep[]) {
+        function addSteps(newSteps: OnboardingStep[]) {
             if (!newSteps.length) {
                 throw new Error("steps cannot be empty");
             }
@@ -99,12 +108,19 @@ export function useOnboardingBuilder(config?: Config) {
             // if the switch is an initial switch before any steps.
             if (steps.length === 0 && newPhase && newPhase.onEnter) {
                 const onEnter = newPhase.onEnter;
+
+                const parentOnHighlightStarted = additionalConfig.onHighlightStarted;
+
                 additionalConfig.onHighlightStarted = async (
-                    _,
-                    __,
-                    { state },
+                    element,
+                    step,
+                    opts,
                 ) => {
-                    if (!state.previousStep) {
+                    if (parentOnHighlightStarted) {
+                        parentOnHighlightStarted(element, step, opts)
+                    }
+
+                    if (!opts.state.previousStep) {
                         await onEnter();
                     }
                 };
@@ -130,7 +146,27 @@ export function useOnboardingBuilder(config?: Config) {
         }
 
         function buildDriver() {
-            return createDriver(steps, config);
+            function unwrap<T>(x?: tOrFunc<T>) : T | undefined {
+                if (typeof x === "function") {
+                    const xFunc = x as (() => T);
+                    return xFunc();
+                }
+
+                return x;
+            }
+
+            const driveSteps = steps.map(x => {
+                return {
+                    ...x,
+                    popover: {
+                        ...x.popover,
+                        title: unwrap(x.popover?.title),
+                        description: unwrap(x.popover?.description),
+                    }
+                } as DriveStep
+            });
+
+            return createDriver(driveSteps, additionalConfig);
         }
 
         return {

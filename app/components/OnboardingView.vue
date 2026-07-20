@@ -38,7 +38,7 @@ const driverBuilder = useOnboardingBuilder({
         {
             name: "inital",
             onEnter: async () => {
-                seedEditorText();
+                await seedEditorText();
             },
         },
         {
@@ -50,7 +50,7 @@ const driverBuilder = useOnboardingBuilder({
         {
             name: "diff",
             onEnter: async () => {
-                await seedEditorText();
+                // await seedEditorText();
                 await runExampleQuickAction();
                 await nextTick();
             },
@@ -61,11 +61,12 @@ const driverBuilder = useOnboardingBuilder({
         {
             name: "thread",
             onEnter: async () => {
+                setRibbonTab("validate");
                 seedDemoThread();
                 await nextTick();
             },
             onExit: async () => {
-                setRibbonTab("validate");
+                setRibbonTab("transform");
                 await executeCommand(new ClearThreadsCommand());
             },
         },
@@ -81,8 +82,8 @@ const driverBuilder = useOnboardingBuilder({
         // Welcome — centered, no target.
         {
             popover: {
-                title: t("tour.welcome.title"),
-                description: t("tour.welcome.content"),
+                title: () => t("tour.welcome.title"),
+                description: () => t("tour.welcome.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -94,8 +95,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="ribbon"]',
             popover: {
-                title: t("tour.ribbon.title"),
-                description: t("tour.ribbon.content"),
+                title: () => t("tour.ribbon.title"),
+                description: () => t("tour.ribbon.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -104,8 +105,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="text-editor"]',
             popover: {
-                title: t("tour.editor.title"),
-                description: t("tour.editor.content"),
+                title: () => t("tour.editor.title"),
+                description: () => t("tour.editor.content"),
                 side: "top",
                 align: "center",
             },
@@ -114,11 +115,12 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="word-count"]',
             popover: {
-                title: t("tour.wordCount.title"),
-                description: t("tour.wordCount.content"),
+                title: () => t("tour.wordCount.title"),
+                description: () => t("tour.wordCount.content"),
                 side: "top",
                 align: "center",
                 onNextClick: async (_, __, options) => {
+                    console.log("onNextClick wordCount");
                     await executeCommand(new ShowTextStatsCommand());
                     options.driver.moveNext();
                 },
@@ -129,8 +131,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="text-stats"]',
             popover: {
-                title: t("tour.textStats.title"),
-                description: t("tour.textStats.content"),
+                title: () => t("tour.textStats.title"),
+                description: () => t("tour.textStats.content"),
                 side: "top",
                 align: "center",
             },
@@ -142,8 +144,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="ribbon-transform"]',
             popover: {
-                title: t("tour.transform.title"),
-                description: t("tour.transform.content"),
+                title: () => t("tour.transform.title"),
+                description: () => t("tour.transform.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -155,8 +157,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="quick-actions"]',
             popover: {
-                title: t("tour.quickActions.title"),
-                description: t("tour.quickActions.content"),
+                title: () => t("tour.quickActions.title"),
+                description: () => t("tour.quickActions.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -168,8 +170,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="custom-quick-action"]',
             popover: {
-                title: t("tour.customQuickAction.title"),
-                description: t("tour.customQuickAction.contentWithLink", {
+                title: () => t("tour.customQuickAction.title"),
+                description: () => t("tour.customQuickAction.contentWithLink", {
                     link: promptingLink,
                 }),
                 side: "bottom",
@@ -189,8 +191,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="diff-review"]',
             popover: {
-                title: t("tour.diffReview.title"),
-                description: t("tour.diffReview.content"),
+                title: () => t("tour.diffReview.title"),
+                description: () => t("tour.diffReview.content"),
                 side: "top",
                 align: "center",
             },
@@ -199,8 +201,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="diff-accept-all"]',
             popover: {
-                title: t("tour.diffAcceptAll.title"),
-                description: t("tour.diffAcceptAll.content"),
+                title: () => t("tour.diffAcceptAll.title"),
+                description: () => t("tour.diffAcceptAll.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -209,8 +211,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="diff-discard-all"]',
             popover: {
-                title: t("tour.diffDiscardAll.title"),
-                description: t("tour.diffDiscardAll.content"),
+                title: () => t("tour.diffDiscardAll.title"),
+                description: () => t("tour.diffDiscardAll.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -219,8 +221,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="retry-quick-action"]',
             popover: {
-                title: t("tour.retry.title"),
-                description: t("tour.retry.content"),
+                title: () => t("tour.retry.title"),
+                description: () => t("tour.retry.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -230,8 +232,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="diff-split-view"]',
             popover: {
-                title: t("tour.diffSplitView.title"),
-                description: t("tour.diffSplitView.content"),
+                title: () => t("tour.diffSplitView.title"),
+                description: () => t("tour.diffSplitView.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -243,19 +245,29 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="ribbon-validate"]',
             popover: {
-                title: t("tour.validate.title"),
-                description: t("tour.validate.content"),
+                title: () => t("tour.validate.title"),
+                description: () => t("tour.validate.content"),
                 side: "bottom",
                 align: "center",
             },
+        },
+        // Check tab — on next, check the demo thread for errors.
+        {
+            element: '[data-tour="ribbon-check"]',
+            popover: {
+                title: () => t("tour.check.title"),
+                description: () => t("tour.check.content"),
+                side: "bottom",
+                align: "center"
+            }
         },
         // Threads rail — rendered by v-if once a thread exists (seeded by the
         // validate step). Clear the demo thread on leave.
         {
             element: '[data-tour="threads-rail"]',
             popover: {
-                title: t("tour.threads.title"),
-                description: t("tour.threads.content"),
+                title: () => t("tour.threads.title"),
+                description: () => t("tour.threads.content"),
                 side: "left",
                 align: "start",
             },
@@ -267,8 +279,8 @@ const driverBuilder = useOnboardingBuilder({
         {
             element: '[data-tour="start-tour"]',
             popover: {
-                title: t("tour.conclusion.title"),
-                description: t("tour.conclusion.content"),
+                title: () => t("tour.conclusion.title"),
+                description: () => t("tour.conclusion.content"),
                 side: "bottom",
                 align: "center",
             },
@@ -321,6 +333,11 @@ function start(): void {
     driverObj.value = driverBuilder.buildDriver();
     driverObj.value.drive();
 }
+
+watch(() => locale.value, () => {
+    driverObj.value?.destroy();
+    driverObj.value = driverBuilder.buildDriver();
+});
 
 // Waits for the disclaimer modal to be accepted before auto-starting. While
 // driver.js is active it sets `pointer-events: none` on every descendant

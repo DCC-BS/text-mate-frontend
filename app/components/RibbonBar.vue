@@ -207,6 +207,7 @@ async function onValidate() {
                             :label="t('ribbon.check')"
                             icon="i-lucide-search-check"
                             :disabled="!actionsAreAvailable"
+                            data-tour="ribbon-check"
                         />
                         <template #content>
                             <div

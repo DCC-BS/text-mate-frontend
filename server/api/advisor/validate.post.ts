@@ -11,15 +11,6 @@ const InputSchema = z.object({
 });
 
 export default apiHandler
-    // .extendFetchOptions(async (options) => {
-    //     return {
-    //         ...options,
-    //         headers: {
-    //             ...options.headers,
-    //             "Content-Type": "application/jsonl",
-    //         },
-    //     }
-    // })
     .withMethod("POST")
     .withBodyProvider<BodyType>(async (event) => {
         const body = await readBody(event);

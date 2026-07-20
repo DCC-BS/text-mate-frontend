@@ -312,7 +312,7 @@
         "restart": "Tutorial neu starten",
         "diffReview": {
             "title": "Änderungen annehmen oder ablehnen",
-            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Nimm jede Änderung an oder lehne sie ab, bevor du weiterbearbeiten kannst müssen alle Änderungen azeptiert oder abgelehnt werden. Mit dem Wiederholen-Knopf verwirfst du den Vorschlag und startest die Aktion neu auf dem Originaltext."
+            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Bevor du weiterbearbeiten kanst musst du all Änderungen annehmen oder Ablehnen."
         },
         "diffAcceptAll": {
             "title": "Alle übernehmen",
@@ -334,6 +334,10 @@
             "title": "Überprüfen",
             "content": "Wechsle zur Registerkarte Überprüfen, um Referenzdokumente auszuwählen und deinen Text daran zu prüfen."
         },
+        "check": {
+            "title": "Überprüfen",
+            "content": "Klicke hier, um deinen Text auf Fehler zu prüfen."
+        },
         "quickActions": {
             "title": "Umschreibaktionen",
             "content": "Führe Textaktionen wie Lesefreundliche Sprache oder Zusammenfassungen durch. Wähle eine Aktion aus, um sie auf Deinen Text anzuwenden."
@@ -347,7 +351,7 @@
         },
         "threads": {
             "title": "Verstösse und Notizen",
-            "content": "Wenn du eine Überprüfung ausführst, erscheinen hier die Verstösse gegen deine Referenzdokumente — mit Begründung, Vorschlag und Quellenangabe. Entscheide pro Verstoss, ob du ihn beheben (Erledigen) oder überspringen willst. Mit \"Fix anwenden\" erzeugt der Advisor den korrigierten Text. Du kannst auch eigene Notizen zu beliebigen Textstellen hinzufügen.",
+            "content": "Wenn du eine Überprüfung ausführst, erscheinen hier die Verstösse gegen deine Referenzdokumente — mit Begründung, Vorschlag und Quellenangabe. Entscheide pro Verstoss, ob du ihn beheben (Erledigen) oder überspringen willst. Mit \"Korrektur anwenden\" erzeugt der Advisor den korrigierten Text. Du kannst auch eigene Notizen zu beliebigen Textstellen hinzufügen.",
             "demoRule": "Beispielregel",
             "demoDoc": "beispiel-dokument.pdf",
             "demoReason": "Dies ist ein Beispiel-Verstoss, der nur während der Tour angezeigt wird.",
@@ -360,7 +364,8 @@
         "skip": "Überspringen",
         "next": "Weiter",
         "prev": "Zurück",
-        "finish": "Beenden"
+        "finish": "Beenden",
+        "progress": "Schritt \\{\\{current\\}\\} von \\{\\{total\\}\\}"
     },
     "common": {
         "cancel": "Abbrechen",

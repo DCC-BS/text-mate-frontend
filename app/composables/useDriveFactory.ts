@@ -19,18 +19,13 @@ function lucideIconSvg(name: keyof typeof LUCIDE_PATHS): string {
 }
 
 export function useDriverFactory() {
-    const { t, locale } = useI18n();
+    const { t } = useI18n();
     const tourCompleted = ref(false);
 
     function createDriver(steps: DriveStep[], additionalOptions: Config = {}) {
-        // driver.js replaces {{current}}/{{total}} itself; we can't store this in
-        // vue-i18n because its parser rejects the double-brace placeholders.
-        const progressText = locale.value.startsWith("de")
-            ? "Schritt {{current}} von {{total}}"
-            : "Step {{current}} of {{total}}";
         return driver({
             showProgress: true,
-            progressText,
+            progressText: t("tour.progress"),
             nextBtnText: t("tour.next"),
             prevBtnText: t("tour.prev"),
             doneBtnText: t("tour.finish"),

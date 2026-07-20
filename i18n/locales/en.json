@@ -356,7 +356,7 @@
         "restart": "Start Tour",
         "diffReview": {
             "title": "Accept or Reject Changes",
-            "content": "When a transformation or fix runs, the changes replace the editor here. Accept or reject each change — all changes must be accepted or rejected before you can continue. Use the retry button to discard the suggestion and run the same action again on your original text."
+            "content": "When a transformation or fix runs, the changes replace the editor here. All changes must be accepted or rejected before you can continue."
         },
         "diffAcceptAll": {
             "title": "Accept All",
@@ -377,6 +377,10 @@
         "validate": {
             "title": "Validate",
             "content": "Switch to the Validate tab to select reference documents and check your text against them."
+        },
+        "check": {
+            "title": "Check",
+            "content": "Click here to check your text for errors."
         },
         "quickActions": {
             "title": "Rewrite Actions",
@@ -404,7 +408,8 @@
         "skip": "Skip",
         "next": "Next",
         "prev": "Back",
-        "finish": "Finish"
+        "finish": "Finish",
+        "progress": "Step \\{\\{current\\}\\} of \\{\\{total\\}\\}"
     },
     "common": {
         "cancel": "Cancel",
