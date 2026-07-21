@@ -5,9 +5,9 @@ import {
     type CheckCommand,
     ClearThreadsCommand,
     Cmds,
-    type ExecuteTextActionCommand,
+    ExecuteTextActionCommand,
     type RetryQuickActionCommand,
-    type RunExampleQuickActionCommand,
+    type SeedExampleDiffCommand,
 } from "~/assets/models/commands";
 import { useUseProgressIndication } from "~/composables/useProgressIndication";
 
@@ -125,16 +125,27 @@ export function useWorkspace(text: Ref<string>) {
     );
 
     /**
-     * Runs the onboarding example quick action against the current text.
+     * Seeds a fake Diff Review for the onboarding tour without hitting the
+     * backend. Builds a synthetic stream from the corrected text (with a small
+     * delay so the "Generating…" affordance is visible), then dispatches the
+     * real {@link ExecuteTextActionCommand} so the diff-review entry path is
+     * reused verbatim. Mirrors the local-seed pattern of `AddThreadCommand`.
      */
-    onCommand<RunExampleQuickActionCommand>(
-        Cmds.RunExampleQuickActionCommand,
-        async () => {
-            await runQuickAction({
-                action: "proofread",
-                text: text.value,
-                options: "",
+    onCommand<SeedExampleDiffCommand>(
+        Cmds.SeedExampleDiffCommand,
+        async (command) => {
+            const encoder = new TextEncoder();
+            const stream = new ReadableStream<Uint8Array<ArrayBufferLike>>({
+                start(controller) {
+                    setTimeout(() => {
+                        controller.enqueue(
+                            encoder.encode(command.correctedText),
+                        );
+                        controller.close();
+                    }, 500);
+                },
             });
+            await executeCommand(new ExecuteTextActionCommand(stream));
         },
     );
 

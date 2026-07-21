@@ -91,21 +91,25 @@ export function useAdvisor() {
         const reader = response.getReader();
         const decoder = new TextDecoder();
 
-        function tryParse(json: string) : { success: true, data: ValidationResult} | { success: false, error: unknown } {
+        function tryParse(
+            json: string,
+        ):
+            | { success: true; data: ValidationResult }
+            | { success: false; error: unknown } {
             try {
                 const result = ValidationResultSchema.parse(
                     JSON.parse(json),
                 ) as ValidationResult;
                 return { success: true, data: result };
             } catch (e) {
-                return { success: false, error: e }
+                return { success: false, error: e };
             }
         }
 
         try {
             let isDone = false;
             let buffer = "";
-            let lastError: unknown = undefined;
+            let lastError: unknown;
 
             while (!isDone) {
                 const { value, done } = await reader.read();
@@ -146,10 +150,12 @@ export function useAdvisor() {
             }
 
             if (buffer) {
-                logger.error({ budder: buffer, error: String(lastError) }, "Validate stream resultet in some parse error.");
+                logger.error(
+                    { budder: buffer, error: String(lastError) },
+                    "Validate stream resultet in some parse error.",
+                );
                 throw new Error(t("errors.unexpected_error"));
             }
-
         } finally {
             reader.releaseLock();
         }

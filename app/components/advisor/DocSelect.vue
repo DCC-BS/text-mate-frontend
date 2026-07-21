@@ -98,7 +98,9 @@ const checkboxUi = {
 
         <!-- Expandable checkbox cards: click card to toggle selection,
              click chevron to reveal document details inline -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 w-full max-h-[80vh] overflow-auto">
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 w-full max-h-[80vh] overflow-auto"
+        >
             <div v-for="doc in docs" :key="doc.id" class="relative">
                 <UCheckbox
                     :model-value="selectedIds.includes(doc.id)"

@@ -10,12 +10,15 @@ import {
     Cmds,
     HideTextStatsCommand,
     type RestartTourCommand,
-    RunExampleQuickActionCommand,
+    SeedExampleDiffCommand,
     ShowTextStatsCommand,
 } from "~/assets/models/commands";
 
 // Example Working Text seeded into the editor so the tour has content to act on.
 const exampleText = "Schreibe hier deinen text.";
+// Fake "proofread" result — single-hunk capitalisation fix used to seed the
+// Diff Review without a backend call. See `SeedExampleDiffCommand`.
+const exampleCorrectedText = "Schreibe hier deinen Text.";
 
 const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
@@ -23,7 +26,7 @@ const { setRibbonTab } = useRibbonTab();
 
 // Tour persistence — SSR-readable so first-time users skip the tour after hydration.
 const tourCompleted = useCookie("tour-completed", { default: () => false });
-const onboading = ref<InstanceType<typeof Onboarding>>();
+const onboarding = ref<InstanceType<typeof Onboarding>>();
 
 const promptingLink = `<a href="${t("tour.customQuickAction.linkUrl")}" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary-600 font-medium">${t("tour.customQuickAction.linkText")}</a>`;
 
@@ -50,7 +53,7 @@ const driverBuilder = useOnboardingBuilder({
             name: "diff",
             onEnter: async () => {
                 // await seedEditorText();
-                await runExampleQuickAction();
+                await seedExampleDiff();
                 await nextTick();
             },
             onExit: async () => {
@@ -169,9 +172,10 @@ const driverBuilder = useOnboardingBuilder({
             element: '[data-tour="custom-quick-action"]',
             popover: {
                 title: () => t("tour.customQuickAction.title"),
-                description: () => t("tour.customQuickAction.contentWithLink", {
-                    link: promptingLink,
-                }),
+                description: () =>
+                    t("tour.customQuickAction.contentWithLink", {
+                        link: promptingLink,
+                    }),
                 side: "bottom",
                 align: "center",
             },
@@ -256,8 +260,8 @@ const driverBuilder = useOnboardingBuilder({
                 title: () => t("tour.check.title"),
                 description: () => t("tour.check.content"),
                 side: "bottom",
-                align: "center"
-            }
+                align: "center",
+            },
         },
         // Threads rail — rendered by v-if once a thread exists (seeded by the
         // validate step). Clear the demo thread on leave.
@@ -290,8 +294,11 @@ async function seedEditorText(): Promise<void> {
     await executeCommand(new ApplyTextCommand(exampleText, { from: 0, to: 0 }));
 }
 
-async function runExampleQuickAction(): Promise<void> {
-    await executeCommand(new RunExampleQuickActionCommand());
+// Seed a fake Diff Review without a backend call. The corrected text is
+// encoded into a synthetic stream inside the handler; `originalText` is
+// sourced from the current editor text by `ExecuteTextActionCommand`.
+async function seedExampleDiff(): Promise<void> {
+    await executeCommand(new SeedExampleDiffCommand(exampleCorrectedText));
 }
 
 // Seed a fabricated Violation thread so the Threads rail becomes visible.
@@ -328,18 +335,17 @@ async function cleanupTourState(): Promise<void> {
 }
 
 async function handleRestart(): Promise<void> {
-    onboading.value?.destroy();
+    onboarding.value?.destroy();
     await cleanupTourState();
     await nextTick();
-    onboading.value?.start();
+    onboarding.value?.start();
 }
 
 onCommand<RestartTourCommand>(Cmds.RestartTourCommand, async () => {
     await handleRestart();
 });
-
 </script>
 
 <template>
-    <Onboarding ref="onboading" :onboading-builder="driverBuilder" />
+    <Onboarding ref="onboarding" :builder="driverBuilder" />
 </template>

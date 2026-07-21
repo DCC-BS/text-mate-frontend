@@ -24,7 +24,7 @@ export const Cmds = {
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
     RetryQuickActionCommand: "RetryQuickActionCommand",
-    RunExampleQuickActionCommand: "RunExampleQuickActionCommand",
+    SeedExampleDiffCommand: "SeedExampleDiffCommand",
     AbandonDiffCommand: "AbandonDiffCommand",
     CheckCommand: "CheckCommand",
     ApplyFixCommand: "ApplyFixCommand",
@@ -118,11 +118,14 @@ export class RetryQuickActionCommand implements ICommand {
 }
 
 /**
- * Runs an example quick action on the current editor text. Used by the onboarding
- * tour to populate the diff viewer with real content.
+ * Seeds a fake Diff Review for the onboarding tour. Carries the corrected text;
+ * the handler builds a synthetic stream and dispatches {@link ExecuteTextActionCommand}.
+ * No backend call — mirrors the local-seed pattern of {@link AddThreadCommand}.
  */
-export class RunExampleQuickActionCommand implements ICommand {
-    readonly $type = Cmds.RunExampleQuickActionCommand;
+export class SeedExampleDiffCommand implements ICommand {
+    readonly $type = Cmds.SeedExampleDiffCommand;
+
+    constructor(public correctedText: string) {}
 }
 
 export class ShowTextStatsCommand implements ICommand {
