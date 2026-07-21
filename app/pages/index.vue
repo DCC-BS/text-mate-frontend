@@ -11,7 +11,7 @@ const userMail = computed(() => data.value?.user?.email ?? undefined);
             <FeedbackControl :default-mail="userMail" />
         </template>
         <NavigationMenu />
-        <div class="md:h-[calc(100vh-150px)]">
+        <div class="md:h-[calc(100vh-135px)]">
             <MainContainer />
             <DataBsFooter />
         </div>

@@ -24,7 +24,7 @@
         "env:check": "pass-cli login && bunx varlock load"
     },
     "dependencies": {
-        "@dcc-bs/common-ui.bs.js": "^1.2.7",
+        "@dcc-bs/common-ui.bs.js": "^1.4.0",
         "@dcc-bs/communication.bs.js": "^0.1.3",
         "@dcc-bs/dependency-injection.bs.js": "^0.0.16",
         "@dcc-bs/event-system.bs.js": "^1.4.3",
