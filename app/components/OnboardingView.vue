@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { type Driver, type DriveStep, driver } from "driver.js";
-import "driver.js/dist/driver.css";
+import type { Onboarding } from "#components";
 import type { AdvisorThread } from "~/assets/models/advisor";
 import {
     AbandonDiffCommand,
@@ -18,13 +17,13 @@ import {
 // Example Working Text seeded into the editor so the tour has content to act on.
 const exampleText = "Schreibe hier deinen text.";
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
 const { executeCommand, onCommand } = useCommandBus();
 const { setRibbonTab } = useRibbonTab();
 
 // Tour persistence — SSR-readable so first-time users skip the tour after hydration.
 const tourCompleted = useCookie("tour-completed", { default: () => false });
-const driverObj = ref<Driver | undefined>();
+const onboading = ref<InstanceType<typeof Onboarding>>();
 
 const promptingLink = `<a href="${t("tour.customQuickAction.linkUrl")}" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary-600 font-medium">${t("tour.customQuickAction.linkText")}</a>`;
 
@@ -120,7 +119,6 @@ const driverBuilder = useOnboardingBuilder({
                 side: "top",
                 align: "center",
                 onNextClick: async (_, __, options) => {
-                    console.log("onNextClick wordCount");
                     await executeCommand(new ShowTextStatsCommand());
                     options.driver.moveNext();
                 },
@@ -329,89 +327,19 @@ async function cleanupTourState(): Promise<void> {
     setRibbonTab("transform");
 }
 
-function start(): void {
-    driverObj.value = driverBuilder.buildDriver();
-    driverObj.value.drive();
-}
-
-watch(() => locale.value, () => {
-    driverObj.value?.destroy();
-    driverObj.value = driverBuilder.buildDriver();
-});
-
-// Waits for the disclaimer modal to be accepted before auto-starting. While
-// driver.js is active it sets `pointer-events: none` on every descendant
-// except the highlighted element, which would make the disclaimer modal
-// unclickable — so the tour must not start until the disclaimer is gone.
-let readyObserver: MutationObserver | undefined;
-
-function beginTourWhenReady(): void {
-    if (tourCompleted.value) return;
-    const modal = document.querySelector(".disclaimer-modal");
-    if (!modal) {
-        start();
-        return;
-    }
-    readyObserver = new MutationObserver(() => {
-        if (!modal.isConnected) {
-            readyObserver?.disconnect();
-            readyObserver = undefined;
-            start();
-        }
-    });
-    readyObserver.observe(document.body, { childList: true, subtree: true });
-}
-
 async function handleRestart(): Promise<void> {
-    driverObj.value?.destroy();
-    driverObj.value = undefined;
+    onboading.value?.destroy();
     await cleanupTourState();
     await nextTick();
-    start();
+    onboading.value?.start();
 }
-
-onMounted(async () => {
-    await nextTick();
-    beginTourWhenReady();
-});
 
 onCommand<RestartTourCommand>(Cmds.RestartTourCommand, async () => {
     await handleRestart();
 });
 
-onUnmounted(() => {
-    readyObserver?.disconnect();
-    readyObserver = undefined;
-    if (driverObj.value) {
-        driverObj.value.destroy();
-        driverObj.value = undefined;
-    }
-});
 </script>
 
 <template>
-    <!-- Renderless: drives the driver.js onboarding overlay, no DOM of its own -->
-    <span hidden aria-hidden="true" />
+    <Onboarding ref="onboading" :onboading-builder="driverBuilder" />
 </template>
-
-<style>
-@reference "../assets/css/main.css";
-
-/* driver.js popover theming for TextMate.
-   Non-scoped because driver.js renders the popover outside this component. */
-.driver-popover.tm-tour-popover {
-    max-width: 450px;
-}
-
-.tm-tour-popover .driver-popover-next-btn {
-    @apply bg-primary text-white;
-}
-
-.tm-tour-popover .driver-popover-prev-btn {
-    @apply bg-primary text-white;
-}
-
-.tm-tour-popover .driver-popover-done-btn {
-    @apply bg-success text-white;
-}
-</style>

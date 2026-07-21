@@ -404,12 +404,7 @@
         "conclusion": {
             "title": "That's it!",
             "content": "You are now ready to make full use of TextMate. Feel free to restart the tour if you forget something. Have fun writing!"
-        },
-        "skip": "Skip",
-        "next": "Next",
-        "prev": "Back",
-        "finish": "Finish",
-        "progress": "Step \\{\\{current\\}\\} of \\{\\{total\\}\\}"
+        }
     },
     "common": {
         "cancel": "Cancel",

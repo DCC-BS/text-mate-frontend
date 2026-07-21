@@ -360,12 +360,7 @@
         "conclusion": {
             "title": "Das war's!",
             "content": "Du bist jetzt bereit, TextMate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
-        },
-        "skip": "Überspringen",
-        "next": "Weiter",
-        "prev": "Zurück",
-        "finish": "Beenden",
-        "progress": "Schritt \\{\\{current\\}\\} von \\{\\{total\\}\\}"
+        }
     },
     "common": {
         "cancel": "Abbrechen",
