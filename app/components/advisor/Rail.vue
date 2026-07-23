@@ -18,11 +18,6 @@ const { executeCommand } = useCommandBus();
 const emit = defineEmits<{
     openPdf: [thread: AdvisorThread];
 }>();
-
-const toFixCount = computed(
-    () => props.threads.filter((x) => x.status === "to-fix").length,
-);
-const skipCount = computed(() => props.threads.length - toFixCount.value);
 </script>
 
 <template>

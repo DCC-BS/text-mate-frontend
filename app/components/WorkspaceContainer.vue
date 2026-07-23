@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import { P } from "vue-router/dist/index-BQLwgiyK.js";
 import type { AdvisorThread } from "~/assets/models/advisor";
 import {
+    type ApplyFixCommand,
+    ChangeActiveThreadId,
     ClearThreadsCommand,
+    Cmds,
     RetryQuickActionCommand,
 } from "~/assets/models/commands";
 import PdfViewerClient from "~/components/advisor/PdfViewer.client.vue";
@@ -16,7 +20,7 @@ const { getDocFile } = useAdvisor();
 const overlay = useOverlay();
 const logger = useLogger();
 const toast = useToast();
-const { executeCommand } = useCommandBus();
+const { executeCommand, onCommand } = useCommandBus();
 const breakpoints = useBreakpoints(breakpointsTailwind);
 
 const text = defineModel<string>({ required: true });
@@ -47,6 +51,18 @@ watch(ws.activeThreadId, (value) => {
     if (value && breakpoints.isSmaller("md")) {
         openMobileRail();
     }
+});
+
+watch(mobileRailOpen, async (isOpen) => {
+    if (!isOpen) {
+        await executeCommand(new ChangeActiveThreadId(null));
+    }
+})
+
+// Close the mobile rail when a fix is applied so the user sees the editor
+// transition into Diff Review instead of the rail covering it.
+onCommand<ApplyFixCommand>(Cmds.ApplyFixCommand, async () => {
+    mobileRailOpen.value = false;
 });
 
 /** Commits the resolved diff text back to the Working Text. No-op while the
@@ -121,7 +137,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
 </script>
 
 <template>
-    <div class="h-full w-full flex flex-col">
+    <div class="h-full w-full min-w-0 flex flex-col">
         <RibbonBar
             :text="text"
             :busy="ws.isBusy.value"
@@ -238,8 +254,13 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
             @click="openMobileRail"
         />
 
-        <USlideover v-model:open="mobileRailOpen" title="Advisor" side="right">
-            <template #content>
+        <USlideover
+            v-model:open="mobileRailOpen"
+            title="Advisor"
+            side="right"
+            :ui="{ body: 'p-0 sm:p-0' }"
+        >
+            <template #body>
                 <Rail
                     :threads="ws.threads.value"
                     :active-thread-id="ws.activeThreadId.value"

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { tree } from "#build/ui";
 import type { AdvisorThread } from "~/assets/models/advisor";
 import {
     AddThreadNoteCommand,
@@ -33,11 +34,6 @@ const replyText = ref("");
 const editingNoteId = ref<string | null>(null);
 const editingText = ref("");
 
-const sourceSnippet = computed(() => {
-    const src = props.thread.violation?.source ?? "";
-    return src.length > 96 ? `${src.slice(0, 93)}…` : src;
-});
-
 onMounted(async () => {
     if (!props.thread.violation && props.thread.notes.length === 0) {
         await executeCommand(new AddThreadNoteCommand(props.thread.id, ""));
@@ -47,8 +43,7 @@ onMounted(async () => {
             editingNoteId.value = newNote.id;
             nextTick(() => {
                 document
-                    .getElementById(`advisor-note-edit-${newNote.id}`)
-                    ?.focus();
+                    .getElementById(`advisor-note-edit-${newNote.id}`)?.focus();
             });
         }
     }

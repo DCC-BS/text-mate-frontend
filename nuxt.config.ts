@@ -159,6 +159,7 @@ export default defineNuxtConfig({
         public: {
             useFeedback: process.env.USE_FEEDBACK ?? false,
             useDummyData: process.env.DUMMY,
+            disableOnboarding: process.env.DISABLE_ONBOARDING,
             logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },

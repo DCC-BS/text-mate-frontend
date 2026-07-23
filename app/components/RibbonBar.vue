@@ -81,7 +81,7 @@ async function onValidate() {
 </script>
 
 <template>
-    <div class="border-b border-default" data-tour="ribbon">
+    <div class="border-b border-default min-w-0" data-tour="ribbon">
         <!-- Tab bar -->
         <div class="flex justify-center items-end gap-1 px-2 pt-1">
             <UButton
@@ -107,11 +107,11 @@ async function onValidate() {
         </div>
 
         <!-- Ribbon body -->
-        <div class="flex items-stretch gap-0 px-2 pb-1.5 pt-1">
+        <div class="flex items-stretch gap-0 px-2 pb-1.5 pt-1 min-w-0">
             <!-- TRANSFORM TAB -->
             <div
                 v-if="activeTab === 'transform'"
-                class="flex justify-center items-stretch gap-3 w-full flex-wrap"
+                class="flex items-stretch gap-3 w-full min-w-0 flex-nowrap overflow-x-auto md:flex-wrap md:justify-center md:overflow-x-visible pb-1 md:pb-0"
                 data-tour="quick-actions"
             >
                 <!-- Restructure -->
