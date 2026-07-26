@@ -43,7 +43,8 @@ onMounted(async () => {
             editingNoteId.value = newNote.id;
             nextTick(() => {
                 document
-                    .getElementById(`advisor-note-edit-${newNote.id}`)?.focus();
+                    .getElementById(`advisor-note-edit-${newNote.id}`)
+                    ?.focus();
             });
         }
     }

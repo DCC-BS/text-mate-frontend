@@ -57,7 +57,7 @@ watch(mobileRailOpen, async (isOpen) => {
     if (!isOpen) {
         await executeCommand(new ChangeActiveThreadId(null));
     }
-})
+});
 
 // Close the mobile rail when a fix is applied so the user sees the editor
 // transition into Diff Review instead of the rail covering it.
