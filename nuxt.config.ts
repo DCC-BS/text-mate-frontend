@@ -89,6 +89,9 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
+        resolve: {
+            dedupe: ["@vueuse/core"],
+        },
         plugins: [varlockVitePlugin({ ssrInjectMode: "auto-load" })],
         build: {
             sourcemap: process.env.NODE_ENV !== "production",
