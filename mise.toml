@@ -1,0 +1,52 @@
+[tools]
+bun = "1.3.0"
+node = "24.9.0"
+"npm:varlock" = "1.13.0"
+
+[hooks]
+postinstall = { task = "install" }
+# enter = { task = "enter-checks"}
+
+[tasks.install]
+description = "install npm packages"
+run = [
+    "bun install",
+    "bunx nuxi prepare"
+]
+
+[tasks.cleanup:layers]
+description = "cleanup layer files"
+run = [
+  "rm -rf ./node_modules/.*c12",
+  "rm -rf ./node_modules/c12"
+]
+
+[tasks.cleanup:bun]
+description = "cleanup cached files"
+run = [
+  "rm -rf ./node_modules",
+  "bun pm cache rm"
+]
+
+[tasks.cleanp:logs]
+run = "rm -rf ./logs"
+
+[task.cleanp:test-results]
+run = "rm -rf ./test-results"
+
+
+[tasks.pass-login]
+run = '''
+if pass-cli info >/dev/null 2>&1; then
+    echo "Already logged in, skipping login"
+    exit 0
+fi
+pass-cli login
+'''
+
+[tasks.dev]
+run = "varlock run -- nuxt dev"
+
+[task.dummy]
+env = { AUTH_MODE=none, DUMMY=true }
+run = run = "varlock run -- nuxt dev"
