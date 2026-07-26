@@ -1,0 +1,55 @@
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - button "Give feedback" [ref=e6]: Feedback
+    - generic [ref=e8]:
+      - generic [ref=e9]: TextMate
+      - generic [ref=e10]:
+        - button "Disclaimer" [ref=e11]: Disclaimer
+        - button "EN" [ref=e13]:
+          - generic [ref=e14]: EN
+        - button [ref=e15]
+    - generic [ref=e17]:
+      - generic [ref=e19]:
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - button "Rewrite" [ref=e23]
+            - button "Review" [active] [ref=e24]
+          - generic [ref=e26]:
+            - button "Show popup" [ref=e27]:
+              - generic: Detect Language
+            - button "Dictionary" [ref=e31]: Dictionary
+        - generic [ref=e146]:
+          - generic [ref=e147]:
+            - generic [ref=e150]: Edit
+            - textbox [ref=e155]:
+              - paragraph [ref=e156]
+          - generic [ref=e158]:
+            - generic [ref=e159]:
+              - checkbox "Beispiel-Dokument" [ref=e161]
+              - generic [ref=e162]:
+                - paragraph [ref=e163]: Beispiel-Dokument
+                - paragraph [ref=e164]: Max Mustermann · 1. Auflage
+            - generic [ref=e165]:
+              - checkbox "Anderes Dokument" [ref=e167]
+              - generic [ref=e168]:
+                - paragraph [ref=e169]: Anderes Dokument
+                - paragraph [ref=e170]: Erika Mustermann · 2. Auflage
+      - generic [ref=e45]:
+        - link "Datenwissenschaften und Künstliche Intelligenz" [ref=e46] [cursor=pointer]:
+          - /url: https://www.bs.ch/ki
+          - img "Datenwissenschaften und Künstliche Intelligenz" [ref=e47]
+        - generic [ref=e48]:
+          - generic [ref=e49]: Datenwissenschaften und KI
+          - generic [ref=e50]: Developed with ♥ by DCC - Data Competence Center
+  - generic:
+    - img
+  - generic [ref=e132]:
+    - button "Toggle Nuxt DevTools" [ref=e133] [cursor=pointer]:
+      - img [ref=e134]
+    - generic "Page load time" [ref=e137]:
+      - generic [ref=e138]: "556"
+      - generic [ref=e139]: ms
+    - button "Toggle Component Inspector" [ref=e141] [cursor=pointer]:
+      - img [ref=e142]
+  - region "Notifications (F8)":
+    - list

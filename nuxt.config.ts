@@ -10,8 +10,9 @@ export default defineNuxtConfig({
         ["github:DCC-BS/nuxt-layers/backend_communication"],
         ["github:DCC-BS/nuxt-layers/health_check"],
         ["github:DCC-BS/nuxt-layers/logger"],
+        ["github:DCC-BS/nuxt-layers/pino-logger"],
         process.env.USE_FEEDBACK === "true"
-            ? ["github:DCC-BS/nuxt-layers/feedback-control"]
+            ? ["github:DCC-BS/nuxt-layers/feedback-control", { install: true }]
             : undefined,
     ],
     routeRules: {
@@ -81,7 +82,6 @@ export default defineNuxtConfig({
         "@dcc-bs/dependency-injection.bs.js",
         "nuxt-viewport",
         "@pinia/nuxt",
-        "nuxt-tour",
     ],
     typescript: {
         typeCheck: true,
@@ -89,7 +89,10 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
-        plugins: [varlockVitePlugin({ ssrInjectMode: "resolved-env" })],
+        resolve: {
+            dedupe: ["@vueuse/core"],
+        },
+        plugins: [varlockVitePlugin({ ssrInjectMode: "auto-load" })],
         build: {
             sourcemap: process.env.NODE_ENV !== "production",
             cssMinify: "lightningcss",
@@ -142,6 +145,8 @@ export default defineNuxtConfig({
                 "@tiptap/extension-text",
                 "@tiptap/vue-3/menus",
                 "@tiptap/pm/state",
+                "@vue/devtools-core",
+                "@vue/devtools-kit",
             ],
             exclude: ["@vueuse/core"],
         },
@@ -157,6 +162,7 @@ export default defineNuxtConfig({
         public: {
             useFeedback: process.env.USE_FEEDBACK ?? false,
             useDummyData: process.env.DUMMY,
+            disableOnboarding: process.env.DISABLE_ONBOARDING,
             logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },

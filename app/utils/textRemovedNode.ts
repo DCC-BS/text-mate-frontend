@@ -1,6 +1,7 @@
 import { VueNodeViewRenderer } from "@tiptap/vue-3";
 import { schema } from "prosemirror-schema-basic";
-import TextRemovedComponent from "~/components/text-editor/TextRemoved.vue";
+import type { Component } from "vue";
+import TextRemovedComponent from "~/components/FleschScoreVisualization.vue";
 
 /**
  * TextRemovedNode is a custom node for the Tiptap editor that displays removed text.
@@ -67,6 +68,6 @@ export const TextRemovedNode = schema.node("inline", {
     },
 
     addNodeView() {
-        return VueNodeViewRenderer(TextRemovedComponent);
+        return VueNodeViewRenderer(TextRemovedComponent as Component);
     },
 });

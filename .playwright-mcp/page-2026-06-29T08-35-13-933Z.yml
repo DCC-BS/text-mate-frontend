@@ -1,0 +1,65 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - button "Give feedback" [ref=e6]: Feedback
+    - generic [ref=e8]:
+      - generic [ref=e9]: TextMate
+      - generic [ref=e10]:
+        - button "Disclaimer" [ref=e11]: Disclaimer
+        - button "EN" [ref=e13]:
+          - generic [ref=e14]: EN
+        - button [ref=e15]
+    - generic [ref=e17]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - generic [ref=e22]:
+              - button "Rewrite" [ref=e23]
+              - button "Review" [ref=e24]
+            - generic [ref=e26]:
+              - button "Show popup" [ref=e27]:
+                - generic: Detect Language
+              - button "Dictionary" [ref=e31]: Dictionary
+          - generic [ref=e99]:
+            - button "My Actions" [disabled] [ref=e100]
+            - button "Plain Language" [disabled] [ref=e101]
+            - button "Bullet Points" [disabled] [ref=e102]
+            - button "Proofread" [disabled] [ref=e103]
+            - button "Summarize" [disabled] [ref=e104]
+            - button "Character Speech" [disabled] [ref=e105]
+            - button "Social Media Format" [disabled] [ref=e106]
+            - button "Formality" [disabled] [ref=e107]
+            - button "Medium" [disabled] [ref=e108]
+            - button "Custom" [disabled] [ref=e109]
+        - generic [ref=e33]:
+          - generic [ref=e110]:
+            - button [ref=e112]
+            - textbox [ref=e116]:
+              - paragraph [ref=e117]
+            - generic [ref=e119]:
+              - generic [ref=e120]:
+                - button [disabled] [ref=e121]
+                - button [disabled] [ref=e123]
+                - button [ref=e125]
+                - button [disabled] [ref=e127]
+                - button [disabled] [ref=e129]
+              - button "0 / 100000 Zeichen" [ref=e131]
+          - generic [ref=e42]: No changes yet. When the text is rewritten by textmate, the changes will be highlighted here.
+      - generic [ref=e45]:
+        - link "Datenwissenschaften und Künstliche Intelligenz" [ref=e46] [cursor=pointer]:
+          - /url: https://www.bs.ch/ki
+          - img "Datenwissenschaften und Künstliche Intelligenz" [ref=e47]
+        - generic [ref=e48]:
+          - generic [ref=e49]: Datenwissenschaften und KI
+          - generic [ref=e50]: Developed with ♥ by DCC - Data Competence Center
+  - generic:
+    - img
+  - generic [ref=e132]:
+    - button "Toggle Nuxt DevTools" [ref=e133] [cursor=pointer]:
+      - img [ref=e134]
+    - generic "Page load time" [ref=e137]:
+      - generic [ref=e138]: "556"
+      - generic [ref=e139]: ms
+    - button "Toggle Component Inspector" [ref=e141] [cursor=pointer]:
+      - img [ref=e142]
+  - region "Notifications (F8)":
+    - list

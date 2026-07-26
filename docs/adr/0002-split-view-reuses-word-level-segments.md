@@ -1,0 +1,3 @@
+# Split View reuses the word-level segment engine, not a line diff
+
+The Split View renders each existing `buildDiffSegments` segment as a two-column row (unchanged text mirrored in both panes; change hunks as removed-left/added-right) instead of introducing a line-level diff like GitHub. We did this because the Diff Hunk `from`/`to` offsets are deliberately kept in the corrected-text offset space that `ApplyTextCommand` operates in; a second, line-based diff engine would desync those offsets and duplicate the diffing logic. The trade-off is that alignment is per-hunk-row, not per-line, so a hunk whose removed/added text differ in line count leaves whitespace on the shorter side rather than padding empty lines.

@@ -1,10 +1,15 @@
 <script setup lang="ts">
 const route = useRoute();
+const { disableOnboarding } = useRuntimeConfig().public;
 
 const isAuth = computed(() => {
     return (
         route.fullPath.includes("/auth") || route.fullPath.includes("/login")
     );
+});
+
+const showOnboarding = computed(() => {
+    return !isAuth.value && disableOnboarding !== "true";
 });
 </script>
 
@@ -12,7 +17,7 @@ const isAuth = computed(() => {
     <div>
         <template v-if="!isAuth">
             <Disclaimer app-name="TextMate" />
-            <Onboarding />
+            <OnboardingView v-if="showOnboarding" />
         </template>
 
         <slot />

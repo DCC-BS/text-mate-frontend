@@ -73,6 +73,7 @@ The following environment variables have defaults and can be overridden as neede
 | **App Configuration** |
 | `USE_FEEDBACK` | Enable feedback feature | `true` | boolean |
 | `DUMMY` | Use dummy data (no backend requests) | `false` | string |
+| `DISABLE_ONBOARDING` | Disable the onboarding tour (e.g. for Playwright tests) | `false` | boolean |
 | **Build-time Variables** |
 | `AUTH_LAYER_URI` | Auth layer Nuxt module | Auto from `AUTH_MODE` | URL |
 | `LOGGER_LAYER_URI` | Logger layer Nuxt module | `github:DCC-BS/nuxt-layers/pino-logger` | URL |

@@ -14,7 +14,7 @@ test.beforeEach(async ({ page, context }) => {
     }
     await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
     await page.locator("#confirmation-checkbox").click();
-    await page.locator("#nt-action-skip").click();
+    await page.locator('[data-testid="tour-skip"]').click();
     await switchTo(page, "rewrite");
 });
 

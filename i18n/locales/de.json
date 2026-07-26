@@ -43,6 +43,33 @@
         "rewrite": "Umschreiben",
         "advisor": "Überprüfen"
     },
+    "ribbon": {
+        "transform": "Umschreiben",
+        "validate": "Überprüfen",
+        "restructure": "Umstrukturieren",
+        "rewriteFor": "Umschreiben für",
+        "polish": "Verbessern",
+        "custom": "Benutzerdefiniert",
+        "myActions": "Meine Aktionen",
+        "refDocs": "Referenzdokumente",
+        "refDocsCount": "{n} von {max} ausgewählt",
+        "check": "Überprüfen",
+        "fix": "Korrektur anwenden",
+        "clear": "Leeren",
+        "clearConfirm": "Alles leeren?",
+        "clearConfirmDesc": "Dies entfernt alle Verstösse und Notizen. Dies kann nicht rückgängig gemacht werden.",
+        "runAction": "Aktion ausführen"
+    },
+    "workspace": {
+        "diffReview": "Änderungen prüfen",
+        "diffTitle": "Vorschau der Änderungen",
+        "checking": "Dein Text wird überprüft…",
+        "generating": "Dein Text wird umgeschrieben…",
+        "fixing": "Korrigierter Text wird erstellt…",
+        "empty": "Schreibe oder füge deinen Text ein, um loszulegen.",
+        "acceptRemaining": "Verbleibende {n} akzeptieren",
+        "noChanges": "Keine Änderungen zu prüfen."
+    },
     "status": {
         "rewritingText": "Text wird umgeschrieben...",
         "advice": "Ratschlag geben...",
@@ -89,6 +116,7 @@
         "checking": "Überprüfe deinen Text...",
         "checkingProgress": "Regeln werden überprüft...",
         "error": "Fehler",
+        "checkFailed": "Überprüfung fehlgeschlagen",
         "rule": {
             "title": "Regelverletzung",
             "source": "Quelle",
@@ -98,7 +126,57 @@
         "selectDocs": "Dokumente auswählen",
         "ignore": "Ignorieren",
         "limitReached": "Limit erreicht",
-        "limitDescription": "Sie können maximal 5 Dokumente auswählen."
+        "limitDescription": "Sie können maximal 5 Dokumente auswählen.",
+        "docCount": "{n} von {max} Dokumenten ausgewählt",
+        "toggleDetails": "Dokumentendetails ein-/ausblenden",
+        "selectAll": "Alle auswählen",
+        "clear": "Zurücksetzen",
+        "file": "Datei",
+        "files": "Dateien",
+        "toFix": "zu korrigieren",
+        "skip": "Überspringen",
+        "reply": "Antworten",
+        "replyPlaceholder": "Notiz hinzufügen…",
+        "suggestion": "Vorschlag",
+        "note": "Notiz",
+        "advisor": "Advisor",
+        "you": "Du",
+        "noThreadsReviewing": "Überprüfung läuft, noch nichts gefunden",
+        "noThreadsReview": "Keine Verstösse gefunden. Sie können Kommentare hinzufügen, indem Sie Text markieren, oder neu starten.",
+        "startNew": "Neue starten",
+        "apply": "Anwenden",
+        "applyInfo": "{n} Threads zur Korrektur ausgewählt",
+        "reviewChanges": "Änderungen prüfen",
+        "noChanges": "TextMate hat nichts zu ändern gefunden.",
+        "emptyResponse": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+        "backToText": "Zurück zum Text",
+        "diffTitle": "Vorschau der Korrektur",
+        "progress": "{accepted} von {total} Änderungen übernommen",
+        "acceptAll": "Alle übernehmen",
+        "discardAll": "Alle verwerfen",
+        "diffProgress": "{resolved} von {total} Änderungen geprüft",
+        "acceptRemaining": "Verbleibende {n} akzeptieren & anwenden",
+        "applyChanges": "Änderungen anwenden",
+        "accepted": "Akzeptiert",
+        "rejected": "Abgelehnt",
+        "addNote": "Notiz hinzufügen",
+        "readonly": "Schreibgeschützt",
+        "words": "Wörter",
+        "editMode": "Bearbeiten",
+        "selectDocsTitle": "Dokumente zum Prüfen auswählen",
+        "selectDocsDescription": "Wähle bis zu {maxDocs} Richtlinien, welche überprüft werden sollen.",
+        "applyDocs": "Anwenden",
+        "editText": "Text bearbeiten",
+        "recheck": "Erneut prüfen",
+        "applying": "Korrigierten Text erstellen",
+        "applyingHint": "Der Advisor wendet die zu korrigierenden Threads an…",
+        "noChangesCouldBeApplied": "Es konnten keine Änderungen angewendet werden",
+        "changesApplied": "Änderungen auf das Dokument angewendet",
+        "allClear": "Alles in Ordnung",
+        "allChangesApplied": "Alle Änderungen angewendet",
+        "allChangesAppliedHint": "Ihr Text wurde aktualisiert. Führen Sie eine neue Prüfung durch, um das Ergebnis zu verifizieren.",
+        "insertExample": "Beispieltext einfügen",
+        "applyHint": "Füge Notizen zu bestehenden Kommentaren hinzu, oder markiere Text und wählen Notiz hinzufügen. Wenn bereit, klicken unten, um alle Änderungen anzuwenden."
     },
     "actions": {
         "custom": "Benutzerdefiniert",
@@ -199,61 +277,66 @@
         "clickToUndo": "Klicken Sie auf die Änderungen, um sie rückgängig zu machen",
         "undo": "Rückgängig",
         "noChangesYet": "Noch keine Änderungen. Wenn der Text von Textmate umgeschrieben wird, werden die Änderungen hier hervorgehoben.",
-        "retry": "Verwerfen und Aktion erneut auf den Originaltext anwenden"
+        "retry": "Verwerfen und Aktion erneut auf den Originaltext anwenden",
+        "title": "Vorschau der Überarbeitung",
+        "progress": "{accepted} von {total} Änderungen übernommen",
+        "acceptAll": "Alle übernehmen",
+        "discardAll": "Alle verwerfen",
+        "noChanges": "Keine Änderungen."
     },
     "tour": {
         "welcome": {
             "title": "Willkommen bei TextMate!",
             "content": "TextMate ist ein KI-basierter Texteditor, der Dir hilft, Deinen Text zu verbessern. Alle Daten werden auf lokalen Servern der IT BS verarbeitet. Du kannst mit TextMate auch besondere Personendaten und Daten, die dem Amtsgeheimnis (Erhöhter Schutzbedarf) unterliegen, verarbeiten. Ich zeige Dir jetzt die Hauptfunktionen von TextMate."
         },
-        "functions": {
-            "title": "TextMate hat zwei Hauptfunktionen",
-            "content": "Hier kannst Du zwischen den zwei Hauptfunktionen wechseln: Umschreiben zur Nutzung von KI für Textverbesserungen und Überprüfen, um Rückmeldung zu Deinem Text basierend auf Richtlinien zu erhalten."
+        "ribbon": {
+            "title": "Das Menüband",
+            "content": "Das Menüband gruppiert Aktionen in zwei Registerkarten: Umschreiben verändert deinen Text, und Überprüfen prüft ihn gegen Referenzdokumente."
         },
-        "language": {
-            "title": "Sprachauswahl",
-            "content": "Wähle die Sprache für Deinen Text. Dies hilft den KI-Werkzeugen, bessere Ergebnisse für die ausgewählte Sprache zu liefern."
-        },
-        "dictionary": {
-            "title": "Persönliches Wörterbuch",
-            "content": "Füge Wörter zu Deinem persönlichen Wörterbuch hinzu. Dies ist nützlich für Fachbegriffe, Namen oder Wörter, die Du konsistent verwenden möchtest."
+        "transform": {
+            "title": "Umschreibaktionen",
+            "content": "Hier findest du Ein-Klick-Transformationen wie Zusammenfassen, Formalität oder Lesefreundliche Sprache."
         },
         "editor": {
             "title": "Text-Editor",
-            "content": "Hier schreibst und bearbeitest Du Deinen Text. Der Editor bietet verschiedene Werkzeuge, um Dein Schreiben zu verbessern und zu transformieren."
+            "content": "Hier schreibst und bearbeitest Du Deinen Text. Markiere eine Textstelle, um eine Notiz hinzuzufügen."
         },
         "wordCount": {
+            "title": "Wortanzahl",
+            "content": "Klicke hier um detailiere Information über Deinen Text anzuzeigen."
+        },
+        "textStats": {
             "title": "Text-Statistiken",
-            "content": "Erhalte detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Flesch-Lesbarkeits-Score. Klicke hier, um mehr Details über die Lesbarkeit Deines Texts zu sehen."
+            "content": "Detaillierte Informationen über Deinen Text einschliesslich Wortanzahl, Zeichenanzahl und Sprachniveau (für deutsche Texte)."
         },
         "restart": "Tutorial neu starten",
-        "textEditorToolpanel": {
-            "title": "Text-Editor-Werkzeuge",
-            "content": "Hier kannst Du Deine Änderungen rückgängig machen oder wiederholen. Zusätzlich kannst Du ein Dokument hochladen, um es mit TextMate zu bearbeiten."
+        "diffReview": {
+            "title": "Änderungen annehmen oder ablehnen",
+            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Bevor du weiterbearbeiten kanst musst du all Änderungen annehmen oder Ablehnen."
         },
-        "rewriteOptions": {
-            "title": "Umschreibungsoptionen",
-            "content": "Definiere hier, wie Dein Text umgeschrieben werden soll. Lasse den Text in Lesefreundlicher Sprache umschreiben, erhalte eine Zusammenfassung und vieles mehr."
+        "diffAcceptAll": {
+            "title": "Alle übernehmen",
+            "content": "Übernimmt alle Änderungen auf einen Klick."
         },
-        "rewriteToolpanel": {
-            "title": "Umschreibaktionen annehmen oder ablehnen",
-            "content": "Hier kanst Du die letzte Umschreibaktion rückgängig machen oder alle Änderungen annehmen."
+        "diffDiscardAll": {
+            "title": "Alle verwerfen",
+            "content": "Verwirft alle Änderungen auf einen Klick und behält deinen Originaltext."
         },
         "retry": {
             "title": "Aktion wiederholen",
-            "content": "Mit dem Ergebnis unzufrieden? Klick hier, um den Vorschlag zu verwerfen und dieselbe Aktion erneut auf Deinen Originaltext anzuwenden."
+            "content": "Verwirft den Vorschlag und führt dieselbe Aktion erneut auf deinem Originaltext aus."
         },
-        "rewrite": {
-            "title": "KI-Textumschreibung",
-            "content": "Wenn eine Textaktion ausgeführt wird, erscheinen die Änderungen hier. Klick auf eine Änderung, um sie rückgängig zu machen oder auf das Häkchen unten, um alle Änderungen zu übernehmen."
+        "diffSplitView": {
+            "title": "Ansicht wechseln",
+            "content": "Wechsle hier zwischen der Inline- und der geteilten Ansicht, um die Änderungen im Fliesstext oder nebeneinander zu vergleichen."
+        },
+        "validate": {
+            "title": "Überprüfen",
+            "content": "Wechsle zur Registerkarte Überprüfen, um Referenzdokumente auszuwählen und deinen Text daran zu prüfen."
         },
         "check": {
             "title": "Überprüfen",
-            "content": "Überprüfe Deinen Text anhand von Dokumenten."
-        },
-        "advisor": {
-            "title": "Dokumentenberater",
-            "content": "Wähle eine Richtlinie aus anhand welcher Du Dein Dokument überprüfen möchtest. Der Dokumentenberater zeigt Dir die von ihm gefundenen Verstösse gegen die ausgewählte Richtlinie an."
+            "content": "Klicke hier, um deinen Text auf Fehler zu prüfen."
         },
         "quickActions": {
             "title": "Umschreibaktionen",
@@ -266,13 +349,28 @@
             "linkText": "Prompting-Merkblatt",
             "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
         },
+        "threads": {
+            "title": "Verstösse und Notizen",
+            "content": "Wenn du eine Überprüfung ausführst, erscheinen hier die Verstösse gegen deine Referenzdokumente — mit Begründung, Vorschlag und Quellenangabe. Entscheide pro Verstoss, ob du ihn beheben (Erledigen) oder überspringen willst. Mit \"Korrektur anwenden\" erzeugt der Advisor den korrigierten Text. Du kannst auch eigene Notizen zu beliebigen Textstellen hinzufügen.",
+            "demoRule": "Beispielregel",
+            "demoDoc": "beispiel-dokument.pdf",
+            "demoReason": "Dies ist ein Beispiel-Verstoss, der nur während der Tour angezeigt wird.",
+            "demoProposal": "Hier erscheint der Korrektur-Vorschlag des Advisors."
+        },
         "conclusion": {
             "title": "Das war's!",
             "content": "Du bist jetzt bereit, TextMate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
-        },
-        "skip": "Überspringen",
-        "next": "Weiter",
-        "prev": "Zurück",
-        "finish": "Beenden"
+        }
+    },
+    "common": {
+        "cancel": "Abbrechen",
+        "accept": "Akzeptieren",
+        "reject": "Ablehnen",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "diffViewInline": "Inline-Ansicht",
+        "diffViewSplit": "Geteilte Ansicht",
+        "diffOriginal": "Original",
+        "diffCorrected": "Korrigiert"
     }
 }
