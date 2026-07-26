@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
-import { P } from "vue-router/dist/index-BQLwgiyK.js";
 import type { AdvisorThread } from "~/assets/models/advisor";
 import {
     type ApplyFixCommand,
