@@ -15,7 +15,7 @@ const { t } = useI18n();
 <template>
     <div>
         <UProgress
-            v-model:modelValue="current"
+            v-model:model-value="current"
             :max="props.progress.total ?? 1"
             status
         >

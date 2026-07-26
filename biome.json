@@ -30,7 +30,7 @@
     "linter": {
         "enabled": true,
         "rules": {
-            "recommended": true,
+            "preset": "recommended",
             "style": {
                 "noParameterAssign": "error",
                 "useAsConstAssertion": "error",
@@ -63,6 +63,9 @@
                         "noUnusedVariables": "off",
                         "noUnusedImports": "off",
                         "noUnknownPseudoClass": "off"
+                    },
+                    "style": {
+                        "useVueMultiWordComponentNames": "off"
                     }
                 }
             }

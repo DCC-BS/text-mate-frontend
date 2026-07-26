@@ -126,6 +126,10 @@ async function deleteNote(noteId: string) {
 function openPdf(): void {
     emit("openPdf", props.thread);
 }
+
+// No-op handler used to satisfy the click-handler lint rule while relying on
+// the `.stop` modifier to prevent bubbling into the card's activate handler.
+function noop(): void {}
 </script>
 
 <template>
@@ -138,6 +142,7 @@ function openPdf(): void {
             isUser ? 'bg-secondary/5' : 'bg-default',
         ]"
         @click="activate"
+        @keydown.enter="activate"
     >
         <header class="flex items-center justify-between mb-2">
             <span
@@ -234,7 +239,7 @@ function openPdf(): void {
                         class="flex-1"
                         @keydown.enter="saveEdit"
                         @keydown.esc="editingNoteId = null"
-                        @click.stop
+                        @click.stop="noop"
                     />
                     <UButton
                         icon="i-lucide-check"
@@ -256,7 +261,7 @@ function openPdf(): void {
                 class="flex-1"
                 @keydown.enter="submitReply"
                 @keydown.esc="replyOpen = false"
-                @click.stop
+                @click.stop="noop"
             />
             <UButton
                 icon="i-lucide-send"
