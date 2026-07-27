@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { tooltip } from "#build/ui";
 import { UButton, UTooltip } from "#components";
 import {
     type TextAction,
@@ -27,8 +26,6 @@ onMounted(async () => {
         method: "get",
         schema: TextActionGetOutputSchema,
     });
-
-    console.log(response);
 
     if (isApiError(response)) {
         logger.error(response, "Failed to load user actions");
@@ -67,7 +64,6 @@ const items = computed<DropdownMenuItem[]>(() =>
                     class="p-0"
                     variant="link"
                     color="neutral"
-                    @click="item.onSelect"
                 >
                     {{ item.label }}
                 </UButton>
