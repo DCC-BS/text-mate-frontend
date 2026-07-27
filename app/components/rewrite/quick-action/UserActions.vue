@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
 import type { DropdownMenuItem } from "@nuxt/ui";
+import { UButton, UTooltip } from "#components";
 import {
     type TextAction,
     TextActionGetOutputSchema,
@@ -35,11 +36,15 @@ onMounted(async () => {
 });
 
 const items = computed<DropdownMenuItem[]>(() =>
-    userActions.value.map((x) => ({
-        label: x.name,
-        value: x.id,
-        onSelect: () => emit("apply-action", x.id),
-    })),
+    userActions.value.map(
+        (x) =>
+            ({
+                label: x.name,
+                value: x.id,
+                tooltip: x.tooltip,
+                onSelect: () => emit("apply-action", x.id),
+            }) satisfies DropdownMenuItem,
+    ),
 );
 </script>
 
@@ -53,5 +58,12 @@ const items = computed<DropdownMenuItem[]>(() =>
         >
             {{ t("editor.userActions") }}
         </UButton>
+        <template #item="{ item }">
+            <UTooltip :text="item.tooltip">
+                <UButton class="p-0" variant="link" color="neutral">
+                    {{ item.label }}
+                </UButton>
+            </UTooltip>
+        </template>
     </UDropdownMenu>
 </template>

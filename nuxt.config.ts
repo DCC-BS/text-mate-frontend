@@ -127,6 +127,7 @@ export default defineNuxtConfig({
         optimizeDeps: {
             include: [
                 "pino", // CJS
+                "cookiejs", // CJS/UMD (nuxt-viewport dep) - needs interop for default export
                 "vue-pdf-embed",
                 "motion-v",
                 "@tiptap/vue-3",

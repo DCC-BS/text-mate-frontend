@@ -1,7 +1,7 @@
 {
     "name": "nuxt-app",
     "private": true,
-    "version": "1.6.0",
+    "version": "1.6.1",
     "scripts": {
         "build": "nuxt build",
         "dev": "varlock run -- nuxt dev",
@@ -68,6 +68,7 @@
         "unified": "^11.0.5",
         "uuid": "^14.0.1",
         "varlock": "^1.9.0",
+        "vite-plugin-checker": "^0.14.4",
         "vue": "^3.5.39",
         "vue-pdf-embed": "^2.1.5",
         "vue-router": "^5.1.0",
@@ -93,5 +94,8 @@
     "overrides": {
         "prosemirror-model": "1.25.9",
         "prosemirror-view": "1.41.9"
+    },
+    "patchedDependencies": {
+        "vite-plugin-checker@0.14.4": "patches/vite-plugin-checker@0.14.4.patch"
     }
 }
