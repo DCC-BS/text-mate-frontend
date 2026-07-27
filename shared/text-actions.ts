@@ -20,7 +20,11 @@ export const TextActionInputSchema = z.object({
     text: z.string(),
 });
 
-export const TextAction = z.object({ id: z.string(), name: z.string() });
+export const TextAction = z.object({
+    id: z.string(),
+    name: z.string(),
+    tooltip: z.string().optional(),
+});
 
 export const TextActionGetOutputSchema = z.object({
     actions: z.array(TextAction),
