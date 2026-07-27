@@ -60,11 +60,7 @@ const items = computed<DropdownMenuItem[]>(() =>
         </UButton>
         <template #item="{ item }">
             <UTooltip :text="item.tooltip">
-                <UButton
-                    class="p-0"
-                    variant="link"
-                    color="neutral"
-                >
+                <UButton class="p-0" variant="link" color="neutral">
                     {{ item.label }}
                 </UButton>
             </UTooltip>
