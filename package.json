@@ -57,7 +57,7 @@
         "nuxt": "4.4.8",
         "nuxt-viewport": "2.4.0",
         "openid-client": "^6.8.4",
-        "pinia": "^3.0.4",
+        "pinia": "^4.0.0",
         "pino": "^10.3.1",
         "prosemirror-schema-basic": "^1.2.4",
         "rehype-stringify": "^10.0.1",
