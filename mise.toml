@@ -12,12 +12,108 @@ pass-cli = "https://github.com/DCC-BS/mise-proton-pass-cli"
 postinstall = { task = "install" }
 enter = { task = "enter-checks" }
 
+# --- Setup ---
+
 [tasks.install]
 description = "install npm packages"
 run = [
     "bun install",
     "bunx nuxi prepare",
 ]
+
+[tasks.env-check]
+description = "🔑 Load secrets into the environment via varlock"
+alias = "env"
+depends = ["pass-login"]
+run = "varlock load"
+
+[tasks."nuxt:prepare"]
+description = "generate Nuxt types"
+run = "bunx nuxi prepare"
+
+# --- Development ---
+
+[tasks.dev]
+description = "start the development server"
+run = "npx varlock run -- nuxt dev"
+
+[tasks.debug]
+description = "start dev server with the Node inspector attached"
+run = "npx varlock run -- nuxt dev --inspect"
+
+[tasks.dummy]
+description = "start dev server in dummy mode (no auth, mock data)"
+env = { AUTH_MODE = "none", DUMMY = true }
+run = "npx varlock run -- nuxt dev"
+
+[tasks.automation]
+description = "start dev server for automation/CI (disables changelog, disclaimer, onboarding)"
+env = { NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG = true, NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER = true, NUXT_PUBLIC_COMMON_UI_DISABLE_ONBOARDING = true, APP_MODE = "ci", AUTH_MODE = "none" }
+run = "npx varlock run -- nuxt dev"
+
+# --- Build & Preview ---
+
+[tasks.build]
+description = "build the production bundle"
+run = "bunx nuxt build"
+
+[tasks.preview]
+description = "preview the production build locally"
+run = "bunx nuxt preview"
+
+# --- Type Checking & Linting ---
+
+[tasks.tsc]
+description = "run TypeScript type checking"
+run = "bunx vue-tsc --noEmit -p tsconfig.json"
+
+[tasks.lint]
+description = "format code with Biome"
+run = "bunx biome format --write"
+
+[tasks.check]
+description = "check and fix linting issues"
+run = "bunx biome check --fix"
+
+# --- Testing ---
+
+[tasks.test]
+description = "run unit tests"
+run = "bunx vitest"
+
+[tasks."test:watch"]
+description = "run unit tests in watch mode"
+run = "bunx vitest --watch"
+
+[tasks."test:coverage"]
+description = "run unit tests with coverage report"
+run = "bunx vitest run --coverage"
+
+[tasks."test:e2e"]
+description = "run Playwright E2E tests"
+run = "bunx playwright test"
+
+[tasks."test:e2e:ui"]
+description = "run Playwright E2E tests with the interactive UI"
+run = "bunx playwright test --ui"
+
+[tasks."e2e:codegen"]
+description = "generate Playwright tests via codegen"
+run = "bunx playwright codegen http://localhost:3000"
+
+# --- Docker ---
+
+[tasks."docker:up"]
+description = "build and start the dev Docker containers"
+dir = "{{config_root}}/docker"
+run = "bunx varlock run -- docker compose -f docker-compose.dev.yml up --build -d"
+
+[tasks."docker:down"]
+description = "stop the dev Docker containers"
+dir = "{{config_root}}/docker"
+run = "bunx varlock run -- docker compose -f docker-compose.dev.yml down"
+
+# --- Cleanup ---
 
 [tasks."cleanup:layers"]
 description = "cleanup layer files"
@@ -40,23 +136,3 @@ run = "rm -rf ./logs"
 [tasks."cleanup:test-results"]
 description = "remove test result artifacts"
 run = "rm -rf ./test-results"
-
-[tasks.env-check]
-description = "🔑 view secrets into the environment via varlock"
-alias = "env"
-depends = ["pass-login"]
-run = "varlock load"
-
-[tasks.dev]
-description = "start the development server"
-run = "npx varlock run -- nuxt dev"
-
-[tasks.dummy]
-description = "start dev server in dummy mode (no auth, mock data)"
-env = { AUTH_MODE = "none", DUMMY = true }
-run = "npx varlock run -- nuxt dev"
-
-[tasks.automation]
-description = "start dev server for automation/CI (disables changelog, disclaimer, onboarding)"
-env = { NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG = true, NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER = true, NUXT_PUBLIC_COMMON_UI_DISABLE_ONBOARDING = true, APP_MODE = "ci", AUTH_MODE = "none" }
-run = "npx varlock run -- nuxt dev"
