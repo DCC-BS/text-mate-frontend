@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
-import { P } from "vue-router/dist/index-BQLwgiyK.js";
 import type { AdvisorThread } from "~/assets/models/advisor";
 import {
     type ApplyFixCommand,
@@ -57,7 +56,7 @@ watch(mobileRailOpen, async (isOpen) => {
     if (!isOpen) {
         await executeCommand(new ChangeActiveThreadId(null));
     }
-})
+});
 
 // Close the mobile rail when a fix is applied so the user sees the editor
 // transition into Diff Review instead of the rail covering it.

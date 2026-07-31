@@ -17,6 +17,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Copy package.json and bun.lock
 COPY ./package*.json ./bun.lock* ./
+COPY ./patches ./patches/
 
 # Install dependencies using bun
 RUN bun install --frozen-lockfile

@@ -1,0 +1,29 @@
+diff --git a/dist/client/index.js b/dist/client/index.js
+index 75b46470f2b74908cacb1812b105239d52678f9c..7412d1a5141496aa27aa99d24ef4cc2ea8dcf12b 100644
+--- a/dist/client/index.js
++++ b/dist/client/index.js
+@@ -5,8 +5,8 @@ const _require = createRequire(import.meta.url);
+ const RUNTIME_CLIENT_RUNTIME_PATH = "/@vite-plugin-checker-runtime";
+ const RUNTIME_CLIENT_ENTRY_PATH = "/@vite-plugin-checker-runtime-entry";
+ const wrapVirtualPrefix = (id) => `virtual:${id.slice(1)}`;
+-const composePreambleCode = ({ baseWithOrigin = "/", overlayConfig }) => `
+-import { inject } from "${baseWithOrigin}${RUNTIME_CLIENT_RUNTIME_PATH.slice(1)}";
++const composePreambleCode = ({ baseWithOrigin = "/", overlayConfig, useBase = true }) => `
++import { inject } from "${useBase ? baseWithOrigin : "/"}${RUNTIME_CLIENT_RUNTIME_PATH.slice(1)}";
+ inject({
+   overlayConfig: ${JSON.stringify(overlayConfig)},
+   base: "${baseWithOrigin}",
+diff --git a/dist/main.js b/dist/main.js
+index 60e7dbb854525cd990649549e72f00b511fe392f..7586379d4e1fc2d8a5b87d6d1d35c736c904ca9b 100644
+--- a/dist/main.js
++++ b/dist/main.js
+@@ -87,7 +87,8 @@ function checker(userConfig) {
+ 			if (id === wrapVirtualPrefix("/@vite-plugin-checker-runtime")) return runtimeCode;
+ 			if (id === wrapVirtualPrefix("/@vite-plugin-checker-runtime-entry")) return composePreambleCode({
+ 				baseWithOrigin,
+-				overlayConfig
++				overlayConfig,
++				useBase: false
+ 			});
+ 		},
+ 		transformIndexHtml() {

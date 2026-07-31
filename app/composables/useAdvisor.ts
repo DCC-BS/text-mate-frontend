@@ -36,6 +36,11 @@ async function getDocs(
 
 const docs = ref<AdvisorDocumentDescription[]>([]);
 
+// Caches the in-flight docs request so the several components that call
+// useAdvisor() during the same first paint share one fetch instead of racing
+// N identical requests. Reset to null on failure so the next call can retry.
+let docsPromise: Promise<void> | null = null;
+
 export function useAdvisor() {
     const { t } = useI18n();
     const logger = useLogger();
@@ -43,13 +48,15 @@ export function useAdvisor() {
     // lazy load docs on first use (client-only: the fetch needs a browser
     // origin and the error path uses useToast, neither of which are available
     // during SSR).
-    if (import.meta.client && docs.value.length === 0) {
-        console.log("Loading advisor docs...");
-        getDocs(t)
-            .then((x) => (docs.value = x))
-            .catch((err: unknown) =>
-                console.error("Failed to load advisor docs:", err),
-            );
+    if (import.meta.client && docs.value.length === 0 && docsPromise === null) {
+        docsPromise = getDocs(t)
+            .then((x) => {
+                docs.value = x;
+            })
+            .catch((err: unknown) => {
+                console.error("Failed to load advisor docs:", err);
+                docsPromise = null;
+            });
     }
 
     async function getDocFile(name: string): Promise<Blob> {
@@ -106,53 +113,84 @@ export function useAdvisor() {
             }
         }
 
+        // Maps a backend ValidationResult into the thread batch yielded to the UI.
+        function toThreadResult(result: ValidationResult): AdvisorThreadResult {
+            return {
+                checked: result.checked,
+                total: result.total,
+                threads: result.violations.map(
+                    (x) =>
+                        ({
+                            id: `t-${uuid()}`,
+                            notes: [],
+                            status: "to-fix",
+                            type: "violation",
+                            violation: x,
+                            range: x.range,
+                        }) as AdvisorThread,
+                ),
+            } as AdvisorThreadResult;
+        }
+
         try {
-            let isDone = false;
             let buffer = "";
             let lastError: unknown;
 
-            while (!isDone) {
+            while (true) {
                 const { value, done } = await reader.read();
-                isDone = done;
-
-                const jsonChunk = decoder.decode(value, { stream: true });
-
-                if (!jsonChunk) {
-                    continue;
+                if (done) {
+                    break;
                 }
 
-                buffer += jsonChunk;
-                const parseResult = tryParse(buffer);
+                buffer += decoder.decode(value, { stream: true });
 
-                if (!parseResult.success) {
-                    lastError = parseResult.error;
-                    continue;
+                // The backend emits JSON Lines: one JSON record per line. A
+                // single read() can coalesce several records ("{...}\n{...}\n")
+                // or split one across reads, so parse every complete line and
+                // keep the trailing partial in the buffer. Parsing the whole
+                // buffer as one JSON value breaks on coalesced frames.
+                while (true) {
+                    const newlineIndex = buffer.indexOf("\n");
+                    if (newlineIndex === -1) {
+                        break;
+                    }
+                    const line = buffer.slice(0, newlineIndex);
+                    buffer = buffer.slice(newlineIndex + 1);
+
+                    if (line.trim() === "") {
+                        continue;
+                    }
+
+                    const parseResult = tryParse(line);
+                    if (!parseResult.success) {
+                        lastError = parseResult.error;
+                        continue;
+                    }
+
+                    yield toThreadResult(parseResult.data);
                 }
-
-                buffer = "";
-                const result = parseResult.data;
-
-                yield {
-                    checked: result.checked,
-                    total: result.total,
-                    threads: result.violations.map(
-                        (x) =>
-                            ({
-                                id: `t-${uuid()}`,
-                                notes: [],
-                                status: "to-fix",
-                                type: "violation",
-                                violation: x,
-                                range: x.range,
-                            }) as AdvisorThread,
-                    ),
-                } as AdvisorThreadResult;
             }
 
-            if (buffer) {
+            // Flush the decoder and any trailing record the producer did not
+            // terminate with a newline.
+            buffer += decoder.decode();
+            const trailing = buffer.trim();
+            if (trailing !== "") {
+                const parseResult = tryParse(trailing);
+                if (!parseResult.success) {
+                    lastError = parseResult.error;
+                } else {
+                    yield toThreadResult(parseResult.data);
+                    buffer = "";
+                }
+            }
+
+            // Anything left is a malformed/partial record the parser could not
+            // recover from.
+            if (buffer.trim() !== "") {
                 logger.error(
-                    { budder: buffer, error: String(lastError) },
-                    "Validate stream resultet in some parse error.",
+                    { buffer: buffer, error: String(lastError) },
+                    "Validate stream resulted in a parse error.",
                 );
                 throw new Error(t("errors.unexpected_error"));
             }

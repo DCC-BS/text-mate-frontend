@@ -89,6 +89,9 @@ export default defineNuxtConfig({
     },
     css: ["~/assets/css/main.css"],
     vite: {
+        resolve: {
+            dedupe: ["@vueuse/core"],
+        },
         plugins: [varlockVitePlugin({ ssrInjectMode: "auto-load" })],
         build: {
             sourcemap: process.env.NODE_ENV !== "production",
@@ -124,6 +127,7 @@ export default defineNuxtConfig({
         optimizeDeps: {
             include: [
                 "pino", // CJS
+                "cookiejs", // CJS/UMD (nuxt-viewport dep) - needs interop for default export
                 "vue-pdf-embed",
                 "motion-v",
                 "@tiptap/vue-3",

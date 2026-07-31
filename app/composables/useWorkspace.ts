@@ -271,14 +271,18 @@ export function useWorkspace(text: Ref<string>) {
      * as the new Working Text and returns to the editable state.
      */
     function commitDiff(resolvedText: string): void {
+        // Capture before resetting originalText below: a fix that landed
+        // unchanged (no-op, empty/error response, or every hunk rejected)
+        // leaves the old ranges valid, so its threads must be preserved.
+        const textChanged = resolvedText !== originalText.value;
         text.value = resolvedText;
         originalText.value = "";
         correctedText.value = "";
         state.value = "editable";
 
-        // A fix fundamentally rewrites the text, so every thread's range is
-        // now invalid. Transform diffs don't touch threads.
-        if (diffMode.value === "fix") {
+        // A fix rewrites the text, invalidating every thread's range. Transform
+        // diffs don't touch threads. See ADR 0003.
+        if (diffMode.value === "fix" && textChanged) {
             executeCommand(new ClearThreadsCommand());
         }
     }
