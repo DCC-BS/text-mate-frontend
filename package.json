@@ -34,7 +34,7 @@
         "@mohtasham/md-to-docx": "git+https://github.com/DCC-BS/md-to-docx.js#v3.0.0",
         "@nuxt/ui": "4.9.0",
         "@nuxtjs/i18n": "^10.4.0",
-        "@nuxtjs/mdc": "0.22.0",
+        "@nuxtjs/mdc": "0.22.2",
         "@pinia/nuxt": "0.11.3",
         "@tiptap/core": "3.27.1",
         "@tiptap/extension-bubble-menu": "3.27.1",
