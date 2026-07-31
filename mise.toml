@@ -12,7 +12,7 @@ pass-cli = "https://github.com/DCC-BS/mise-proton-pass-cli"
 postinstall = { task = "install" }
 enter = { task = "enter-checks" }
 
-# --- Setup ---
+# ── Setup ─────────────────────────────────────────────────────────────────────
 
 [tasks.install]
 description = "install npm packages"
@@ -31,7 +31,7 @@ run = "varlock load"
 description = "generate Nuxt types"
 run = "bunx nuxi prepare"
 
-# --- Development ---
+# ── Development ───────────────────────────────────────────────────────────────
 
 [tasks.dev]
 description = "start the development server"
@@ -51,7 +51,7 @@ description = "start dev server for automation/CI (disables changelog, disclaime
 env = { NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG = true, NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER = true, NUXT_PUBLIC_COMMON_UI_DISABLE_ONBOARDING = true, APP_MODE = "ci", AUTH_MODE = "none" }
 run = "npx varlock run -- nuxt dev"
 
-# --- Build & Preview ---
+# ── Build & Preview ───────────────────────────────────────────────────────────
 
 [tasks.build]
 description = "build the production bundle"
@@ -61,7 +61,7 @@ run = "bunx nuxt build"
 description = "preview the production build locally"
 run = "bunx nuxt preview"
 
-# --- Type Checking & Linting ---
+# ── Type Checking & Linting ───────────────────────────────────────────────────
 
 [tasks.tsc]
 description = "run TypeScript type checking"
@@ -75,7 +75,7 @@ run = "bunx biome format --write"
 description = "check and fix linting issues"
 run = "bunx biome check --fix"
 
-# --- Testing ---
+# ── Testing ───────────────────────────────────────────────────────────────────
 
 [tasks.test]
 description = "run unit tests"
@@ -101,7 +101,7 @@ run = "bunx playwright test --ui"
 description = "generate Playwright tests via codegen"
 run = "bunx playwright codegen http://localhost:3000"
 
-# --- Docker ---
+# ── Docker ────────────────────────────────────────────────────────────────────
 
 [tasks."docker:up"]
 description = "build and start the dev Docker containers"
@@ -113,7 +113,7 @@ description = "stop the dev Docker containers"
 dir = "{{config_root}}/docker"
 run = "bunx varlock run -- docker compose -f docker-compose.dev.yml down"
 
-# --- Cleanup ---
+# ── Cleanup ───────────────────────────────────────────────────────────────────
 
 [tasks."cleanup:layers"]
 description = "cleanup layer files"
