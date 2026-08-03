@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useOnboading } from '~/composables/useOnboarding';
+import { useOnboading } from "~/composables/useOnboarding";
 
 const route = useRoute();
 

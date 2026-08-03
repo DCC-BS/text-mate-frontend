@@ -169,9 +169,9 @@ export default defineNuxtConfig({
             },
             commonUi: {
                 disclaimer: {
-                    appName: "TextMate"
-                }
-            }
+                    appName: "TextMate",
+                },
+            },
         },
     },
     fonts: {

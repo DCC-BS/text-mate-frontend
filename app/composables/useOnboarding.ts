@@ -291,7 +291,9 @@ export function useOnboading() {
 
     async function seedEditorText(): Promise<void> {
         await executeCommand(new ClearTextCommand());
-        await executeCommand(new ApplyTextCommand(exampleText, { from: 0, to: 0 }));
+        await executeCommand(
+            new ApplyTextCommand(exampleText, { from: 0, to: 0 }),
+        );
     }
 
     // Seed a fake Diff Review without a backend call. The corrected text is
