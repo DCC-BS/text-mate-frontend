@@ -124,24 +124,26 @@ In production (Docker), varlock runs as the container entrypoint, loading secret
 
 ### Install Dependencies
 
-Make sure to install dependencies using Bun:
+Install the required tools and dependencies with [mise](https://mise.jdx.dev/):
 
 ```bash
-bun install
+mise install
 ```
+
+All commands below are defined as [mise tasks](mise.toml). Run any of them with `mise run <task>` (or `mise r <task>`), and list all available tasks with `mise tasks`.
 
 ## Development
 
 Start the development server on `http://localhost:3000`:
 
 ```bash
-bun run dev
+mise run dev
 ```
 
 For debugging with inspector:
 
 ```bash
-bun run debug
+mise run debug
 ```
 
 ### Dummy Mode
@@ -149,7 +151,7 @@ bun run debug
 For development without a backend connection, use dummy mode which returns mock data instead of calling the backend API:
 
 ```bash
-bun run dummy
+mise run dummy
 ```
 
 This allows frontend development without running the Python backend services.
@@ -163,13 +165,13 @@ This frontend requires the [Text-mate backend](https://github.com/DCC-BS/text-ma
 Start only the backend services for development:
 
 ```bash
-bun run docker:up
+mise run docker:up
 ```
 
 Stop backend services:
 
 ```bash
-bun run docker:down
+mise run docker:down
 ```
 
 #### Full Stack with Nginx
@@ -218,25 +220,25 @@ Run tests with Vitest:
 
 ```bash
 # Run tests
-bun test
+mise run test
 
 # Run tests in watch mode
-bun test:watch
+mise run test:watch
 
 # Generate coverage report
-bun test:coverage
+mise run test:coverage
 ```
 
 Format code with Biome:
 
 ```bash
-bun run lint
+mise run lint
 ```
 
 Check and fix code issues:
 
 ```bash
-bun run check
+mise run check
 ```
 
 ### E2E Testing
@@ -252,19 +254,13 @@ End-to-end tests cover key features:
 Build the application for production:
 
 ```bash
-bun run build
-```
-
-Generate static site:
-
-```bash
-bun run generate
+mise run build
 ```
 
 Preview production build:
 
 ```bash
-bun run preview
+mise run preview
 ```
 
 ## Docker Deployment
