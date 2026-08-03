@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useOnboading } from "~/composables/useOnboarding";
+
 const route = useRoute();
-const { disableOnboarding } = useRuntimeConfig().public;
 
 const isAuth = computed(() => {
     return (
@@ -8,16 +9,13 @@ const isAuth = computed(() => {
     );
 });
 
-const showOnboarding = computed(() => {
-    return !isAuth.value && disableOnboarding !== "true";
-});
+const { driverBuilder } = useOnboading();
 </script>
 
 <template>
     <div>
         <template v-if="!isAuth">
-            <Disclaimer app-name="TextMate" />
-            <OnboardingView v-if="showOnboarding" />
+            <FirstRunOrchestrator :onboarding-builder="driverBuilder" />
         </template>
 
         <slot />

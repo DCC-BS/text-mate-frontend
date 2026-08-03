@@ -167,6 +167,11 @@ export default defineNuxtConfig({
             logger: {
                 loglevel: process.env.LOG_LEVEL || "debug",
             },
+            commonUi: {
+                disclaimer: {
+                    appName: "TextMate",
+                },
+            },
         },
     },
     fonts: {
