@@ -113,6 +113,15 @@ description = "stop the dev Docker containers"
 dir = "{{config_root}}/docker"
 run = "bunx varlock run -- docker compose -f docker-compose.dev.yml down"
 
+# ── Versioning ────────────────────────────────────────────────────────────────
+
+[tasks.version]
+description = "Bump package version (patch, minor, or major)"
+usage = '''
+arg "<bump>" help="Version bump type: patch, minor, or major"
+'''
+run = "bun pm version ${usage_bump}"
+
 # ── Cleanup ───────────────────────────────────────────────────────────────────
 
 [tasks."cleanup:layers"]
