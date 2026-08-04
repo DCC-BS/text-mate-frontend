@@ -11,6 +11,7 @@ export default defineNuxtConfig({
         ["github:DCC-BS/nuxt-layers/health_check"],
         ["github:DCC-BS/nuxt-layers/logger"],
         ["github:DCC-BS/nuxt-layers/pino-logger"],
+        ["github:DCC-BS/nuxt-layers/dcc-app-config"],
         process.env.USE_FEEDBACK === "true"
             ? ["github:DCC-BS/nuxt-layers/feedback-control", { install: true }]
             : undefined,

@@ -32,7 +32,7 @@ const { t } = useI18n();
 const { runQuickAction } = useQuickAction();
 const { executeCommand } = useCommandBus();
 const toast = useToast();
-const { ribbonTab: activeTab, setRibbonTab } = useRibbonTab();
+const { ribbonTab: activeTab } = useRibbonTab();
 
 const actionsAreAvailable = computed(
     () => props.editable && !props.busy && props.text.trim().length > 0,
@@ -82,30 +82,6 @@ async function onValidate() {
 
 <template>
     <div class="border-b border-default min-w-0" data-tour="ribbon">
-        <!-- Tab bar -->
-        <div class="flex justify-center items-end gap-1 px-2 pt-1">
-            <UButton
-                :variant="activeTab === 'transform' ? 'soft' : 'link'"
-                :color="activeTab === 'transform' ? 'primary' : 'neutral'"
-                size="sm"
-                icon="i-lucide-wand-sparkles"
-                data-tour="ribbon-transform"
-                @click="setRibbonTab('transform')"
-            >
-                {{ t("ribbon.transform") }}
-            </UButton>
-            <UButton
-                :variant="activeTab === 'validate' ? 'soft' : 'link'"
-                :color="activeTab === 'validate' ? 'primary' : 'neutral'"
-                size="sm"
-                icon="i-lucide-file-search"
-                data-tour="ribbon-validate"
-                @click="setRibbonTab('validate')"
-            >
-                {{ t("ribbon.validate") }}
-            </UButton>
-        </div>
-
         <!-- Ribbon body -->
         <div class="flex items-stretch gap-0 px-2 pb-1.5 pt-1 min-w-0">
             <!-- TRANSFORM TAB -->

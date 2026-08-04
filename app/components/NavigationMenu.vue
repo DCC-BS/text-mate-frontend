@@ -1,20 +1,15 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { RestartTourCommand } from "~/assets/models/commands";
 
 // Add translation hook
 const { t } = useI18n();
 const { data, signOut, isAuthEnabled } = useAppAuth();
-const { executeCommand } = useCommandBus();
-const config = useRuntimeConfig().public;
+const { ribbonTab, setRibbonTab } = useRibbonTab();
 
 const userImage = computed(() => {
     const base64 = data.value?.user?.image;
     return base64 ? base64 : "/LucideCircleUserRound.png";
 });
-
-const onlineCheckFunction =
-    config.useDummyData === "true" ? () => Promise.resolve(true) : undefined;
 
 // Navigation menu items
 const items = computed<DropdownMenuItem[]>(() => [
@@ -29,24 +24,36 @@ async function handleSignOut(): Promise<void> {
     await signOut();
 }
 
-function handleRestartTour(): void {
-    executeCommand(new RestartTourCommand());
-}
+const apps = useAppList("TextMate");
 </script>
 
 <template>
-    <NavigationBar>
-        <template #rightPostItems>
-            <OnlineStatus :is-online-check-function="onlineCheckFunction" />
-            <UTooltip :text="t('tour.restart')" placement="bottom">
+    <NavigationBar :other-apps="apps">
+        <template #center>
+            <div class="flex items-end gap-1">
                 <UButton
-                    data-tour="start-tour"
-                    variant="ghost"
-                    color="neutral"
-                    icon="i-lucide-help-circle"
-                    @click="handleRestartTour"
-                />
-            </UTooltip>
+                    :variant="ribbonTab === 'transform' ? 'soft' : 'link'"
+                    :color="ribbonTab === 'transform' ? 'primary' : 'neutral'"
+                    size="sm"
+                    icon="i-lucide-wand-sparkles"
+                    data-tour="ribbon-transform"
+                    @click="setRibbonTab('transform')"
+                >
+                    {{ t("ribbon.transform") }}
+                </UButton>
+                <UButton
+                    :variant="ribbonTab === 'validate' ? 'soft' : 'link'"
+                    :color="ribbonTab === 'validate' ? 'primary' : 'neutral'"
+                    size="sm"
+                    icon="i-lucide-file-search"
+                    data-tour="ribbon-validate"
+                    @click="setRibbonTab('validate')"
+                >
+                    {{ t("ribbon.validate") }}
+                </UButton>
+            </div>
+        </template>
+        <template #rightPostItems>
             <UDropdownMenu v-if="isAuthEnabled" :items="items">
                 <UButton variant="ghost" color="neutral">
                     <img
