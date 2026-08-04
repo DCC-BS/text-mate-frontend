@@ -1,3 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32" role="img" aria-label="TextMate"><title>TextMate</title><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" role="img" aria-label="TextMate"><title>TextMate</title><!-- Icon from Lucide by Lucide Contributors - https://github.com/lucide-icons/lucide/blob/main/LICENSE --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v14m4-9h2m-2-4h2M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4a4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3a3 3 0 0 0-3-3zm3-6h2M6 8h2"></path></svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
-@media (prefers-color-scheme: dark) { :root { filter: none; } }
-</style></svg>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>TextMate</title>
+<rect width="1024" height="1024" fill="#8C4A92" style="fill:#8C4A92;fill:color(display-p3 0.5490 0.2902 0.5725);fill-opacity:1;"/>
+<g transform="translate(-57.35 -273.55) scale(1.2653)">
+<path d="M621.02 810.46L380.86 730.28L69.64 455.92L90.92 431.6L384.28 690.38L428.74 645.92L226.96 458.2L249 435.02L451.54 623.12L499.8 575.62L377.82 454.02L400.62 431.22L540.84 570.68L621.02 810.46ZM570.48 759.54L517.66 602.6L412.4 707.1L570.48 759.54Z" fill="#FDC603" style="fill:#FDC603;fill:color(display-p3 0.9922 0.7765 0.0118);fill-opacity:1;"/>
+<path d="M830.3 659.64L800.24 719.58L770.36 660.18L800.24 600.42L830.3 659.64ZM800.24 685.92L813.2 659.82L800.42 634.26L787.28 660.18L800.24 685.92ZM710.6 780.06L665.6 690.78L710.6 600.42L755.78 689.7L710.6 780.06ZM734.54 689.16L710.78 642.36L686.66 690.6L710.6 738.12L734.54 689.16Z" fill="#FDC603" style="fill:#FDC603;fill:color(display-p3 0.9922 0.7765 0.0118);fill-opacity:1;"/>
+</g>
+</svg>
