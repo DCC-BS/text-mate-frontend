@@ -6,7 +6,7 @@ const userMail = computed(() => data.value?.user?.email ?? undefined);
 
 <template>
     <div>
-        <div class="h-[calc(100dvh-5px)] grid grid-rows-[auto_1fr_auto]">
+        <div class="h-screen grid grid-rows-[auto_minmax(0,1fr)_auto]">
             <NavigationMenu />
             <MainContainer />
             <DataBsFooter size="sm" class="p-2">

@@ -97,7 +97,7 @@ const words = computed(
                 <!-- Editor area + drop target -->
                 <div
                     ref="dropZoneRef"
-                    class="w-full h-full overflow-y-auto overflow-x-hidden relative mb-[35px]"
+                    class="w-full flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative mb-[35px]"
                 >
                     <!-- Drop zone overlay -->
                     <div
