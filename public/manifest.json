@@ -1,9 +1,13 @@
 {
     "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+    "id": "/",
     "name": "TextMate",
     "short_name": "TextMate",
     "description": "Tool for text manipulation",
+    "lang": "de",
     "start_url": "/",
+    "scope": "/",
+    "orientation": "any",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -33,8 +37,9 @@
             "url": "/?clipboard=true",
             "icons": [
                 {
-                    "src": "/MaterialSymbolsContentPasteGo.png",
-                    "sizes": "512x512"
+                    "src": "/shortcut-clipboard-512x512.png",
+                    "sizes": "512x512",
+                    "type": "image/png"
                 }
             ]
         }
