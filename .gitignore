@@ -37,3 +37,4 @@ env.d.ts
 plan/
 CONTEXT.md
 *.old
+mise.local.toml
