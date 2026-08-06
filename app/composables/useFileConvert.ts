@@ -4,10 +4,10 @@ import type { ConversionResult } from "~/assets/models/conversion-result";
 import { useUseErrorDialog } from "./useUseErrorDialog";
 /**
  * Composable for handling file conversion and drop zone functionality
- * @param onComplete Callback function that receives the converted text
+ * @param onComplete Callback function that receives the converted HTML content
  * @returns Object containing drop zone refs and state
  */
-export function useFileConvert(onComplete: (text: string) => void) {
+export function useFileConvert(onComplete: (htmlContent: string) => void) {
     const logger = useLogger();
     const { t } = useI18n();
 

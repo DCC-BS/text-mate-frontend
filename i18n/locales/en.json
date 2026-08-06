@@ -1,5 +1,7 @@
 {
     "errors": {
+        "title": "Error",
+        "no_text_to_process": "No text to process",
         "unexpected_error": "Unexpected error occurred.  Maybe the server is down, if the error persists. Please use the feedback button to send us a message.",
         "no_document": "The document was not found.",
         "check_text_error": "Error checking text",
@@ -224,7 +226,8 @@
     },
     "actions": {
         "custom": "Custom",
-        "apply": "Apply"
+        "apply": "Apply",
+        "more": "More actions"
     },
     "user-dictionary": {
         "title": "Dictionary",
@@ -404,6 +407,10 @@
         "conclusion": {
             "title": "That's it!",
             "content": "You are now ready to make full use of TextMate. Feel free to restart the tour if you forget something. Have fun writing!"
+        },
+        "unavailable": {
+            "title": "Onboarding is desktop-only",
+            "content": "The interactive tour isn't available on mobile. Please open TextMate on a desktop device."
         }
     },
     "common": {

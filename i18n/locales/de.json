@@ -1,5 +1,7 @@
 {
     "errors": {
+        "title": "Fehler",
+        "no_text_to_process": "Kein Text zum Verarbeiten",
         "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten. Möglicherweise ist der Server nicht erreichbar. Falls der Fehler weiterhin auftritt, nutzen Sie bitte die Feedback-Funktion, um uns eine Nachricht zu senden.",
         "no_document": "Das Dokument wurde nicht gefunden.",
         "check_text_error": "Fehler beim Überprüfen des Textes",
@@ -180,7 +182,8 @@
     },
     "actions": {
         "custom": "Benutzerdefiniert",
-        "apply": "Anwenden"
+        "apply": "Anwenden",
+        "more": "Weitere Aktionen"
     },
     "user-dictionary": {
         "title": "Wörterbuch",
@@ -360,6 +363,10 @@
         "conclusion": {
             "title": "Das war's!",
             "content": "Du bist jetzt bereit, TextMate voll zu nutzen. Zögere nicht, die Tour erneut zu starten, wenn Du etwas vergessen hast. Viel Spass beim Schreiben!"
+        },
+        "unavailable": {
+            "title": "Einführung nur auf dem Desktop",
+            "content": "Die interaktive Einführung ist auf Mobilgeräten nicht verfügbar. Bitte öffne TextMate auf einem Desktop-Gerät."
         }
     },
     "common": {

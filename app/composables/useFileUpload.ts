@@ -1,5 +1,5 @@
 export interface UseFileUploadOptions {
-    onFileConverted: (text: string) => void;
+    onFileConverted: (htmlContent: string) => void;
 }
 
 export function useTextFileUpload(options: UseFileUploadOptions) {

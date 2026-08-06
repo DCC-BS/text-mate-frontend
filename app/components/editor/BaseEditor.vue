@@ -4,7 +4,6 @@ import { EditorContent } from "@tiptap/vue-3";
 import { Cmds, type ToggleLockEditorCommand } from "~/assets/models/commands";
 import type { EditorSelection } from "~/composables/useBaseEditor";
 import { useTextFileUpload } from "~/composables/useFileUpload";
-import { plainTextToEditorHtml } from "~/utils/plainTextToEditorHtml";
 import EditorTextClear from "./TextClear.vue";
 import EditorTextToolbar from "./TextToolbar.vue";
 
@@ -45,8 +44,8 @@ const {
     triggerFileUpload,
     onFileSelect,
 } = useTextFileUpload({
-    onFileConverted: (text: string) => {
-        props.editor?.commands.setContent(plainTextToEditorHtml(text));
+    onFileConverted: (htmlContent: string) => {
+        props.editor?.commands.setContent(htmlContent);
     },
 });
 

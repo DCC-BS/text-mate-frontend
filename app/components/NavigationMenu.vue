@@ -28,41 +28,65 @@ const apps = useAppList("TextMate");
 </script>
 
 <template>
-    <NavigationBar :other-apps="apps">
-        <template #center>
-            <div class="flex items-end gap-1">
-                <UButton
-                    :variant="ribbonTab === 'transform' ? 'soft' : 'link'"
-                    :color="ribbonTab === 'transform' ? 'primary' : 'neutral'"
-                    size="sm"
-                    icon="i-lucide-wand-sparkles"
-                    data-tour="ribbon-transform"
-                    @click="setRibbonTab('transform')"
-                >
-                    {{ t("ribbon.transform") }}
-                </UButton>
-                <UButton
-                    :variant="ribbonTab === 'validate' ? 'soft' : 'link'"
-                    :color="ribbonTab === 'validate' ? 'primary' : 'neutral'"
-                    size="sm"
-                    icon="i-lucide-file-search"
-                    data-tour="ribbon-validate"
-                    @click="setRibbonTab('validate')"
-                >
-                    {{ t("ribbon.validate") }}
-                </UButton>
-            </div>
-        </template>
-        <template #rightPostItems>
-            <UDropdownMenu v-if="isAuthEnabled" :items="items">
-                <UButton variant="ghost" color="neutral">
-                    <img
-                        :src="userImage"
-                        class="h-6 w-6 rounded-full"
-                        :alt="data?.user?.name || 'User'"
+    <div>
+        <NavigationBar :other-apps="apps">
+            <template #center>
+                <div class="hidden md:flex items-end gap-1">
+                    <UButton
+                        :variant="ribbonTab === 'transform' ? 'soft' : 'link'"
+                        :color="ribbonTab === 'transform' ? 'primary' : 'neutral'"
+                        size="sm"
+                        icon="i-lucide-wand-sparkles"
+                        data-tour="ribbon-transform"
+                        @click="setRibbonTab('transform')"
                     >
-                </UButton>
-            </UDropdownMenu>
-        </template>
-    </NavigationBar>
+                        {{ t("ribbon.transform") }}
+                    </UButton>
+                    <UButton
+                        :variant="ribbonTab === 'validate' ? 'soft' : 'link'"
+                        :color="ribbonTab === 'validate' ? 'primary' : 'neutral'"
+                        size="sm"
+                        icon="i-lucide-file-search"
+                        data-tour="ribbon-validate"
+                        @click="setRibbonTab('validate')"
+                    >
+                        {{ t("ribbon.validate") }}
+                    </UButton>
+                </div>
+            </template>
+            <template #rightPostItems>
+                <UDropdownMenu v-if="isAuthEnabled" :items="items">
+                    <UButton variant="ghost" color="neutral">
+                        <img
+                            :src="userImage"
+                            class="h-6 w-6 rounded-full"
+                            :alt="data?.user?.name || 'User'"
+                        >
+                    </UButton>
+                </UDropdownMenu>
+            </template>
+        </NavigationBar>
+        <div class="px-2 md:hidden w-full flex justify-stretch gap-1">
+            <UButton
+                class="grow"
+                :variant="ribbonTab === 'transform' ? 'soft' : 'link'"
+                :color="ribbonTab === 'transform' ? 'primary' : 'neutral'"
+                icon="i-lucide-wand-sparkles"
+                data-tour="ribbon-transform-mobile"
+                @click="setRibbonTab('transform')"
+            >
+                {{ t("ribbon.transform") }}
+            </UButton>
+            <UButton
+                class="grow"
+                :variant="ribbonTab === 'validate' ? 'soft' : 'link'"
+                :color="ribbonTab === 'validate' ? 'primary' : 'neutral'"
+                icon="i-lucide-file-search"
+                data-tour="ribbon-validate-mobile"
+                @click="setRibbonTab('validate')"
+            >
+                {{ t("ribbon.validate") }}
+            </UButton>
+        </div>
+    </div>
 </template>
