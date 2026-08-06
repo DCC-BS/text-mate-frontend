@@ -105,6 +105,7 @@ function onDrawerCustom(config: string): void {
                 color="neutral"
                 class="flex-col h-auto py-2.5 gap-1 px-4 shrink-0 rounded-xl"
                 :disabled="!actionsAreAvailable"
+                data-tour="custom-quick-action-mobile"
             >
                 <UIcon name="i-lucide-layout-grid" class="size-6" />
                 <span class="text-xs font-medium">{{ t("actions.more") }}</span>

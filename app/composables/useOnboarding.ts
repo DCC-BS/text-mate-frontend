@@ -13,12 +13,12 @@ import {
     ShowTextStatsCommand,
 } from "~/assets/models/commands";
 
-// The ribbon tab buttons render twice — desktop (hidden below `md`) and mobile
-// (hidden at `md`+). driver.js evaluates an element resolver when each step
-// becomes active, so return whichever variant is currently on-screen. This
-// mirrors driver.js's own visibility check (`offsetWidth || offsetHeight ||
-// getClientRects().length`).
-function resolveRibbonTarget(...selectors: string[]): Element {
+// Several tour targets render twice — a desktop variant (hidden below `md`)
+// and a mobile variant (hidden at `md`+). driver.js evaluates an element
+// resolver when each step becomes active, so return whichever variant is
+// currently on-screen. This mirrors driver.js's own visibility check
+// (`offsetWidth || offsetHeight || getClientRects().length`).
+function resolveTourTarget(...selectors: string[]): Element {
     for (const selector of selectors) {
         const el = document.querySelector(selector) as HTMLElement | null;
         if (
@@ -162,7 +162,7 @@ export function useOnboading() {
             // Transform tab.
             {
                 element: () =>
-                    resolveRibbonTarget(
+                    resolveTourTarget(
                         '[data-tour="ribbon-transform"]',
                         '[data-tour="ribbon-transform-mobile"]',
                     ),
@@ -178,7 +178,11 @@ export function useOnboading() {
             },
             // Built-in Quick Actions.
             {
-                element: '[data-tour="quick-actions"]',
+                element: () =>
+                    resolveTourTarget(
+                        '[data-tour="quick-actions"]',
+                        '[data-tour="quick-actions-mobile"]',
+                    ),
                 popover: {
                     title: () => t("tour.quickActions.title"),
                     description: () => t("tour.quickActions.content"),
@@ -191,7 +195,11 @@ export function useOnboading() {
             },
             // Custom action — on next, seed the diff (async) then advance.
             {
-                element: '[data-tour="custom-quick-action"]',
+                element: () =>
+                    resolveTourTarget(
+                        '[data-tour="custom-quick-action"]',
+                        '[data-tour="custom-quick-action-mobile"]',
+                    ),
                 popover: {
                     title: () => t("tour.customQuickAction.title"),
                     description: () =>
@@ -268,7 +276,7 @@ export function useOnboading() {
             // Validate tab — on next, seed a demo violation thread then advance.
             {
                 element: () =>
-                    resolveRibbonTarget(
+                    resolveTourTarget(
                         '[data-tour="ribbon-validate"]',
                         '[data-tour="ribbon-validate-mobile"]',
                     ),
@@ -281,7 +289,11 @@ export function useOnboading() {
             },
             // Check tab — on next, check the demo thread for errors.
             {
-                element: '[data-tour="ribbon-check"]',
+                element: () =>
+                    resolveTourTarget(
+                        '[data-tour="ribbon-check"]',
+                        '[data-tour="ribbon-check-mobile"]',
+                    ),
                 popover: {
                     title: () => t("tour.check.title"),
                     description: () => t("tour.check.content"),
@@ -290,9 +302,14 @@ export function useOnboading() {
                 },
             },
             // Threads rail — rendered by v-if once a thread exists (seeded by the
-            // validate step). Clear the demo thread on leave.
+            // validate step). On mobile the rail lives in a slideover that
+            // auto-opens when the demo thread becomes active. Clear on leave.
             {
-                element: '[data-tour="threads-rail"]',
+                element: () =>
+                    resolveTourTarget(
+                        '[data-tour="threads-rail"]',
+                        '[data-tour="threads-rail-mobile"]',
+                    ),
                 popover: {
                     title: () => t("tour.threads.title"),
                     description: () => t("tour.threads.content"),

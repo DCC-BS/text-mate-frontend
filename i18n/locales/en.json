@@ -407,6 +407,10 @@
         "conclusion": {
             "title": "That's it!",
             "content": "You are now ready to make full use of TextMate. Feel free to restart the tour if you forget something. Have fun writing!"
+        },
+        "unavailable": {
+            "title": "Onboarding is desktop-only",
+            "content": "The interactive tour isn't available on mobile. Please open TextMate on a desktop device."
         }
     },
     "common": {

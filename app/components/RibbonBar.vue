@@ -14,7 +14,10 @@ const { ribbonTab: activeTab } = useRibbonTab();
 <template>
     <div class="border-b border-default min-w-0" data-tour="ribbon">
         <!-- Mobile ribbon -->
-        <div class="px-2 pb-2 pt-1.5 min-w-0 md:hidden">
+        <div
+            class="px-2 pb-2 pt-1.5 min-w-0 md:hidden"
+            :data-tour="activeTab === 'transform' ? 'quick-actions-mobile' : undefined"
+        >
             <RibbonMobileTransformTab
                 v-if="activeTab === 'transform'"
                 :text="props.text"

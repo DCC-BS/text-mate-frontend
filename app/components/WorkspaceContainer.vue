@@ -260,12 +260,14 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
             :ui="{ body: 'p-0 sm:p-0' }"
         >
             <template #body>
-                <Rail
-                    :threads="ws.threads.value"
-                    :active-thread-id="ws.activeThreadId.value"
-                    :checking="ws.progress.value === 'checking'"
-                    @open-pdf="onOpenPdf"
-                />
+                <div data-tour="threads-rail-mobile">
+                    <Rail
+                        :threads="ws.threads.value"
+                        :active-thread-id="ws.activeThreadId.value"
+                        :checking="ws.progress.value === 'checking'"
+                        @open-pdf="onOpenPdf"
+                    />
+                </div>
             </template>
         </USlideover>
 

@@ -45,6 +45,7 @@ async function onValidate(): Promise<void> {
                 color="neutral"
                 class="flex-col h-auto py-2.5 gap-1 flex-1 min-w-0 rounded-xl"
                 :disabled="!actionsAreAvailable"
+                data-tour="ribbon-check-mobile"
             >
                 <UIcon name="i-lucide-search-check" class="size-6" />
                 <span class="text-xs font-medium truncate w-full text-center"
