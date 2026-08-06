@@ -49,6 +49,8 @@ export function useMobileActions(props: RibbonTransformProps) {
     const { t } = useI18n();
     const { runQuickAction } = useQuickAction();
     const toast = useToast();
+    const { showError } = useUserFeedback();
+    const logger = useLogger();
 
     const actionsAreAvailable = computed(
         () => props.editable && !props.busy && props.text.trim().length > 0,
@@ -80,7 +82,10 @@ export function useMobileActions(props: RibbonTransformProps) {
             method: "get",
             schema: TextActionGetOutputSchema,
         });
-        if (!isApiError(response)) {
+        if (isApiError(response)) {
+            logger.error(response, "Failed to load user actions");
+            showError(response);
+        } else {
             userActions.value = response.actions.map((a) => ({
                 id: a.id,
                 name: a.name,
