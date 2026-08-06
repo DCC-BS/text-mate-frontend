@@ -23,9 +23,9 @@ const items = computed<DropdownMenuItem[]>(() => [
     },
     {
         label: t("quick-actions.social-mediafy.instagram"),
-        value: "instagramm",
+        value: "instagram",
         icon: "i-simple-icons-instagram",
-        onSelect: () => emit("apply-action", "social_mediafy", "instagramm"),
+        onSelect: () => emit("apply-action", "social_mediafy", "instagram"),
     },
     {
         label: t("quick-actions.social-mediafy.linkedin"),

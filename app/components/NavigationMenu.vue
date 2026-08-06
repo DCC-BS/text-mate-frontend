@@ -72,7 +72,7 @@ const apps = useAppList("TextMate");
                 :variant="ribbonTab === 'transform' ? 'soft' : 'link'"
                 :color="ribbonTab === 'transform' ? 'primary' : 'neutral'"
                 icon="i-lucide-wand-sparkles"
-                data-tour="ribbon-transform"
+                data-tour="ribbon-transform-mobile"
                 @click="setRibbonTab('transform')"
             >
                 {{ t("ribbon.transform") }}
@@ -82,7 +82,7 @@ const apps = useAppList("TextMate");
                 :variant="ribbonTab === 'validate' ? 'soft' : 'link'"
                 :color="ribbonTab === 'validate' ? 'primary' : 'neutral'"
                 icon="i-lucide-file-search"
-                data-tour="ribbon-validate"
+                data-tour="ribbon-validate-mobile"
                 @click="setRibbonTab('validate')"
             >
                 {{ t("ribbon.validate") }}

@@ -60,8 +60,8 @@ export function useMobileActions(props: RibbonTransformProps) {
     async function apply(action: string, config?: string): Promise<void> {
         if (!actionsAreAvailable.value) {
             toast.add({
-                title: "Error",
-                description: "No text to process",
+                title: t("errors.title"),
+                description: t("errors.no_text_to_process"),
                 color: "error",
                 icon: "i-lucide-circle-alert",
             });
@@ -162,7 +162,7 @@ export function useMobileActions(props: RibbonTransformProps) {
                         {
                             label: t("quick-actions.social-mediafy.instagram"),
                             icon: "i-simple-icons-instagram",
-                            config: "instagramm",
+                            config: "instagram",
                         },
                         {
                             label: t("quick-actions.social-mediafy.linkedin"),

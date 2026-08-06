@@ -1,5 +1,7 @@
 {
     "errors": {
+        "title": "Error",
+        "no_text_to_process": "No text to process",
         "unexpected_error": "Unexpected error occurred.  Maybe the server is down, if the error persists. Please use the feedback button to send us a message.",
         "no_document": "The document was not found.",
         "check_text_error": "Error checking text",

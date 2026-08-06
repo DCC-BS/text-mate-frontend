@@ -1,5 +1,7 @@
 {
     "errors": {
+        "title": "Fehler",
+        "no_text_to_process": "Kein Text zum Verarbeiten",
         "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten. Möglicherweise ist der Server nicht erreichbar. Falls der Fehler weiterhin auftritt, nutzen Sie bitte die Feedback-Funktion, um uns eine Nachricht zu senden.",
         "no_document": "Das Dokument wurde nicht gefunden.",
         "check_text_error": "Fehler beim Überprüfen des Textes",

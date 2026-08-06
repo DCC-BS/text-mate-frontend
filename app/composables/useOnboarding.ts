@@ -13,6 +13,24 @@ import {
     ShowTextStatsCommand,
 } from "~/assets/models/commands";
 
+// The ribbon tab buttons render twice — desktop (hidden below `md`) and mobile
+// (hidden at `md`+). driver.js evaluates an element resolver when each step
+// becomes active, so return whichever variant is currently on-screen. This
+// mirrors driver.js's own visibility check (`offsetWidth || offsetHeight ||
+// getClientRects().length`).
+function resolveRibbonTarget(...selectors: string[]): Element {
+    for (const selector of selectors) {
+        const el = document.querySelector(selector) as HTMLElement | null;
+        if (
+            el &&
+            (el.offsetWidth || el.offsetHeight || el.getClientRects().length)
+        ) {
+            return el;
+        }
+    }
+    return document.querySelector(selectors[0] ?? "") ?? document.body;
+}
+
 export function useOnboading() {
     // Example Working Text seeded into the editor so the tour has content to act on.
     const exampleText = "Schreibe hier deinen text.";
@@ -143,7 +161,11 @@ export function useOnboading() {
             },
             // Transform tab.
             {
-                element: '[data-tour="ribbon-transform"]',
+                element: () =>
+                    resolveRibbonTarget(
+                        '[data-tour="ribbon-transform"]',
+                        '[data-tour="ribbon-transform-mobile"]',
+                    ),
                 popover: {
                     title: () => t("tour.transform.title"),
                     description: () => t("tour.transform.content"),
@@ -245,7 +267,11 @@ export function useOnboading() {
         .addSteps([
             // Validate tab — on next, seed a demo violation thread then advance.
             {
-                element: '[data-tour="ribbon-validate"]',
+                element: () =>
+                    resolveRibbonTarget(
+                        '[data-tour="ribbon-validate"]',
+                        '[data-tour="ribbon-validate-mobile"]',
+                    ),
                 popover: {
                     title: () => t("tour.validate.title"),
                     description: () => t("tour.validate.content"),
