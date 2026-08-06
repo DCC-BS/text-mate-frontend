@@ -46,7 +46,7 @@ const {
     onFileSelect,
 } = useTextFileUpload({
     onFileConverted: (text: string) => {
-        props.editor?.commands.setContent(plainTextToEditorHtml(text));
+        props.editor?.commands.setContent(text);
     },
 });
 

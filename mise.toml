@@ -15,6 +15,7 @@ enter = { task = "enter-checks" }
 # ── Setup ─────────────────────────────────────────────────────────────────────
 
 [tasks.install]
+env = { APP_MODE = "build" }
 description = "install npm packages"
 run = [
     "bun install",

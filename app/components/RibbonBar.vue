@@ -1,83 +1,14 @@
 <script setup lang="ts">
-import { ApplyFixCommand, CheckCommand } from "~/assets/models/commands";
-import type { TextActions } from "~~/shared/text-actions";
-import CharacterSpeechAction from "./rewrite/quick-action/CharacterSpeechAction.vue";
-import CustomAction from "./rewrite/quick-action/CustomAction.vue";
-import FormalityAction from "./rewrite/quick-action/FormalityAction.vue";
-import MediumAction from "./rewrite/quick-action/MediumAction.vue";
-import SocialMediaAction from "./rewrite/quick-action/SocialMediaAction.vue";
-import SummarizeAction from "./rewrite/quick-action/SummarizeAction.vue";
-import UserActions from "./rewrite/quick-action/UserActions.vue";
+import type { RibbonProps } from "~/types/ribbon";
 
-interface Props {
-    /** Current Working Text, sent to the backend with each transform action. */
-    text: string;
-    /** True while a stream/diff is in progress — disables all actions. */
-    busy: boolean;
-    /** True while the editor accepts edits. */
-    editable: boolean;
-    selectedDocs: string[];
-    maxDocs: number;
-    toFixCount: number;
-}
-
-const props = defineProps<Props>();
+const props = defineProps<RibbonProps>();
 
 const emit = defineEmits<{
     clear: [];
     "update:selectedDocs": [string[]];
 }>();
 
-const { t } = useI18n();
-const { runQuickAction } = useQuickAction();
-const { executeCommand } = useCommandBus();
-const toast = useToast();
 const { ribbonTab: activeTab } = useRibbonTab();
-
-const actionsAreAvailable = computed(
-    () => props.editable && !props.busy && props.text.trim().length > 0,
-);
-
-const isDocSelectOpen = ref(false);
-
-async function applyAction(
-    action: TextActions | string,
-    config?: string,
-): Promise<void> {
-    if (!actionsAreAvailable.value) {
-        toast.add({
-            title: "Error",
-            description: "No text to process",
-            color: "error",
-            icon: "i-lucide-circle-alert",
-        });
-        return;
-    }
-
-    await runQuickAction({
-        action,
-        text: props.text,
-        options: config ?? "",
-    });
-}
-
-const selectedDocsModel = computed({
-    get: () => props.selectedDocs,
-    set: (value: string[]) => onUpdateDocs(value),
-});
-
-function onUpdateDocs(newValue: string[]) {
-    if (newValue.length > props.maxDocs) {
-        return;
-    }
-
-    emit("update:selectedDocs", newValue);
-}
-
-async function onValidate() {
-    isDocSelectOpen.value = false;
-    await executeCommand(new CheckCommand());
-}
 </script>
 
 <template>
@@ -87,144 +18,13 @@ async function onValidate() {
             <!-- TRANSFORM TAB -->
             <div
                 v-if="activeTab === 'transform'"
-                class="flex items-stretch gap-3 w-full min-w-0 flex-nowrap overflow-x-auto md:flex-wrap md:justify-center md:overflow-x-visible pb-1 md:pb-0"
                 data-tour="quick-actions"
             >
-                <!-- Restructure -->
-                <RibbonGroup
-                    :label="t('ribbon.restructure')"
-                    icon="i-lucide-list-tree"
-                >
-                    <SummarizeAction
-                        :actions-are-available="actionsAreAvailable"
-                        @apply-action="applyAction"
-                    />
-                    <RibbonIconButton
-                        :label="t('editor.bullet_points')"
-                        icon="i-lucide-list"
-                        :disabled="!actionsAreAvailable"
-                        @click="applyAction('bullet_points')"
-                    />
-                </RibbonGroup>
-
-                <RibbonDivider />
-
-                <!-- Rewrite for -->
-                <RibbonGroup
-                    :label="t('ribbon.rewriteFor')"
-                    icon="i-lucide-pen-line"
-                >
-                    <SocialMediaAction
-                        :actions-are-available="actionsAreAvailable"
-                        @apply-action="applyAction"
-                    />
-                    <MediumAction
-                        :actions-are-available="actionsAreAvailable"
-                        @apply-action="applyAction"
-                    />
-                    <CharacterSpeechAction
-                        :actions-are-available="actionsAreAvailable"
-                        @apply-action="applyAction"
-                    />
-                    <FormalityAction
-                        :actions-are-available="actionsAreAvailable"
-                        @apply-action="applyAction"
-                    />
-                </RibbonGroup>
-
-                <RibbonDivider />
-
-                <!-- Polish -->
-                <RibbonGroup
-                    :label="t('ribbon.polish')"
-                    icon="i-lucide-sparkles"
-                >
-                    <RibbonIconButton
-                        :label="t('editor.plain_language')"
-                        icon="i-lucide-book-open"
-                        :disabled="!actionsAreAvailable"
-                        @click="applyAction('plain_language')"
-                    />
-                    <RibbonIconButton
-                        :label="t('editor.proofread')"
-                        icon="i-lucide-check"
-                        :disabled="!actionsAreAvailable"
-                        @click="applyAction('proofread')"
-                    />
-                </RibbonGroup>
-
-                <RibbonDivider />
-
-                <!-- Custom + My Actions -->
-                <RibbonGroup
-                    :label="t('actions.custom')"
-                    icon="i-lucide-wand-2"
-                >
-                    <CustomAction
-                        :actions-are-available="actionsAreAvailable"
-                        @apply-action="applyAction"
-                    />
-                    <UserActions
-                        :actions-are-available="actionsAreAvailable"
-                        @apply-action="applyAction"
-                    />
-                </RibbonGroup>
+                <RibbonTransformTab v-bind="props" />
             </div>
-
             <!-- VALIDATE TAB -->
             <div v-else class="flex justify-center items-stretch gap-3 w-full">
-                <!-- Check / Fix -->
-                <RibbonGroup
-                    :label="t('ribbon.validate')"
-                    icon="i-lucide-file-search"
-                >
-                    <UDrawer v-model:open="isDocSelectOpen">
-                        <RibbonIconButton
-                            :label="t('ribbon.check')"
-                            icon="i-lucide-search-check"
-                            :disabled="!actionsAreAvailable"
-                            data-tour="ribbon-check"
-                        />
-                        <template #content>
-                            <div
-                                class="flex flex-col justify-center items-center p-2 gap-2"
-                            >
-                                <div>
-                                    {{ t('advisor.selectDocsDescription', { maxDocs: props.maxDocs }) }}
-                                </div>
-                                <AdvisorDocSelect
-                                    v-model="selectedDocsModel"
-                                    :max="props.maxDocs"
-                                />
-                                <UButton
-                                    @click="onValidate"
-                                    :disabled="!editable || busy || selectedDocs.length === 0
-                            "
-                                >
-                                    {{ t("advisor.applyDocs") }}
-                                </UButton>
-                            </div>
-                        </template>
-                    </UDrawer>
-                    <RibbonIconButton
-                        :label="t('ribbon.fix')"
-                        icon="i-lucide-wrench"
-                        :disabled="!editable || busy || toFixCount === 0"
-                        @click="executeCommand(new ApplyFixCommand())"
-                    />
-                </RibbonGroup>
-
-                <RibbonDivider />
-
-                <!-- Clear -->
-                <RibbonGroup :label="t('ribbon.clear')" icon="i-lucide-eraser">
-                    <RibbonIconButton
-                        :label="t('ribbon.clear')"
-                        icon="i-lucide-trash-2"
-                        :disabled="busy"
-                        @click="emit('clear')"
-                    />
-                </RibbonGroup>
+                <RibbonValidateTab v-bind="props" />
             </div>
         </div>
     </div>
