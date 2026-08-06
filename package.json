@@ -89,7 +89,7 @@
         "@parcel/watcher"
     ],
     "overrides": {
-        "prosemirror-model": "1.25.9",
+        "prosemirror-model": "1.25.11",
         "prosemirror-view": "1.41.9"
     },
     "patchedDependencies": {
