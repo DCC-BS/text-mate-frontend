@@ -224,7 +224,8 @@
     },
     "actions": {
         "custom": "Custom",
-        "apply": "Apply"
+        "apply": "Apply",
+        "more": "More actions"
     },
     "user-dictionary": {
         "title": "Dictionary",

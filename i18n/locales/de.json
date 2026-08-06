@@ -180,7 +180,8 @@
     },
     "actions": {
         "custom": "Benutzerdefiniert",
-        "apply": "Anwenden"
+        "apply": "Anwenden",
+        "more": "Weitere Aktionen"
     },
     "user-dictionary": {
         "title": "Wörterbuch",
