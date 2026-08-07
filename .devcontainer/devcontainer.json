@@ -8,15 +8,19 @@
             "upgradePackages": true
         }
     },
-    "remoteUser": "vscode",
+    "remoteUser": "root",
+    "containerUser": "root",
+    "updateRemoteUserUID": false,
+    "containerEnv": {
+        "HOME": "/home/vscode"
+    },
     "remoteEnv": {
+        "HOME": "/home/vscode",
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
         "PROTON_PASS_KEY_PROVIDER": "fs"
     },
     "postCreateCommand": ".devcontainer/scripts/setup.sh",
-    "forwardPorts": [
-        3000
-    ],
+    "forwardPorts": [3000],
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
     ]
