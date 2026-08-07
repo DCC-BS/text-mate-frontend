@@ -38,3 +38,4 @@ plan/
 CONTEXT.md
 *.old
 mise.local.toml
+.devpod-internal/
