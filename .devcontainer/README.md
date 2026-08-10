@@ -20,25 +20,47 @@ If you ever see files owned by `100999` again (e.g. after restoring a backup), r
 sudo chown -R tobi:tobi /home/tobi/Code/text-mate-frontend
 ```
 
-## Before you start DevPod (each session)
+## One-time host setup (per machine)
 
-Load your GitHub key into the host agent:
+This devcontainer forwards the host's SSH agent into the container — the private key is **never** copied in. Configure the host once and you never need to think about it again; no per-session `ssh-agent` / `ssh-add` dance.
+
+### 1. Use the persistent systemd agent
+
+Modern systemd already runs `ssh-agent.socket` at boot and exposes it at `$XDG_RUNTIME_DIR/openssh_agent`. Point your shell at it instead of spawning a throwaway agent per terminal:
 
 ```sh
-ssh-add ~/.ssh/id_ed25519
+mkdir -p ~/.config/environment.d
+echo 'SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/openssh_agent' > ~/.config/environment.d/ssh-agent.conf
 ```
 
-If `ssh-add` reports `Could not open a connection to your authentication agent`, start the agent first:
+Log out and back in (or reboot) for it to take effect. Verify with:
 
 ```sh
+echo "$SSH_AUTH_SOCK"   # should print /run/user/<uid>/openssh_agent
+```
+
+On hosts without systemd user units (e.g. WSL, macOS), fall back to the per-shell agent:
+
+```sh
+# only if the systemd socket is unavailable
 eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
 ```
 
-Verify it loaded:
+### 2. Auto-load the key on first use
+
+Add this line **above any `Host` block** in `~/.ssh/config`:
+
+```
+AddKeysToAgent yes
+```
+
+Now the first `git pull` / `ssh git@github.com` silently loads `~/.ssh/id_ed25519` into the agent. For a passphrase-less key this is completely invisible; for a passphrase-protected key you are prompted once per agent lifetime (consider removing the passphrase with `ssh-keygen -p -f ~/.ssh/id_ed25519`, or wire up `SSH_ASKPASS` / KWallet for auto-unlock).
+
+### 3. Verify
 
 ```sh
-ssh-add -l   # should print the SHA256 fingerprint of id_ed25519
+ssh -T git@github.com   # should greet you as your GitHub user
+ssh-add -l              # should list the SHA256 of id_ed25519 after first use
 ```
 
 ## How it works
