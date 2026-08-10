@@ -21,7 +21,7 @@
         "e2e:codegen": "playwright codegen http://localhost:3000"
     },
     "dependencies": {
-        "@dcc-bs/common-ui.bs.js": "2.1.3",
+        "@dcc-bs/common-ui.bs.js": "2.1.4",
         "@dcc-bs/communication.bs.js": "^0.1.3",
         "@dcc-bs/dependency-injection.bs.js": "^0.0.16",
         "@dcc-bs/event-system.bs.js": "^1.4.3",
