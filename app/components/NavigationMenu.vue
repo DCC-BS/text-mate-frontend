@@ -3,7 +3,7 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 
 // Add translation hook
 const { t } = useI18n();
-const { data, signOut, isAuthEnabled } = useAppAuth();
+const { data, signOut, isAuthEnabled, inMsTeams } = useAppAuth();
 const { ribbonTab, setRibbonTab } = useRibbonTab();
 
 const userImage = computed(() => {
@@ -29,7 +29,7 @@ const apps = useAppList("TextMate");
 
 <template>
     <div>
-        <NavigationBar :other-apps="apps">
+        <NavigationBar :other-apps="apps" :show-app-switcher="!inMsTeams">
             <template #center>
                 <div class="hidden md:flex items-end gap-1">
                     <UButton
