@@ -23,8 +23,10 @@ const {
     fleschScore,
 } = useTextStats(textRef);
 
-// Consume custom composable for backend CEFR evaluation
-const { isLoading, cefrLevel, error } = useCefrScore(textRef);
+// Consume custom composable for the backend readability evaluation. Only de/en
+// come back with a CEFR level; fr/it carry their own metric instead (§10).
+const { isLoading, cefrLevel, language, score, scoreLabel, band, error } =
+    useCefrScore(textRef);
 </script>
 
 <template>
@@ -64,10 +66,14 @@ const { isLoading, cefrLevel, error } = useCefrScore(textRef);
             <!-- Disable FleschScore in favor for CEFR score -->
             <!-- <FleschScoreVisualization :score="fleschScore" /> -->
 
-            <!-- CEFR Text Understandability Score Visualization -->
+            <!-- Text Understandability Score Visualization -->
             <CefrScoreVisualization
                 :is-loading="isLoading"
                 :cefr-level="cefrLevel"
+                :language="language"
+                :score="score"
+                :score-label="scoreLabel"
+                :band="band"
                 :error="error"
             />
         </div>

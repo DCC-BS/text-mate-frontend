@@ -6,7 +6,10 @@
         "no_document": "The document was not found.",
         "check_text_error": "Error checking text",
         "rewrite_text_error": "Error rewriting text",
-        "text_analysis_error": "Error analyzing text. Please try again later."
+        "text_analysis_error": "Error analyzing text. Please try again later.",
+        "invalid_mime_type": "Invalid or unsupported file format.",
+        "document_conversion_error": "Error converting document. Please check the file and try again.",
+        "document_conversion_timeout": "Document conversion timed out. Please try again with a smaller file."
     },
     "loading": "Loading...",
     "auth": {
@@ -302,6 +305,32 @@
     },
     "plain-language": {
         "notice": "Note: This tool is a support tool and does not replace a complete manual review. We recommend that all automatically generated texts be reviewed again before publication."
+    },
+    "simplify": {
+        "running": "Simplifying your text…",
+        "failed": "Simplification failed",
+        "diffTitle": "Simplification preview",
+        "attempt": "Attempt {attempt}",
+        "stage": {
+            "readability": "Measuring readability…"
+        },
+        "unitsInTarget": "{inTarget} of {total} text sections at target level",
+        "scoreComparison": "Readability before and after",
+        "readability": "Readability ({label})",
+        "readabilityDescription": "Readability is measured with the metric that fits the detected language. A CEFR level exists for German and English only.",
+        "notScored": "Not scored for this language",
+        "band": {
+            "easy": "Easy",
+            "ok": "Medium",
+            "hard": "Hard"
+        },
+        "unconverged": {
+            "title": "{count} passage needs a human look |{count} passages need a human look",
+            "position": "{index} of {count}",
+            "rejectedReason": "This passage was difficult and the suggestion was not applied.",
+            "prev": "Previous marked passage",
+            "next": "Next marked passage"
+        }
     },
     "pwa": {
         "newContentAvailable": "New content available",

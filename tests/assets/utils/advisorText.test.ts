@@ -4,6 +4,9 @@ import { Transform } from "prosemirror-transform";
 import type { AdvisorThread } from "../../../app/assets/models/advisor";
 import {
     advisorSegments,
+    buildDecorationSpecs,
+    clampOffset,
+    offsetToPos,
     reflowAdvisorRanges,
     serializeAdvisorText,
 } from "../../../app/utils/advisorText";
@@ -97,6 +100,49 @@ function threadAt(start: number, end: number): AdvisorThread {
     };
 }
 
+describe("offsetToPos at a paragraph boundary", () => {
+    // Regression test: a range that starts exactly on a paragraph break (as
+    // every multi-paragraph `unconverged_ranges` entry but the first does)
+    // used to resolve to the synthetic "\n\n" separator segment instead of
+    // the paragraph that follows, and silently return null — dropping the
+    // whole decoration. See simplifyRanges.ts / T6.7.
+    const d = doc(p(text("Hello world")), p(text("Second paragraph")));
+    // Segments: "Hello world" (0..11), "\n\n" (11..13, synthetic), "Second
+    // paragraph" (13..30).
+
+    it("resolves an offset at the separator's trailing edge to the next paragraph, not null", () => {
+        const segments = advisorSegments(d);
+        const resolved = offsetToPos(segments, 13);
+        expect(resolved).not.toBeNull();
+        // Should land inside "Second paragraph", not at the gap.
+        const text2 = serializeAdvisorText(d);
+        expect(text2.slice(13, 13 + 6)).toBe("Second");
+    });
+
+    it("still returns null for an offset strictly inside the separator", () => {
+        const segments = advisorSegments(d);
+        expect(offsetToPos(segments, 12)).toBeNull();
+    });
+
+    it("clampOffset resolves a paragraph-start offset via the same fix", () => {
+        const segments = advisorSegments(d);
+        expect(clampOffset(segments, 13)).not.toBeNull();
+    });
+
+    it("buildDecorationSpecs produces a decoration for a range starting exactly on a paragraph break", () => {
+        const thread: AdvisorThread = {
+            id: "t-boundary",
+            type: "violation",
+            status: "to-fix",
+            notes: [],
+            range: { start: 13, end: 30 }, // the whole second paragraph
+        };
+        const specs = buildDecorationSpecs(d, [thread], null);
+        expect(specs.length).toBeGreaterThan(0);
+        expect(specs.some((s) => s.id === "t-boundary")).toBe(true);
+    });
+});
+
 describe("reflowAdvisorRanges", () => {
     it("keeps a range anchored to its word when text is inserted before it", () => {
         const oldDoc = doc(p(text("Hello world"))); // "world" = offset 6..11
@@ -130,5 +176,63 @@ describe("reflowAdvisorRanges", () => {
 
         expect(t.range.start).toBe(-1);
         expect(t.range.end).toBe(-1);
+    });
+
+    // Regression test: typing a replacement over a fully-selected marked
+    // range (the "user rewrites a flagged passage by hand" gesture the whole
+    // auto-dismiss mechanism exists for) used to leave a spurious
+    // one-character sliver of the range alive instead of dismissing it,
+    // because — unlike a pure deletion — the mapped positions of a
+    // same-size-or-larger replacement don't collapse to the same point.
+    it("flags a range for auto-dismiss when its text is replaced by a single typed character", () => {
+        const oldDoc = doc(p(text("Hello world")));
+        // Model "select 'world' and type 'x'" as delete-then-insert, exactly
+        // how ProseMirror represents replacing a selection.
+        const tr = new Transform(oldDoc).delete(7, 12).insert(7, schema.text("x"));
+        const t = threadAt(6, 11);
+
+        reflowAdvisorRanges(oldDoc, tr.doc, tr.mapping, [t]);
+
+        expect(t.range.start).toBe(-1);
+        expect(t.range.end).toBe(-1);
+    });
+
+    it("flags a range for auto-dismiss when its text is replaced by longer text", () => {
+        const oldDoc = doc(p(text("Hello world")));
+        const tr = new Transform(oldDoc)
+            .delete(7, 12)
+            .insert(7, schema.text("everybody"));
+        const t = threadAt(6, 11);
+
+        reflowAdvisorRanges(oldDoc, tr.doc, tr.mapping, [t]);
+
+        expect(t.range.start).toBe(-1);
+        expect(t.range.end).toBe(-1);
+    });
+
+    it("does not dismiss a range when only its interior is edited (insert not touching either boundary)", () => {
+        const oldDoc = doc(p(text("Hello good old world")));
+        // Range covers "good old world" (offset 6..20); insert new text in
+        // its interior, away from both boundaries.
+        const t = threadAt(6, 20);
+        const tr = new Transform(oldDoc).insert(12, schema.text("REALLY ")); // inside "good [old world"
+        reflowAdvisorRanges(oldDoc, tr.doc, tr.mapping, [t]);
+
+        expect(t.range.start).not.toBe(-1);
+        const newText = serializeAdvisorText(tr.doc);
+        expect(newText.slice(t.range.start, t.range.end)).toContain("REALLY");
+    });
+
+    it("does not dismiss a range when only a small deletion touches its interior", () => {
+        const oldDoc = doc(p(text("Hello good old world")));
+        const t = threadAt(6, 20); // "good old world"
+        // Delete " old" (positions 11..15 in PM terms — mid-range, not
+        // touching either boundary).
+        const tr = new Transform(oldDoc).delete(11, 15);
+        reflowAdvisorRanges(oldDoc, tr.doc, tr.mapping, [t]);
+
+        expect(t.range.start).not.toBe(-1);
+        const newText = serializeAdvisorText(tr.doc);
+        expect(newText.slice(t.range.start, t.range.end)).toBe("good world");
     });
 });

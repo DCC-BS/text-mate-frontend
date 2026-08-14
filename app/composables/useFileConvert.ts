@@ -9,7 +9,7 @@ import { useUseErrorDialog } from "./useUseErrorDialog";
  */
 export function useFileConvert(onComplete: (htmlContent: string) => void) {
     const logger = useLogger();
-    const { t } = useI18n();
+    const { t, te } = useI18n();
 
     const dropZoneRef = ref<HTMLDivElement>();
     const isConverting = ref<boolean>(false);
@@ -60,15 +60,24 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
             result.html = result.html.replace(/\\r/g, "\r"); // Replace escaped carriage returns with actual carriage returns
 
             onComplete(result.html);
-        } catch (err) {
-            error.value =
-                err instanceof Error ? err.message : "Failed to convert file";
-            if (err instanceof FetchError) {
-                error.value = err.message ?? err.statusMessage;
+        } catch (err: unknown) {
+            let errorId: string | undefined;
+            if (
+                err instanceof FetchError &&
+                err.data &&
+                typeof err.data === "object"
+            ) {
+                errorId = (err.data as { errorId?: string }).errorId;
             }
 
-            logger.error(err, "File conversion error:");
-            useUseErrorDialog().sendError(t("upload.errorDescription"));
+            const localizedErrorMessage =
+                errorId && te(`errors.${errorId}`)
+                    ? t(`errors.${errorId}`)
+                    : t("upload.errorDescription");
+
+            error.value = localizedErrorMessage;
+            logger.error({ err, errorId }, "File conversion error:");
+            useUseErrorDialog().sendError(localizedErrorMessage);
         } finally {
             isConverting.value = false;
         }

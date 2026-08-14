@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { SimplifyTextCommand } from "~/assets/models/commands";
 import type { RibbonTransformProps } from "~/types/ribbon";
 import type { TextActions } from "~~/shared/text-actions";
 import CharacterSpeechAction from "../rewrite/quick-action/CharacterSpeechAction.vue";
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const { runQuickAction } = useQuickAction();
+const { executeCommand } = useCommandBus();
 const toast = useToast();
 
 const actionsAreAvailable = computed(
@@ -35,6 +37,13 @@ async function applyAction(
             color: "error",
             icon: "i-lucide-circle-alert",
         });
+        return;
+    }
+
+    // Plain Language is no longer a quick action: it runs the measured,
+    // language-aware simplification loop (`POST /api/simplify`).
+    if (action === "plain_language") {
+        await executeCommand(new SimplifyTextCommand());
         return;
     }
 

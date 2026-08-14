@@ -120,6 +120,77 @@
     );
 }
 
+/* ─── Simplify unconverged-passage marks ────────────────────────────
+   Rendered by the simplifyDecorations ProseMirror plugin (T6.7). Same
+   decoration-not-Mark approach as the advisor marks above. Severity is
+   picked once per document (info vs. amber, see simplifyDecorations.ts),
+   not per mark, so every mark of a given severity looks identical. */
+
+.simplify-mark {
+    border-radius: 2px;
+    padding: 1px 2px;
+    cursor: pointer;
+    transition: background-color 0.14s ease;
+}
+
+.simplify-mark--info {
+    background-color: color-mix(
+        in srgb,
+        var(--color-blue-500, #3b82f6) 14%,
+        transparent
+    );
+    border-bottom: 2px solid
+        color-mix(in srgb, var(--color-blue-500, #3b82f6) 40%, transparent);
+}
+
+.simplify-mark--info:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-blue-500, #3b82f6) 24%,
+        transparent
+    );
+}
+
+.simplify-mark--amber {
+    background-color: color-mix(
+        in srgb,
+        var(--color-amber-500, #f59e0b) 16%,
+        transparent
+    );
+    border-bottom: 2px solid
+        color-mix(in srgb, var(--color-amber-500, #f59e0b) 45%, transparent);
+}
+
+.simplify-mark--amber:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-amber-500, #f59e0b) 26%,
+        transparent
+    );
+}
+
+.simplify-mark--active {
+    font-weight: 600;
+}
+
+.simplify-mark--info.simplify-mark--active {
+    background-color: color-mix(
+        in srgb,
+        var(--color-blue-500, #3b82f6) 28%,
+        transparent
+    );
+    border-bottom-color: var(--color-blue-500, #3b82f6);
+}
+
+.simplify-mark--amber.simplify-mark--active {
+    background-color: color-mix(
+        in srgb,
+        var(--color-amber-500, #f59e0b) 30%,
+        transparent
+    );
+    border-bottom-color: var(--color-amber-500, #f59e0b);
+}
+
 /* ─── Advisor diff tokens ─────────────────────────────────────────── */
 
 .advisor-diff-del {

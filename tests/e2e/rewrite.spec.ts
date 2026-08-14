@@ -131,9 +131,11 @@ test.beforeEach(async ({ page, context }) => {
     });
 });
 
-test("After rewrite, changes are shown on the rigt side", async ({ page }) => {
+test("Plain Language runs the simplification loop and opens the diff", async ({
+    page,
+}) => {
     const inputText =
-        "This is a test streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
+        "Gemäss der Verordnung über die Erhebung von Gebühren ist die Antragstellerin verpflichtet, die erforderlichen Unterlagen unverzüglich und vollständig einzureichen, damit die zuständige Fachstelle die Prüfung vornehmen kann.";
 
     await page.locator(".tiptap").fill(inputText);
 
@@ -141,15 +143,17 @@ test("After rewrite, changes are shown on the rigt side", async ({ page }) => {
         .getByRole("button", { name: local.editor.plain_language, exact: true })
         .click();
 
-    await page.waitForTimeout(1000);
+    // The loop streams progress long before it produces any text.
+    await expect(page.getByTestId("simplifyProgress")).toBeVisible();
 
-    await expect(
-        page.locator("pre.bg-green-100:text-is('dummy')"),
-    ).toBeVisible();
+    // Before/after readability lands in the diff header once `done` arrives.
+    await expect(page.getByTestId("simplifyScoreComparison")).toBeVisible({
+        timeout: 60_000,
+    });
 
-    await expect(
-        page.locator("pre.bg-red-100:text-is('test')"),
-    ).toBeVisible();
+    // The diff itself is the existing client-side word diff.
+    await expect(page.locator("span.bg-green-100").first()).toBeVisible();
+    await expect(page.locator("span.bg-red-50").first()).toBeVisible();
 });
 
 test("Custom action button should be present", async ({ page }) => {

@@ -23,6 +23,7 @@ export const Cmds = {
     UndoRedoStateChanged: "UndoRedoStateChanged",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
+    SimplifyTextCommand: "SimplifyTextCommand",
     RetryQuickActionCommand: "RetryQuickActionCommand",
     SeedExampleDiffCommand: "SeedExampleDiffCommand",
     AbandonDiffCommand: "AbandonDiffCommand",
@@ -107,6 +108,16 @@ export class ExecuteTextActionCommand implements ICommand {
     readonly $type = Cmds.ExecuteTextActionCommand;
 
     constructor(public stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {}
+}
+
+/**
+ * Runs the readability-gated simplification loop (`POST /api/simplify`) over
+ * the current Working Text and hands its result to the Diff Review. Replaces
+ * the former `plain_language` quick action; the loop measures, rewrites and
+ * re-measures, so it streams progress instead of text.
+ */
+export class SimplifyTextCommand implements ICommand {
+    readonly $type = Cmds.SimplifyTextCommand;
 }
 
 /**

@@ -2,6 +2,7 @@ import { isApiError } from "@dcc-bs/communication.bs.js";
 import type { Ref } from "vue";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { getTextAnalysis } from "~/utils/textAnalysis";
+import type { ReadabilityBand } from "~~/shared/types/simplify";
 
 /**
  * Vue Composable that manages fetching the CEFR understandability score for a text.
@@ -21,6 +22,12 @@ export function useCefrScore(text: Ref<string>) {
     const cefrLevel = ref<string | undefined>(undefined);
     const zixScore = ref<number | undefined>(undefined);
     const error = ref<string | undefined>(undefined);
+    // Language-aware extension of the endpoint: the detected language and its
+    // own metric, for languages that have no CEFR mapping (spec §10).
+    const language = ref<string | undefined>(undefined);
+    const score = ref<number | undefined>(undefined);
+    const scoreLabel = ref<string | undefined>(undefined);
+    const band = ref<ReadabilityBand | undefined>(undefined);
 
     let abortController: AbortController | undefined;
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -45,6 +52,12 @@ export function useCefrScore(text: Ref<string>) {
                 result.zix_score !== null ? result.zix_score : undefined;
             cefrLevel.value =
                 result.cefr_level !== null ? result.cefr_level : undefined;
+            language.value = result.language ?? undefined;
+            // Fall back to the German score so the badge keeps a value while
+            // the backend still answers with `zix_score` only.
+            score.value = result.score ?? result.zix_score ?? undefined;
+            scoreLabel.value = result.score_label ?? undefined;
+            band.value = result.band ?? undefined;
         } catch (err: unknown) {
             if (err instanceof Error && err.name === "AbortError") {
                 return;
@@ -105,6 +118,10 @@ export function useCefrScore(text: Ref<string>) {
         isLoading,
         cefrLevel,
         zixScore,
+        language,
+        score,
+        scoreLabel,
+        band,
         error,
     };
 }

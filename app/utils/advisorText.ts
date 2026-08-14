@@ -13,7 +13,7 @@ import type { AdvisorThread } from "~/assets/models/advisor";
  * interchange consistent with the rewrite editor, so layout survives
  * switching between the two tools.
  */
-type Segment = {
+export type Segment = {
     text: string;
     from: number;
     to: number;
@@ -55,10 +55,18 @@ export function serializeAdvisorText(doc: PmNode): string {
 
 /**
  * Converts an inclusive character offset into the segment list to a
- * ProseMirror position. Returns `null` when the offset falls on a
- * synthetic inter-paragraph separator (no real DOM position).
+ * ProseMirror position. Returns `null` when the offset falls *strictly
+ * inside* a synthetic inter-paragraph separator (no real DOM position there).
+ *
+ * A separator's trailing edge is not really "inside" it — it is the same
+ * point as the start of whatever paragraph follows, so an offset landing
+ * exactly there resolves to that next segment instead of failing. This
+ * matters a lot for paragraph-level ranges (e.g. `unconverged_ranges`):
+ * every such range but the first paragraph's starts *exactly* on a paragraph
+ * break, so without this the separator's own inclusive boundary test would
+ * shadow the real segment and silently drop the whole range.
  */
-function offsetToPos(
+export function offsetToPos(
     segments: Segment[],
     offset: number,
 ): { pos: number; segmentIndex: number } | null {
@@ -69,9 +77,16 @@ function offsetToPos(
             continue;
         }
         const segLen = seg.text.length;
+        const isSeparator = seg.from === seg.to;
+        if (isSeparator && offset === cursor + segLen) {
+            // Exactly at the separator's trailing edge: fall through to the
+            // segment that follows rather than reporting no position.
+            cursor += segLen;
+            continue;
+        }
         if (offset >= cursor && offset <= cursor + segLen) {
-            if (seg.from === seg.to) {
-                return null; // synthetic separator, no DOM pos
+            if (isSeparator) {
+                return null; // strictly inside the synthetic separator
             }
             return { pos: seg.from + (offset - cursor), segmentIndex: i };
         }
@@ -181,7 +196,7 @@ export function buildDecorationSpecs(
     return [...specs, ...markers];
 }
 
-function clampOffset(
+export function clampOffset(
     segments: Segment[],
     offset: number,
 ): { pos: number; segmentIndex: number } | null {
@@ -197,7 +212,7 @@ function clampOffset(
  * Splits a `[from, to]` position range (both inclusive of valid segment
  * indices) into per-paragraph contiguous pieces.
  */
-function splitByParagraph(
+export function splitByParagraph(
     segments: Segment[],
     from: { pos: number; segmentIndex: number },
     to: { pos: number; segmentIndex: number },
@@ -297,28 +312,56 @@ function posToOffset(segments: Segment[], pos: number): number | null {
     return null;
 }
 
+/** Anything anchored to a half-open `[start, end)` plain-text range. */
+export type RangedItem = { range: { start: number; end: number } };
+
 /**
- * Reflows every thread's plain-text Range through a ProseMirror transaction's
+ * Reflows every item's plain-text Range through a ProseMirror transaction's
  * mapping, so edits keep ranges anchored to the right text. Ranges whose text
  * was deleted or fully replaced collapse and are flagged with `start = -1` so
- * the caller can auto-dismiss them. Mutates `threads` in place.
+ * the caller can auto-dismiss them. Mutates `items` in place.
  *
- * This is what lets the Editor stay editable while violation/user threads are
- * present (Word-like): ranges follow the text instead of going stale.
+ * Generic over anything shaped like {@link RangedItem} — both
+ * `AdvisorThread` (violation/user marks) and `SimplifyRange` (unconverged
+ * simplification passages, see `simplifyRanges.ts`) satisfy it, so the two
+ * decoration systems share this exact reflow engine instead of each
+ * reimplementing it.
+ *
+ * This is what lets the Editor stay editable while marks are present
+ * (Word-like): ranges follow the text instead of going stale.
  */
-export function reflowAdvisorRanges(
+export function reflowAdvisorRanges<T extends RangedItem>(
     oldDoc: PmNode,
     newDoc: PmNode,
     mapping: Mapping,
-    threads: AdvisorThread[],
+    items: T[],
 ): void {
     const oldSegs = advisorSegments(oldDoc);
     const newSegs = advisorSegments(newDoc);
 
-    for (const thread of threads) {
-        const fromPos = offsetToPos(oldSegs, thread.range.start);
-        const toPos = offsetToPos(oldSegs, thread.range.end);
+    for (const item of items) {
+        const fromPos = offsetToPos(oldSegs, item.range.start);
+        const toPos = offsetToPos(oldSegs, item.range.end);
         if (fromPos === null || toPos === null) {
+            continue;
+        }
+
+        // Content touching *both* the range's start and its end was deleted
+        // by this transaction — i.e. the tracked span was consumed,
+        // regardless of whether replacement text landed in its place. This
+        // has to be checked before the position math below: typing a
+        // replacement over a fully-selected range is a delete-then-insert,
+        // and for a same-size-or-larger replacement the mapped positions do
+        // not collapse the way a pure deletion does (they land just inside
+        // the *new* content instead), which used to leave a spurious
+        // one-character sliver of the mark alive instead of dismissing it.
+        // `deletedAfter`/`deletedBefore` come straight from ProseMirror's own
+        // step-tracking, so this doesn't depend on guessing the right
+        // associativity for an arbitrary replacement.
+        const deletedAtStart = mapping.mapResult(fromPos.pos, 1).deletedAfter;
+        const deletedAtEnd = mapping.mapResult(toPos.pos, -1).deletedBefore;
+        if (deletedAtStart && deletedAtEnd) {
+            item.range = { start: -1, end: -1 };
             continue;
         }
 
@@ -332,11 +375,11 @@ export function reflowAdvisorRanges(
 
         if (newStart === null || newEnd === null || newEnd <= newStart) {
             // The range's text was deleted or fully replaced → auto-dismiss.
-            thread.range = { start: -1, end: -1 };
+            item.range = { start: -1, end: -1 };
             continue;
         }
 
-        thread.range = {
+        item.range = {
             start: Math.min(newStart, newEnd),
             end: Math.max(newStart, newEnd),
         };

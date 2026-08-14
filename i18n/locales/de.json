@@ -6,7 +6,10 @@
         "no_document": "Das Dokument wurde nicht gefunden.",
         "check_text_error": "Fehler beim Überprüfen des Textes",
         "rewrite_text_error": "Fehler beim Umschreiben des Textes",
-        "text_analysis_error": "Fehler bei der Textanalyse. Bitte versuchen Sie es später noch einmal."
+        "text_analysis_error": "Fehler bei der Textanalyse. Bitte versuchen Sie es später noch einmal.",
+        "invalid_mime_type": "Ungültiges oder nicht unterstütztes Dateiformat.",
+        "document_conversion_error": "Fehler bei der Dokumentenkonvertierung. Bitte überprüfen Sie die Datei und versuchen Sie es erneut.",
+        "document_conversion_timeout": "Die Dokumentenkonvertierung hat das Zeitlimit überschritten. Bitte versuchen Sie es mit einer kleineren Datei erneut."
     },
     "loading": "Wird geladen...",
     "auth": {
@@ -258,6 +261,32 @@
     },
     "plain-language": {
         "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen."
+    },
+    "simplify": {
+        "running": "Text wird vereinfacht…",
+        "failed": "Vereinfachung fehlgeschlagen",
+        "diffTitle": "Vorschau der Vereinfachung",
+        "attempt": "Versuch {attempt}",
+        "stage": {
+            "readability": "Lesbarkeit wird gemessen…"
+        },
+        "unitsInTarget": "{inTarget} von {total} Textabschnitten auf Zielniveau",
+        "scoreComparison": "Lesbarkeit vorher und nachher",
+        "readability": "Lesbarkeit ({label})",
+        "readabilityDescription": "Die Lesbarkeit wird mit der für diese Sprache passenden Kennzahl gemessen. Ein Sprachniveau (GER) gibt es nur für Deutsch und Englisch.",
+        "notScored": "Für diese Sprache nicht bewertbar",
+        "band": {
+            "easy": "Einfach",
+            "ok": "Mittel",
+            "hard": "Schwer"
+        },
+        "unconverged": {
+            "title": "{count} Stelle braucht einen menschlichen Blick |{count} Stellen brauchen einen menschlichen Blick",
+            "position": "{index} von {count}",
+            "rejectedReason": "Diese Stelle war schwierig; der Vorschlag wurde nicht übernommen.",
+            "prev": "Vorherige markierte Stelle",
+            "next": "Nächste markierte Stelle"
+        }
     },
     "pwa": {
         "newContentAvailable": "Neue Inhalte verfügbar",

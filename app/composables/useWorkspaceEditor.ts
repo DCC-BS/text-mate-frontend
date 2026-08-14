@@ -15,6 +15,10 @@ import { serializeAdvisorText } from "~/utils/advisorText";
 import { FocusedSentenceMark } from "~/utils/focusedSentenceMark";
 import { FocusedWordMark } from "~/utils/focusedWordMark";
 import { mapTextOffsetsToDocPositions } from "~/utils/mapTextOffsets";
+import {
+    createSimplifyDecorationExtension,
+    simplifyDecorationKey,
+} from "~/utils/simplifyDecorations";
 
 export interface UseWorkspaceEditorOptions {
     /** Two-way text interchange. */
@@ -76,6 +80,29 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
         },
     });
 
+    // Unconverged-passage highlighting (T6.7). Both `useSimplify` and
+    // `useSimplifyRanges` are module-level singletons (documented as such on
+    // their own files), so calling them here — rather than threading yet
+    // another pair of props through WorkspaceEditor — reaches the same state
+    // `useWorkspace`/`WorkspaceContainer` read, exactly like the decoration
+    // plugin above reaches thread state through `threads`/`activeThreadId`.
+    const { result: simplifyResult } = useSimplify();
+    const simplifyRangesApi = useSimplifyRanges();
+    const simplifyDecorationExtension = createSimplifyDecorationExtension({
+        getRanges: () => simplifyRangesApi.ranges.value,
+        getActiveId: () => simplifyRangesApi.activeRangeId.value,
+        // Gated on the same `editable` the workspace already computes
+        // (state === "editable" && progress === "none"); while e.g. a Check
+        // runs the editor is covered by a blur overlay anyway, so hiding the
+        // highlight meanwhile is not user-visible.
+        getEnabled: () =>
+            editable.value && simplifyRangesApi.ranges.value.length > 0,
+        getSeverity: () =>
+            simplifyResult.value?.converged === true ? "info" : "amber",
+        onSelect: (id) => simplifyRangesApi.selectRange(id),
+        onDismiss: (ids) => simplifyRangesApi.dismiss(ids),
+    });
+
     const base = useBaseEditor({
         text,
         limit,
@@ -84,6 +111,7 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
             FocusedSentenceMark,
             FocusedWordMark,
             decorationExtension,
+            simplifyDecorationExtension,
         ],
         serialize: (editor) => serializeAdvisorText(editor.state.doc),
         initialEditable: editable.value,
@@ -129,6 +157,37 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
             view.dispatch(view.state.tr.setMeta(advisorDecorationKey, true));
         },
         { deep: true },
+    );
+
+    // Rebuild the unconverged-passage highlights whenever the range set, the
+    // active one, or editability changes.
+    watch(
+        [simplifyRangesApi.ranges, simplifyRangesApi.activeRangeId, editable],
+        () => {
+            const view = base.editor.value?.view;
+            if (!view) {
+                return;
+            }
+            view.dispatch(view.state.tr.setMeta(simplifyDecorationKey, true));
+        },
+        { deep: true },
+    );
+
+    // Scroll the active unconverged passage into view when it changes from
+    // elsewhere (e.g. a nav-bar prev/next click).
+    watch(
+        () => simplifyRangesApi.activeRangeId.value,
+        (id) => {
+            if (!id) {
+                return;
+            }
+            nextTick(() => {
+                const el = base.editor.value?.view.dom.querySelector(
+                    `[data-simplify-range-id="${CSS.escape(id)}"]`,
+                ) as HTMLElement | null;
+                el?.scrollIntoView({ behavior: "smooth", block: "center" });
+            });
+        },
     );
 
     onCommand<ApplyTextCommand>(Cmds.ApplyTextCommand, async (command) => {

@@ -1,6 +1,11 @@
 <script lang="ts" setup>
 import type { DiffHunk, HunkStatus } from "~/types/diff";
 import { buildDiffSegments, type DiffSegment } from "~/utils/diffSegments";
+import {
+    type MappedUnconvergedRange,
+    type OffsetRange,
+    remapUnconvergedRanges,
+} from "~/utils/simplifyRanges";
 
 interface DiffViewerProps {
     /** Original (before) text. */
@@ -237,11 +242,30 @@ function hasPendingHunks(): boolean {
     return pendingHunks.value.length > 0;
 }
 
+/**
+ * Remaps ranges expressed in the corrected-text offset space (e.g. the
+ * simplification loop's `unconverged_ranges`, which are offsets into
+ * `done.text` === `correctedText`) onto the resolved text this viewer would
+ * currently produce via {@link getResolvedText}, tagging each with why it is
+ * still marked (`kind`, see {@link MappedUnconvergedRange}). A range
+ * overlapping a rejected hunk is no longer dropped — the user's own wording
+ * restored by the rejection is almost certainly *harder* than the rewrite
+ * they turned down, so the mark now follows it onto that restored text
+ * instead of silently disappearing. Delegates the actual offset arithmetic
+ * to `remapUnconvergedRanges` (framework-agnostic, unit-tested on its own).
+ */
+function mapUnconvergedRanges(
+    ranges: readonly OffsetRange[],
+): MappedUnconvergedRange[] {
+    return remapUnconvergedRanges(ranges, changeHunks.value);
+}
+
 defineExpose({
     getAllChangeHunks,
     getResolvedText,
     areAllHunksResolved,
     hasPendingHunks,
+    mapUnconvergedRanges,
 });
 </script>
 
