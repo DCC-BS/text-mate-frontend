@@ -3,7 +3,6 @@ bun = "1.3.0"
 pass-cli = "latest"
 node = "24.9.0"
 "npm:varlock" = "1.13.0"
-"npm:@playwright/cli" = "latest"
 usage = "3.5.6"
 
 [plugins]
@@ -25,8 +24,8 @@ run = [
 ]
 
 [tasks."playwright:install-browser"]
-description = "install the default Playwright CLI browser (chromium)"
-run = "playwright-cli install-browser --with-deps"
+description = "install the Playwright browser matching the pinned @playwright/test version"
+run = "bunx playwright install --with-deps"
 
 [tasks.env-check]
 description = "🔑 Load secrets into the environment via varlock"
