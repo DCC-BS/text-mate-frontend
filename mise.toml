@@ -90,6 +90,7 @@ run = "bunx biome ci ."
 [tasks."test:unit"]
 env = { APP_MODE= "ci" }
 description = "run unit tests"
+alias = "test"
 run = "bunx vitest"
 
 [tasks."test:watch"]

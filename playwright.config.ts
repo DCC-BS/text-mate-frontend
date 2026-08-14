@@ -46,7 +46,7 @@ export default defineConfig({
     webServer: {
         command: process.env.CI
             ? "node ./.output/server/index.mjs"
-            : "APP_MODE=ci AUTH_MODE=none bunx varlock run -- nuxt dev",
+            : "bunx varlock run -- nuxt dev",
         url: "http://localhost:3000",
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
