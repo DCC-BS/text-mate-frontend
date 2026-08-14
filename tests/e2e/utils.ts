@@ -1,9 +1,5 @@
-import type { Page, BrowserContext } from "@playwright/test";
-
+import { expect, type Page, type BrowserContext } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-
-const rewriteText = local.tools.rewrite;
-const advisorText = local.tools.advisor;
 
 export async function clearBrowserState(page: Page, context: BrowserContext) {
     await context.clearCookies();
@@ -30,45 +26,26 @@ export async function clearBrowserState(page: Page, context: BrowserContext) {
     } catch {}
 }
 
-export async function setupFreshBrowser(page: Page, context: BrowserContext) {
-    await clearBrowserState(page, context);
-    await page.goto("/");
-    await page.waitForLoadState("domcontentloaded");
-    try {
-        await page.evaluate(() => {
-            localStorage.clear();
-            sessionStorage.clear();
-        });
-    } catch (error) {}
-    await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
-    await skipDisclaimer(page);
-    await skipTour(page);
-    await switchTo(page, "rewrite");
-}
-
-export async function skipDisclaimer(page: Page) {
-    await page.waitForSelector("#confirmation-checkbox", {
-        state: "visible",
-        timeout: 15000,
-    });
-    await page.locator("#confirmation-checkbox").click();
-}
-
-export async function skipTour(page: Page) {
-    await page.waitForSelector('[data-testid="tour-skip"]', {
-        state: "visible",
-        timeout: 5000,
-    });
-    await page.locator('[data-testid="tour-skip"]').click();
-}
-
+/**
+ * Switches the workspace to the given tool via the ribbon tabs in the
+ * navigation menu. The transform tab is the default, so switching to
+ * "rewrite" is mostly a no-op that keeps the intent explicit.
+ */
 export async function switchTo(page: Page, tool: "rewrite" | "advisor") {
-    switch (tool) {
-        case "rewrite":
-            await page.getByRole("button", { name: rewriteText }).click();
-            break;
-        case "advisor":
-            await page.getByRole("button", { name: advisorText }).click();
-            break;
-    }
+    const selector =
+        tool === "rewrite"
+            ? '[data-tour="ribbon-transform"]'
+            : '[data-tour="ribbon-validate"]';
+    await page.locator(selector).click();
+}
+
+/**
+ * Accepts all hunks of the current diff review and waits until the editor
+ * is back with the applied text.
+ */
+export async function acceptAllChanges(page: Page) {
+    await page
+        .getByRole("button", { name: local.advisor.acceptAll })
+        .click();
+    await expect(page.locator(".tiptap")).toBeVisible();
 }

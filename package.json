@@ -4,9 +4,9 @@
     "version": "1.6.3",
     "scripts": {
         "build": "nuxt build",
-        "dev": "varlock run -- nuxt dev",
-        "dummy": "AUTH_MODE=none DUMMY=true varlock run -- nuxt dev",
-        "debug": "varlock run -- nuxt dev --inspect",
+        "dev": "nuxt dev",
+        "dummy": "AUTH_MODE=none DUMMY=true nuxt dev",
+        "debug": "nuxt dev --inspect",
         "tsc": "vue-tsc --noEmit -p tsconfig.json",
         "nuxt:prepare": "nuxt prepare",
         "preview": "nuxt preview",

@@ -13,19 +13,15 @@ test.beforeEach(async ({ page, context }) => {
     } catch (error) {
     }
     await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
-    await page.locator("#confirmation-checkbox").click();
-    await page.locator('[data-testid="tour-skip"]').click();
 });
 
 test("Character count is displayed correctly", async ({ page }) => {
     const inputText = "Hello, world!";
     await page.fill(".tiptap", inputText);
 
-    const charCount = await page
-        .getByTestId("characterCountButton")
-        .textContent();
-
-    expect(charCount).toContain(`${inputText.length} /`);
+    await expect(page.getByTestId("characterCountButton")).toContainText(
+        `${inputText.length} /`,
+    );
 });
 
 test("Text statistics are updated on text change", async ({ page }) => {

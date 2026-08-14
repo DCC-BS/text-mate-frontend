@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-import { switchTo, clearBrowserState } from "./utils";
+import { switchTo, clearBrowserState, acceptAllChanges } from "./utils";
 
 test.beforeEach(async ({ page, context }) => {
     await clearBrowserState(page, context);
@@ -13,8 +13,6 @@ test.beforeEach(async ({ page, context }) => {
     } catch (error) {
     }
     await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
-    await page.locator("#confirmation-checkbox").click();
-    await page.locator('[data-testid="tour-skip"]').click();
     await switchTo(page, "rewrite");
 });
 
@@ -121,17 +119,22 @@ test.beforeEach(async ({ page, context }) => {
                 .click();
         }
 
-        await page.waitForTimeout(1500);
+        // The quick action streams into the diff review
+        const diffReview = page.locator('[data-tour="diff-review"]');
+        await expect(diffReview).toBeVisible();
+        await expect(diffReview).toContainText(`Action: ${action}`);
+        await expect(diffReview).toContainText(`Input: ${inputText}`);
+        await expect(diffReview).toContainText(`Options: ${config}`);
 
-        const text = await page.locator(".tiptap").innerText();
-
-        expect(text).toContain(`Action: ${action}`);
-        expect(text).toContain(`Input: ${inputText}`);
-        expect(text).toContain(`Options: ${config}`);
+        // Accepting all changes applies the result to the editor
+        await acceptAllChanges(page);
+        await expect(page.locator(".tiptap")).toContainText(
+            `Action: ${action}`,
+        );
     });
 });
 
-test("After rewrite, changes are shown on the rigt side", async ({ page }) => {
+test("After rewrite, changes are shown in the diff review", async ({ page }) => {
     const inputText =
         "This is a test streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
 
@@ -141,30 +144,31 @@ test("After rewrite, changes are shown on the rigt side", async ({ page }) => {
         .getByRole("button", { name: local.editor.plain_language, exact: true })
         .click();
 
-    await page.waitForTimeout(1000);
+    const diffReview = page.locator('[data-tour="diff-review"]');
+    await expect(diffReview).toBeVisible();
 
+    // Word-level diff: "test" was replaced by "dummy"
     await expect(
-        page.locator("pre.bg-green-100:text-is('dummy')"),
+        diffReview.locator("span.bg-red-50").filter({ hasText: "test" }),
     ).toBeVisible();
-
     await expect(
-        page.locator("pre.bg-red-100:text-is('test')"),
+        diffReview.locator("span.bg-green-100").filter({ hasText: "dummy" }),
     ).toBeVisible();
 });
 
 test("Custom action button should be present", async ({ page }) => {
     await page.locator(".tiptap").fill("This is a test.");
 
-    await page.getByRole("button", { name: local.actions.custom }).click();
+    await page
+        .getByRole("button", { name: local.actions.custom, exact: true })
+        .click();
 
     await page.getByTestId("customActionTextBox").fill("Make it fun!");
     await page.getByTestId("customActionSubmit").click();
 
-    await page.waitForTimeout(3000);
-
-    const text = await page.locator(".tiptap").innerText();
-
-    expect(text).toContain("Action: custom");
-    expect(text).toContain("Input: This is a test.");
-    expect(text).toContain("Options: Make it fun!");
+    const diffReview = page.locator('[data-tour="diff-review"]');
+    await expect(diffReview).toBeVisible();
+    await expect(diffReview).toContainText("Action: custom");
+    await expect(diffReview).toContainText("Input: This is a test.");
+    await expect(diffReview).toContainText("Options: Make it fun!");
 });
