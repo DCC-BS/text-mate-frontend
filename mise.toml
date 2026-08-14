@@ -17,15 +17,15 @@ enter = { task = "enter-checks" }
 [tasks.install]
 env = { APP_MODE = "build" }
 description = "install npm packages"
-depends = ["playwright:install-browser"]
 run = [
     "bun install",
     "bunx nuxi prepare",
+    "mise run playwright:install-browser",
 ]
 
 [tasks."playwright:install-browser"]
 description = "install the Playwright browser matching the pinned @playwright/test version"
-run = "bunx playwright install --with-deps"
+run = "bunx playwright install chromium --with-deps"
 
 [tasks.env-check]
 description = "🔑 Load secrets into the environment via varlock"
