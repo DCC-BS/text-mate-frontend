@@ -28,14 +28,20 @@ export const SimplifyModeSchema = z.enum(["whole", "chunked"]);
 export type SimplifyMode = z.output<typeof SimplifyModeSchema>;
 
 /**
- * Which gate produced a progress event. The LLM fidelity gate was removed from
+ * What phase of the loop a progress event reports on.
+ *
+ * - `rewriting` — the model is producing text. This is the phase that takes the
+ *   wall-clock, and its events carry a `units_in_target` that climbs as units
+ *   land, so the progress bar moves during a round instead of only between
+ *   rounds.
+ * - `readability` — a round finished and its result has been measured.
+ *
+ * Readability is still the only *gate*; the LLM fidelity gate was removed from
  * the pipeline (it only ever produced false positives, fired inconsistently on
- * identical content, and doubled the LLM calls per attempt), so retries are
- * driven by the readability band alone and this is a one-member union today.
- * Deliberately still a union, and optional on the event, so re-adding a stage
- * later is an additive change rather than a breaking one.
+ * identical content, and doubled the LLM calls per attempt). Optional on the
+ * event, so adding a phase stays an additive change for older clients.
  */
-export const SimplifyStageSchema = z.enum(["readability"]);
+export const SimplifyStageSchema = z.enum(["rewriting", "readability"]);
 
 export type SimplifyStage = z.output<typeof SimplifyStageSchema>;
 
@@ -174,6 +180,20 @@ export const SimplifyDoneEventSchema = z.object({
         .array(UnconvergedRangeSchema)
         .nullish()
         .transform((value) => (value ?? []).filter((r) => r.end > r.start)),
+    /**
+     * Rewrite calls that produced nothing usable — timeout, error, or empty
+     * output. Non-zero means part of `text` is unchanged source because the
+     * model could not be reached, *not* because it needed no change. The two
+     * are byte-identical in the diff, so this is the only way to tell the user
+     * which one happened instead of reporting a failed run as "nothing to
+     * change". Defaults to 0 so an older backend parses.
+     */
+    rewrite_failures: z
+        .number()
+        .int()
+        .nonnegative()
+        .nullish()
+        .transform((value) => value ?? 0),
 });
 
 export type SimplifyDoneEvent = z.output<typeof SimplifyDoneEventSchema>;

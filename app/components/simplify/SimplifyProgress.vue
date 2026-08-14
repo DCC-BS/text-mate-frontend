@@ -61,20 +61,18 @@ const currentScore = computed<ReadabilityScore>(() => ({
             <ReadabilityScoreBadge :value="currentScore" compact />
         </div>
 
-        <UProgress
-            v-if="props.progress.unitsTotal > 0"
-            :model-value="unitsInTarget"
-            :max="unitsTotal"
-            status
-        >
-            <template #status>
-                <div class="text-xs text-muted">
-                    {{ t("simplify.unitsInTarget", {
-                            inTarget: unitsInTarget,
-                            total: props.progress.unitsTotal,
-                        }) }}
-                </div>
-            </template>
-        </UProgress>
+        <!-- The count is deliberately NOT in UProgress's `status` slot: that slot's
+             container is sized to the percentage, so the label slides left-to-right
+             as the bar fills and the number never sits still long enough to read.
+             Pinned to the right of its own row instead. -->
+        <template v-if="props.progress.unitsTotal > 0">
+            <UProgress :model-value="unitsInTarget" :max="unitsTotal" />
+            <div class="text-xs text-muted text-right">
+                {{ t("simplify.unitsInTarget", {
+                        inTarget: unitsInTarget,
+                        total: props.progress.unitsTotal,
+                    }) }}
+            </div>
+        </template>
     </div>
 </template>

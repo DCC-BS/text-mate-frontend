@@ -33,6 +33,14 @@ interface DiffViewerProps {
      * produced the diff.
      */
     streamingLabel?: string;
+    /**
+     * Replaces the reassuring `<prefix>.noChanges` message when the parent
+     * knows the text came back unchanged because the operation *failed*, not
+     * because it found nothing to do. The two produce a byte-identical diff, so
+     * only the parent can tell them apart — and telling the user "nothing to
+     * change" after a run that never reached the model is simply wrong.
+     */
+    noChangeNotice?: string;
 }
 
 const props = defineProps<DiffViewerProps>();
@@ -564,15 +572,29 @@ defineExpose({
                     {{ t(`${i18nPrefix}.emptyResponse`) }}
                 </p>
             </div>
-            <!-- No-op result: corrected text matched the original. -->
+            <!-- No-op result: corrected text matched the original. Either
+                 nothing needed changing, or the parent knows the run failed
+                 and passed a notice saying so. -->
             <div
                 v-else-if="isNoChangeState"
                 class="flex flex-col items-center justify-center gap-3 py-16 text-center"
                 data-tour="diff-no-changes"
             >
-                <UIcon name="i-lucide-sparkles" class="size-8 text-primary" />
-                <p class="m-0 text-sm text-default font-medium">
-                    {{ t(`${i18nPrefix}.noChanges`) }}
+                <UIcon
+                    v-if="props.noChangeNotice"
+                    name="i-lucide-circle-alert"
+                    class="size-8 text-amber-500"
+                />
+                <UIcon
+                    v-else
+                    name="i-lucide-sparkles"
+                    class="size-8 text-primary"
+                />
+                <p
+                    class="m-0 text-sm text-default font-medium"
+                    data-testid="diffNoChangeMessage"
+                >
+                    {{ props.noChangeNotice ?? t(`${i18nPrefix}.noChanges`) }}
                 </p>
             </div>
         </div>

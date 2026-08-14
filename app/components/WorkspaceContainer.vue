@@ -101,6 +101,24 @@ const showsScoreComparison = computed(
 );
 
 /**
+ * Message for a simplify run that came back unchanged because rewrites failed
+ * (the model timed out, errored, or returned nothing), rather than because the
+ * text needed no change. `undefined` in every other case, which leaves the
+ * DiffViewer's own reassuring "nothing to change" message in place.
+ *
+ * Without this a run against an unreachable model was reported as a success
+ * with nothing to do — the most misleading thing the UI could say, since the
+ * text was never looked at.
+ */
+const simplifyFailureNotice = computed<string | undefined>(() => {
+    if (!isSimplifyDiff.value) {
+        return undefined;
+    }
+    const failures = ws.simplifyResult.value?.rewrite_failures ?? 0;
+    return failures > 0 ? t("simplify.rewriteFailed") : undefined;
+});
+
+/**
  * Number of passages the loop could not bring into the target band (T6.7),
  * highlighted in place in the editor (`simplifyDecorations.ts`) rather than
  * enumerated here. Persists across a Diff Review commit until another
@@ -132,6 +150,11 @@ function onSimplifyRangePrev(): void {
 
 function onSimplifyRangeNext(): void {
     ws.nextSimplifyRange();
+}
+
+/** Drops every unconverged mark at once. The text itself is left alone. */
+function onSimplifyRangeDismiss(): void {
+    ws.clearSimplifyRanges();
 }
 
 watch(ws.activeThreadId, (value) => {
@@ -281,6 +304,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                             :streaming-label="streamingLabel"
                             i18n-prefix="advisor"
                             :title="diffTitle"
+                            :no-change-notice="simplifyFailureNotice"
                             @accept-hunk="onAcceptHunk"
                             @reject-hunk="onRejectHunk"
                             @accept-all="commitResolved"
@@ -341,6 +365,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                             :active-kind="activeSimplifyRangeKind"
                             @prev="onSimplifyRangePrev"
                             @next="onSimplifyRangeNext"
+                            @dismiss="onSimplifyRangeDismiss"
                         />
                         <WorkspaceEditor
                             v-model="text"

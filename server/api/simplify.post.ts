@@ -162,6 +162,15 @@ function wholeEvents(
             band_before: analyzer.band(before),
             cefr_before: analyzer.cefr(before),
         },
+        // The real backend announces the phase before the call that takes the
+        // wall-clock, so the dummy does too — otherwise the progress panel's
+        // most common state is the one never exercised here.
+        {
+            event: "progress",
+            attempt: 1,
+            stage: "rewriting",
+            units_in_target: 0,
+        },
         {
             event: "progress",
             attempt: 1,
@@ -169,6 +178,12 @@ function wholeEvents(
             score: midway,
             band: analyzer.band(midway),
             cefr: analyzer.cefr(midway),
+            units_in_target: inTargetMidway,
+        },
+        {
+            event: "progress",
+            attempt: 2,
+            stage: "rewriting",
             units_in_target: inTargetMidway,
         },
         {
@@ -195,6 +210,7 @@ function wholeEvents(
             converged,
             unconverged_units: unconverged,
             unconverged_ranges: unconvergedRanges,
+            rewrite_failures: 0,
         },
     ];
 }
@@ -278,6 +294,12 @@ function chunkedEvents(
         {
             event: "progress",
             attempt: 1,
+            stage: "rewriting",
+            units_in_target: Math.max(0, paragraphs.length - rewritten.length),
+        },
+        {
+            event: "progress",
+            attempt: 1,
             stage: "readability",
             score: before,
             band: analyzer.band(before),
@@ -315,6 +337,7 @@ function chunkedEvents(
             converged: analyzer.band(after) === "easy",
             unconverged_units: unconverged,
             unconverged_ranges: unconvergedRanges,
+            rewrite_failures: 0,
         },
     ];
 }
@@ -336,6 +359,13 @@ function unscoredEvents(
             mode: "whole",
             units: simplifiedText.split("\n\n").length,
         },
+        // No metric, so no measurement event — but the phase is still announced,
+        // because the client needs to show something while the model works.
+        {
+            event: "progress",
+            attempt: 1,
+            stage: "rewriting",
+        },
         {
             event: "done",
             text: simplifiedText,
@@ -344,6 +374,7 @@ function unscoredEvents(
             converged: true,
             unconverged_units: [],
             unconverged_ranges: [],
+            rewrite_failures: 0,
         },
     ];
 }

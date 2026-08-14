@@ -122,11 +122,17 @@ export function useWorkspace(text: Ref<string>) {
     );
 
     /**
-     * Runs the simplification loop and enters the diff review. Unlike a quick
-     * action the backend streams *events*, not text: WHOLE mode lands the whole
-     * result at `done`, CHUNKED mode finalizes paragraph by paragraph. Both are
-     * mirrored into {@link correctedText} through the composable's assembled
-     * text, so the existing DiffViewer handles the rest.
+     * Runs the simplification loop and enters the diff review once, when the
+     * run is over. Unlike a quick action the backend streams *events*, not
+     * text, and the only text a client may show is the assembly that arrives
+     * with `done` — see {@link useSimplify}'s `simplifiedText` for why the
+     * per-unit events cannot be laid out client-side.
+     *
+     * Entering on the first bit of text was the earlier behaviour and it put
+     * the user in a diff review while most of the document was still being
+     * rewritten: the view flickered as the (mis-placed) preview grew, then
+     * changed again under them at `done`. The editor now stays on screen under
+     * the progress panel for the whole run, the way an Advisor Check does.
      */
     async function runSimplification(): Promise<void> {
         const source = text.value;
@@ -139,40 +145,41 @@ export function useWorkspace(text: Ref<string>) {
             title: t("simplify.running"),
         });
 
-        /**
-         * Enters the diff review with the text known so far. Deliberately
-         * deferred until there *is* text: unlike a quick action, a simplify
-         * run produces nothing for tens of seconds (WHOLE mode produces
-         * nothing at all before `done`), and an empty diff review would show
-         * either a blank page or the whole document struck through. Until
-         * then the editor stays on screen under the progress overlay, the way
-         * an Advisor Check does.
-         */
-        function enterDiffReview(correctedValue: string): void {
-            if (state.value !== "diff-review") {
-                originalText.value = source;
-                state.value = "diff-review";
-                diffKey.value++;
-            }
-            correctedText.value = correctedValue;
-        }
-
-        // Mirror the composable's assembled text into the diff review. The
-        // reset to "" at the start of a run is not mirrored.
-        const stopMirroring = watch(simplifiedText, (value) => {
-            if (value !== "") {
-                enterDiffReview(value);
-            }
-        });
-
         try {
             const finished = await runSimplify(source);
-            // An empty `done.text` is a backend failure. Enter the diff review
-            // with an empty corrected text, which is the state the DiffViewer
-            // renders as "something went wrong". See ADR 0003.
-            if (finished && simplifyResult.value?.text === "") {
-                enterDiffReview("");
+            if (!finished) {
+                // Aborted before `done`: leave the working text untouched.
+                return;
             }
+
+            // A run where rewrites failed *and* nothing came back changed has
+            // nothing to review. Sending the user into a Diff Review only to
+            // tell them it failed makes them navigate out of a screen they
+            // never wanted; the error belongs where they already are. Partial
+            // failures still open the review — some units did get rewritten and
+            // those are worth deciding on — with the toast as the warning.
+            const failures = simplifyResult.value?.rewrite_failures ?? 0;
+            const unchanged = simplifiedText.value === source;
+            if (failures > 0) {
+                toast.add({
+                    title: t("simplify.failed"),
+                    description: t("simplify.rewriteFailed"),
+                    color: "error",
+                    icon: "i-lucide-alert-circle",
+                    duration: 8000,
+                });
+                if (unchanged) {
+                    state.value = "editable";
+                    return;
+                }
+            }
+
+            // An empty `done.text` is a backend failure; the DiffViewer renders
+            // an empty corrected text as "something went wrong" (ADR 0003).
+            originalText.value = source;
+            correctedText.value = simplifiedText.value;
+            state.value = "diff-review";
+            diffKey.value++;
         } catch (error: unknown) {
             console.error("Simplification failed:", error);
             const message =
@@ -186,7 +193,6 @@ export function useWorkspace(text: Ref<string>) {
             });
             state.value = "editable";
         } finally {
-            stopMirroring();
             removeProgress("simplify");
             progress.value = "none";
         }
@@ -463,5 +469,6 @@ export function useWorkspace(text: Ref<string>) {
         activeSimplifyRangeIndex: simplifyRangesApi.activeIndex,
         nextSimplifyRange: simplifyRangesApi.next,
         prevSimplifyRange: simplifyRangesApi.prev,
+        clearSimplifyRanges: simplifyRangesApi.clear,
     };
 }

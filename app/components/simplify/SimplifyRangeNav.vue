@@ -40,6 +40,13 @@ const props = defineProps<{
 const emit = defineEmits<{
     prev: [];
     next: [];
+    /**
+     * The user is done with these marks and wants them gone. They are advisory
+     * — nothing about the text is wrong — so there has to be a way out that
+     * isn't "edit every flagged passage until they collapse one by one", which
+     * was the only one that existed.
+     */
+    dismiss: [];
 }>();
 
 const { t } = useI18n();
@@ -117,6 +124,17 @@ const iconClass = computed<string>(() =>
                 :aria-label="t('simplify.unconverged.next')"
                 :title="t('simplify.unconverged.next')"
                 @click="emit('next')"
+            />
+            <UButton
+                variant="ghost"
+                color="neutral"
+                size="xs"
+                square
+                icon="i-lucide-x"
+                data-testid="simplifyUnconvergedDismiss"
+                :aria-label="t('simplify.unconverged.dismiss')"
+                :title="t('simplify.unconverged.dismiss')"
+                @click="emit('dismiss')"
             />
         </div>
     </div>

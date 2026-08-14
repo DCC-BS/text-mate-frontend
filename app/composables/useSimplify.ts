@@ -55,9 +55,19 @@ const isRunning = ref(false);
 const progress = ref<SimplifyProgressState>(initialProgress());
 const result = ref<SimplifyDoneEvent | undefined>(undefined);
 /**
- * The simplified text as currently known: assembled from `chunk_done` events
- * while CHUNKED mode runs, replaced by the authoritative `done.text` at the
- * end. Empty until the first text arrives.
+ * The simplified text, set once from the authoritative `done.text`. Empty until
+ * the run finishes.
+ *
+ * It is deliberately *not* assembled incrementally from `chunk_done`. That was
+ * tried and was wrong in a way no test caught: `chunk_done.index` addresses the
+ * backend's **merged** units (short paragraphs folded forward to ~100 words,
+ * `docs/simplify_redesign.md` §14.2), while the only splitting a client can do
+ * on its own is on blank lines. On a real document those are different spaces —
+ * 23 units against 40-plus raw blocks — so every finished unit was spliced in at
+ * an unrelated position, and the preview showed text that had never existed.
+ * Reconstructing it client-side would need each unit's source span, which is
+ * only known at `done` anyway. The progress panel is what reports the run while
+ * it is in flight; text appears when it is real.
  */
 const simplifiedText = ref("");
 
@@ -185,16 +195,8 @@ export function useSimplify() {
         }
     }
 
-    /**
-     * Folds one event into the reactive state. `chunkTexts` accumulates the
-     * finalized paragraphs of CHUNKED mode, keyed by their index, so events
-     * that arrive out of order still reassemble correctly.
-     */
-    function applyEvent(
-        event: SimplifyEvent,
-        chunkTexts: Map<number, string>,
-        sourceParagraphs: string[],
-    ): void {
+    /** Folds one event into the reactive state. */
+    function applyEvent(event: SimplifyEvent): void {
         if (event.event === "start") {
             progress.value = {
                 ...initialProgress(),
@@ -227,15 +229,12 @@ export function useSimplify() {
             return;
         }
 
+        // `chunk_done` carries no text this client can place: its `index` is in
+        // the backend's merged-unit space, which is not the blank-line split of
+        // the source (see `simplifiedText`). Unit counting is driven by the
+        // `progress` events instead, which report it in the same population
+        // `start.units` established. Nothing to fold in here.
         if (event.event === "chunk_done") {
-            // `chunk_done` is final and never retracted. Paragraphs the loop
-            // does not rewrite pass through verbatim, so the preview overlays
-            // the finalized chunks onto the source paragraphs. `done.text`
-            // replaces this preview with the authoritative assembly.
-            chunkTexts.set(event.index, event.text);
-            simplifiedText.value = sourceParagraphs
-                .map((paragraph, index) => chunkTexts.get(index) ?? paragraph)
-                .join("\n\n");
             return;
         }
 
@@ -284,17 +283,12 @@ export function useSimplify() {
         reset();
         isRunning.value = true;
 
-        const chunkTexts = new Map<number, string>();
-        // Same split as the backend chunker (`split(text, "\n\n")`), used only
-        // for the CHUNKED-mode preview.
-        const sourceParagraphs = text.split("\n\n");
-
         try {
             for await (const event of streamSimplify(text, controller.signal)) {
                 if (controller.signal.aborted) {
                     return false;
                 }
-                applyEvent(event, chunkTexts, sourceParagraphs);
+                applyEvent(event);
             }
             return result.value !== undefined;
         } catch (error: unknown) {

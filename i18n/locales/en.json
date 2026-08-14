@@ -309,9 +309,11 @@
     "simplify": {
         "running": "Simplifying your text…",
         "failed": "Simplification failed",
+        "rewriteFailed": "The text could not be simplified. The language model request failed, so the text is unchanged. Please try again later.",
         "diffTitle": "Simplification preview",
         "attempt": "Attempt {attempt}",
         "stage": {
+            "rewriting": "Rewriting your text…",
             "readability": "Measuring readability…"
         },
         "unitsInTarget": "{inTarget} of {total} text sections at target level",
@@ -329,7 +331,8 @@
             "position": "{index} of {count}",
             "rejectedReason": "This passage was difficult and the suggestion was not applied.",
             "prev": "Previous marked passage",
-            "next": "Next marked passage"
+            "next": "Next marked passage",
+            "dismiss": "Hide the marks"
         }
     },
     "pwa": {

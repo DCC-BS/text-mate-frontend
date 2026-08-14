@@ -21,6 +21,11 @@ export default defineConfig({
     },
     resolve: {
         alias: {
+            // Nuxt 4's srcDir aliases. `~~`/`@@` are the project root (where
+            // `shared/` lives), `~`/`@` the app directory — ordered longest
+            // first so `~~/...` is not swallowed by the `~` entry.
+            "~~": fileURLToPath(new URL("./", import.meta.url)),
+            "@@": fileURLToPath(new URL("./", import.meta.url)),
             "~": fileURLToPath(new URL("./app", import.meta.url)),
             "@": fileURLToPath(new URL("./app", import.meta.url)),
             "#app": fileURLToPath(

@@ -265,9 +265,11 @@
     "simplify": {
         "running": "Text wird vereinfacht…",
         "failed": "Vereinfachung fehlgeschlagen",
+        "rewriteFailed": "Der Text konnte nicht vereinfacht werden. Die Sprachmodell-Anfrage ist fehlgeschlagen — der Text wurde nicht verändert. Bitte später erneut versuchen.",
         "diffTitle": "Vorschau der Vereinfachung",
         "attempt": "Versuch {attempt}",
         "stage": {
+            "rewriting": "Text wird umgeschrieben…",
             "readability": "Lesbarkeit wird gemessen…"
         },
         "unitsInTarget": "{inTarget} von {total} Textabschnitten auf Zielniveau",
@@ -285,7 +287,8 @@
             "position": "{index} von {count}",
             "rejectedReason": "Diese Stelle war schwierig; der Vorschlag wurde nicht übernommen.",
             "prev": "Vorherige markierte Stelle",
-            "next": "Nächste markierte Stelle"
+            "next": "Nächste markierte Stelle",
+            "dismiss": "Markierungen ausblenden"
         }
     },
     "pwa": {
