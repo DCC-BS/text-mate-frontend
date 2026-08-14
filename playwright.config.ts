@@ -1,8 +1,40 @@
+import { execSync } from "node:child_process";
 import { defineConfig, devices } from "@playwright/test";
 
 // Dedicated port so the E2E server never collides with (or silently reuses)
 // a real dev server running on port 3000.
 const baseURL = "http://localhost:4300";
+
+/**
+ * Reads the `e2e:serve` mise task so its command and env stay defined in
+ * exactly one place: mise.toml. The Playwright webServer cannot spawn
+ * `mise run e2e:serve` itself — mise detaches its task into a separate
+ * process group and flakily leaks the stdio pipes on shutdown, which makes
+ * Playwright's teardown hang forever (tests pass, then the run stalls). So
+ * instead the task is mirrored here and run as a plain foreground process.
+ */
+function miseE2eServeTask(): { command: string; env: Record<string, string> } {
+    const task = JSON.parse(
+        execSync("mise tasks info e2e:serve --json", { encoding: "utf8" }),
+    ) as { run?: string[]; env?: string[] };
+
+    if (task.run?.length !== 1) {
+        throw new Error(
+            "e2e:serve mise task must have exactly one run command to be used as the Playwright webServer",
+        );
+    }
+
+    // env entries come as "KEY=VALUE" strings; they are merged over
+    // process.env by Playwright, so PATH etc. stay intact.
+    const env: Record<string, string> = {};
+    for (const pair of task.env ?? []) {
+        const separator = pair.indexOf("=");
+        env[pair.slice(0, separator)] = pair.slice(separator + 1);
+    }
+    return { command: task.run[0], env };
+}
+
+const serveTask = miseE2eServeTask();
 
 export default defineConfig({
     testDir: "./tests/e2e",
@@ -49,22 +81,13 @@ export default defineConfig({
     ],
 
     webServer: {
-        // The server entrypoint lives in mise.toml (`e2e:serve`), which
-        // delegates to scripts/e2e-serve.sh: it serves the production build
-        // from .output on port 4300 with dummy data and the
-        // changelog/disclaimer/onboarding overlays disabled. The `test:e2e`
-        // task depends on `e2e:build`, so the bundle exists before this
-        // command runs.
-        //
-        // NOTE: this invokes the script directly instead of `mise run
-        // e2e:serve` on purpose. mise detaches its task into a separate
-        // process group and flakily leaks the stdio pipes on shutdown, which
-        // makes Playwright's webServer teardown hang forever (tests pass,
-        // then the run stalls). The script exec's node as a single
-        // foreground process, so signals and pipes behave. stdout/stderr are
-        // piped so a failing server fails fast and visibly instead of eating
-        // the whole webServer timeout.
-        command: "sh scripts/e2e-serve.sh",
+        // Command and env are mirrored from the `e2e:serve` mise task (see
+        // miseE2eServeTask). The `test:e2e` task depends on `e2e:build`, so
+        // the bundle exists before this command runs. stdout/stderr are
+        // piped so a failing server fails fast and visibly instead of
+        // eating the whole webServer timeout.
+        command: serveTask.command,
+        env: serveTask.env,
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 60_000,

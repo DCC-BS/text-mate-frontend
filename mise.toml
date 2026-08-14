@@ -109,7 +109,8 @@ run = 'if [ "${CI:-}" = "true" ] && [ -d .output ]; then echo "e2e:build: reusin
 
 [tasks."e2e:serve"]
 description = "serve the E2E production build on port 4300 (dummy data, overlays disabled)"
-run = "sh scripts/e2e-serve.sh"
+env = { APP_MODE = "ci", AUTH_MODE = "none", DUMMY = true, PORT = "4300", NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG = true, NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER = true, NUXT_PUBLIC_COMMON_UI_DISABLE_ONBOARDING = true }
+run = "node .output/server/index.mjs"
 
 [tasks."test:e2e"]
 env = { APP_MODE = "ci" }
