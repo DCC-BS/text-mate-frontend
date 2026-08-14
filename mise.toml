@@ -28,10 +28,6 @@ run = [
 description = "install the default Playwright CLI browser (chromium)"
 run = "playwright-cli install-browser --with-deps"
 
-[tasks."playwright:install-browser"]
-description = "install the default Playwright CLI browser (chromium)"
-run = "playwright-cli install-browser --with-deps"
-
 [tasks.env-check]
 description = "🔑 Load secrets into the environment via varlock"
 alias = "env"
