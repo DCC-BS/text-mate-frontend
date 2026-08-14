@@ -16,9 +16,9 @@
         "test": "vitest",
         "test:watch": "vitest --watch",
         "test:coverage": "vitest run --coverage",
-        "test:e2e": "playwright test",
-        "test:e2e:ui": "playwright test --ui",
-        "e2e:codegen": "playwright codegen http://localhost:3000"
+        "test:e2e": "mise run test:e2e",
+        "test:e2e:ui": "mise run test:e2e:ui",
+        "e2e:codegen": "mise run e2e:codegen"
     },
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "2.1.4",

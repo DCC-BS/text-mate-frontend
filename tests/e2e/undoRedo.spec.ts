@@ -1,17 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { clearBrowserState } from "./utils";
 
-test.beforeEach(async ({ page, context }) => {
-    await clearBrowserState(page, context);
+test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    try {
-        await page.evaluate(() => {
-            localStorage.clear();
-            sessionStorage.clear();
-        });
-    } catch (error) {
-    }
-    await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
+    await expect(page.locator(".tiptap")).toBeVisible();
 });
 
 test("Undo and Redo buttons should be disabled when no action was taken", async ({

@@ -102,20 +102,31 @@ run = "bunx vitest --watch"
 description = "run unit tests with coverage report"
 run = "bunx vitest run --coverage"
 
+[tasks."e2e:build"]
+env = { APP_MODE = "ci", AUTH_MODE = "none", DUMMY = true }
+description = "build the production bundle for E2E tests (reuses prebuilt .output in CI)"
+run = 'if [ "${CI:-}" = "true" ] && [ -d .output ]; then echo "e2e:build: reusing prebuilt .output"; else bunx nuxt build; fi'
+
+[tasks."e2e:serve"]
+description = "serve the E2E production build on port 4300 (dummy data, overlays disabled)"
+run = "sh scripts/e2e-serve.sh"
+
 [tasks."test:e2e"]
-env = { APP_MODE= "ci" }
-description = "run Playwright E2E tests"
+env = { APP_MODE = "ci" }
+description = "run Playwright E2E tests (builds first, serves on port 4300)"
+depends = ["e2e:build"]
 run = "bunx playwright test"
 
 [tasks."test:e2e:ui"]
-env = { APP_MODE= "ci" }
+env = { APP_MODE = "ci" }
 description = "run Playwright E2E tests with the interactive UI"
+depends = ["e2e:build"]
 run = "bunx playwright test --ui"
 
 [tasks."e2e:codegen"]
-env = { APP_MODE= "ci" }
-description = "generate Playwright tests via codegen"
-run = "bunx playwright codegen http://localhost:3000"
+env = { APP_MODE = "ci" }
+description = "generate Playwright tests via codegen (requires a running e2e:serve)"
+run = "bunx playwright codegen http://localhost:4300"
 
 # ── Docker ────────────────────────────────────────────────────────────────────
 
