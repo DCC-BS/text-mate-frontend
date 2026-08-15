@@ -346,18 +346,7 @@ export function reflowAdvisorRanges<T extends RangedItem>(
             continue;
         }
 
-        // Content touching *both* the range's start and its end was deleted
-        // by this transaction — i.e. the tracked span was consumed,
-        // regardless of whether replacement text landed in its place. This
-        // has to be checked before the position math below: typing a
-        // replacement over a fully-selected range is a delete-then-insert,
-        // and for a same-size-or-larger replacement the mapped positions do
-        // not collapse the way a pure deletion does (they land just inside
-        // the *new* content instead), which used to leave a spurious
-        // one-character sliver of the mark alive instead of dismissing it.
-        // `deletedAfter`/`deletedBefore` come straight from ProseMirror's own
-        // step-tracking, so this doesn't depend on guessing the right
-        // associativity for an arbitrary replacement.
+        // Auto-dismiss if the tracked span was consumed by a delete/replace step.
         const deletedAtStart = mapping.mapResult(fromPos.pos, 1).deletedAfter;
         const deletedAtEnd = mapping.mapResult(toPos.pos, -1).deletedBefore;
         if (deletedAtStart && deletedAtEnd) {

@@ -1,51 +1,16 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { SimplifyRangeKind } from "~/utils/simplifyRanges";
 
-/**
- * Count + navigation for the passages the simplification loop could not
- * bring into the target band (T6.7), plus the ones where a rewrite *was*
- * proposed for such a passage but the user rejected it — both kinds are
- * counted and stepped through together, since where a passage is matters
- * more than why it is flagged (see `SimplifyRangeKind`). The passages
- * themselves are tinted in place in the editor by `simplifyDecorations.ts`;
- * this bar is the "spellcheck pattern" affordance for them — a count and
- * prev/next controls that scroll to each one, never a list of indices. Per
- * `docs/simplify_redesign.md` §14.4, no per-unit readability number is ever
- * shown here or anywhere else — only the one whole-document score exists on
- * screen.
- */
 const props = defineProps<{
-    /** Number of passages still flagged. Nothing renders when this is 0. */
     count: number;
-    /**
-     * Whether the assembled text reached the target band — keyed off the
-     * document band, not off whether any unit fell short, so this stays
-     * consistent with the readability badge instead of contradicting it.
-     * `true` → info (blue): the text is fine overall, these are worth a
-     * look. `false` → amber: the document itself did not reach the target.
-     * Deliberately the *only* thing that drives color: the two `kind`s are
-     * told apart by message, not by a second color.
-     */
     converged: boolean;
-    /** 0-based position of the active passage among the ordered set, -1 if none. */
     activeIndex: number;
-    /**
-     * Why the active passage is flagged; `undefined` when none is active.
-     * `"rejected"` gets an explanatory line the others don't — see the
-     * `reason` computed below.
-     */
     activeKind?: SimplifyRangeKind;
 }>();
 
 const emit = defineEmits<{
     prev: [];
     next: [];
-    /**
-     * The user is done with these marks and wants them gone. They are advisory
-     * — nothing about the text is wrong — so there has to be a way out that
-     * isn't "edit every flagged passage until they collapse one by one", which
-     * was the only one that existed.
-     */
     dismiss: [];
 }>();
 
@@ -64,14 +29,6 @@ const position = computed<string | undefined>(() =>
         : undefined,
 );
 
-/**
- * Explains *why* the active passage is still marked, but only for the
- * `"rejected"` kind: a rewrite was proposed there and the user turned it
- * down, so their own (unmeasured) wording is what remains — a materially
- * different situation from the `"rewritten"` kind (still above target after
- * the rewrite), which keeps the title/position above as its only message,
- * unchanged from before rejection-awareness existed.
- */
 const reason = computed<string | undefined>(() =>
     props.activeKind === "rejected"
         ? t("simplify.unconverged.rejectedReason")

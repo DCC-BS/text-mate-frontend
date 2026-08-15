@@ -54,11 +54,6 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
     const { onCommand, executeCommand } = useCommandBus();
     const toast = useToast();
 
-    // The rewrite-text / rewrite-word selection bubble is temporarily
-    // disabled. When false, useTextFocus clears the focus marks and the
-    // `focusedWord`/`focusedSentence` refs stay undefined, so the rewrite
-    // section of the BubbleMenu (gated on those refs) never renders — only the
-    // Add-Note button remains. Flip back to `true` to re-enable.
     const isRewriteActive = ref(false);
 
     const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
@@ -70,7 +65,6 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
         getEnabled: () => decorationsEnabled.value,
         onSelect: (id) => executeCommand(new ChangeActiveThreadId(id)),
         onDismiss: (ids) => {
-            // Auto-dismiss threads whose range collapsed on an edit.
             for (const id of ids) {
                 const thread = threads.value.find((t) => t.id === id);
                 if (thread) {
@@ -80,21 +74,11 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
         },
     });
 
-    // Unconverged-passage highlighting (T6.7). Both `useSimplify` and
-    // `useSimplifyRanges` are module-level singletons (documented as such on
-    // their own files), so calling them here — rather than threading yet
-    // another pair of props through WorkspaceEditor — reaches the same state
-    // `useWorkspace`/`WorkspaceContainer` read, exactly like the decoration
-    // plugin above reaches thread state through `threads`/`activeThreadId`.
     const { result: simplifyResult } = useSimplify();
     const simplifyRangesApi = useSimplifyRanges();
     const simplifyDecorationExtension = createSimplifyDecorationExtension({
         getRanges: () => simplifyRangesApi.ranges.value,
         getActiveId: () => simplifyRangesApi.activeRangeId.value,
-        // Gated on the same `editable` the workspace already computes
-        // (state === "editable" && progress === "none"); while e.g. a Check
-        // runs the editor is covered by a blur overlay anyway, so hiding the
-        // highlight meanwhile is not user-visible.
         getEnabled: () =>
             editable.value && simplifyRangesApi.ranges.value.length > 0,
         getSeverity: () =>

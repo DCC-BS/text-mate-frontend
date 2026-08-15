@@ -9,32 +9,11 @@ import {
 /** A half-open plain-text range `[start, end)`, detached from any id. */
 export type OffsetRange = { start: number; end: number };
 
-/**
- * Why a passage is still marked after Diff Review settles:
- * - `"rewritten"`: the rewrite was applied (accepted, or never touched by a
- *   hunk at all) and the assembled text still fell short of the target band.
- *   This is what "unconverged" always meant before rejection-awareness.
- * - `"rejected"`: the user rejected the hunk covering this passage, so their
- *   *original* wording ends up in the document instead. We never scored that
- *   original wording — we only know the rewrite was needed and the user
- *   declined it — so the message for this kind must say exactly that, not
- *   claim a measurement that never happened.
- */
+/** Reason why a passage is flagged after Diff Review. */
 export type SimplifyRangeKind = "rewritten" | "rejected";
 
 /**
- * A passage the simplification loop could not bring into the target band
- * within its attempt budget (T6.7), anchored to a half-open plain-text
- * range. Mirrors `AdvisorThread`'s `{ id, range }` shape closely enough that
- * `reflowAdvisorRanges` (in `advisorText.ts`) reflows both through the same
- * generic engine — there is deliberately no second reflow implementation.
- *
- * Unlike `AdvisorThread` there is no `status`: every unconverged passage is
- * navigated identically, and its color (info vs. amber) is a document-level
- * property (whether the assembled text reached the target band), not a
- * per-range one — see `simplifyDecorations.ts`. `kind` exists only to pick
- * the right explanatory message in `SimplifyRangeNav`; it never affects
- * severity/color.
+ * A passage the simplification loop could not bring into the target band.
  */
 export type SimplifyRange = {
     id: string;
@@ -51,19 +30,12 @@ export type SimplifyDecorationSpec = {
 
 /**
  * Builds inline decoration specs for the given ranges, mapping plain-text
- * offsets to ProseMirror positions. Ranges are clamped so a decoration never
- * crosses a paragraph boundary (ProseMirror forbids that); a range spanning
- * multiple paragraphs contributes one decoration per touched paragraph.
- *
- * Reuses the same segment/offset primitives `buildDecorationSpecs` (advisor
- * threads) is built on. No overlap-marker handling here: unlike advisor
- * threads, unconverged passages are backend-reported paragraph spans and are
- * not expected to overlap each other.
+ * offsets to ProseMirror positions.
  */
 export function buildSimplifyDecorationSpecs(
     doc: PmNode,
     ranges: SimplifyRange[],
-    activeId: string | null,
+    activeId: string | undefined,
 ): SimplifyDecorationSpec[] {
     const segments = advisorSegments(doc);
     const specs: SimplifyDecorationSpec[] = [];
@@ -91,35 +63,11 @@ export function buildSimplifyDecorationSpecs(
     return specs;
 }
 
-/** An {@link OffsetRange} remapped onto Diff Review's resolved text, tagged
- * with why it is still marked — see {@link SimplifyRangeKind}. */
+/** An {@link OffsetRange} remapped onto Diff Review's resolved text. */
 export type MappedUnconvergedRange = OffsetRange & { kind: SimplifyRangeKind };
 
 /**
- * Remaps ranges expressed in the corrected-text offset space (e.g. the
- * simplification loop's `unconverged_ranges`, which are offsets into
- * `done.text`) onto the text Diff Review's `getResolvedText()` would
- * currently produce from `hunks`' accept/reject decisions.
- *
- * Every hunk's `from`/`to` already live in the corrected-text space (see
- * `diffSegments.ts`), so each endpoint of a range is mapped independently by
- * walking the hunks in order:
- * - Ahead of/behind every overlapping hunk, a position just shifts by the
- *   cumulative length delta rejected hunks before it introduce (their
- *   resolved length is `removedText.length`, not `addedText.length`).
- * - Falling inside an accepted/pending hunk, a position maps 1:1 — that
- *   hunk's `addedText` is exactly what the corrected text already has there.
- * - Falling inside a *rejected* hunk, a position snaps to that hunk's full
- *   resolved span instead of interpolating into content that no longer
- *   exists: the hunk's `removedText` is what ends up in the document, so the
- *   common case (a marked passage rewritten as a single hunk) ends up with
- *   the mark covering that restored original wording exactly, rather than
- *   the mark being dropped as it was before rejection-awareness.
- *
- * A range is tagged `kind: "rejected"` when any hunk it overlaps was
- * rejected, `"rewritten"` otherwise — see {@link SimplifyRangeKind}. Ranges
- * that collapse to empty after remapping (defensively, mirroring
- * `UnconvergedRangeSchema`'s own filter) are dropped.
+ * Remaps ranges expressed in corrected-text space onto resolved text based on hunk decisions.
  */
 export function remapUnconvergedRanges(
     ranges: readonly OffsetRange[],

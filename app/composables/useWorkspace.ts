@@ -48,6 +48,7 @@ const checkProgress = ref({ checked: 0, total: 1 });
 export function useWorkspace(text: Ref<string>) {
     const { t } = useI18n();
     const toast = useToast();
+    const logger = useLogger();
     const { addProgress, removeProgress } = useUseProgressIndication();
     const { validate, fix } = useAdvisor();
     const { threads, activeThreadId, addThread, clearViolationThreads } =
@@ -63,26 +64,18 @@ export function useWorkspace(text: Ref<string>) {
     const simplifyRangesApi = useSimplifyRanges();
     const { onCommand, executeCommand } = useCommandBus();
 
-    let fixAbort: AbortController | null = null;
+    let fixAbort: AbortController | undefined;
 
     const editable = computed(
         () => state.value === "editable" && progress.value === "none",
     );
 
-    // Decorations render whenever threads exist and the editor is visible
-    // (i.e. not during a diff review).
     const decorationsEnabled = computed(
         () => threads.value.length > 0 && state.value === "editable",
     );
 
     const isBusy = computed(() => progress.value !== "none");
 
-    /**
-     * Streams a Transform quick action's result into the diff review. The
-     * editor is NOT touched during streaming — the corrected text accumulates
-     * in {@link correctedText} and is committed (or discarded) once the user
-     * resolves the diff.
-     */
     onCommand<ExecuteTextActionCommand>(
         Cmds.ExecuteTextActionCommand,
         async (command) => {
@@ -113,27 +106,10 @@ export function useWorkspace(text: Ref<string>) {
             } finally {
                 removeProgress("quick-action");
                 progress.value = "none";
-                // Stay in diff-review even on a no-op or empty result so the
-                // DiffViewer can surface an explicit "no changes" / error
-                // hint instead of vanishing silently. The user leaves via
-                // exitDiffReview() (the "Back to text" button).
             }
         },
     );
 
-    /**
-     * Runs the simplification loop and enters the diff review once, when the
-     * run is over. Unlike a quick action the backend streams *events*, not
-     * text, and the only text a client may show is the assembly that arrives
-     * with `done` — see {@link useSimplify}'s `simplifiedText` for why the
-     * per-unit events cannot be laid out client-side.
-     *
-     * Entering on the first bit of text was the earlier behaviour and it put
-     * the user in a diff review while most of the document was still being
-     * rewritten: the view flickered as the (mis-placed) preview grew, then
-     * changed again under them at `done`. The editor now stays on screen under
-     * the progress panel for the whole run, the way an Advisor Check does.
-     */
     async function runSimplification(): Promise<void> {
         const source = text.value;
 
@@ -148,16 +124,9 @@ export function useWorkspace(text: Ref<string>) {
         try {
             const finished = await runSimplify(source);
             if (!finished) {
-                // Aborted before `done`: leave the working text untouched.
                 return;
             }
 
-            // A run where rewrites failed *and* nothing came back changed has
-            // nothing to review. Sending the user into a Diff Review only to
-            // tell them it failed makes them navigate out of a screen they
-            // never wanted; the error belongs where they already are. Partial
-            // failures still open the review — some units did get rewritten and
-            // those are worth deciding on — with the toast as the warning.
             const failures = simplifyResult.value?.rewrite_failures ?? 0;
             const unchanged = simplifiedText.value === source;
             if (failures > 0) {
@@ -174,14 +143,12 @@ export function useWorkspace(text: Ref<string>) {
                 }
             }
 
-            // An empty `done.text` is a backend failure; the DiffViewer renders
-            // an empty corrected text as "something went wrong" (ADR 0003).
             originalText.value = source;
             correctedText.value = simplifiedText.value;
             state.value = "diff-review";
             diffKey.value++;
         } catch (error: unknown) {
-            console.error("Simplification failed:", error);
+            logger.error({ error }, "Simplification failed");
             const message =
                 error instanceof Error ? error.message : String(error);
             toast.add({
@@ -265,10 +232,6 @@ export function useWorkspace(text: Ref<string>) {
         state.value = "editable";
     });
 
-    /**
-     * Validation: preserves User Threads (notes), replaces Violation Threads.
-     * The editor stays editable throughout.
-     */
     onCommand<CheckCommand>(Cmds.CheckCommand, async () => {
         clearViolationThreads();
         progress.value = "checking";
@@ -288,7 +251,7 @@ export function useWorkspace(text: Ref<string>) {
                 }
             }
         } catch (error: unknown) {
-            console.error("Advisor validation failed:", error);
+            logger.error({ error }, "Advisor validation failed");
             const message =
                 error instanceof Error ? error.message : String(error);
             toast.add({
@@ -303,11 +266,6 @@ export function useWorkspace(text: Ref<string>) {
         }
     });
 
-    /**
-     * Generates the corrected Working Text from every to-fix thread and enters
-     * the diff review. Threads are cleared once the user commits the diff (the
-     * corrected text no longer matches the old ranges).
-     */
     onCommand<ApplyFixCommand>(Cmds.ApplyFixCommand, async () => {
         if (threads.value.filter((x) => x.status === "to-fix").length === 0) {
             return;
@@ -351,11 +309,8 @@ export function useWorkspace(text: Ref<string>) {
                 }
                 correctedText.value += chunk;
             }
-
-            // No commitIfUnchanged() here: a no-op or empty result stays in
-            // diff-review so the DiffViewer can show a hint. See ADR 0003.
         } catch (error: unknown) {
-            console.error("Advisor fix failed:", error);
+            logger.error({ error }, "Advisor fix failed");
             const message =
                 error instanceof Error ? error.message : String(error);
             toast.add({

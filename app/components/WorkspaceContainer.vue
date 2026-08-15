@@ -31,16 +31,14 @@ const text = defineModel<string>({ required: true });
 const ws = useWorkspace(text);
 const pdfModal = overlay.create(PdfViewerClient);
 
-const diffViewerRef = ref<InstanceType<typeof DiffViewer> | null>(null);
+const diffViewerRef = ref<InstanceType<typeof DiffViewer>>();
 const mobileRailOpen = ref(false);
 const clearOpen = ref(false);
 
 const inDiffReview = computed(() => ws.state.value === "diff-review");
 
-/** True while corrected text is streaming into the diff review. */
 const isStreaming = computed(() => ws.progress.value !== "none");
 
-/** Context-aware label for the diff streaming indicator. */
 const streamingLabel = computed(() => {
     if (ws.progress.value === "fixing") {
         return t("workspace.fixing");
@@ -51,21 +49,16 @@ const streamingLabel = computed(() => {
     return t("workspace.generating");
 });
 
-/** True while an Advisor Check stream is running. */
 const isChecking = computed(() => ws.progress.value === "checking");
 
-/** True while the simplification loop is running. */
 const isSimplifying = computed(() => ws.progress.value === "simplifying");
 
-/** True when the current diff review was produced by the simplification loop. */
 const isSimplifyDiff = computed(() => ws.diffMode.value === "simplify");
 
-/** Title of the diff review, naming the operation that produced it. */
 const diffTitle = computed(() =>
     isSimplifyDiff.value ? t("simplify.diffTitle") : t("workspace.diffTitle"),
 );
 
-/** Readability of the original text, as measured before the first rewrite. */
 const scoreBefore = computed<ReadabilityScore>(() => ({
     scored: ws.simplifyProgress.value.scored,
     language: ws.simplifyProgress.value.language,
@@ -75,7 +68,6 @@ const scoreBefore = computed<ReadabilityScore>(() => ({
     cefr: ws.simplifyProgress.value.cefrBefore,
 }));
 
-/** Readability of the simplified text. Only known once `done` arrived. */
 const scoreAfter = computed<ReadabilityScore>(() => {
     const result = ws.simplifyResult.value;
     return {
@@ -88,10 +80,6 @@ const scoreAfter = computed<ReadabilityScore>(() => {
     };
 });
 
-/**
- * True when both ends of the comparison exist, i.e. the header can show the
- * before/after pair. Unscored languages show nothing at all.
- */
 const showsScoreComparison = computed(
     () =>
         isSimplifyDiff.value &&
@@ -100,16 +88,6 @@ const showsScoreComparison = computed(
         !isUnscored(scoreAfter.value),
 );
 
-/**
- * Message for a simplify run that came back unchanged because rewrites failed
- * (the model timed out, errored, or returned nothing), rather than because the
- * text needed no change. `undefined` in every other case, which leaves the
- * DiffViewer's own reassuring "nothing to change" message in place.
- *
- * Without this a run against an unreachable model was reported as a success
- * with nothing to do — the most misleading thing the UI could say, since the
- * text was never looked at.
- */
 const simplifyFailureNotice = computed<string | undefined>(() => {
     if (!isSimplifyDiff.value) {
         return undefined;
@@ -118,28 +96,12 @@ const simplifyFailureNotice = computed<string | undefined>(() => {
     return failures > 0 ? t("simplify.rewriteFailed") : undefined;
 });
 
-/**
- * Number of passages the loop could not bring into the target band (T6.7),
- * highlighted in place in the editor (`simplifyDecorations.ts`) rather than
- * enumerated here. Persists across a Diff Review commit until another
- * operation rewrites the text or every passage is edited away — see
- * `useWorkspace.commitSimplifyDiff`/`commitDiff`.
- */
 const unconvergedCount = computed<number>(() => ws.simplifyRanges.value.length);
 
-/**
- * Whether the assembled text reached the target band — drives the nav bar's
- * severity (info vs. amber), keyed off the document band rather than off
- * whether any passage fell short (§14.4 of the redesign doc).
- */
 const simplifyConverged = computed<boolean>(
     () => ws.simplifyResult.value?.converged ?? false,
 );
 
-/**
- * Why the currently-active marked passage is flagged — drives which message
- * `SimplifyRangeNav` shows. `undefined` when nothing is active (count is 0).
- */
 const activeSimplifyRangeKind = computed(
     () => ws.simplifyRanges.value[ws.activeSimplifyRangeIndex.value]?.kind,
 );
@@ -152,7 +114,6 @@ function onSimplifyRangeNext(): void {
     ws.nextSimplifyRange();
 }
 
-/** Drops every unconverged mark at once. The text itself is left alone. */
 function onSimplifyRangeDismiss(): void {
     ws.clearSimplifyRanges();
 }
@@ -169,18 +130,10 @@ watch(mobileRailOpen, async (isOpen) => {
     }
 });
 
-// Close the mobile rail when a fix is applied so the user sees the editor
-// transition into Diff Review instead of the rail covering it.
 onCommand<ApplyFixCommand>(Cmds.ApplyFixCommand, async () => {
     mobileRailOpen.value = false;
 });
 
-/** Commits the resolved diff text back to the Working Text. No-op while the
-    corrected text is still streaming, so the view cannot close mid-stream.
-    A simplify diff also remaps the loop's raw `unconverged_ranges` (offsets
-    into `done.text`) onto the resolved text via the DiffViewer's hunk
-    decisions, so a rejected hunk drops or shifts a highlight exactly like an
-    edit would once the text is back in the live editor. */
 function commitResolved(): void {
     if (isStreaming.value) {
         return;
@@ -210,10 +163,6 @@ function onRejectHunk(_hunk: DiffHunk): void {
     }
 }
 
-/**
- * Leaves Diff Review when the corrected text held no reviewable hunks
- * (no-op or empty response). See ADR 0003.
- */
 function onDismissDiff(): void {
     ws.exitDiffReview();
 }
@@ -273,11 +222,11 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
         />
 
         <!-- Main area: centered editor/diff + right rail -->
-        <div class="flex-1 min-h-0 flex bg-gray-100">
+        <div class="flex-1 min-h-0 flex bg-muted">
             <div class="flex-1 min-w-0 flex justify-center overflow-hidden">
                 <div
                     :class="[
-                        'w-full h-full p-2 bg-white shadow relative',
+                        'w-full h-full p-2 bg-default shadow relative',
                         inDiffReview ? '' : 'max-w-6xl',
                     ]"
                 >
@@ -287,8 +236,6 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                         class="h-full flex flex-col min-h-0"
                         data-tour="diff-review"
                     >
-                        <!-- Simplification runs for tens of seconds: show the
-                             loop's attempt and paragraph progress meanwhile. -->
                         <SimplifyProgress
                             v-if="isSimplifying"
                             :progress="ws.simplifyProgress.value"
@@ -312,8 +259,6 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                             @dismiss="onDismissDiff"
                         >
                             <template #actions>
-                                <!-- Before/after readability, in whatever form
-                                     the detected language supports. -->
                                 <div
                                     v-if="showsScoreComparison"
                                     class="flex items-center gap-2 mr-1"
@@ -353,11 +298,6 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
 
                     <!-- Editor -->
                     <div v-else class="h-full flex flex-col min-h-0">
-                        <!-- Count + prev/next for passages the simplification
-                             loop could not bring into the target band. The
-                             passages themselves are tinted in place by the
-                             editor's decoration plugin; nothing renders here
-                             when there are none. -->
                         <SimplifyRangeNav
                             :count="unconvergedCount"
                             :converged="simplifyConverged"
@@ -378,14 +318,13 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                         />
                     </div>
 
-                    <!-- Check progress: pinned below the ribbon, overlays and
-                         blocks the editor until the Advisor check finishes. -->
+                    <!-- Check progress -->
                     <template v-if="isChecking">
                         <div
-                            class="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px]"
+                            class="absolute inset-0 z-10 bg-default/50 backdrop-blur-[1px]"
                         />
                         <div
-                            class="absolute top-0 inset-x-0 z-20 px-4 py-3 border-b border-default bg-white/95 shadow-sm"
+                            class="absolute top-0 inset-x-0 z-20 px-4 py-3 border-b border-default bg-default/95 shadow-sm"
                         >
                             <ValidationProgress
                                 :progress="ws.checkProgress.value"
@@ -393,16 +332,13 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                         </div>
                     </template>
 
-                    <!-- Simplify progress before the first text arrives: the
-                         editor stays visible under the overlay, exactly as
-                         during a check. Once text exists the diff review takes
-                         over and hosts the same panel above the diff. -->
+                    <!-- Simplify progress before first text -->
                     <template v-if="isSimplifying && !inDiffReview">
                         <div
-                            class="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px]"
+                            class="absolute inset-0 z-10 bg-default/50 backdrop-blur-[1px]"
                         />
                         <div
-                            class="absolute top-0 inset-x-0 z-20 px-4 pt-3 border-b border-default bg-white/95 shadow-sm"
+                            class="absolute top-0 inset-x-0 z-20 px-4 pt-3 border-b border-default bg-default/95 shadow-sm"
                         >
                             <SimplifyProgress
                                 :progress="ws.simplifyProgress.value"

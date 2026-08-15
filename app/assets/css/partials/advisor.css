@@ -79,22 +79,12 @@
     );
 }
 
-/* Where two thread ranges overlap, a synthetic marker decoration injects
-   this class on exactly the intersection segment (ProseMirror merges active
-   decorations' classes per text segment). A thicker dashed underline signals
-   that more than one element lives here; the smallest range wins the click. */
+/* Overlap markers */
 .advisor-mark--overlap {
     border-bottom-style: dashed;
     border-bottom-width: 3px;
 }
 
-/* Violation + user note overlap. On the merged segment the per-thread
-   classes collide (e.g. selecting the violation brings `--active` while the
-   user note brings `--user`, wrongly firing `.advisor-mark--user.advisor-mark
-   --active`). The overlap marker therefore drives the color itself, using
-   compound selectors (0,2,0) to win over that collision. Default keeps the
-   violation's purple as the background and the user note as a green dashed
-   underline; the `-user`/`-violation` variants reflect the selected thread. */
 .advisor-mark--overlap.advisor-mark--overlap-mixed {
     background-color: color-mix(
         in srgb,
@@ -120,11 +110,7 @@
     );
 }
 
-/* ─── Simplify unconverged-passage marks ────────────────────────────
-   Rendered by the simplifyDecorations ProseMirror plugin (T6.7). Same
-   decoration-not-Mark approach as the advisor marks above. Severity is
-   picked once per document (info vs. amber, see simplifyDecorations.ts),
-   not per mark, so every mark of a given severity looks identical. */
+/* ─── Simplify unconverged-passage marks ──────────────────────────── */
 
 .simplify-mark {
     border-radius: 2px;

@@ -1,7 +1,5 @@
-<script lang="ts" setup>
-import { computed } from "vue";
+<script setup lang="ts">
 import CefrScoreVisualization from "~/components/CefrScoreVisualization.vue";
-import FleschScoreVisualization from "~/components/FleschScoreVisualization.vue";
 import { useCefrScore } from "~/composables/useCefrScore";
 import { useTextStats } from "~/composables/useTextStats";
 
@@ -13,33 +11,28 @@ const props = defineProps<{
 
 const textRef = computed(() => props.text);
 
-// Existing client-side statistics
 const {
     charCount,
     wordCount,
     syllableCount,
     averageSentenceLength,
     averageSyllablesPerWord,
-    fleschScore,
 } = useTextStats(textRef);
 
-// Consume custom composable for the backend readability evaluation. Only de/en
-// come back with a CEFR level; fr/it carry their own metric instead (§10).
 const { isLoading, cefrLevel, language, score, scoreLabel, band, error } =
     useCefrScore(textRef);
 </script>
 
 <template>
     <div class="flex flex-col gap-2">
-        <!-- Fancy Flesch Score Visualization -->
-        <div class="bg-white border border-gray-200 p-2 rounded-md">
+        <div class="bg-elevated border border-default p-2 rounded-md">
             <div class="grid grid-cols-2">
                 <span>{{ t("text-stats.character-count") }}</span>
                 <span class="text-end font-bold" data-testid="characterCount"
                     >{{ charCount }}</span
                 >
 
-                <span>{{ t("text-stats.word-count") }}:</span>
+                <span>{{ t("text-stats.word-count") }}</span>
                 <span class="text-end font-bold" data-testid="wordCount"
                     >{{ wordCount }}</span
                 >
@@ -63,10 +56,7 @@ const { isLoading, cefrLevel, language, score, scoreLabel, band, error } =
                     >{{ averageSyllablesPerWord }}</span
                 >
             </div>
-            <!-- Disable FleschScore in favor for CEFR score -->
-            <!-- <FleschScoreVisualization :score="fleschScore" /> -->
 
-            <!-- Text Understandability Score Visualization -->
             <CefrScoreVisualization
                 :is-loading="isLoading"
                 :cefr-level="cefrLevel"

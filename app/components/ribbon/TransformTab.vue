@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { SimplifyTextCommand } from "~/assets/models/commands";
 import type { RibbonTransformProps } from "~/types/ribbon";
 import type { TextActions } from "~~/shared/text-actions";
@@ -32,16 +32,14 @@ async function applyAction(
 ): Promise<void> {
     if (!actionsAreAvailable.value) {
         toast.add({
-            title: "Error",
-            description: "No text to process",
+            title: t("errors.title"),
+            description: t("errors.no_text_to_process"),
             color: "error",
             icon: "i-lucide-circle-alert",
         });
         return;
     }
 
-    // Plain Language is no longer a quick action: it runs the measured,
-    // language-aware simplification loop (`POST /api/simplify`).
     if (action === "plain_language") {
         await executeCommand(new SimplifyTextCommand());
         return;

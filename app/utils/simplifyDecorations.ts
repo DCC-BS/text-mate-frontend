@@ -22,7 +22,7 @@ export type SimplifySeverity = "info" | "amber";
 
 export type SimplifyDecorationOptions = {
     getRanges: () => SimplifyRange[];
-    getActiveId: () => string | null;
+    getActiveId: () => string | undefined;
     /** Decorations render only while this returns true (ranges exist + editor visible). */
     getEnabled: () => boolean;
     getSeverity: () => SimplifySeverity;

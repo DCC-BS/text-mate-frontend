@@ -11,7 +11,7 @@ describe("useSimplifyRanges", () => {
     it("starts empty", () => {
         const api = useSimplifyRanges();
         expect(api.ranges.value).toEqual([]);
-        expect(api.activeRangeId.value).toBeNull();
+        expect(api.activeRangeId.value).toBeUndefined();
         expect(api.activeIndex.value).toBe(-1);
     });
 
@@ -76,7 +76,7 @@ describe("useSimplifyRanges", () => {
         const api = useSimplifyRanges();
         api.next();
         api.prev();
-        expect(api.activeRangeId.value).toBeNull();
+        expect(api.activeRangeId.value).toBeUndefined();
     });
 
     it("selectRange sets the active range directly", () => {
@@ -109,7 +109,6 @@ describe("useSimplifyRanges", () => {
 
         expect(api.ranges.value).toHaveLength(1);
         expect(api.ranges.value[0]?.id).toBe(r1.id);
-        // The active range was dismissed, so a new one takes over.
         expect(api.activeRangeId.value).toBe(r1.id);
     });
 
@@ -135,7 +134,7 @@ describe("useSimplifyRanges", () => {
         api.clear();
 
         expect(api.ranges.value).toEqual([]);
-        expect(api.activeRangeId.value).toBeNull();
+        expect(api.activeRangeId.value).toBeUndefined();
         expect(api.activeIndex.value).toBe(-1);
     });
 });

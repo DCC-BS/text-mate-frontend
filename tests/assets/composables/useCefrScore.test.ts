@@ -11,12 +11,20 @@ vi.mock("../../../app/utils/textAnalysis", () => {
     };
 });
 
+const mockLogger = {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+};
+
 // Mock the global i18n helper
 vi.stubGlobal("useI18n", () => {
     return {
         t: (key: string) => key,
     };
 });
+
+vi.stubGlobal("useLogger", () => mockLogger);
 
 describe("useCefrScore", () => {
     beforeEach(() => {
@@ -96,29 +104,22 @@ describe("useCefrScore", () => {
         const mockError = new Error("Connection failed");
         vi.mocked(getTextAnalysis).mockRejectedValue(mockError);
 
-        // Spy on console.error to prevent noisy test stderr output
-        const spyError = vi.spyOn(console, "error").mockImplementation(() => {});
+        // Act
+        const wrapper = mount(createTestComponent(text));
 
-        try {
-            // Act
-            const wrapper = mount(createTestComponent(text));
+        // Wait for async evaluations to finish
+        await nextTick();
+        await nextTick();
+        await nextTick();
 
-            // Wait for async evaluations to finish
-            await nextTick();
-            await nextTick();
-            await nextTick();
-
-            // Assert
-            expect(wrapper.vm.isLoading).toBe(false);
-            expect(wrapper.vm.error).toBe("Connection failed");
-            expect(wrapper.vm.cefrLevel).toBeUndefined();
-            expect(spyError).toHaveBeenCalledWith(
-                "Failed to fetch CEFR understandability score:",
-                mockError,
-            );
-        } finally {
-            spyError.mockRestore();
-        }
+        // Assert
+        expect(wrapper.vm.isLoading).toBe(false);
+        expect(wrapper.vm.error).toBe("Connection failed");
+        expect(wrapper.vm.cefrLevel).toBeUndefined();
+        expect(mockLogger.error).toHaveBeenCalledWith(
+            { err: mockError },
+            "Failed to fetch CEFR understandability score",
+        );
     });
 
     it("should abort active fetch request and clear timeout when unmounted", async () => {

@@ -1,20 +1,15 @@
-import { ApiError } from "@dcc-bs/communication.bs.js";
 import { z } from "zod";
 import type { FetcherOptions } from "#layers/backend_communication/server/types/fetcher";
 import {
     type ReadabilityBand,
     type SimplifyEvent,
+    type SimplifyInput,
     SimplifyInputSchema,
     type UnconvergedRange,
 } from "~~/shared/types/simplify";
 
-type BodyType = { text: string; language?: string };
+type BodyType = SimplifyInput;
 
-/**
- * Nuxt API route for the readability-gated simplification loop.
- * Proxies POST requests to `/simplify` on the FastAPI backend and streams the
- * JSON Lines event sequence (see `shared/types/simplify.ts`) straight through.
- */
 export default apiHandler
     .withMethod("POST")
     .withBodyProvider<BodyType>(async (event) => {
@@ -23,11 +18,11 @@ export default apiHandler
         const result = SimplifyInputSchema.safeParse(body);
 
         if (!result.success) {
-            throw new ApiError(
-                "invalid_input",
-                400,
-                z.prettifyError(result.error),
-            );
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Invalid input",
+                data: z.prettifyError(result.error),
+            });
         }
 
         return result.data;
@@ -38,20 +33,8 @@ export default apiHandler
 
 // DUMMY
 
-/**
- * Chunking threshold of the backend orchestrator (`simplify_chunking_threshold_chars`).
- * Above it the pipeline rewrites paragraph-wise and emits `chunk_done` events.
- */
 const CHUNKING_THRESHOLD_CHARS = 8000;
 
-/**
- * Emits a realistic JSONL event sequence without a backend:
- * - unsupported language → `start(scored:false)` + single `done`
- * - text ≤ 8000 chars → WHOLE mode: `start` → several `progress` → `done`
- * - text > 8000 chars → CHUNKED mode: additionally `chunk_done` per rewritten
- *   paragraph, deliberately emitted out of index order so the client's
- *   reassembly-by-index is exercised.
- */
 function dummyFetcher(options: FetcherOptions<BodyType>): Response {
     const text = options.body.text;
     const paragraphs = text.split("\n\n");
@@ -84,28 +67,16 @@ function dummyFetcher(options: FetcherOptions<BodyType>): Response {
     });
 }
 
-/**
- * Computes the `[start, end)` UTF-16 offset of every paragraph within the
- * text produced by joining `paragraphs` with `"\n\n"` — the same assembly the
- * client mirrors from `chunk_done`/`done.text` (`sourceParagraphs` in
- * `useSimplify`). Used to translate the dummy's paragraph-index shortfall
- * list into the `unconverged_ranges` offsets a real backend would report.
- */
 function paragraphRanges(paragraphs: string[]): UnconvergedRange[] {
     const ranges: UnconvergedRange[] = [];
     let cursor = 0;
     for (const paragraph of paragraphs) {
         ranges.push({ start: cursor, end: cursor + paragraph.length });
-        cursor += paragraph.length + 2; // + the "\n\n" separator
+        cursor += paragraph.length + 2;
     }
     return ranges;
 }
 
-/**
- * Maps a set of unconverged unit indices to their character ranges in
- * the assembled text, dropping any index that (defensively) falls outside
- * `paragraphs`.
- */
 function unconvergedRangesOf(
     paragraphs: string[],
     unconvergedIndices: number[],
@@ -116,17 +87,6 @@ function unconvergedRangesOf(
         .filter((range): range is UnconvergedRange => range !== undefined);
 }
 
-/**
- * WHOLE mode: two rewrites of the entire text, gated on the whole-text band.
- * Units still below target are reported but do not block (spec §9), so the
- * common path deliberately ends with `converged: true` *and* a non-empty
- * `unconverged_units` — the combination the UI has to render sensibly.
- *
- * The dummy does not merge short paragraphs forward the way the real backend
- * does, so here one unit is exactly one paragraph — but the wire field is
- * still `units`/`units_in_target`/`unconverged_units` throughout, matching
- * what a real backend reports.
- */
 function wholeEvents(
     analyzer: DummyAnalyzer,
     text: string,
@@ -136,12 +96,9 @@ function wholeEvents(
     const unitCount = simplifiedParagraphs.length;
     const before = analyzer.score(text);
     const after = analyzer.score(simplifiedText);
-    // Attempt 1 lands between before and after, so the progress UI moves.
     const midway = round(before + (after - before) / 2);
     const inTargetMidway = Math.max(1, Math.floor(unitCount / 2));
 
-    // `converged` means "the assembled text reached the target band" — the same
-    // meaning in both modes, and not a claim about every unit.
     const converged = analyzer.band(after) === "easy";
     const unconverged = unitCount > 1 ? [unitCount - 1] : [];
     const unconvergedRanges = unconvergedRangesOf(
@@ -162,9 +119,6 @@ function wholeEvents(
             band_before: analyzer.band(before),
             cefr_before: analyzer.cefr(before),
         },
-        // The real backend announces the phase before the call that takes the
-        // wall-clock, so the dummy does too — otherwise the progress panel's
-        // most common state is the one never exercised here.
         {
             event: "progress",
             attempt: 1,
@@ -215,12 +169,6 @@ function wholeEvents(
     ];
 }
 
-/**
- * CHUNKED mode: paragraph-wise rewrites. `chunk_done` events are final and are
- * emitted out of order on purpose; the last rewritten paragraph does not reach
- * the target band, so the "needs a human look" hint is exercised too — while
- * the assembled text can still be `converged`.
- */
 function chunkedEvents(
     analyzer: DummyAnalyzer,
     paragraphs: string[],
@@ -230,28 +178,22 @@ function chunkedEvents(
     const fullText = paragraphs.join("\n\n");
     const before = analyzer.score(fullText);
     const after = analyzer.score(simplifiedText);
-    // Score of the second attempt, part-way between the two.
     const midway = round(before + (after - before) / 2);
 
-    // Rewrite the first few non-trivial paragraphs, mimicking "only paragraphs
-    // outside the target band are rewritten".
     const rewritten = paragraphs
         .map((paragraph, index) => ({ paragraph, index }))
         .filter((unit) => unit.paragraph.trim().split(/\s+/).length > 5)
         .slice(0, 4);
 
-    // Deliberately non-monotonic emission order.
     const emissionOrder = [2, 0, 3, 1].filter(
         (position) => position < rewritten.length,
     );
 
     const chunkEvents: SimplifyEvent[] = emissionOrder.map((position, nth) => {
         const unit = rewritten[position];
-        // `rewritten[position]` is guaranteed by the filter above.
         const index = unit?.index ?? 0;
         const chunkBefore = analyzer.score(paragraphs[index] ?? "");
         const chunkAfter = analyzer.score(simplifiedParagraphs[index] ?? "");
-        // The last emitted chunk stays outside the target band.
         const converged = nth < emissionOrder.length - 1;
 
         return {
@@ -332,8 +274,6 @@ function chunkedEvents(
             band_after: analyzer.band(after),
             cefr_before: analyzer.cefr(before),
             cefr_after: analyzer.cefr(after),
-            // Same meaning as in WHOLE mode: the *assembled* text reached the
-            // target band. Individual units may still fall short.
             converged: analyzer.band(after) === "easy",
             unconverged_units: unconverged,
             unconverged_ranges: unconvergedRanges,
@@ -342,11 +282,6 @@ function chunkedEvents(
     ];
 }
 
-/**
- * Unsupported language: single rewrite, no scoring, no loop (§4.1 Stage 0).
- * `language` is omitted when detection was inconclusive — the UI must not
- * claim a language it does not know, and must not show a score either.
- */
 function unscoredEvents(
     language: string | undefined,
     simplifiedText: string,
@@ -481,11 +416,6 @@ const DUMMY_STOPWORDS: Record<string, string[]> = {
     it: ["il", "la", "e", "che", "di", "per", "sono", "con", "non", "una"],
 };
 
-/**
- * Crude language detection: counts stopword hits per language. Returns
- * `undefined` when no language wins, which drives the unscored branch — the
- * frontend must then render no score at all.
- */
 function detectDummyLanguage(text: string): string | undefined {
     const words = text.toLowerCase().match(/[\p{L}']+/gu) ?? [];
     if (words.length === 0) {
@@ -505,14 +435,10 @@ function detectDummyLanguage(text: string): string | undefined {
         return undefined;
     }
 
-    // Needs a decisive win: neighbouring Romance languages share function
-    // words, and a weak signal must fall through to the unscored branch
-    // rather than mislabel the text.
     const decisive = best.hits >= 4 && best.hits >= (runnerUp?.hits ?? 0) * 2;
     return decisive ? best.language : undefined;
 }
 
-/** Officialese → plain word replacements, applied case-insensitively. */
 const DUMMY_REPLACEMENTS: Record<string, string> = {
     gemäss: "nach",
     beziehungsweise: "oder",
@@ -528,10 +454,6 @@ const DUMMY_REPLACEMENTS: Record<string, string> = {
     utilise: "use",
 };
 
-/**
- * Stand-in for the LLM rewrite: replaces officialese words and splits
- * over-long sentences, so the DiffViewer always receives real hunks.
- */
 function simplifyDummyParagraph(paragraph: string): string {
     let result = paragraph;
 
@@ -540,8 +462,6 @@ function simplifyDummyParagraph(paragraph: string): string {
             `\\b${from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
             "gi",
         );
-        // Keep the original capitalisation, so a replacement at the start of a
-        // sentence does not lower-case it.
         result = result.replace(pattern, (match) =>
             match.charAt(0) === match.charAt(0).toUpperCase()
                 ? capitalize(to)
@@ -554,11 +474,6 @@ function simplifyDummyParagraph(paragraph: string): string {
     );
 }
 
-/**
- * Splits a sentence of more than 15 words in two, at the comma or clause
- * boundary closest to the middle. Sentences without such a boundary in the
- * middle third are left alone rather than cut mid-clause.
- */
 function splitLongSentence(sentence: string): string {
     const words = sentence.trim().split(/\s+/);
     if (words.length <= 15) {
@@ -569,8 +484,6 @@ function splitLongSentence(sentence: string): string {
     const lowerBound = Math.floor(words.length * 0.3);
     const upperBound = Math.ceil(words.length * 0.75);
 
-    // Candidate boundaries: a word ending in a comma/semicolon, or a
-    // subordinating conjunction that can start a new sentence.
     let pivot = -1;
     for (let index = lowerBound; index < upperBound; index++) {
         const word = words[index] ?? "";
