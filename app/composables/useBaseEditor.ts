@@ -5,6 +5,7 @@ import HardBreak from "@tiptap/extension-hard-break";
 import History from "@tiptap/extension-history";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
+import { EditorState } from "@tiptap/pm/state";
 import type { EditorProps } from "@tiptap/pm/view";
 import { useEditor } from "@tiptap/vue-3";
 import {
@@ -145,7 +146,18 @@ export function useBaseEditor(options: UseBaseEditorOptions) {
         if (!editor.value) {
             return;
         }
+        text.value = "";
         editor.value.commands.clearContent();
+        const state = editor.value.state;
+        const newState = EditorState.create({
+            schema: state.schema,
+            plugins: state.plugins,
+            doc: state.doc,
+        });
+        editor.value.view.updateState(newState);
+        undoRedoState.canUndo = false;
+        undoRedoState.canRedo = false;
+        executeCommand(new UndoRedoStateChanged(false, false));
     });
 
     // Surface the current (non-collapsed) selection for selection-driven bubbles.

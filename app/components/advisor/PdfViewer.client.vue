@@ -1,5 +1,5 @@
-<script lang="ts" setup>
-import { defineAsyncComponent, onMounted, ref, watch } from "vue";
+<script setup lang="ts">
+import { defineAsyncComponent, onMounted, onUnmounted, ref, watch } from "vue";
 
 // Import will be handled client-side only
 const PdfEmbed = defineAsyncComponent(() =>
@@ -19,12 +19,14 @@ const emit = defineEmits<{
     close: [];
 }>();
 
+const { t } = useI18n();
+
 const currentPage = ref(props.page || 1);
 const totalPages = ref(0);
-const pdfSource = ref<string | ArrayBuffer | null>(null);
-const pdfInstance = ref<unknown>(null);
+const pdfSource = ref<string | ArrayBuffer | undefined>(undefined);
+const pdfInstance = ref<unknown>(undefined);
 const zoomLevel = ref(100);
-const containerRef = ref<HTMLElement | null>(null);
+const containerRef = ref<HTMLElement | undefined>(undefined);
 
 /**
  * Convert Blob to data URL for embedding
@@ -33,7 +35,7 @@ function convertBlobToSource(blob: Blob): void {
     const reader = new FileReader();
     reader.onload = (event) => {
         if (event.target) {
-            pdfSource.value = event.target.result;
+            pdfSource.value = event.target.result ?? undefined;
         }
     };
     reader.readAsArrayBuffer(blob);
@@ -135,13 +137,19 @@ onMounted(() => {
     if (props.file) {
         convertBlobToSource(props.file);
     }
+});
 
-    // Add wheel event listener for zooming
-    if (containerRef.value) {
-        containerRef.value.addEventListener("wheel", handleWheel, {
-            passive: false,
-        });
-    }
+watch(
+    containerRef,
+    (el, oldEl) => {
+        oldEl?.removeEventListener("wheel", handleWheel);
+        el?.addEventListener("wheel", handleWheel, { passive: false });
+    },
+    { immediate: true },
+);
+
+onUnmounted(() => {
+    containerRef.value?.removeEventListener("wheel", handleWheel);
 });
 
 // Watch for changes to the page prop
@@ -180,7 +188,7 @@ watch(
                         type="button"
                         class="p-1 hover:bg-gray-300 rounded-full"
                         @click="closeModal"
-                        aria-label="Close PDF viewer"
+                        :aria-label='t("advisor.pdfViewer.close")'
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +197,7 @@ watch(
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                         >
-                            <title>Close PDF viewer</title>
+                            <title>{{ t("advisor.pdfViewer.close") }}</title>
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -247,6 +255,7 @@ watch(
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="zoomLevel <= 50"
                             @click="zoomOut"
+                            :aria-label='t("advisor.pdfViewer.zoomOut")'
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -255,7 +264,9 @@ watch(
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
                             >
-                                <title>Zoom out</title>
+                                <title>
+                                    {{ t("advisor.pdfViewer.zoomOut") }}
+                                </title>
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -270,6 +281,7 @@ watch(
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="zoomLevel >= 300"
                             @click="zoomIn"
+                            :aria-label='t("advisor.pdfViewer.zoomIn")'
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -278,7 +290,9 @@ watch(
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
                             >
-                                <title>Zoom in</title>
+                                <title>
+                                    {{ t("advisor.pdfViewer.zoomIn") }}
+                                </title>
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -292,7 +306,7 @@ watch(
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 ml-1"
                             @click="resetZoom"
                         >
-                            Reset
+                            {{ t("advisor.pdfViewer.resetZoom") }}
                         </button>
 
                         <!-- Download button -->
@@ -300,7 +314,7 @@ watch(
                             type="button"
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 ml-2 flex items-center gap-1"
                             @click="downloadPdf"
-                            aria-label="Download PDF"
+                            :aria-label='t("advisor.pdfViewer.downloadPdf")'
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -309,7 +323,9 @@ watch(
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
                             >
-                                <title>Download PDF</title>
+                                <title>
+                                    {{ t("advisor.pdfViewer.downloadPdf") }}
+                                </title>
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -317,7 +333,7 @@ watch(
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                                 />
                             </svg>
-                            Download
+                            {{ t("advisor.pdfViewer.download") }}
                         </button>
                     </div>
 
@@ -328,10 +344,13 @@ watch(
                             :disabled="currentPage <= 1"
                             @click="goToPage(currentPage - 1)"
                         >
-                            Previous
+                            {{ t("advisor.pdfViewer.prevPage") }}
                         </button>
                         <span class="mx-2 text-sm"
-                            >Page {{ currentPage }} of {{ totalPages }}</span
+                            >{{ t("advisor.pdfViewer.pageIndicator", {
+                                current: currentPage,
+                                total: totalPages,
+                            }) }}</span
                         >
                         <button
                             type="button"
@@ -339,7 +358,7 @@ watch(
                             :disabled="currentPage >= totalPages"
                             @click="goToPage(currentPage + 1)"
                         >
-                            Next
+                            {{ t("advisor.pdfViewer.nextPage") }}
                         </button>
                     </div>
                 </div>

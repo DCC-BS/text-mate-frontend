@@ -1,4 +1,5 @@
-<script lang="ts" setup>
+<script setup lang="ts">
+import { SimplifyTextCommand } from "~/assets/models/commands";
 import type { RibbonTransformProps } from "~/types/ribbon";
 import type { TextActions } from "~~/shared/text-actions";
 import CharacterSpeechAction from "../rewrite/quick-action/CharacterSpeechAction.vue";
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const { runQuickAction } = useQuickAction();
+const { executeCommand } = useCommandBus();
 const toast = useToast();
 
 const actionsAreAvailable = computed(
@@ -30,11 +32,16 @@ async function applyAction(
 ): Promise<void> {
     if (!actionsAreAvailable.value) {
         toast.add({
-            title: "Error",
-            description: "No text to process",
+            title: t("errors.title"),
+            description: t("errors.no_text_to_process"),
             color: "error",
             icon: "i-lucide-circle-alert",
         });
+        return;
+    }
+
+    if (action === "plain_language") {
+        await executeCommand(new SimplifyTextCommand());
         return;
     }
 
@@ -97,6 +104,12 @@ async function applyAction(
                 @click="applyAction('plain_language')"
             />
             <RibbonIconButton
+                :label="t('editor.condense')"
+                icon="i-lucide-shrink"
+                :disabled="!actionsAreAvailable"
+                @click="applyAction('condense')"
+            />
+            <RibbonIconButton
                 :label="t('editor.proofread')"
                 icon="i-lucide-check"
                 :disabled="!actionsAreAvailable"
@@ -107,7 +120,7 @@ async function applyAction(
         <RibbonDivider />
 
         <!-- Custom + My Actions -->
-        <RibbonGroup :label="t('actions.custom')" icon="i-lucide-wand-2">
+        <RibbonGroup :label="t('actions.custom')" icon="i-lucide-wand-sparkles">
             <CustomAction
                 :actions-are-available="actionsAreAvailable"
                 @apply-action="applyAction"

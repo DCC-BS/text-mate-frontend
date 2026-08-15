@@ -8,8 +8,10 @@ import {
     ExecuteTextActionCommand,
     type RetryQuickActionCommand,
     type SeedExampleDiffCommand,
+    type SimplifyTextCommand,
 } from "~/assets/models/commands";
 import { useUseProgressIndication } from "~/composables/useProgressIndication";
+import type { MappedUnconvergedRange } from "~/utils/simplifyRanges";
 
 /**
  * The two durable workspace states. The Editor is editable in `editable`; it is
@@ -22,10 +24,15 @@ export type WorkspaceState = "editable" | "diff-review";
  * editability on its own — only `diff-review` does — but drives the progress
  * indicator and disables the ribbon actions.
  */
-export type WorkspaceProgress = "none" | "checking" | "generating" | "fixing";
+export type WorkspaceProgress =
+    | "none"
+    | "checking"
+    | "generating"
+    | "fixing"
+    | "simplifying";
 
 /** Which category produced the current diff review. */
-type DiffMode = "transform" | "fix";
+type DiffMode = "transform" | "fix" | "simplify";
 
 // Module-level singleton state: the workspace is mounted once per page.
 const state = ref<WorkspaceState>("editable");
@@ -41,33 +48,34 @@ const checkProgress = ref({ checked: 0, total: 1 });
 export function useWorkspace(text: Ref<string>) {
     const { t } = useI18n();
     const toast = useToast();
+    const logger = useLogger();
     const { addProgress, removeProgress } = useUseProgressIndication();
     const { validate, fix } = useAdvisor();
     const { threads, activeThreadId, addThread, clearViolationThreads } =
         useAdvisorRevision();
     const { runQuickAction, lastRequest } = useQuickAction();
+    const {
+        run: runSimplify,
+        abort: abortSimplify,
+        simplifiedText,
+        progress: simplifyProgress,
+        result: simplifyResult,
+    } = useSimplify();
+    const simplifyRangesApi = useSimplifyRanges();
     const { onCommand, executeCommand } = useCommandBus();
 
-    let fixAbort: AbortController | null = null;
+    let fixAbort: AbortController | undefined;
 
     const editable = computed(
         () => state.value === "editable" && progress.value === "none",
     );
 
-    // Decorations render whenever threads exist and the editor is visible
-    // (i.e. not during a diff review).
     const decorationsEnabled = computed(
         () => threads.value.length > 0 && state.value === "editable",
     );
 
     const isBusy = computed(() => progress.value !== "none");
 
-    /**
-     * Streams a Transform quick action's result into the diff review. The
-     * editor is NOT touched during streaming — the corrected text accumulates
-     * in {@link correctedText} and is committed (or discarded) once the user
-     * resolves the diff.
-     */
     onCommand<ExecuteTextActionCommand>(
         Cmds.ExecuteTextActionCommand,
         async (command) => {
@@ -98,13 +106,76 @@ export function useWorkspace(text: Ref<string>) {
             } finally {
                 removeProgress("quick-action");
                 progress.value = "none";
-                // Stay in diff-review even on a no-op or empty result so the
-                // DiffViewer can surface an explicit "no changes" / error
-                // hint instead of vanishing silently. The user leaves via
-                // exitDiffReview() (the "Back to text" button).
             }
         },
     );
+
+    let currentSimplifyRun = 0;
+
+    async function runSimplification(): Promise<void> {
+        const runId = ++currentSimplifyRun;
+        const source = text.value;
+
+        diffMode.value = "simplify";
+        progress.value = "simplifying";
+
+        addProgress("simplify", {
+            icon: "i-lucide-book-open",
+            title: t("simplify.running"),
+        });
+
+        try {
+            const finished = await runSimplify(source);
+            if (!finished || currentSimplifyRun !== runId) {
+                return;
+            }
+
+            const failures = simplifyResult.value?.rewrite_failures ?? 0;
+            const unchanged = simplifiedText.value === source;
+            if (failures > 0) {
+                toast.add({
+                    title: t("simplify.failed"),
+                    description: t("simplify.rewriteFailed"),
+                    color: "error",
+                    icon: "i-lucide-circle-alert",
+                    duration: 8000,
+                });
+                if (unchanged) {
+                    state.value = "editable";
+                    return;
+                }
+            }
+
+            originalText.value = source;
+            correctedText.value = simplifiedText.value;
+            state.value = "diff-review";
+            diffKey.value++;
+        } catch (error: unknown) {
+            if (currentSimplifyRun !== runId) {
+                return;
+            }
+            logger.error({ error }, "Simplification failed");
+            const message =
+                error instanceof Error ? error.message : String(error);
+            toast.add({
+                title: t("simplify.failed"),
+                description: message,
+                color: "error",
+                icon: "i-lucide-circle-alert",
+                duration: 5000,
+            });
+            state.value = "editable";
+        } finally {
+            if (currentSimplifyRun === runId) {
+                removeProgress("simplify");
+                progress.value = "none";
+            }
+        }
+    }
+
+    onCommand<SimplifyTextCommand>(Cmds.SimplifyTextCommand, async () => {
+        await runSimplification();
+    });
 
     /**
      * Re-runs the last quick action: discards the current diff first so the
@@ -113,6 +184,16 @@ export function useWorkspace(text: Ref<string>) {
     onCommand<RetryQuickActionCommand>(
         Cmds.RetryQuickActionCommand,
         async () => {
+            // A simplify diff retries the loop, not the quick action registry.
+            if (diffMode.value === "simplify") {
+                abortSimplify();
+                correctedText.value = "";
+                originalText.value = "";
+                state.value = "editable";
+                await runSimplification();
+                return;
+            }
+
             if (!lastRequest.value) {
                 return;
             }
@@ -159,10 +240,6 @@ export function useWorkspace(text: Ref<string>) {
         state.value = "editable";
     });
 
-    /**
-     * Validation: preserves User Threads (notes), replaces Violation Threads.
-     * The editor stays editable throughout.
-     */
     onCommand<CheckCommand>(Cmds.CheckCommand, async () => {
         clearViolationThreads();
         progress.value = "checking";
@@ -182,14 +259,14 @@ export function useWorkspace(text: Ref<string>) {
                 }
             }
         } catch (error: unknown) {
-            console.error("Advisor validation failed:", error);
+            logger.error({ error }, "Advisor validation failed");
             const message =
                 error instanceof Error ? error.message : String(error);
             toast.add({
                 title: t("advisor.checkFailed"),
                 description: message,
                 color: "error",
-                icon: "i-lucide-alert-circle",
+                icon: "i-lucide-circle-alert",
                 duration: 5000,
             });
         } finally {
@@ -197,11 +274,6 @@ export function useWorkspace(text: Ref<string>) {
         }
     });
 
-    /**
-     * Generates the corrected Working Text from every to-fix thread and enters
-     * the diff review. Threads are cleared once the user commits the diff (the
-     * corrected text no longer matches the old ranges).
-     */
     onCommand<ApplyFixCommand>(Cmds.ApplyFixCommand, async () => {
         if (threads.value.filter((x) => x.status === "to-fix").length === 0) {
             return;
@@ -245,18 +317,15 @@ export function useWorkspace(text: Ref<string>) {
                 }
                 correctedText.value += chunk;
             }
-
-            // No commitIfUnchanged() here: a no-op or empty result stays in
-            // diff-review so the DiffViewer can show a hint. See ADR 0003.
         } catch (error: unknown) {
-            console.error("Advisor fix failed:", error);
+            logger.error({ error }, "Advisor fix failed");
             const message =
                 error instanceof Error ? error.message : String(error);
             toast.add({
                 title: t("advisor.checkFailed"),
                 description: message,
                 color: "error",
-                icon: "i-lucide-alert-circle",
+                icon: "i-lucide-circle-alert",
                 duration: 5000,
             });
             state.value = "editable";
@@ -285,6 +354,29 @@ export function useWorkspace(text: Ref<string>) {
         if (diffMode.value === "fix" && textChanged) {
             executeCommand(new ClearThreadsCommand());
         }
+
+        // Any *other* operation that actually rewrote the text invalidates the
+        // unconverged-passage highlights the same way — they are only ever
+        // (re)established by commitSimplifyDiff, right after this call, for a
+        // simplify commit.
+        if (diffMode.value !== "simplify" && textChanged) {
+            simplifyRangesApi.clear();
+        }
+    }
+
+    /**
+     * Commits a simplification diff and (re)establishes the unconverged-
+     * passage highlights from the loop's `unconverged_ranges`, already
+     * remapped by the caller from `done.text` offsets onto `resolvedText`
+     * (DiffViewer's `mapUnconvergedRanges` — see its doc comment for how a
+     * rejected hunk shifts or drops a range).
+     */
+    function commitSimplifyDiff(
+        resolvedText: string,
+        mappedUnconvergedRanges: MappedUnconvergedRange[],
+    ): void {
+        commitDiff(resolvedText);
+        simplifyRangesApi.setRanges(mappedUnconvergedRanges);
     }
 
     /**
@@ -293,9 +385,21 @@ export function useWorkspace(text: Ref<string>) {
      * or came back empty (error). Delegates to commitDiff so cleanup parity
      * (clearing fix-mode threads, resetting state/original/corrected) is
      * preserved. See ADR 0003.
+     *
+     * A no-op simplify dismiss still (re)establishes the highlights: the
+     * corrected text equals the original one-for-one there (no hunks to map
+     * through), so the loop's raw `unconverged_ranges` already address the
+     * Working Text the dismiss leaves in place — e.g. a document that was
+     * already at target but still has a couple of dense paragraphs.
      */
     function exitDiffReview(): void {
         if (state.value !== "diff-review") {
+            return;
+        }
+        if (diffMode.value === "simplify") {
+            const raw = simplifyResult.value?.unconverged_ranges ?? [];
+            commitDiff(originalText.value);
+            simplifyRangesApi.setRanges(raw);
             return;
         }
         commitDiff(originalText.value);
@@ -307,6 +411,11 @@ export function useWorkspace(text: Ref<string>) {
         originalText: readonly(originalText),
         correctedText: readonly(correctedText),
         diffKey: readonly(diffKey),
+        diffMode: readonly(diffMode),
+        /** Loop progress of the running simplification (T6.4). */
+        simplifyProgress,
+        /** `done` event of the last simplification, incl. before/after scores. */
+        simplifyResult,
         selectedDocs,
         checkProgress: readonly(checkProgress),
         editable,
@@ -315,6 +424,14 @@ export function useWorkspace(text: Ref<string>) {
         threads,
         activeThreadId,
         commitDiff,
+        commitSimplifyDiff,
         exitDiffReview,
+        /** Unconverged passages (T6.7), in document order, and the nav state. */
+        simplifyRanges: simplifyRangesApi.orderedRanges,
+        activeSimplifyRangeId: simplifyRangesApi.activeRangeId,
+        activeSimplifyRangeIndex: simplifyRangesApi.activeIndex,
+        nextSimplifyRange: simplifyRangesApi.next,
+        prevSimplifyRange: simplifyRangesApi.prev,
+        clearSimplifyRanges: simplifyRangesApi.clear,
     };
 }

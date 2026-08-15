@@ -1,7 +1,12 @@
 import { useDropZone } from "@vueuse/core";
 import { FetchError } from "ofetch";
+import { z } from "zod";
 import type { ConversionResult } from "~/assets/models/conversion-result";
-import { useUseErrorDialog } from "./useUseErrorDialog";
+
+const ErrorPayloadSchema = z.object({
+    errorId: z.string().optional(),
+});
+
 /**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted HTML content
@@ -9,7 +14,7 @@ import { useUseErrorDialog } from "./useUseErrorDialog";
  */
 export function useFileConvert(onComplete: (htmlContent: string) => void) {
     const logger = useLogger();
-    const { t } = useI18n();
+    const { t, te } = useI18n();
 
     const dropZoneRef = ref<HTMLDivElement>();
     const isConverting = ref<boolean>(false);
@@ -26,27 +31,34 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
      * @param file File to be converted
      */
     async function processFile(file: File): Promise<void> {
+        abortController.value.abort(); // Abort any ongoing conversion
+        const currentController = new AbortController();
+        abortController.value = currentController;
+
+        fileName.value = file.name;
+        error.value = undefined;
+        isConverting.value = true;
+
         try {
-            abortController.value.abort(); // Abort any ongoing conversion
-            abortController.value = new AbortController();
-
-            fileName.value = file.name;
-            error.value = undefined;
-            isConverting.value = true;
-
             const formData = new FormData();
             formData.append("file", file, file.name);
 
             const result = await $fetch<ConversionResult>("/api/convert", {
                 method: "POST",
                 body: formData,
-                signal: abortController.value.signal,
+                signal: currentController.signal,
             });
+
+            if (
+                abortController.value !== currentController ||
+                currentController.signal.aborted
+            ) {
+                return;
+            }
 
             if (result && result?.statusMessage === "Failed to convert file") {
                 logger.error({ extra: result }, "File conversion error:");
-
-                useUseErrorDialog().sendError(t("upload.errorDescription"));
+                error.value = t("errors.document_conversion_error");
                 return;
             }
 
@@ -60,17 +72,33 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
             result.html = result.html.replace(/\\r/g, "\r"); // Replace escaped carriage returns with actual carriage returns
 
             onComplete(result.html);
-        } catch (err) {
-            error.value =
-                err instanceof Error ? err.message : "Failed to convert file";
-            if (err instanceof FetchError) {
-                error.value = err.message ?? err.statusMessage;
+        } catch (err: unknown) {
+            if (
+                abortController.value !== currentController ||
+                currentController.signal.aborted
+            ) {
+                return;
             }
 
-            logger.error(err, "File conversion error:");
-            useUseErrorDialog().sendError(t("upload.errorDescription"));
+            let errorId: string | undefined;
+            if (err instanceof FetchError && err.data) {
+                const parsed = ErrorPayloadSchema.safeParse(err.data);
+                if (parsed.success && typeof parsed.data.errorId === "string") {
+                    errorId = parsed.data.errorId;
+                }
+            }
+
+            const localizedErrorMessage =
+                errorId && te(`errors.${errorId}`)
+                    ? t(`errors.${errorId}`)
+                    : t("errors.document_conversion_error");
+
+            error.value = localizedErrorMessage;
+            logger.error({ err, errorId }, "File conversion error:");
         } finally {
-            isConverting.value = false;
+            if (abortController.value === currentController) {
+                isConverting.value = false;
+            }
         }
     }
 
@@ -90,7 +118,7 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
     });
 
     /**
-     * Handles file selection from file input
+     * Handles file selection from input
      * @param event File input change event
      */
     function handleFileSelect(event: Event): void {

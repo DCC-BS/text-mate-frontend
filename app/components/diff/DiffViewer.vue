@@ -1,33 +1,20 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { DiffHunk, HunkStatus } from "~/types/diff";
 import { buildDiffSegments, type DiffSegment } from "~/utils/diffSegments";
+import {
+    type MappedUnconvergedRange,
+    type OffsetRange,
+    remapUnconvergedRanges,
+} from "~/utils/simplifyRanges";
 
 interface DiffViewerProps {
-    /** Original (before) text. */
     originalText: string;
-    /** Corrected (after) text. */
     correctedText: string;
-    /**
-     * i18n key prefix used to resolve the title, progress line and bulk button
-     * labels, e.g. `"rewrite-diff-viewer"`. The keys `<prefix>.title`,
-     * `<prefix>.progress`, `<prefix>.acceptAll`, `<prefix>.discardAll` and
-     * `<prefix>.noChanges` are consulted.
-     */
     i18nPrefix: string;
-    /** Optional explicit header title; falls back to `<prefix>.title`. */
     title?: string;
-    /**
-     * True while the corrected text is still streaming in. Disables the bulk
-     * accept/reject buttons so the diff cannot be finalized until the stream
-     * completes.
-     */
     streaming?: boolean;
-    /**
-     * Label shown next to the streaming spinner (e.g. "Rewriting your text…").
-     * Resolved by the parent so it reflects whether a Transform or Validation
-     * produced the diff.
-     */
     streamingLabel?: string;
+    noChangeNotice?: string;
 }
 
 const props = defineProps<DiffViewerProps>();
@@ -38,28 +25,10 @@ const emit = defineEmits<{
     "reject-hunk": [hunk: DiffHunk];
     "accept-all": [hunks: DiffHunk[]];
     "reject-all": [hunks: DiffHunk[]];
-    /**
-     * Fired by the "Back to text" button when the diff has no reviewable
-     * hunks — either a no-op result (corrected === original) or an empty
-     * response (corrected === ""). The parent leaves Diff Review without
-     * altering the Working Text. See ADR 0003.
-     */
     dismiss: [];
 }>();
 
-/**
- * Per-hunk status keyed by the hunk's text key. Survives reactive rebuilds of
- * the segment list (e.g. when the corrected text mutates after a live revert),
- * so decisions are not lost while unresolved hunks are still on screen.
- */
 const statusMap = ref<Record<string, HunkStatus>>({});
-
-/**
- * Current Diff View Mode: "inline" (default, single flowing column) or
- * "split" (original-left / corrected-right two-column layout). Presentational
- * only — toggling reuses the same segment list and statusMap, so per-hunk
- * decisions survive a switch.
- */
 const viewMode = ref<"inline" | "split">("inline");
 
 const segments = computed<DiffSegment[]>(() => {
@@ -91,12 +60,6 @@ const pendingHunks = computed(() =>
     changeHunks.value.filter((hunk) => hunk.status === "pending"),
 );
 
-/**
- * True when the stream finished but produced no corrected text at all — the
- * model returned an empty response, which we treat as an error and surface
- * with a distinct "something went wrong" hint. Gated on !streaming so the
- * state only resolves once, at stream end. See ADR 0003.
- */
 const isErrorState = computed(
     () =>
         !props.streaming &&
@@ -104,12 +67,6 @@ const isErrorState = computed(
         props.correctedText === "",
 );
 
-/**
- * True when the stream finished and the corrected text equals the original
- * (no change hunks). Shown with a positive "nothing to change" hint. The
- * !streaming guard keeps this from flashing before the first chunk arrives.
- * See ADR 0003.
- */
 const isNoChangeState = computed(
     () =>
         !props.streaming &&
@@ -117,8 +74,6 @@ const isNoChangeState = computed(
         !isErrorState.value,
 );
 
-/** True for either no-result state (no-op or error): both render the
- * "Back to text" exit button in the header. */
 const isNoResultState = computed(
     () => isErrorState.value || isNoChangeState.value,
 );
@@ -188,31 +143,14 @@ function rejectAll(): void {
     emit("reject-all", pending);
 }
 
-/**
- * Leaves Diff Review when there are no hunks to review (no-op or empty
- * response). The parent resets to the editable state without touching the
- * Working Text. See ADR 0003.
- */
 function dismiss(): void {
     emit("dismiss");
 }
 
-/**
- * Exposes every change hunk currently present in the corrected text, including
- * already-decided ones. Callers (e.g. the rewrite wrapper) use this to perform
- * a full revert of all changes back to the original text.
- */
 function getAllChangeHunks(): DiffHunk[] {
     return changeHunks.value;
 }
 
-/**
- * Reconstructs the full text from the current per-hunk decisions: rejected
- * hunks contribute their original text, every other hunk (pending/accepted)
- * contributes the corrected text, and unchanged segments flow through. Used by
- * "preview then apply" callers (e.g. the advisor wrapper) to commit the final
- * text in a single update.
- */
 function getResolvedText(): string {
     let result = "";
     for (const segment of segments.value) {
@@ -237,11 +175,18 @@ function hasPendingHunks(): boolean {
     return pendingHunks.value.length > 0;
 }
 
+function mapUnconvergedRanges(
+    ranges: readonly OffsetRange[],
+): MappedUnconvergedRange[] {
+    return remapUnconvergedRanges(ranges, changeHunks.value);
+}
+
 defineExpose({
     getAllChangeHunks,
     getResolvedText,
     areAllHunksResolved,
     hasPendingHunks,
+    mapUnconvergedRanges,
 });
 </script>
 
@@ -540,15 +485,29 @@ defineExpose({
                     {{ t(`${i18nPrefix}.emptyResponse`) }}
                 </p>
             </div>
-            <!-- No-op result: corrected text matched the original. -->
+            <!-- No-op result: corrected text matched the original. Either
+                 nothing needed changing, or the parent knows the run failed
+                 and passed a notice saying so. -->
             <div
                 v-else-if="isNoChangeState"
                 class="flex flex-col items-center justify-center gap-3 py-16 text-center"
                 data-tour="diff-no-changes"
             >
-                <UIcon name="i-lucide-sparkles" class="size-8 text-primary" />
-                <p class="m-0 text-sm text-default font-medium">
-                    {{ t(`${i18nPrefix}.noChanges`) }}
+                <UIcon
+                    v-if="props.noChangeNotice"
+                    name="i-lucide-circle-alert"
+                    class="size-8 text-amber-500"
+                />
+                <UIcon
+                    v-else
+                    name="i-lucide-sparkles"
+                    class="size-8 text-primary"
+                />
+                <p
+                    class="m-0 text-sm text-default font-medium"
+                    data-testid="diffNoChangeMessage"
+                >
+                    {{ props.noChangeNotice ?? t(`${i18nPrefix}.noChanges`) }}
                 </p>
             </div>
         </div>

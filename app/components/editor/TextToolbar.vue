@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { UTooltip } from "#components";
 import {
     Cmds,
@@ -8,6 +8,7 @@ import {
     UndoCommand,
     type UndoRedoStateChanged,
 } from "~/assets/models/commands";
+import { formatNumber } from "~/utils/formatNumber";
 import TextStatsView from "../tool-panel/TextStatsView.vue";
 
 const props = defineProps<{
@@ -41,7 +42,6 @@ onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
 
 // Listen for the ShowTextStatsCommand to open the popover
 onCommand<ShowTextStatsCommand>(Cmds.ShowTextStatsCommand, async () => {
-    console.log(" asjdasl;djsaldsjadlksajds");
     isStatsPopoverOpen.value = true;
     isDismissable.value = false;
 });
@@ -74,14 +74,14 @@ async function copyToClipboard(): Promise<void> {
         toast.add({
             title: t("toolbar.copySuccess"),
             color: "success",
-            icon: "i-lucide-check-circle",
+            icon: "i-lucide-circle-check",
             duration: 2000,
         });
     } catch {
         toast.add({
             title: t("toolbar.copyFailed"),
             color: "error",
-            icon: "i-lucide-alert-circle",
+            icon: "i-lucide-circle-alert",
             duration: 3000,
         });
     }
@@ -107,14 +107,14 @@ async function downloadWord(): Promise<void> {
             title: t("toolbar.downloadSuccess"),
             description: filename,
             color: "success",
-            icon: "i-lucide-check-circle",
+            icon: "i-lucide-circle-check",
             duration: 3000,
         });
     } catch {
         toast.add({
             title: t("toolbar.downloadFailed"),
             color: "error",
-            icon: "i-lucide-alert-circle",
+            icon: "i-lucide-circle-alert",
             duration: 3000,
         });
     }
@@ -188,8 +188,8 @@ async function downloadWord(): Promise<void> {
                 data-tour="word-count"
                 data-testid="characterCountButton"
             >
-                {{ props.characters }}
-                / {{ props.limit }} Zeichen
+                {{ formatNumber(props.characters) }}
+                / {{ formatNumber(props.limit) }} {{ t("toolbar.characters") }}
             </UButton>
 
             <template #content>

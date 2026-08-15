@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 
 // Add translation hook
@@ -15,7 +15,7 @@ const userImage = computed(() => {
 const items = computed<DropdownMenuItem[]>(() => [
     {
         label: t("navigation.signOut"),
-        icon: "i-lucide-sign-out",
+        icon: "i-lucide-log-out",
         onSelect: handleSignOut,
     },
 ]);

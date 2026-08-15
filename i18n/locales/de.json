@@ -6,7 +6,10 @@
         "no_document": "Das Dokument wurde nicht gefunden.",
         "check_text_error": "Fehler beim Überprüfen des Textes",
         "rewrite_text_error": "Fehler beim Umschreiben des Textes",
-        "text_analysis_error": "Fehler bei der Textanalyse. Bitte versuchen Sie es später noch einmal."
+        "text_analysis_error": "Fehler bei der Textanalyse. Bitte versuchen Sie es später noch einmal.",
+        "invalid_mime_type": "Ungültiges oder nicht unterstütztes Dateiformat.",
+        "document_conversion_error": "Fehler bei der Dokumentenkonvertierung. Bitte überprüfen Sie die Datei und versuchen Sie es erneut.",
+        "document_conversion_timeout": "Die Dokumentenkonvertierung hat das Zeitlimit überschritten. Bitte versuchen Sie es mit einer kleineren Datei erneut."
     },
     "loading": "Wird geladen...",
     "auth": {
@@ -39,7 +42,8 @@
         "copyFailed": "Kopieren fehlgeschlagen",
         "downloadWord": "Als Word herunterladen",
         "downloadSuccess": "Word-Dokument heruntergeladen",
-        "downloadFailed": "Download fehlgeschlagen"
+        "downloadFailed": "Download fehlgeschlagen",
+        "characters": "Zeichen"
     },
     "tools": {
         "rewrite": "Umschreiben",
@@ -101,6 +105,7 @@
         "formality": "Formalität",
         "medium": "Medium",
         "proofread": "Korrigieren",
+        "condense": "Verdichten",
         "character_speech": "Direkte / Indirekte Rede",
         "userActions": "Meine Aktionen"
     },
@@ -144,7 +149,7 @@
         "advisor": "Advisor",
         "you": "Du",
         "noThreadsReviewing": "Überprüfung läuft, noch nichts gefunden",
-        "noThreadsReview": "Keine Verstösse gefunden. Sie können Kommentare hinzufügen, indem Sie Text markieren, oder neu starten.",
+        "noThreadsReview": "Keine Verstösse gefunden. Du kannst Notizen hinzufügen, indem du Text markierst, oder neu starten.",
         "startNew": "Neue starten",
         "apply": "Anwenden",
         "applyInfo": "{n} Threads zur Korrektur ausgewählt",
@@ -176,9 +181,20 @@
         "changesApplied": "Änderungen auf das Dokument angewendet",
         "allClear": "Alles in Ordnung",
         "allChangesApplied": "Alle Änderungen angewendet",
-        "allChangesAppliedHint": "Ihr Text wurde aktualisiert. Führen Sie eine neue Prüfung durch, um das Ergebnis zu verifizieren.",
+        "allChangesAppliedHint": "Dein Text wurde aktualisiert. Führe eine neue Prüfung durch, um das Ergebnis zu überprüfen.",
         "insertExample": "Beispieltext einfügen",
-        "applyHint": "Füge Notizen zu bestehenden Kommentaren hinzu, oder markiere Text und wählen Notiz hinzufügen. Wenn bereit, klicken unten, um alle Änderungen anzuwenden."
+        "applyHint": "Füge Notizen zu bestehenden Kommentaren hinzu, oder markiere Text und wähle „Notiz hinzufügen“. Wenn du bereit bist, klicke unten, um alle Änderungen anzuwenden.",
+        "pdfViewer": {
+            "close": "PDF-Vorschau schliessen",
+            "zoomIn": "Vergrössern",
+            "zoomOut": "Verkleinern",
+            "resetZoom": "Zurücksetzen",
+            "downloadPdf": "PDF herunterladen",
+            "download": "Herunterladen",
+            "prevPage": "Vorherige Seite",
+            "nextPage": "Nächste Seite",
+            "pageIndicator": "Seite {current} von {total}"
+        }
     },
     "actions": {
         "custom": "Benutzerdefiniert",
@@ -212,7 +228,7 @@
         },
         "custom": {
             "label": "Benutzerdefinierte Anweisungen",
-            "placeholder": "Geben Sie hier Ihre benutzerdefinierten Umschreibanweisungen ein..."
+            "placeholder": "Gib hier deine benutzerdefinierten Umschreibanweisungen ein..."
         },
         "formality": {
             "formal": "Formell",
@@ -236,9 +252,9 @@
         "academic": "Akademisch",
         "reading-ease": "Lesbarkeit (Flesch Index)",
         "score": "Bewertung",
-        "cefr-level": "Sprachniveau (GER)",
-        "cefr-loading": "GER-Niveau wird berechnet...",
-        "cefr-description": "Das GER-Niveau (Gemeinsamer Europäischer Referenzrahmen) beschreibt die sprachliche Verständlichkeit von A1 (sehr einfach) bis C2 (sehr komplex).",
+        "cefr-level": "Sprachniveau (GER / CEFR)",
+        "cefr-loading": "Sprachniveau wird berechnet...",
+        "cefr-description": "Das Sprachniveau nach dem Gemeinsamen Europäischen Referenzrahmen (GER / CEFR) beschreibt die sprachliche Verständlichkeit von A1 (sehr einfach) bis C2 (sehr komplex).",
         "cefr-too-short": "Text zu kurz für Analyse",
         "cefr-level-a1": "Sehr einfach",
         "cefr-level-a2": "Einfach",
@@ -253,15 +269,46 @@
         "syllable-count": "Silbenanzahl",
         "average-sentence-length": "Durchschnittliche Satzlänge",
         "average-syllables-per-word": "Durchschnittliche Silben pro Wort",
+        "language": "Erkannte Sprache",
         "show-details": "Details anzeigen",
         "hide-details": "Details ausblenden"
     },
     "plain-language": {
         "notice": "Hinweis: Dieses Tool ist eine Unterstützung und ersetzt keine vollständige manuelle Überprüfung. Wir empfehlen, alle automatisch erstellten Texte vor der Veröffentlichung noch einmal überprüfen zu lassen."
     },
+    "simplify": {
+        "running": "Text wird vereinfacht…",
+        "failed": "Vereinfachung fehlgeschlagen",
+        "rewriteFailed": "Der Text konnte nicht vereinfacht werden. Die Sprachmodell-Anfrage ist fehlgeschlagen — der Text wurde nicht verändert. Bitte später erneut versuchen.",
+        "diffTitle": "Vorschau der Vereinfachung",
+        "attempt": "Versuch {attempt}",
+        "stage": {
+            "rewriting": "Text wird umgeschrieben…",
+            "readability": "Lesbarkeit wird gemessen…"
+        },
+        "unitsInTarget": "{inTarget} von {total} Textabschnitten auf Zielniveau",
+        "scoreComparison": "Lesbarkeit vorher und nachher",
+        "readability": "Lesbarkeit ({label})",
+        "readabilityDescription": "Die Lesbarkeit wird mit der für diese Sprache passenden Kennzahl gemessen. Ein Sprachniveau (GER / CEFR) gibt es nur für Deutsch und Englisch.",
+        "notScored": "Für diese Sprache nicht bewertbar",
+        "notSupported": "Sprache nicht unterstützt",
+        "band": {
+            "easy": "Einfach",
+            "ok": "Mittel",
+            "hard": "Schwer"
+        },
+        "unconverged": {
+            "title": "{count} Abschnitt ist noch schwer verständlich und benötigt deine Aufmerksamkeit | {count} Abschnitte sind noch schwer verständlich und benötigen deine Aufmerksamkeit",
+            "position": "{index} von {count}",
+            "rejectedReason": "Vorschlag verworfen (Originaltext beibehalten)",
+            "prev": "Vorheriger markierter Abschnitt",
+            "next": "Nächster markierter Abschnitt",
+            "dismiss": "Markierungen ausblenden"
+        }
+    },
     "pwa": {
         "newContentAvailable": "Neue Inhalte verfügbar",
-        "newVersionDescription": "Eine neue Version der App ist verfügbar. Bitte aktualisieren Sie, um die neuesten Updates zu erhalten.",
+        "newVersionDescription": "Eine neue Version der App ist verfügbar. Bitte aktualisiere, um die neuesten Updates zu erhalten.",
         "refresh": "Aktualisieren"
     },
     "upload": {
@@ -271,13 +318,13 @@
         "dropFileToConvert": "Für Upload, die Datei hierher ziehen",
         "supportedFormats": "Unterstützte Formate: DOC, DOCX, HTML, MD, PDF, PPTX, RTF, TXT",
         "error": "Fehler",
-        "errorDescription": "Fehler beim Hochladen der Datei. Versuchen Sie es erneut oder melden Sie sich bei uns.",
+        "errorDescription": "Fehler beim Hochladen der Datei. Versuche es erneut oder melde dich bei uns.",
         "dismiss": "Schliessen",
         "fileConvertedSuccess": "Datei erfolgreich konvertiert"
     },
     "rewrite-diff-viewer": {
         "changes": "Änderungen",
-        "clickToUndo": "Klicken Sie auf die Änderungen, um sie rückgängig zu machen",
+        "clickToUndo": "Klicke auf die Änderungen, um sie rückgängig zu machen",
         "undo": "Rückgängig",
         "noChangesYet": "Noch keine Änderungen. Wenn der Text von Textmate umgeschrieben wird, werden die Änderungen hier hervorgehoben.",
         "retry": "Verwerfen und Aktion erneut auf den Originaltext anwenden",
@@ -306,7 +353,7 @@
         },
         "wordCount": {
             "title": "Wortanzahl",
-            "content": "Klicke hier um detailiere Information über Deinen Text anzuzeigen."
+            "content": "Klicke hier, um detaillierte Informationen über Deinen Text anzuzeigen."
         },
         "textStats": {
             "title": "Text-Statistiken",
@@ -315,7 +362,7 @@
         "restart": "Tutorial neu starten",
         "diffReview": {
             "title": "Änderungen annehmen oder ablehnen",
-            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Bevor du weiterbearbeiten kanst musst du all Änderungen annehmen oder Ablehnen."
+            "content": "Wenn eine Transformation oder Korrektur ausgeführt wird, erscheinen die Änderungen hier anstelle des Editors. Bevor du weiterarbeiten kannst, musst du alle Änderungen annehmen oder ablehnen."
         },
         "diffAcceptAll": {
             "title": "Alle übernehmen",

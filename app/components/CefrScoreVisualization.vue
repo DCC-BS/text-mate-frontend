@@ -1,92 +1,80 @@
-<script lang="ts" setup>
-import { computed } from "vue";
-import { USkeleton, UTooltip } from "#components";
+<script setup lang="ts">
+import ReadabilityScoreBadge from "~/components/ReadabilityScoreBadge.vue";
+import { isUnscored, type ReadabilityScore } from "~/utils/readability";
+import type { ReadabilityBand } from "~~/shared/types/simplify";
 
 const { t } = useI18n();
 
-// Define explicit types for props
 const props = defineProps<{
-    // True while fetching the score from the backend
     isLoading: boolean;
-    // The CEFR score level (e.g. A1, B2) computed by the backend
     cefrLevel?: string;
-    // Any error message returned during the analysis
+    language?: string;
+    score?: number;
+    scoreLabel?: string;
+    band?: ReadabilityBand;
     error?: string;
 }>();
 
-// Compute the localized description label for the CEFR level
-const cefrLabelText = computed<string>(() => {
-    if (!props.cefrLevel) {
-        return "";
+/** Readability score representation passed down to ReadabilityScoreBadge */
+const scoreValue = computed<ReadabilityScore>(() => ({
+    scored: props.cefrLevel !== undefined || props.score !== undefined,
+    language: props.language,
+    scoreLabel: props.scoreLabel,
+    score: props.score,
+    band: props.band,
+    cefr: props.cefrLevel,
+}));
+
+/** True when the text cannot be scored or is too short / unsupported */
+const hasNothingToShow = computed<boolean>(() => isUnscored(scoreValue.value));
+
+/** Dynamic row label based on whether CEFR or a custom readability metric is active */
+const rowLabel = computed<string>(() => {
+    if (props.cefrLevel === undefined && props.scoreLabel !== undefined) {
+        return t("simplify.readability", { label: props.scoreLabel });
     }
-    const levelKey = props.cefrLevel.toLowerCase();
-    return t(`flesch-score.cefr-level-${levelKey}`);
+    return t("flesch-score.cefr-level");
 });
 
-// Compute the design-harmonised Tailwind class name depending on CEFR level
-const cefrLevelClass = computed<string>(() => {
-    if (!props.cefrLevel) {
-        return "text-gray-400 dark:text-gray-500";
-    }
-    const level = props.cefrLevel.toUpperCase();
-    if (level === "A1" || level === "A2") {
-        return "text-blue-500 dark:text-blue-400"; // blue class
-    }
-    if (level === "B1" || level === "B2") {
-        return "text-orange-500 dark:text-orange-400"; // orange class
-    }
-    if (level === "C1" || level === "C2") {
-        return "text-red-500 dark:text-red-400"; // red class
-    }
-    return "text-gray-400 dark:text-gray-500";
-});
+/** Tooltip explanation for the readability metric or CEFR level */
+const rowDescription = computed<string>(() =>
+    props.cefrLevel === undefined && props.scoreLabel !== undefined
+        ? t("simplify.readabilityDescription")
+        : t("flesch-score.cefr-description"),
+);
+
+/** Empty state message: "Sprache nicht unterstützt" when language detected but unscored, or "Text zu kurz" */
+const emptyStateText = computed<string>(() =>
+    props.language !== undefined
+        ? t("simplify.notSupported")
+        : t("flesch-score.cefr-too-short"),
+);
 </script>
 
 <template>
-    <!-- CEFR Text Understandability Score -->
     <div
-        class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm"
+        class="mt-4 pt-3 border-t border-default flex items-center justify-between text-sm"
     >
-        <!-- Left Side: Title with Tooltip (no info icon) -->
-        <UTooltip :text="t('flesch-score.cefr-description')">
+        <UTooltip :text="rowDescription">
             <span
-                class="text-xs font-medium text-gray-500 dark:text-gray-400 cursor-help hover:text-gray-600 dark:hover:text-gray-300"
+                class="text-xs font-medium text-muted cursor-help hover:text-default"
             >
-                {{ t("flesch-score.cefr-level") }}
+                {{ rowLabel }}
             </span>
         </UTooltip>
 
-        <!-- Right Side: Content based on state -->
-
-        <!-- Error State -->
-        <div v-if="props.error" class="text-xs text-rose-500 font-medium">
+        <div v-if="props.error" class="text-xs text-error font-medium">
             {{ props.error }}
         </div>
 
-        <!-- Loading State with compact Skeleton -->
         <div v-else-if="props.isLoading" class="py-0.5">
             <USkeleton class="h-4 w-[60px]" />
         </div>
 
-        <!-- Text too short state -->
-        <div
-            v-else-if="!props.cefrLevel"
-            class="text-xs text-gray-400 dark:text-gray-500 italic"
-        >
-            {{ t("flesch-score.cefr-too-short") }}
+        <div v-else-if="hasNothingToShow" class="text-xs text-muted italic">
+            {{ emptyStateText }}
         </div>
 
-        <!-- Success State: Blends in beautifully like the Flesch Score visualization header -->
-        <div v-else class="flex items-center gap-2">
-            <span class="text-base font-black text-gray-800 dark:text-gray-100">
-                {{ props.cefrLevel }}
-            </span>
-            <span
-                class="text-xs font-bold uppercase tracking-wider"
-                :class="cefrLevelClass"
-            >
-                {{ cefrLabelText }}
-            </span>
-        </div>
+        <ReadabilityScoreBadge v-else :value="scoreValue" />
     </div>
 </template>
