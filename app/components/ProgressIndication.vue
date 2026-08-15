@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { activeProgress } = useUseProgressIndication();
+const { t } = useI18n();
 
 const progressItems = computed(() => {
     return Object.values(activeProgress.value);
@@ -12,7 +13,7 @@ const progressItems = computed(() => {
             v-if="progressItems.length > 0"
             name="i-lucide-loader"
             class="animate-spin"
-            aria-label="Loading"
+            :aria-label="t('loading')"
         />
         <div v-for="progress in progressItems" :key="progress.title">
             <UIcon :name="progress.icon" />

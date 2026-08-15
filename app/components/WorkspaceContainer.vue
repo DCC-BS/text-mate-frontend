@@ -376,7 +376,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
 
         <USlideover
             v-model:open="mobileRailOpen"
-            title="Advisor"
+            :title="t('advisor.title')"
             side="right"
             :ui="{ body: 'p-0 sm:p-0' }"
         >

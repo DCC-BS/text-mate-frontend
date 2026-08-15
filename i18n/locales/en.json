@@ -2,7 +2,7 @@
     "errors": {
         "title": "Error",
         "no_text_to_process": "No text to process",
-        "unexpected_error": "Unexpected error occurred.  Maybe the server is down, if the error persists. Please use the feedback button to send us a message.",
+        "unexpected_error": "An unexpected error occurred. If the error persists, please use the feedback button to send us a message.",
         "no_document": "The document was not found.",
         "check_text_error": "Error checking text",
         "rewrite_text_error": "Error rewriting text",
@@ -18,10 +18,10 @@
         "connecting": "Connecting...",
         "authenticating": "Authenticating...",
         "redirecting": "Redirecting...",
-        "azureAdDescription": "We're securely connecting you to Azure Active Directory. This will only take a moment."
+        "azureAdDescription": "We're securely connecting you to Azure Active Directory. This will just take a moment."
     },
     "language": {
-        "auto": "Detect Language",
+        "auto": "Detect language",
         "de-CH": "German",
         "fr": "French",
         "it": "Italian",
@@ -42,7 +42,8 @@
         "copyFailed": "Copy failed",
         "downloadWord": "Download as Word",
         "downloadSuccess": "Word document downloaded",
-        "downloadFailed": "Download failed"
+        "downloadFailed": "Download failed",
+        "characters": "Characters"
     },
     "tools": {
         "rewrite": "Rewrite",
@@ -107,50 +108,6 @@
         "character_speech": "Character Speech",
         "userActions": "My Actions"
     },
-    "rewrite": {
-        "writing_style": {
-            "general": "General",
-            "simple": "Simple",
-            "professional": "Professional",
-            "casual": "Casual",
-            "academic": "Academic",
-            "technical": "Technical"
-        },
-        "target_audience": {
-            "general": "General",
-            "young": "Young Adults",
-            "adult": "Adults",
-            "children": "Children",
-            "journalists": "Journalists",
-            "scientists": "Scientists"
-        },
-        "intend": {
-            "general": "General",
-            "persuasive": "Persuasive",
-            "informative": "Informative",
-            "descriptive": "Descriptive",
-            "narrative": "Narrative",
-            "entertaining": "Entertaining"
-        },
-        "medium": {
-            "general": "General",
-            "official letter": "Official Letter",
-            "email": "Email",
-            "report": "Report",
-            "presentation": "Presentation",
-            "website": "Website"
-        },
-        "writingStyleLabel": "Writing Style",
-        "targetAudienceLabel": "Target Audience",
-        "intendLabel": "Intent",
-        "mediumLabel": "Medium",
-        "apply": "Apply",
-        "rewrite": "Rewrite",
-        "noRewrite": "Select text and click \"Rewrite\" to rewrite it",
-        "advancedOptionsLabel": "Here you can write your custom rewrite rules",
-        "hideAdvanced": "Simple",
-        "showAdvanced": "Advanced"
-    },
     "advisor": {
         "check": "Check Text",
         "reason": "Reason",
@@ -191,7 +148,7 @@
         "advisor": "Advisor",
         "you": "You",
         "noThreadsReviewing": "Still reviewing, nothing found yet",
-        "noThreadsReview": "No violations found. You can add comments by marking the text, or start a new.",
+        "noThreadsReview": "No violations found. You can add comments by selecting text, or start a new check.",
         "startNew": "Start new",
         "apply": "Apply",
         "applyInfo": "{n} threads selected for fixing",
@@ -225,7 +182,18 @@
         "allChangesApplied": "All changes applied",
         "allChangesAppliedHint": "Your text has been updated. Run a new check to verify the result.",
         "insertExample": "Insert example text",
-        "applyHint": "Add your own notes to existing comments, or select text and choose Add Note. When ready, press the button below to let the AI apply all changes."
+        "applyHint": "Add your own notes to existing comments, or select text and choose Add Note. When ready, press the button below to let the AI apply all changes.",
+        "pdfViewer": {
+            "close": "Close PDF viewer",
+            "zoomIn": "Zoom in",
+            "zoomOut": "Zoom out",
+            "resetZoom": "Reset",
+            "downloadPdf": "Download PDF",
+            "download": "Download",
+            "prevPage": "Previous page",
+            "nextPage": "Next page",
+            "pageIndicator": "Page {current} of {total}"
+        }
     },
     "actions": {
         "custom": "Custom",
@@ -327,12 +295,12 @@
             "hard": "Hard"
         },
         "unconverged": {
-            "title": "{count} passage needs a human look |{count} passages need a human look",
+            "title": "{count} section is still difficult to understand and needs your attention | {count} sections are still difficult to understand and need your attention",
             "position": "{index} of {count}",
-            "rejectedReason": "This passage was difficult and the suggestion was not applied.",
-            "prev": "Previous marked passage",
-            "next": "Next marked passage",
-            "dismiss": "Hide the marks"
+            "rejectedReason": "Suggestion discarded (original text kept)",
+            "prev": "Previous marked section",
+            "next": "Next marked section",
+            "dismiss": "Hide marks"
         }
     },
     "pwa": {

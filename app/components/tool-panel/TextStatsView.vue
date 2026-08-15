@@ -2,6 +2,7 @@
 import CefrScoreVisualization from "~/components/CefrScoreVisualization.vue";
 import { useCefrScore } from "~/composables/useCefrScore";
 import { useTextStats } from "~/composables/useTextStats";
+import { formatNumber } from "~/utils/formatNumber";
 
 const { t } = useI18n();
 
@@ -29,17 +30,17 @@ const { isLoading, cefrLevel, language, score, scoreLabel, band, error } =
             <div class="grid grid-cols-2">
                 <span>{{ t("text-stats.character-count") }}</span>
                 <span class="text-end font-bold" data-testid="characterCount"
-                    >{{ charCount }}</span
+                    >{{ formatNumber(charCount) }}</span
                 >
 
                 <span>{{ t("text-stats.word-count") }}</span>
                 <span class="text-end font-bold" data-testid="wordCount"
-                    >{{ wordCount }}</span
+                    >{{ formatNumber(wordCount) }}</span
                 >
 
                 <span>{{ t("text-stats.syllable-count") }}</span>
                 <span class="text-end font-bold" data-testid="syllableCount"
-                    >{{ syllableCount }}</span
+                    >{{ formatNumber(syllableCount) }}</span
                 >
 
                 <span>{{ t("text-stats.average-sentence-length") }}</span>

@@ -8,6 +8,7 @@ import {
     UndoCommand,
     type UndoRedoStateChanged,
 } from "~/assets/models/commands";
+import { formatNumber } from "~/utils/formatNumber";
 import TextStatsView from "../tool-panel/TextStatsView.vue";
 
 const props = defineProps<{
@@ -188,8 +189,8 @@ async function downloadWord(): Promise<void> {
                 data-tour="word-count"
                 data-testid="characterCountButton"
             >
-                {{ props.characters }}
-                / {{ props.limit }} Zeichen
+                {{ formatNumber(props.characters) }}
+                / {{ formatNumber(props.limit) }} {{ t("toolbar.characters") }}
             </UButton>
 
             <template #content>

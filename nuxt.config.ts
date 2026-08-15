@@ -94,9 +94,21 @@ export default defineNuxtConfig({
         strict: true,
     },
     css: ["~/assets/css/main.css"],
+    build: {
+        transpile: ["vaul-vue", "reka-ui"],
+    },
     vite: {
         resolve: {
-            dedupe: ["@vueuse/core"],
+            dedupe: [
+                "vue",
+                "@vue/runtime-core",
+                "@vue/runtime-dom",
+                "@vue/server-renderer",
+                "@vue/reactivity",
+                "@vue/shared",
+                "reka-ui",
+                "@vueuse/core",
+            ],
         },
         plugins: [varlockVitePlugin({ ssrInjectMode: "auto-load" })],
         build: {
