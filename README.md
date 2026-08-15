@@ -1,6 +1,6 @@
 # TextMate (Frontend)
 
-![TextMate Screenshot](_imgs/preview_problems.png)
+https://github.com/user-attachments/assets/ec0416b2-a3dc-48df-8ec5-554d0f59f391
 
 TextMate is a modern web application for advanced text editing and document validation. Built with Nuxt.js and TypeScript, it provides a rich set of tools to enhance writing experiences. This repository contains only the frontend code; the backend is written in Python FastAPI and available at [https://github.com/DCC-BS/text-mate-backend](https://github.com/DCC-BS/text-mate-backend).
 
@@ -14,7 +14,6 @@ TextMate is a modern web application for advanced text editing and document vali
 
 ---
 
-https://github.com/user-attachments/assets/de988b87-5f72-426d-b6d1-4bd19cd43664
 
 ## Features
 

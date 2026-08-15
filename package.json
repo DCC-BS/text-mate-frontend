@@ -29,7 +29,7 @@
         "@iconify-json/lucide": "^1.2.115",
         "@iconify-json/simple-icons": "^1.2.88",
         "@mohtasham/md-to-docx": "git+https://github.com/DCC-BS/md-to-docx.js#v3.0.0",
-        "@nuxt/ui": "4.9.0",
+        "@nuxt/ui": "4.10.0",
         "@nuxtjs/i18n": "^10.4.0",
         "@nuxtjs/mdc": "0.22.0",
         "@pinia/nuxt": "0.11.3",
@@ -51,7 +51,7 @@
         "giget": "^3.3.0",
         "jsdiff": "^1.1.1",
         "motion-v": "^2.3.0",
-        "nuxt": "4.4.8",
+        "nuxt": "4.5.1",
         "nuxt-viewport": "2.4.0",
         "openid-client": "^6.8.4",
         "pinia": "^3.0.4",
@@ -90,7 +90,7 @@
     ],
     "overrides": {
         "prosemirror-model": "1.25.9",
-        "prosemirror-view": "1.41.9"
+        "prosemirror-view": "1.42.2"
     },
     "patchedDependencies": {
         "vite-plugin-checker@0.14.4": "patches/vite-plugin-checker@0.14.4.patch"
