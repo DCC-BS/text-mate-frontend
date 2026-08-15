@@ -22,6 +22,22 @@ const {
 
 const { isLoading, cefrLevel, language, score, scoreLabel, band, error } =
     useCefrScore(textRef);
+
+/** Maps language codes to human-readable names with uppercase code */
+function formatLanguage(lang?: string): string {
+    if (!lang) {
+        return "";
+    }
+    const code = lang.toLowerCase();
+    const names: Record<string, string> = {
+        de: "Deutsch (DE)",
+        en: "English (EN)",
+        fr: "Français (FR)",
+        it: "Italiano (IT)",
+        es: "Español (ES)",
+    };
+    return names[code] ?? lang.toUpperCase();
+}
 </script>
 
 <template>
@@ -56,6 +72,15 @@ const { isLoading, cefrLevel, language, score, scoreLabel, band, error } =
                     data-testid="averageSyllablesPerWord"
                     >{{ averageSyllablesPerWord }}</span
                 >
+
+                <template v-if="language">
+                    <span>{{ t("text-stats.language") }}</span>
+                    <span
+                        class="text-end font-bold"
+                        data-testid="detectedLanguage"
+                        >{{ formatLanguage(language) }}</span
+                    >
+                </template>
             </div>
 
             <CefrScoreVisualization

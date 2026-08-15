@@ -23,9 +23,11 @@ function dummyFetcher(options: FetcherOptions<BodyType>) {
     let dummyText = "";
     switch (body.action) {
         case "plain_language":
-            dummyText =
-                "This is a dummy streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
-            break;
+            throw createError({
+                statusCode: 400,
+                statusMessage:
+                    "The plain_language quick action is retired. Use POST /simplify instead.",
+            });
         default:
             dummyText = `Action: ${body.action}, Input: ${body.text}, Options: ${body.options}`;
             break;

@@ -15,6 +15,7 @@ const props = defineProps<{
     error?: string;
 }>();
 
+/** Readability score representation passed down to ReadabilityScoreBadge */
 const scoreValue = computed<ReadabilityScore>(() => ({
     scored: props.cefrLevel !== undefined || props.score !== undefined,
     language: props.language,
@@ -24,8 +25,10 @@ const scoreValue = computed<ReadabilityScore>(() => ({
     cefr: props.cefrLevel,
 }));
 
+/** True when the text cannot be scored or is too short / unsupported */
 const hasNothingToShow = computed<boolean>(() => isUnscored(scoreValue.value));
 
+/** Dynamic row label based on whether CEFR or a custom readability metric is active */
 const rowLabel = computed<string>(() => {
     if (props.cefrLevel === undefined && props.scoreLabel !== undefined) {
         return t("simplify.readability", { label: props.scoreLabel });
@@ -33,15 +36,17 @@ const rowLabel = computed<string>(() => {
     return t("flesch-score.cefr-level");
 });
 
+/** Tooltip explanation for the readability metric or CEFR level */
 const rowDescription = computed<string>(() =>
     props.cefrLevel === undefined && props.scoreLabel !== undefined
         ? t("simplify.readabilityDescription")
         : t("flesch-score.cefr-description"),
 );
 
+/** Empty state message: "Sprache nicht unterstützt" when language detected but unscored, or "Text zu kurz" */
 const emptyStateText = computed<string>(() =>
     props.language !== undefined
-        ? t("simplify.notScored")
+        ? t("simplify.notSupported")
         : t("flesch-score.cefr-too-short"),
 );
 </script>

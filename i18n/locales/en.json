@@ -252,7 +252,7 @@
         "reading-ease": "Reading Ease (Flesch Index)",
         "score": "Score",
         "cefr-level": "Language Level (CEFR)",
-        "cefr-loading": "Calculating CEFR level...",
+        "cefr-loading": "Calculating language level...",
         "cefr-description": "The CEFR level (Common European Framework of Reference for Languages) describes linguistic understandability from A1 (very simple) to C2 (very complex).",
         "cefr-too-short": "Text too short for analysis",
         "cefr-level-a1": "Very simple",
@@ -268,6 +268,7 @@
         "syllable-count": "Syllable Count",
         "average-sentence-length": "Average Sentence Length",
         "average-syllables-per-word": "Average Syllables per Word",
+        "language": "Detected Language",
         "show-details": "Show Details",
         "hide-details": "Hide Details"
     },
@@ -289,6 +290,7 @@
         "readability": "Readability ({label})",
         "readabilityDescription": "Readability is measured with the metric that fits the detected language. A CEFR level exists for German and English only.",
         "notScored": "Not scored for this language",
+        "notSupported": "Language not supported",
         "band": {
             "easy": "Easy",
             "ok": "Medium",

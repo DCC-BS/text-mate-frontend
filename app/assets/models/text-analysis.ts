@@ -5,20 +5,16 @@ export type TextAnalysisInput = {
 };
 
 export type TextAnalysisResult = {
-    // ZIX understandability score (-10 to 10); null if text is too short
-    zix_score: number | null;
-    // CEFR level (A1–C2); null if score could not be computed.
-    // Only German and English have a CEFR mapping — see spec §10.
+    /** Detected ISO 639-1 code ("de", "en", "fr", "it"), or unsupported code ("es", "zh"), or null if inconclusive */
+    language: string | null;
+    /** Raw metric value (ZIX: -10 to +10, Flesch/LIX/Gulpease: 0 to 100). Null for unsupported languages */
+    score: number | null;
+    /** Metric label: "ZIX" | "CEFR" | "LIX" | "Gulpease" | null */
+    score_label: string | null;
+    /** Calibrated band: "easy" (target) | "ok" | "hard" | null */
+    band: ReadabilityBand | null;
+    /** CEFR level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null (Only populated for DE and EN) */
     cefr_level: string | null;
-    // The fields below are the additive, language-aware extension of the
-    // endpoint (backend T2.4). They are optional so the frontend keeps working
-    // against a backend that has not shipped them yet.
-    // Detected language of the text; absent when detection was inconclusive
-    language?: string | null;
-    // Raw score on that language's own metric
-    score?: number | null;
-    // Name of the metric: ZIX | CEFR | LIX | Gulpease
-    score_label?: string | null;
-    // Calibrated band of the score
-    band?: ReadabilityBand | null;
+    /** Legacy German ZIX score (-10 to +10). Populated only for German */
+    zix_score: number | null;
 };
