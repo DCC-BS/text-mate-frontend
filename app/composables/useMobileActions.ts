@@ -261,6 +261,13 @@ export function useMobileActions(props: RibbonTransformProps) {
                 },
                 {
                     kind: "simple",
+                    id: "condense",
+                    label: t("editor.condense"),
+                    icon: "i-lucide-shrink",
+                    action: "condense",
+                },
+                {
+                    kind: "simple",
                     id: "proofread",
                     label: t("editor.proofread"),
                     icon: "i-lucide-check",

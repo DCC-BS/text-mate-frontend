@@ -105,6 +105,7 @@
         "formality": "Formality",
         "medium": "Medium",
         "proofread": "Proofread",
+        "condense": "Condense",
         "character_speech": "Character Speech",
         "userActions": "My Actions"
     },

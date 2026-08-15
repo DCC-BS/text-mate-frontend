@@ -104,6 +104,12 @@ async function applyAction(
                 @click="applyAction('plain_language')"
             />
             <RibbonIconButton
+                :label="t('editor.condense')"
+                icon="i-lucide-shrink"
+                :disabled="!actionsAreAvailable"
+                @click="applyAction('condense')"
+            />
+            <RibbonIconButton
                 :label="t('editor.proofread')"
                 icon="i-lucide-check"
                 :disabled="!actionsAreAvailable"
