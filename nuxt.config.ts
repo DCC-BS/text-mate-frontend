@@ -80,6 +80,14 @@ export default defineNuxtConfig({
     ui: {
         colorMode: false, // Disable color mode as it is not used
     },
+    icon: {
+        serverBundle: "local",
+        clientBundle: {
+            scan: {
+                globInclude: ["**/*.{vue,jsx,tsx,ts,js,md,mdc,mdx}"],
+            },
+        },
+    },
     modules: [
         "@nuxt/ui",
         "@nuxtjs/i18n",
