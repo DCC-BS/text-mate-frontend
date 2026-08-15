@@ -294,6 +294,23 @@ docker run -p 3000:3000 text-mate-frontend
 
 ---
 
+## Dependency Overrides & Security
+
+We maintain explicit overrides in `package.json` for two distinct reasons:
+
+1. **Framework Singletons**:
+   - `vue` (`3.5.41`), `reka-ui` (`2.10.1`), `@vueuse/core` (`^14.4.0`), `prosemirror-model` (`1.25.11`), `prosemirror-view` (`1.42.2`): Deduplicates instances across transitive sub-dependencies (e.g. `vaul-vue`, Tiptap extensions) to prevent dual-instance SSR crashes and editor `instanceof` selection failures.
+2. **Temporary Transitive Security Patches**:
+   - `nanoid` (`3.3.18`): Mitigates [GHSA-2v37-7h3g-55p8](https://github.com/advisories/GHSA-2v37-7h3g-55p8).
+   - `postcss` (`8.5.26`): Mitigates [GHSA-fxqj-rqcc-2cmp](https://github.com/advisories/GHSA-fxqj-rqcc-2cmp).
+   - `brace-expansion` (`2.1.4`): Mitigates [GHSA-rgw5-rvv9-x895](https://github.com/advisories/GHSA-rgw5-rvv9-x895) and [GHSA-mh99-v99m-4gvg](https://github.com/advisories/GHSA-mh99-v99m-4gvg).
+   - `js-yaml` (`4.3.1`): Mitigates [GHSA-5p4m-2wfm-xmqj](https://github.com/advisories/GHSA-5p4m-2wfm-xmqj).
+   - `esbuild` (`0.28.1`): Mitigates [GHSA-g7r4-m6w7-qqqr](https://github.com/advisories/GHSA-g7r4-m6w7-qqqr).
+
+*Security overrides are reviewed and removed as upstream frameworks release updated minimum version requirements.*
+
+---
+
 ## Acknowledgements & Credits
 
 Special thanks to the following open-source projects and initiatives that inspired and contributed to TextMate:
