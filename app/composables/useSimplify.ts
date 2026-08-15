@@ -215,6 +215,7 @@ export function useSimplify() {
     function abort(): void {
         abortController?.abort();
         abortController = undefined;
+        isRunning.value = false;
     }
 
     async function run(text: string): Promise<boolean> {
@@ -239,8 +240,8 @@ export function useSimplify() {
             }
             throw error;
         } finally {
-            isRunning.value = false;
             if (abortController === controller) {
+                isRunning.value = false;
                 abortController = undefined;
             }
         }

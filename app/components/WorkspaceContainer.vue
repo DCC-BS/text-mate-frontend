@@ -236,11 +236,6 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                         class="h-full flex flex-col min-h-0"
                         data-tour="diff-review"
                     >
-                        <SimplifyProgress
-                            v-if="isSimplifying"
-                            :progress="ws.simplifyProgress.value"
-                        />
-
                         <DiffViewer
                             :key="ws.diffKey.value"
                             ref="diffViewerRef"

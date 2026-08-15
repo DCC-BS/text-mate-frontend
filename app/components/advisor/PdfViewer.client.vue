@@ -1,5 +1,5 @@
-<script lang="ts" setup>
-import { defineAsyncComponent, onMounted, ref, watch } from "vue";
+<script setup lang="ts">
+import { defineAsyncComponent, onMounted, onUnmounted, ref, watch } from "vue";
 
 // Import will be handled client-side only
 const PdfEmbed = defineAsyncComponent(() =>
@@ -23,10 +23,10 @@ const { t } = useI18n();
 
 const currentPage = ref(props.page || 1);
 const totalPages = ref(0);
-const pdfSource = ref<string | ArrayBuffer | null>(null);
-const pdfInstance = ref<unknown>(null);
+const pdfSource = ref<string | ArrayBuffer | undefined>(undefined);
+const pdfInstance = ref<unknown>(undefined);
 const zoomLevel = ref(100);
-const containerRef = ref<HTMLElement | null>(null);
+const containerRef = ref<HTMLElement | undefined>(undefined);
 
 /**
  * Convert Blob to data URL for embedding
@@ -35,7 +35,7 @@ function convertBlobToSource(blob: Blob): void {
     const reader = new FileReader();
     reader.onload = (event) => {
         if (event.target) {
-            pdfSource.value = event.target.result;
+            pdfSource.value = event.target.result ?? undefined;
         }
     };
     reader.readAsArrayBuffer(blob);
@@ -137,13 +137,19 @@ onMounted(() => {
     if (props.file) {
         convertBlobToSource(props.file);
     }
+});
 
-    // Add wheel event listener for zooming
-    if (containerRef.value) {
-        containerRef.value.addEventListener("wheel", handleWheel, {
-            passive: false,
-        });
-    }
+watch(
+    containerRef,
+    (el, oldEl) => {
+        oldEl?.removeEventListener("wheel", handleWheel);
+        el?.addEventListener("wheel", handleWheel, { passive: false });
+    },
+    { immediate: true },
+);
+
+onUnmounted(() => {
+    containerRef.value?.removeEventListener("wheel", handleWheel);
 });
 
 // Watch for changes to the page prop

@@ -1,7 +1,6 @@
 import { useDropZone } from "@vueuse/core";
 import { FetchError } from "ofetch";
 import type { ConversionResult } from "~/assets/models/conversion-result";
-import { useUseErrorDialog } from "./useUseErrorDialog";
 /**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted HTML content
@@ -45,8 +44,7 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
 
             if (result && result?.statusMessage === "Failed to convert file") {
                 logger.error({ extra: result }, "File conversion error:");
-
-                useUseErrorDialog().sendError(t("upload.errorDescription"));
+                error.value = t("upload.errorDescription");
                 return;
             }
 
@@ -77,7 +75,6 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
 
             error.value = localizedErrorMessage;
             logger.error({ err, errorId }, "File conversion error:");
-            useUseErrorDialog().sendError(localizedErrorMessage);
         } finally {
             isConverting.value = false;
         }

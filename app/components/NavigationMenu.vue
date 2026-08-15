@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 
 // Add translation hook

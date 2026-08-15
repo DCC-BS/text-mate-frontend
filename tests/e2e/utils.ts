@@ -2,8 +2,8 @@ import type { Page, BrowserContext } from "@playwright/test";
 
 import local from "../../i18n/locales/de.json" with { type: "json" };
 
-const rewriteText = local.tools.rewrite;
-const advisorText = local.tools.advisor;
+const rewriteText = local.ribbon.transform;
+const advisorText = local.ribbon.validate;
 
 export async function clearBrowserState(page: Page, context: BrowserContext) {
     await context.clearCookies();
@@ -60,6 +60,10 @@ export async function skipTour(page: Page) {
         timeout: 5000,
     });
     await page.locator('[data-testid="tour-skip"]').click();
+    await page.waitForSelector(".driver-popover", {
+        state: "detached",
+        timeout: 5000,
+    });
 }
 
 export async function switchTo(page: Page, tool: "rewrite" | "advisor") {

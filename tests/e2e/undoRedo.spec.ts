@@ -14,6 +14,10 @@ test.beforeEach(async ({ page, context }) => {
     await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
     await page.locator("#confirmation-checkbox").click();
     await page.locator('[data-testid="tour-skip"]').click();
+    await page.waitForSelector(".driver-popover", {
+        state: "detached",
+        timeout: 5000,
+    });
 });
 
 test("Undo and Redo buttons should be disabled when no action was taken", async ({

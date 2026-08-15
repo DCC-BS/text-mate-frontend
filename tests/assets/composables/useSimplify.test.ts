@@ -243,4 +243,30 @@ describe("useSimplify", () => {
 
         expect(api.result.value?.rewrite_failures).toBe(0);
     });
+
+    it("resets isRunning cleanly when aborted", async () => {
+        const api = useSimplify();
+        streamedLines = [START];
+
+        const promise = api.run(SOURCE);
+        expect(api.isRunning.value).toBe(true);
+        api.abort();
+        await promise;
+        expect(api.isRunning.value).toBe(false);
+    });
+
+    it("maintains isRunning when a new run supersedes an in-flight run", async () => {
+        const api = useSimplify();
+        streamedLines = [START, DONE];
+
+        const run1 = api.run(SOURCE);
+        const run2 = api.run(SOURCE);
+
+        expect(api.isRunning.value).toBe(true);
+        await run1;
+        // Even though run1 aborted and cleaned up, run2 is still running/completing
+        await run2;
+        expect(api.isRunning.value).toBe(false);
+        expect(api.simplifiedText.value).toBe("Die endgueltige Fassung.");
+    });
 });

@@ -112,7 +112,7 @@ function hunk(
     status: DiffHunk["status"],
 ): DiffHunk {
     return {
-        key: `${removedText}::${addedText}`,
+        key: `${from}::${removedText}::${addedText}`,
         from,
         to: from + addedText.length,
         removedText,

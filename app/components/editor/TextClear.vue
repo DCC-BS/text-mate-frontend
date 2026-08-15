@@ -13,7 +13,7 @@
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ClearTextCommand } from "~/assets/models/commands";
 
 const { executeCommand } = useCommandBus();

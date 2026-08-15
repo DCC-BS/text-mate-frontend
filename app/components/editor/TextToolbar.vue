@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { UTooltip } from "#components";
 import {
     Cmds,
@@ -42,7 +42,6 @@ onCommand<UndoRedoStateChanged>(Cmds.UndoRedoStateChanged, async (command) => {
 
 // Listen for the ShowTextStatsCommand to open the popover
 onCommand<ShowTextStatsCommand>(Cmds.ShowTextStatsCommand, async () => {
-    console.log(" asjdasl;djsaldsjadlksajds");
     isStatsPopoverOpen.value = true;
     isDismissable.value = false;
 });

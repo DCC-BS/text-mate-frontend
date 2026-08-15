@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 const { activeProgress } = useUseProgressIndication();
 const { t } = useI18n();
 
