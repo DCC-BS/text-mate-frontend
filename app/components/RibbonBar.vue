@@ -39,10 +39,14 @@ const { ribbonTab: activeTab } = useRibbonTab();
 
         <!-- Ribbon body (desktop only) -->
         <div
-            class="hidden md:flex items-stretch gap-0 px-2 pb-1.5 pt-1 min-w-0"
+            class="hidden md:flex items-stretch justify-center gap-0 px-2 pb-1.5 pt-1 min-w-0 w-full"
         >
             <!-- TRANSFORM TAB -->
-            <div v-if="activeTab === 'transform'" data-tour="quick-actions">
+            <div
+                v-if="activeTab === 'transform'"
+                class="w-full flex justify-center"
+                data-tour="quick-actions"
+            >
                 <RibbonTransformTab
                     v-bind="props"
                     @clear="emit('clear')"
