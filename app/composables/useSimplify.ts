@@ -149,6 +149,7 @@ export function useSimplify() {
                 throw new Error(t("errors.unexpected_error"));
             }
         } finally {
+            await reader.cancel().catch(() => {});
             reader.releaseLock();
         }
     }
@@ -190,20 +191,25 @@ export function useSimplify() {
             return;
         }
 
-        result.value = event;
-        simplifiedText.value = event.text;
-        progress.value = {
-            ...progress.value,
-            scored: event.scored,
-            language: event.language ?? progress.value.language,
-            scoreLabel: event.score_label ?? progress.value.scoreLabel,
-            scoreBefore: event.score_before ?? progress.value.scoreBefore,
-            bandBefore: event.band_before ?? progress.value.bandBefore,
-            cefrBefore: event.cefr_before ?? progress.value.cefrBefore,
-            score: event.score_after ?? progress.value.score,
-            band: event.band_after ?? progress.value.band,
-            cefr: event.cefr_after ?? progress.value.cefr,
-        };
+        if (event.event === "done") {
+            result.value = event;
+            simplifiedText.value = event.text;
+            progress.value = {
+                ...progress.value,
+                scored: event.scored,
+                language: event.language ?? progress.value.language,
+                scoreLabel: event.score_label ?? progress.value.scoreLabel,
+                scoreBefore: event.score_before ?? progress.value.scoreBefore,
+                bandBefore: event.band_before ?? progress.value.bandBefore,
+                cefrBefore: event.cefr_before ?? progress.value.cefrBefore,
+                score: event.score_after ?? progress.value.score,
+                band: event.band_after ?? progress.value.band,
+                cefr: event.cefr_after ?? progress.value.cefr,
+            };
+            return;
+        }
+
+        const _unreachable: never = event;
     }
 
     function reset(): void {

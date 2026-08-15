@@ -110,7 +110,10 @@ export function useWorkspace(text: Ref<string>) {
         },
     );
 
+    let currentSimplifyRun = 0;
+
     async function runSimplification(): Promise<void> {
+        const runId = ++currentSimplifyRun;
         const source = text.value;
 
         diffMode.value = "simplify";
@@ -123,7 +126,7 @@ export function useWorkspace(text: Ref<string>) {
 
         try {
             const finished = await runSimplify(source);
-            if (!finished) {
+            if (!finished || currentSimplifyRun !== runId) {
                 return;
             }
 
@@ -148,6 +151,9 @@ export function useWorkspace(text: Ref<string>) {
             state.value = "diff-review";
             diffKey.value++;
         } catch (error: unknown) {
+            if (currentSimplifyRun !== runId) {
+                return;
+            }
             logger.error({ error }, "Simplification failed");
             const message =
                 error instanceof Error ? error.message : String(error);
@@ -160,8 +166,10 @@ export function useWorkspace(text: Ref<string>) {
             });
             state.value = "editable";
         } finally {
-            removeProgress("simplify");
-            progress.value = "none";
+            if (currentSimplifyRun === runId) {
+                removeProgress("simplify");
+                progress.value = "none";
+            }
         }
     }
 

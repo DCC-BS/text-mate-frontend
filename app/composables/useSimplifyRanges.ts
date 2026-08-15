@@ -1,15 +1,17 @@
 import { v7 } from "uuid";
-import { computed, ref } from "vue";
 import type {
     OffsetRange,
     SimplifyRange,
     SimplifyRangeKind,
 } from "~/utils/simplifyRanges";
 
-const ranges = ref<SimplifyRange[]>([]);
-const activeRangeId = ref<string | undefined>(undefined);
-
 export function useSimplifyRanges() {
+    const ranges = useState<SimplifyRange[]>("simplify-ranges", () => []);
+    const activeRangeId = useState<string | undefined>(
+        "simplify-active-range-id",
+        () => undefined,
+    );
+
     const orderedRanges = computed<SimplifyRange[]>(() =>
         ranges.value.toSorted((a, b) => a.range.start - b.range.start),
     );
@@ -26,7 +28,7 @@ export function useSimplifyRanges() {
             range: { start: r.start, end: r.end },
             kind: r.kind ?? "rewritten",
         }));
-        activeRangeId.value = ranges.value[0]?.id;
+        activeRangeId.value = orderedRanges.value[0]?.id;
     }
 
     function clear(): void {

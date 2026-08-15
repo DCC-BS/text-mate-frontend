@@ -143,10 +143,13 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
         { deep: true },
     );
 
-    // Rebuild the unconverged-passage highlights whenever the range set, the
-    // active one, or editability changes.
+    // Rebuild the unconverged-passage highlights whenever the range set or
+    // the active range changes.
     watch(
-        [simplifyRangesApi.ranges, simplifyRangesApi.activeRangeId, editable],
+        [
+            () => simplifyRangesApi.ranges.value.map((r) => r.id).join(","),
+            simplifyRangesApi.activeRangeId,
+        ],
         () => {
             const view = base.editor.value?.view;
             if (!view) {
@@ -154,7 +157,6 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
             }
             view.dispatch(view.state.tr.setMeta(simplifyDecorationKey, true));
         },
-        { deep: true },
     );
 
     // Scroll the active unconverged passage into view when it changes from

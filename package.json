@@ -75,7 +75,7 @@
         "@biomejs/biome": "^2.5.7",
         "@playwright/test": "^1.62.1",
         "@types/diff": "^8.0.0",
-        "@types/node": "26.2.0",
+        "@types/node": "^24.10.9",
         "@vitejs/plugin-vue": "^6.0.8",
         "@vitest/coverage-v8": "^4.1.10",
         "@vue/test-utils": "^2.4.11",
@@ -95,8 +95,5 @@
         "@vueuse/core": "^14.4.0",
         "prosemirror-model": "1.25.11",
         "prosemirror-view": "1.42.2"
-    },
-    "patchedDependencies": {
-        "vite-plugin-checker@0.14.4": "patches/vite-plugin-checker@0.14.4.patch"
     }
 }

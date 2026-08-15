@@ -1,9 +1,15 @@
+import { z } from "zod";
 import type { FetcherOptions } from "#layers/backend_communication/server/types/fetcher";
-import type { TextAnalysisResult } from "~/assets/models/text-analysis";
+import type {
+    TextAnalysisInput,
+    TextAnalysisResult,
+} from "#shared/types/textAnalysis";
 
-type BodyType = {
-    text: string;
-};
+export const TextAnalysisInputSchema = z.object({
+    text: z.string(),
+});
+
+type BodyType = TextAnalysisInput;
 
 /** Stopwords used for dummy language detection */
 const DUMMY_STOPWORDS: Record<string, string[]> = {
@@ -11,6 +17,7 @@ const DUMMY_STOPWORDS: Record<string, string[]> = {
     en: ["the", "and", "is", "of", "to", "you", "with", "for", "this"],
     fr: ["le", "la", "les", "et", "est", "vous", "pour", "des", "une"],
     it: ["il", "la", "e", "che", "di", "per", "sono", "con", "non"],
+    es: ["el", "la", "de", "que", "en", "los", "se", "del", "por", "un"],
 };
 
 /**
@@ -52,7 +59,17 @@ function dummyFetcher(options: FetcherOptions<BodyType>): TextAnalysisResult {
         };
     }
 
-    const lang = detectDummyLanguage(text) ?? "de";
+    const lang = detectDummyLanguage(text);
+    if (lang === null) {
+        return {
+            language: null,
+            score: null,
+            score_label: null,
+            band: null,
+            cefr_level: null,
+            zix_score: null,
+        };
+    }
 
     if (lang === "de") {
         return {
@@ -114,6 +131,17 @@ function dummyFetcher(options: FetcherOptions<BodyType>): TextAnalysisResult {
  */
 export default apiHandler
     .withMethod("POST")
-    .withBodyProvider<BodyType>()
+    .withBodyProvider<BodyType>(async (event) => {
+        const body = await readBody(event);
+        const result = TextAnalysisInputSchema.safeParse(body);
+        if (!result.success) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Invalid input",
+                data: z.prettifyError(result.error),
+            });
+        }
+        return result.data;
+    })
     .withDummyFetcher(dummyFetcher)
     .build("/text-analysis");

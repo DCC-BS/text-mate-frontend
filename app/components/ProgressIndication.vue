@@ -13,7 +13,7 @@ const progressItems = computed(() => {
             v-if="progressItems.length > 0"
             name="i-lucide-loader"
             class="animate-spin"
-            :aria-label="t('loading')"
+            :aria-label='t("loading")'
         />
         <div v-for="progress in progressItems" :key="progress.title">
             <UIcon :name="progress.icon" />

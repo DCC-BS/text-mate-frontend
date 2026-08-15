@@ -1,5 +1,4 @@
-import { describe, expect, it } from "vitest";
-import { formatNumber } from "../../../app/utils/formatNumber";
+import { formatNumber } from "~/utils/formatNumber";
 
 describe("formatNumber", () => {
     it("formats 0 as '0'", () => {
@@ -26,6 +25,10 @@ describe("formatNumber", () => {
 
     it("formats large numbers correctly with multiple separators", () => {
         expect(formatNumber(123456789)).toBe("123'456'789");
+    });
+
+    it("formats decimal numbers with thousands separator while preserving decimals", () => {
+        expect(formatNumber(1234.56)).toBe("1'234.56");
     });
 
     it("handles negative numbers correctly", () => {

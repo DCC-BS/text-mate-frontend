@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { computed } from "vue";
 import { mount } from "@vue/test-utils";
 import ReadabilityScoreBadge from "~/components/ReadabilityScoreBadge.vue";

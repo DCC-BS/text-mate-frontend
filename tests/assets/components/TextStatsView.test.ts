@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { computed, ref } from "vue";
 import { mount } from "@vue/test-utils";
 import TextStatsView from "~/components/tool-panel/TextStatsView.vue";
@@ -52,7 +51,7 @@ vi.stubGlobal("useI18n", () => {
 describe("TextStatsView", () => {
     const globalStubs = {
         CefrScoreVisualization: {
-            template: '<div class="cefr-visualization-stub"></div>',
+            template: "<div class=\"cefr-visualization-stub\"></div>",
         },
     };
 

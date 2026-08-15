@@ -42,7 +42,7 @@ const currentScore = computed<ReadabilityScore>(() => ({
                 <span class="font-medium text-highlighted">
                     {{ t("simplify.attempt", { attempt: props.progress.attempt }) }}
                 </span>
-                <span v-if="stageLabel" class="text-muted truncate">
+                <span class="text-muted truncate">
                     {{ stageLabel }}
                 </span>
             </div>

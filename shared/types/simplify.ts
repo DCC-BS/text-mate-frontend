@@ -56,17 +56,34 @@ function absentAsUndefined<TSchema extends z.ZodTypeAny>(
 
 const LanguageSchema = z.string();
 
-export const SimplifyStartEventSchema = z.object({
-    event: z.literal("start"),
-    language: absentAsUndefined(LanguageSchema),
-    score_label: absentAsUndefined(z.string()),
-    scored: z.boolean(),
-    mode: SimplifyModeSchema,
-    units: z.number().int().nonnegative(),
-    score_before: absentAsUndefined(z.number()),
-    band_before: absentAsUndefined(ReadabilityBandSchema),
-    cefr_before: absentAsUndefined(z.string()),
-});
+export const SimplifyStartEventSchema = z
+    .object({
+        event: z.literal("start"),
+        language: absentAsUndefined(LanguageSchema),
+        score_label: absentAsUndefined(z.string()),
+        scored: z.boolean(),
+        mode: SimplifyModeSchema,
+        units: z.number().int().nonnegative(),
+        score_before: absentAsUndefined(z.number()),
+        band_before: absentAsUndefined(ReadabilityBandSchema),
+        cefr_before: absentAsUndefined(z.string()),
+    })
+    .superRefine((val, ctx) => {
+        if (!val.scored) {
+            if (
+                val.score_label !== undefined ||
+                val.score_before !== undefined ||
+                val.band_before !== undefined ||
+                val.cefr_before !== undefined
+            ) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message:
+                        "Score metric fields must be absent when scored is false",
+                });
+            }
+        }
+    });
 
 export type SimplifyStartEvent = z.output<typeof SimplifyStartEventSchema>;
 
@@ -104,39 +121,59 @@ export type SimplifyChunkDoneEvent = z.output<
     typeof SimplifyChunkDoneEventSchema
 >;
 
-export const SimplifyDoneEventSchema = z.object({
-    event: z.literal("done"),
-    /** Fully assembled simplified text — authoritative for the diff. */
-    text: z.string(),
-    language: absentAsUndefined(LanguageSchema),
-    score_label: absentAsUndefined(z.string()),
-    scored: z.boolean(),
-    score_before: absentAsUndefined(z.number()),
-    score_after: absentAsUndefined(z.number()),
-    band_before: absentAsUndefined(ReadabilityBandSchema),
-    band_after: absentAsUndefined(ReadabilityBandSchema),
-    cefr_before: absentAsUndefined(z.string()),
-    cefr_after: absentAsUndefined(z.string()),
-    converged: z.boolean(),
-    unconverged_units: z
-        .array(z.number().int().nonnegative())
-        .nullish()
-        .transform((value) => value ?? []),
-    unconverged_ranges: z
-        .array(UnconvergedRangeSchema)
-        .nullish()
-        .transform((value) => (value ?? []).filter((r) => r.end > r.start)),
-    rewrite_failures: z
-        .number()
-        .int()
-        .nonnegative()
-        .nullish()
-        .transform((value) => value ?? 0),
-});
+export const SimplifyDoneEventSchema = z
+    .object({
+        event: z.literal("done"),
+        /** Fully assembled simplified text — authoritative for the diff. */
+        text: z.string(),
+        language: absentAsUndefined(LanguageSchema),
+        score_label: absentAsUndefined(z.string()),
+        scored: z.boolean(),
+        score_before: absentAsUndefined(z.number()),
+        score_after: absentAsUndefined(z.number()),
+        band_before: absentAsUndefined(ReadabilityBandSchema),
+        band_after: absentAsUndefined(ReadabilityBandSchema),
+        cefr_before: absentAsUndefined(z.string()),
+        cefr_after: absentAsUndefined(z.string()),
+        converged: z.boolean(),
+        unconverged_units: z
+            .array(z.number().int().nonnegative())
+            .nullish()
+            .transform((value) => value ?? []),
+        unconverged_ranges: z
+            .array(UnconvergedRangeSchema)
+            .nullish()
+            .transform((value) => (value ?? []).filter((r) => r.end > r.start)),
+        rewrite_failures: z
+            .number()
+            .int()
+            .nonnegative()
+            .nullish()
+            .transform((value) => value ?? 0),
+    })
+    .superRefine((val, ctx) => {
+        if (!val.scored) {
+            if (
+                val.score_label !== undefined ||
+                val.score_before !== undefined ||
+                val.score_after !== undefined ||
+                val.band_before !== undefined ||
+                val.band_after !== undefined ||
+                val.cefr_before !== undefined ||
+                val.cefr_after !== undefined
+            ) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message:
+                        "Score metric fields must be absent when scored is false",
+                });
+            }
+        }
+    });
 
 export type SimplifyDoneEvent = z.output<typeof SimplifyDoneEventSchema>;
 
-export const SimplifyEventSchema = z.discriminatedUnion("event", [
+export const SimplifyEventSchema = z.union([
     SimplifyStartEventSchema,
     SimplifyProgressEventSchema,
     SimplifyChunkDoneEventSchema,

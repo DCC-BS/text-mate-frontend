@@ -174,7 +174,17 @@ function dummyFetcher(options: FetcherOptions<BodyType>): TextAnalysisResult {
         };
     }
 
-    const lang = detectDummyLanguage(text) ?? "de";
+    const lang = detectDummyLanguage(text);
+    if (lang === null) {
+        return {
+            language: null,
+            score: null,
+            score_label: null,
+            band: null,
+            cefr_level: null,
+            zix_score: null,
+        };
+    }
 
     if (lang === "de") {
         return {

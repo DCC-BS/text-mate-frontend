@@ -1,6 +1,12 @@
 import { useDropZone } from "@vueuse/core";
 import { FetchError } from "ofetch";
+import { z } from "zod";
 import type { ConversionResult } from "~/assets/models/conversion-result";
+
+const ErrorPayloadSchema = z.object({
+    errorId: z.string().optional(),
+});
+
 /**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted HTML content
@@ -25,26 +31,34 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
      * @param file File to be converted
      */
     async function processFile(file: File): Promise<void> {
+        abortController.value.abort(); // Abort any ongoing conversion
+        const currentController = new AbortController();
+        abortController.value = currentController;
+
+        fileName.value = file.name;
+        error.value = undefined;
+        isConverting.value = true;
+
         try {
-            abortController.value.abort(); // Abort any ongoing conversion
-            abortController.value = new AbortController();
-
-            fileName.value = file.name;
-            error.value = undefined;
-            isConverting.value = true;
-
             const formData = new FormData();
             formData.append("file", file, file.name);
 
             const result = await $fetch<ConversionResult>("/api/convert", {
                 method: "POST",
                 body: formData,
-                signal: abortController.value.signal,
+                signal: currentController.signal,
             });
+
+            if (
+                abortController.value !== currentController ||
+                currentController.signal.aborted
+            ) {
+                return;
+            }
 
             if (result && result?.statusMessage === "Failed to convert file") {
                 logger.error({ extra: result }, "File conversion error:");
-                error.value = t("upload.errorDescription");
+                error.value = t("errors.document_conversion_error");
                 return;
             }
 
@@ -59,24 +73,32 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
 
             onComplete(result.html);
         } catch (err: unknown) {
-            let errorId: string | undefined;
             if (
-                err instanceof FetchError &&
-                err.data &&
-                typeof err.data === "object"
+                abortController.value !== currentController ||
+                currentController.signal.aborted
             ) {
-                errorId = (err.data as { errorId?: string }).errorId;
+                return;
+            }
+
+            let errorId: string | undefined;
+            if (err instanceof FetchError && err.data) {
+                const parsed = ErrorPayloadSchema.safeParse(err.data);
+                if (parsed.success && typeof parsed.data.errorId === "string") {
+                    errorId = parsed.data.errorId;
+                }
             }
 
             const localizedErrorMessage =
                 errorId && te(`errors.${errorId}`)
                     ? t(`errors.${errorId}`)
-                    : t("upload.errorDescription");
+                    : t("errors.document_conversion_error");
 
             error.value = localizedErrorMessage;
             logger.error({ err, errorId }, "File conversion error:");
         } finally {
-            isConverting.value = false;
+            if (abortController.value === currentController) {
+                isConverting.value = false;
+            }
         }
     }
 
@@ -96,7 +118,7 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
     });
 
     /**
-     * Handles file selection from file input
+     * Handles file selection from input
      * @param event File input change event
      */
     function handleFileSelect(event: Event): void {

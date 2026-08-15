@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { computed, readonly, ref, watch } from "vue";
 
 /**
@@ -26,23 +25,23 @@ vi.stubGlobal("useI18n", () => ({
     locale: ref("de"),
 }));
 vi.stubGlobal("useLogger", () => ({
-    warn: () => undefined,
-    error: () => undefined,
-    info: () => undefined,
+    warn: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
 }));
 
 /** The stream body `apiStreamFetch` is stubbed to return, one line per event. */
 let streamedLines: string[] = [];
 
 vi.mock("@dcc-bs/communication.bs.js", () => ({
-    isApiError: () => false,
-    apiStreamFetch: () => {
+    isApiError: vi.fn(() => false),
+    apiStreamFetch: vi.fn(() => {
         const encoder = new TextEncoder();
         const lines = [...streamedLines];
         let sent = 0;
         return Promise.resolve({
             getReader: () => ({
-                read: () =>
+                read: vi.fn(() =>
                     Promise.resolve(
                         sent < lines.length
                             ? {
@@ -51,13 +50,15 @@ vi.mock("@dcc-bs/communication.bs.js", () => ({
                               }
                             : { value: undefined, done: true },
                     ),
-                releaseLock: () => undefined,
+                ),
+                cancel: vi.fn().mockResolvedValue(undefined),
+                releaseLock: vi.fn(() => undefined),
             }),
         });
-    },
+    }),
 }));
 
-const { useSimplify } = await import("../../../app/composables/useSimplify");
+const { useSimplify } = await import("~/composables/useSimplify");
 
 /** A source whose blank-line blocks outnumber the backend's merged units. */
 const SOURCE = ["Erster Block.", "Zweiter Block.", "Dritter Block."].join(

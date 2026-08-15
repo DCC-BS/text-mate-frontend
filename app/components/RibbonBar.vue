@@ -45,13 +45,14 @@ const { ribbonTab: activeTab } = useRibbonTab();
             <div
                 v-if="activeTab === 'transform'"
                 class="w-full flex justify-center"
-                data-tour="quick-actions"
             >
-                <RibbonTransformTab
-                    v-bind="props"
-                    @clear="emit('clear')"
-                    @update:selected-docs="emit('update:selectedDocs', $event)"
-                />
+                <div class="w-fit" data-tour="quick-actions">
+                    <RibbonTransformTab
+                        v-bind="props"
+                        @clear="emit('clear')"
+                        @update:selected-docs="emit('update:selectedDocs', $event)"
+                    />
+                </div>
             </div>
             <!-- VALIDATE TAB -->
             <div v-else class="flex justify-center items-stretch gap-3 w-full">

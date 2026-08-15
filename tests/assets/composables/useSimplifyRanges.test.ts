@@ -1,5 +1,14 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { useSimplifyRanges } from "../../../app/composables/useSimplifyRanges";
+import { computed, ref, type Ref } from "vue";
+import { useSimplifyRanges } from "~/composables/useSimplifyRanges";
+
+const stateStore = new Map<string, Ref<unknown>>();
+vi.stubGlobal("computed", computed);
+vi.stubGlobal("useState", <T>(key: string, init: () => T) => {
+    if (!stateStore.has(key)) {
+        stateStore.set(key, ref(init()));
+    }
+    return stateStore.get(key) as Ref<T>;
+});
 
 describe("useSimplifyRanges", () => {
     // Module-level singleton state (matching useSimplify/useWorkspace): reset

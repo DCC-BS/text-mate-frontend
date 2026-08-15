@@ -1,4 +1,4 @@
-import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { type EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { Extension } from "@tiptap/vue-3";
 import { reflowAdvisorRanges } from "~/utils/advisorText";
@@ -42,7 +42,7 @@ export type SimplifyDecorationOptions = {
  */
 export function createSimplifyDecorationExtension(
     options: SimplifyDecorationOptions,
-) {
+): Extension {
     return Extension.create({
         name: "simplifyDecorations",
 
@@ -91,7 +91,7 @@ export function createSimplifyDecorationExtension(
                             const rangeId = found?.spec?.rangeId;
                             if (typeof rangeId === "string") {
                                 options.onSelect(rangeId);
-                                return true;
+                                return false;
                             }
                             return false;
                         },
@@ -101,9 +101,7 @@ export function createSimplifyDecorationExtension(
         },
     });
 
-    function build(state: {
-        doc: Parameters<typeof buildSimplifyDecorationSpecs>[0];
-    }): DecorationSet {
+    function build(state: EditorState): DecorationSet {
         // Decorations render only when enabled (ranges exist + editor visible).
         if (!options.getEnabled()) {
             return DecorationSet.empty;

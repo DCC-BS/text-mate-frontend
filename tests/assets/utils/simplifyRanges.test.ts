@@ -1,13 +1,12 @@
-import { describe, expect, it } from "vitest";
 import { Node as PmNode, Schema } from "prosemirror-model";
 import { Transform } from "prosemirror-transform";
-import { reflowAdvisorRanges } from "../../../app/utils/advisorText";
-import type { DiffHunk } from "../../../app/types/diff";
+import { reflowAdvisorRanges } from "~/utils/advisorText";
+import type { DiffHunk } from "~/types/diff";
 import {
     buildSimplifyDecorationSpecs,
     remapUnconvergedRanges,
     type SimplifyRange,
-} from "../../../app/utils/simplifyRanges";
+} from "~/utils/simplifyRanges";
 
 // Same minimal schema as advisorText.test.ts.
 const schema = new Schema({

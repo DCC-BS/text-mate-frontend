@@ -99,8 +99,15 @@ function wholeEvents(
     const midway = round(before + (after - before) / 2);
     const inTargetMidway = Math.max(1, Math.floor(unitCount / 2));
 
-    const converged = analyzer.band(after) === "easy";
-    const unconverged = unitCount > 1 ? [unitCount - 1] : [];
+    const perUnitResults = simplifiedParagraphs.map((paragraph, index) => {
+        const score = analyzer.score(paragraph);
+        const band = analyzer.band(score);
+        return { index, converged: band === "easy" };
+    });
+    const unconverged = perUnitResults
+        .filter((res) => !res.converged)
+        .map((res) => res.index);
+    const converged = unconverged.length === 0;
     const unconvergedRanges = unconvergedRangesOf(
         simplifiedParagraphs,
         unconverged,
@@ -209,13 +216,10 @@ function chunkedEvents(
         };
     });
 
-    const lastPosition = emissionOrder[emissionOrder.length - 1];
-    const unconverged =
-        lastPosition === undefined
-            ? []
-            : [rewritten[lastPosition]?.index ?? 0].filter(
-                  (index) => index >= 0,
-              );
+    const unconverged = chunkEvents
+        .filter((event) => event.event === "chunk_done" && !event.converged)
+        .map((event) => (event.event === "chunk_done" ? event.index : 0));
+    const converged = unconverged.length === 0;
     const unconvergedRanges = unconvergedRangesOf(
         simplifiedParagraphs,
         unconverged,
@@ -274,7 +278,7 @@ function chunkedEvents(
             band_after: analyzer.band(after),
             cefr_before: analyzer.cefr(before),
             cefr_after: analyzer.cefr(after),
-            converged: analyzer.band(after) === "easy",
+            converged,
             unconverged_units: unconverged,
             unconverged_ranges: unconvergedRanges,
             rewrite_failures: 0,

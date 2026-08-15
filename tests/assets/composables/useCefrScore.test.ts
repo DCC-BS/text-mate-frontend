@@ -1,12 +1,11 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { ref, nextTick, defineComponent, type Ref } from "vue";
+import { ref, nextTick, defineComponent, type Ref, type Component } from "vue";
 import { mount } from "@vue/test-utils";
-import { useCefrScore } from "../../../app/composables/useCefrScore";
-import { getTextAnalysis } from "../../../app/utils/textAnalysis";
+import { useCefrScore } from "~/composables/useCefrScore";
+import { getTextAnalysis } from "~/utils/textAnalysis";
 import type { TextAnalysisResult } from "~/assets/models/text-analysis";
 
 // Mock the backend client utility
-vi.mock("../../../app/utils/textAnalysis", () => {
+vi.mock("~/utils/textAnalysis", () => {
     return {
         getTextAnalysis: vi.fn(),
     };
@@ -34,7 +33,7 @@ describe("useCefrScore", () => {
     });
 
     // Helper component to mount the composable inside a reactive Vue context
-    function createTestComponent(textRef: Ref<string>) {
+    function createTestComponent(textRef: Ref<string>): Component {
         return defineComponent({
             setup() {
                 const cefrState = useCefrScore(textRef);

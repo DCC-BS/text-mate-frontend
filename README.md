@@ -87,18 +87,18 @@ Environment variables are validated using Varlock schemas (`.env.schema`, `.env.
 
 | Variable | Description | Default | Type |
 |----------|-------------|---------|------|
-| **Core Configuration** |
+| **Core Configuration** | | | |
 | `APP_MODE` | Application runtime mode (`dev`, `ci`, `build`, `prod`) | `dev` | enum |
 | `AUTH_MODE` | Authentication mode (`none`, `azure`) | `none` | enum |
 | `USE_FEEDBACK` | Enable feedback widget | `true` (non-CI) | boolean |
 | `DUMMY` | Enable mock API mode (no backend required) | `false` | boolean |
-| **Backend & Services** |
+| **Backend & Services** | | | |
 | `API_PORT` | Backend API port | `8000` | port |
 | `NUXT_API_URL` | Backend API URL | `http://localhost:8000` (dev) | URL |
 | `NUXT_FEEDBACK_GITHUB_TOKEN` | GitHub token for feedback reporting | Proton Pass (dev) | string (sensitive) |
 | `NUXT_PUBLIC_LOGGER_LOG_LEVEL` | Client log level | `debug` (dev), `info` (prod) | enum |
 | `LOG_LEVEL` | Server log level | `debug` (dev), `info` (prod) | enum |
-| **UI & Onboarding Flags** |
+| **UI & Onboarding Flags** | | | |
 | `DISABLE_ONBOARDING` | Disable onboarding tour (e.g. in tests) | `false` | boolean |
 | `NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG` | Disable changelog modal | `false` | boolean |
 | `NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER` | Disable disclaimer banner | `false` | boolean |
@@ -193,7 +193,7 @@ varlock run -- docker compose up
 
 ## Project Architecture
 
-```
+```text
 app/
 ├── assets/
 │   ├── css/                # Main Tailwind CSS styles
@@ -237,7 +237,7 @@ mise run test:watch
 mise run test:coverage
 
 # Run a single test file
-bun test -- tests/assets/utils/formatNumber.test.ts
+bunx vitest run tests/assets/utils/formatNumber.test.ts
 ```
 
 ### Type Checking & Linting

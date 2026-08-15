@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { computed } from "vue";
 import { mount } from "@vue/test-utils";
 import CefrScoreVisualization from "~/components/CefrScoreVisualization.vue";
@@ -33,10 +32,10 @@ describe("CefrScoreVisualization", () => {
     const globalStubs = {
         UTooltip: {
             props: ["text"],
-            template: '<div class="u-tooltip"><slot /></div>',
+            template: "<div class=\"u-tooltip\"><slot /></div>",
         },
         USkeleton: {
-            template: '<div class="u-skeleton"></div>',
+            template: "<div class=\"u-skeleton\"></div>",
         },
     };
 

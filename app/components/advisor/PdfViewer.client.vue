@@ -188,7 +188,7 @@ watch(
                         type="button"
                         class="p-1 hover:bg-gray-300 rounded-full"
                         @click="closeModal"
-                        :aria-label="t('advisor.pdfViewer.close')"
+                        :aria-label='t("advisor.pdfViewer.close")'
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -255,7 +255,7 @@ watch(
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="zoomLevel <= 50"
                             @click="zoomOut"
-                            :aria-label="t('advisor.pdfViewer.zoomOut')"
+                            :aria-label='t("advisor.pdfViewer.zoomOut")'
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -281,7 +281,7 @@ watch(
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="zoomLevel >= 300"
                             @click="zoomIn"
-                            :aria-label="t('advisor.pdfViewer.zoomIn')"
+                            :aria-label='t("advisor.pdfViewer.zoomIn")'
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -314,7 +314,7 @@ watch(
                             type="button"
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 ml-2 flex items-center gap-1"
                             @click="downloadPdf"
-                            :aria-label="t('advisor.pdfViewer.downloadPdf')"
+                            :aria-label='t("advisor.pdfViewer.downloadPdf")'
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

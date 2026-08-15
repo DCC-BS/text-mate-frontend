@@ -66,18 +66,26 @@ const labelClass = computed<string>(() =>
 </script>
 
 <template>
-    <span v-if="showNothing" />
-
-    <span v-else-if="showCefr" class="inline-flex items-center gap-1.5">
+    <UBadge
+        v-if="!showNothing && showCefr"
+        color="neutral"
+        variant="subtle"
+        class="inline-flex items-center gap-1.5"
+    >
         <span :class="[valueClass, 'text-highlighted']">
             {{ props.value.cefr }}
         </span>
         <span :class="[labelClass, cefrLevelClass(props.value.cefr)]">
             {{ cefrLabel }}
         </span>
-    </span>
+    </UBadge>
 
-    <span v-else-if="showScore" class="inline-flex items-center gap-1.5">
+    <UBadge
+        v-else-if="!showNothing && showScore"
+        color="neutral"
+        variant="subtle"
+        class="inline-flex items-center gap-1.5"
+    >
         <span :class="[valueClass, 'text-highlighted']">
             {{ scoreText }}
         </span>
@@ -87,5 +95,5 @@ const labelClass = computed<string>(() =>
         >
             {{ bandLabel }}
         </span>
-    </span>
+    </UBadge>
 </template>

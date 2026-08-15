@@ -113,7 +113,7 @@ describe("offsetToPos at a paragraph boundary", () => {
     it("resolves an offset at the separator's trailing edge to the next paragraph, not null", () => {
         const segments = advisorSegments(d);
         const resolved = offsetToPos(segments, 13);
-        expect(resolved).not.toBeNull();
+        expect(resolved).toEqual({ pos: 14, segmentIndex: 2 });
         // Should land inside "Second paragraph", not at the gap.
         const text2 = serializeAdvisorText(d);
         expect(text2.slice(13, 13 + 6)).toBe("Second");
