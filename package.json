@@ -75,7 +75,7 @@
         "@biomejs/biome": "^2.5.7",
         "@playwright/test": "^1.62.1",
         "@types/diff": "^8.0.0",
-        "@types/node": "^24.10.9",
+        "@types/node": "^26.0.0",
         "@vitejs/plugin-vue": "^6.0.8",
         "@vitest/coverage-v8": "^4.1.10",
         "@vue/test-utils": "^2.4.11",
