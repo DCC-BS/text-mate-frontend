@@ -90,7 +90,7 @@
     ],
     "overrides": {
         "prosemirror-model": "1.25.9",
-        "prosemirror-view": "1.41.9"
+        "prosemirror-view": "1.42.2"
     },
     "patchedDependencies": {
         "vite-plugin-checker@0.14.4": "patches/vite-plugin-checker@0.14.4.patch"
