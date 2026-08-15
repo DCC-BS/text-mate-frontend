@@ -15,7 +15,7 @@ const userImage = computed(() => {
 const items = computed<DropdownMenuItem[]>(() => [
     {
         label: t("navigation.signOut"),
-        icon: "i-lucide-sign-out",
+        icon: "i-lucide-log-out",
         onSelect: handleSignOut,
     },
 ]);

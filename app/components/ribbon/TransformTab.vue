@@ -114,7 +114,7 @@ async function applyAction(
         <RibbonDivider />
 
         <!-- Custom + My Actions -->
-        <RibbonGroup :label="t('actions.custom')" icon="i-lucide-wand-2">
+        <RibbonGroup :label="t('actions.custom')" icon="i-lucide-wand-sparkles">
             <CustomAction
                 :actions-are-available="actionsAreAvailable"
                 @apply-action="applyAction"

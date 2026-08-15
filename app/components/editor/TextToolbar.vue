@@ -75,14 +75,14 @@ async function copyToClipboard(): Promise<void> {
         toast.add({
             title: t("toolbar.copySuccess"),
             color: "success",
-            icon: "i-lucide-check-circle",
+            icon: "i-lucide-circle-check",
             duration: 2000,
         });
     } catch {
         toast.add({
             title: t("toolbar.copyFailed"),
             color: "error",
-            icon: "i-lucide-alert-circle",
+            icon: "i-lucide-circle-alert",
             duration: 3000,
         });
     }
@@ -108,14 +108,14 @@ async function downloadWord(): Promise<void> {
             title: t("toolbar.downloadSuccess"),
             description: filename,
             color: "success",
-            icon: "i-lucide-check-circle",
+            icon: "i-lucide-circle-check",
             duration: 3000,
         });
     } catch {
         toast.add({
             title: t("toolbar.downloadFailed"),
             color: "error",
-            icon: "i-lucide-alert-circle",
+            icon: "i-lucide-circle-alert",
             duration: 3000,
         });
     }

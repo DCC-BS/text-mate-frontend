@@ -134,7 +134,7 @@ export function useWorkspace(text: Ref<string>) {
                     title: t("simplify.failed"),
                     description: t("simplify.rewriteFailed"),
                     color: "error",
-                    icon: "i-lucide-alert-circle",
+                    icon: "i-lucide-circle-alert",
                     duration: 8000,
                 });
                 if (unchanged) {
@@ -155,7 +155,7 @@ export function useWorkspace(text: Ref<string>) {
                 title: t("simplify.failed"),
                 description: message,
                 color: "error",
-                icon: "i-lucide-alert-circle",
+                icon: "i-lucide-circle-alert",
                 duration: 5000,
             });
             state.value = "editable";
@@ -258,7 +258,7 @@ export function useWorkspace(text: Ref<string>) {
                 title: t("advisor.checkFailed"),
                 description: message,
                 color: "error",
-                icon: "i-lucide-alert-circle",
+                icon: "i-lucide-circle-alert",
                 duration: 5000,
             });
         } finally {
@@ -317,7 +317,7 @@ export function useWorkspace(text: Ref<string>) {
                 title: t("advisor.checkFailed"),
                 description: message,
                 color: "error",
-                icon: "i-lucide-alert-circle",
+                icon: "i-lucide-circle-alert",
                 duration: 5000,
             });
             state.value = "editable";

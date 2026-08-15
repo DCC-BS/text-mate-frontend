@@ -271,7 +271,7 @@ export function useMobileActions(props: RibbonTransformProps) {
         {
             id: "custom",
             label: t("actions.custom"),
-            icon: "i-lucide-wand-2",
+            icon: "i-lucide-wand-sparkles",
             actions: [
                 {
                     kind: "custom",
