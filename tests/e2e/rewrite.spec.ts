@@ -139,12 +139,24 @@ test("After rewrite, changes are shown in the diff review", async ({ page }) => 
     const diffReview = page.locator('[data-tour="diff-review"]');
     await expect(diffReview).toBeVisible();
 
-    // Word-level diff: "test" was replaced by "dummy"
+    // Before/after readability lands in the diff header once `done` arrives.
+    await expect(page.getByTestId("simplifyScoreComparison")).toBeVisible({
+        timeout: 60_000,
+    });
+
+    // The dummy simplify replaces words and splits long sentences, so the
+    // client-side word diff shows removed and added spans.
     await expect(
-        diffReview.locator("span.bg-red-50").filter({ hasText: "test" }),
+        diffReview.locator("span.bg-red-50").filter({ hasText: "Gemäss" }),
     ).toBeVisible();
     await expect(
-        diffReview.locator("span.bg-green-100").filter({ hasText: "dummy" }),
+        diffReview.locator("span.bg-green-100").filter({ hasText: "Nach" }),
+    ).toBeVisible();
+    await expect(
+        diffReview.locator("span.bg-red-50").filter({ hasText: "unverzüglich" }),
+    ).toBeVisible();
+    await expect(
+        diffReview.locator("span.bg-green-100").filter({ hasText: "sofort" }),
     ).toBeVisible();
 });
 
