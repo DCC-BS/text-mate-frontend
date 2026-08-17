@@ -30,20 +30,55 @@ export async function clearBrowserState(page: Page, context: BrowserContext) {
     } catch {}
 }
 
-export async function setupFreshBrowser(page: Page, context: BrowserContext) {
+/** Must match `baseURL` in playwright.config.ts — cookies are set per origin. */
+const APP_URL = "http://localhost:3000";
+
+/**
+ * Marks the guided tour as completed before the app boots. Clicking the skip
+ * button instead races the tour's own setup: its first phase seeds example
+ * text into the editor, and a skip that lands mid-seed leaves that text (and
+ * its history entry) behind.
+ */
+export async function disableTour(context: BrowserContext) {
+    await context.addCookies([
+        { name: "tour-completed", value: "true", url: APP_URL },
+    ]);
+}
+
+/**
+ * Opens the app on an empty workspace: no tour, disclaimer accepted, and
+ * optionally a ribbon tab selected.
+ */
+export async function setupWorkspace(
+    page: Page,
+    context: BrowserContext,
+    options: { tab?: "rewrite" | "advisor" } = {},
+) {
     await clearBrowserState(page, context);
+    await disableTour(context);
     await page.goto("/");
     await page.waitForLoadState("domcontentloaded");
-    try {
-        await page.evaluate(() => {
-            localStorage.clear();
-            sessionStorage.clear();
-        });
-    } catch (error) {}
     await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
     await skipDisclaimer(page);
-    await skipTour(page);
-    await switchTo(page, "rewrite");
+    await page.waitForSelector("#confirmation-checkbox", { state: "detached" });
+    if (options.tab) {
+        await switchTo(page, options.tab);
+    }
+}
+
+export async function setupFreshBrowser(page: Page, context: BrowserContext) {
+    await setupWorkspace(page, context, { tab: "rewrite" });
+}
+
+/**
+ * Accepts every hunk of the open Diff Review, committing its text back into
+ * the editor. Quick actions, advisor fixes and simplifications all land here
+ * instead of writing to the editor directly.
+ */
+export async function acceptDiff(page: Page) {
+    const acceptAll = page.locator('[data-tour="diff-accept-all"]');
+    await acceptAll.waitFor({ state: "visible", timeout: 30000 });
+    await acceptAll.click();
 }
 
 export async function skipDisclaimer(page: Page) {
@@ -52,18 +87,6 @@ export async function skipDisclaimer(page: Page) {
         timeout: 15000,
     });
     await page.locator("#confirmation-checkbox").click();
-}
-
-export async function skipTour(page: Page) {
-    await page.waitForSelector('[data-testid="tour-skip"]', {
-        state: "visible",
-        timeout: 5000,
-    });
-    await page.locator('[data-testid="tour-skip"]').click();
-    await page.waitForSelector(".driver-popover", {
-        state: "detached",
-        timeout: 5000,
-    });
 }
 
 export async function switchTo(page: Page, tool: "rewrite" | "advisor") {

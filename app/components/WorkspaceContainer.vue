@@ -291,8 +291,14 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                         </DiffViewer>
                     </div>
 
-                    <!-- Editor -->
-                    <div v-else class="h-full flex flex-col min-h-0">
+                    <!-- Editor. Hidden during a Diff Review:
+                         unmounting destroys the Tiptap instance and with it the
+                         undo history, so a committed quick action / fix could no
+                         longer be undone. -->
+                    <div
+                        v-show="!inDiffReview"
+                        class="h-full flex flex-col min-h-0"
+                    >
                         <SimplifyRangeNav
                             :count="unconvergedCount"
                             :converged="simplifyConverged"

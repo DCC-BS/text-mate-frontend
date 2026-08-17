@@ -94,11 +94,9 @@ export function useBaseEditor(options: UseBaseEditorOptions) {
         enablePasteRules,
         editorProps,
         onUpdate: ({ editor }) => {
-            if (!editor.isEditable) {
-                return;
-            }
-            text.value = serializeContent(editor);
-
+            // Before the editable guard: a committed Diff Review changes the
+            // document while the editor is still locked, and that change is
+            // undoable — the toolbar has to hear about it.
             const canUndo = editor.can().undo();
             const canRedo = editor.can().redo();
             if (
@@ -109,6 +107,11 @@ export function useBaseEditor(options: UseBaseEditorOptions) {
                 undoRedoState.canRedo = canRedo;
                 executeCommand(new UndoRedoStateChanged(canUndo, canRedo));
             }
+
+            if (!editor.isEditable) {
+                return;
+            }
+            text.value = serializeContent(editor);
         },
     });
 
@@ -123,6 +126,8 @@ export function useBaseEditor(options: UseBaseEditorOptions) {
             if (serializeContent(ed) === value) {
                 return;
             }
+            // Recorded in the history as one step, so a committed quick action,
+            // advisor fix or simplification is undoable as a single unit.
             ed.commands.setContent(plainTextToEditorHtml(value || ""));
         },
     );

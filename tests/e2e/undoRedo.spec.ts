@@ -1,23 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { clearBrowserState } from "./utils";
+import { setupWorkspace } from "./utils";
 
 test.beforeEach(async ({ page, context }) => {
-    await clearBrowserState(page, context);
-    await page.goto("/");
-    try {
-        await page.evaluate(() => {
-            localStorage.clear();
-            sessionStorage.clear();
-        });
-    } catch (error) {
-    }
-    await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
-    await page.locator("#confirmation-checkbox").click();
-    await page.locator('[data-testid="tour-skip"]').click();
-    await page.waitForSelector(".driver-popover", {
-        state: "detached",
-        timeout: 5000,
-    });
+    await setupWorkspace(page, context);
 });
 
 test("Undo and Redo buttons should be disabled when no action was taken", async ({
