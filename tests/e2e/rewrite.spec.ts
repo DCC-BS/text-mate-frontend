@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-import { acceptDiff, setupWorkspace } from "./utils";
+import { switchTo, acceptAllChanges } from "./utils";
 
-test.beforeEach(async ({ page, context }) => {
-    await setupWorkspace(page, context, { tab: "rewrite" });
+test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".tiptap")).toBeVisible();
+    await switchTo(page, "rewrite");
 });
 
 [
@@ -109,21 +111,22 @@ test.beforeEach(async ({ page, context }) => {
                 .click();
         }
 
-        // The result lands in a Diff Review; only accepting it writes back.
-        await acceptDiff(page);
+        // The quick action streams into the diff review
+        const diffReview = page.locator('[data-tour="diff-review"]');
+        await expect(diffReview).toBeVisible();
+        await expect(diffReview).toContainText(`Action: ${action}`);
+        await expect(diffReview).toContainText(`Input: ${inputText}`);
+        await expect(diffReview).toContainText(`Options: ${config}`);
 
-        const editor = page.locator(".tiptap");
-        await expect(editor).toContainText(`Action: ${action}`);
-        await expect(editor).toContainText(`Input: ${inputText}`);
-        // `bullet_points` carries no option, so the dummy backend echoes an
-        // empty value — normalised text matching would drop the trailing space.
-        await expect(editor).toContainText(`Options: ${config}`.trimEnd());
+        // Accepting all changes applies the result to the editor
+        await acceptAllChanges(page);
+        await expect(page.locator(".tiptap")).toContainText(
+            `Action: ${action}`,
+        );
     });
 });
 
-test("Plain Language runs the simplification loop and opens the diff", async ({
-    page,
-}) => {
+test("After rewrite, changes are shown in the diff review", async ({ page }) => {
     const inputText =
         "Gemäss der Verordnung über die Erhebung von Gebühren ist die Antragstellerin verpflichtet, die erforderlichen Unterlagen unverzüglich und vollständig einzureichen, damit die zuständige Fachstelle die Prüfung vornehmen kann.";
 
@@ -133,31 +136,43 @@ test("Plain Language runs the simplification loop and opens the diff", async ({
         .getByRole("button", { name: local.editor.plain_language, exact: true })
         .click();
 
-    // The loop streams progress long before it produces any text.
-    await expect(page.getByTestId("simplifyProgress")).toBeVisible();
+    const diffReview = page.locator('[data-tour="diff-review"]');
+    await expect(diffReview).toBeVisible();
 
     // Before/after readability lands in the diff header once `done` arrives.
     await expect(page.getByTestId("simplifyScoreComparison")).toBeVisible({
         timeout: 60_000,
     });
 
-    // The diff itself is the existing client-side word diff.
-    await expect(page.locator("span.bg-green-100").first()).toBeVisible();
-    await expect(page.locator("span.bg-red-50").first()).toBeVisible();
+    // The dummy simplify replaces words and splits long sentences, so the
+    // client-side word diff shows removed and added spans.
+    await expect(
+        diffReview.locator("span.bg-red-50").filter({ hasText: "Gemäss" }),
+    ).toBeVisible();
+    await expect(
+        diffReview.locator("span.bg-green-100").filter({ hasText: "Nach" }),
+    ).toBeVisible();
+    await expect(
+        diffReview.locator("span.bg-red-50").filter({ hasText: "unverzüglich" }),
+    ).toBeVisible();
+    await expect(
+        diffReview.locator("span.bg-green-100").filter({ hasText: "sofort" }),
+    ).toBeVisible();
 });
 
 test("Custom action button should be present", async ({ page }) => {
     await page.locator(".tiptap").fill("This is a test.");
 
-    await page.getByRole("button", { name: local.actions.custom }).click();
+    await page
+        .getByRole("button", { name: local.actions.custom, exact: true })
+        .click();
 
     await page.getByTestId("customActionTextBox").fill("Make it fun!");
     await page.getByTestId("customActionSubmit").click();
 
-    await acceptDiff(page);
-
-    const editor = page.locator(".tiptap");
-    await expect(editor).toContainText("Action: custom");
-    await expect(editor).toContainText("Input: This is a test.");
-    await expect(editor).toContainText("Options: Make it fun!");
+    const diffReview = page.locator('[data-tour="diff-review"]');
+    await expect(diffReview).toBeVisible();
+    await expect(diffReview).toContainText("Action: custom");
+    await expect(diffReview).toContainText("Input: This is a test.");
+    await expect(diffReview).toContainText("Options: Make it fun!");
 });

@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-import { setupFreshBrowser } from "./utils";
 
-test.beforeEach(async ({ page, context }) => {
-    await setupFreshBrowser(page, context);
+test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".tiptap")).toBeVisible();
 });
 
 test("Undo reverts a committed quick action", async ({ page }) => {

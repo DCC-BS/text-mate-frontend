@@ -11,20 +11,8 @@ on:
 env:
     AUTH_MODE: "none"
     APP_MODE: "ci"
+    CI: true
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: DCC-BS/ci-workflows/actions/node-bun-biome-playwright@6d1cca8023e197f6e9cda5e64f3b3f0448f4cf6e # v9
-
-              with:
-                  node_version: "25.x"
-                  working_directory: "."
-                  run_biome: "true"
-                  run_playwright: "false"
-                  install_method: "bun"
-                  build_command: "bun run build"
-                  test_command: "bunx playwright test"
-                  artifact_name: "playwright-report"
-                  artifact_retention_days: 30
+    frontend-ci:
+        uses: DCC-BS/ci-workflows/.github/workflows/ci.yml@c78eccc843c19ba40a4b55aa4f4a8537cc3160b3 #v10

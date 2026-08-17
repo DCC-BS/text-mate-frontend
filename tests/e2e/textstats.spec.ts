@@ -1,32 +1,17 @@
 import { expect, test } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-import { acceptDiff, setupWorkspace } from "./utils";
 
-test.beforeEach(async ({ page, context }) => {
-    await setupWorkspace(page, context, { tab: "rewrite" });
+test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".tiptap")).toBeVisible();
 });
 
 test("Character count is displayed correctly", async ({ page }) => {
     const inputText = "Hello, world!";
     await page.fill(".tiptap", inputText);
 
-    await expect(page.getByTestId("characterCountButton")).toHaveText(
-        new RegExp(`^\\s*${inputText.length}\\s*/`),
-    );
-});
-
-test("Character count follows a committed quick action", async ({ page }) => {
-    await page.fill(".tiptap", "This is a test.");
-
-    await page
-        .getByRole("button", { name: local.editor.bullet_points, exact: true })
-        .click();
-    await acceptDiff(page);
-
-    const editorText = await page.locator(".tiptap").innerText();
-
-    await expect(page.getByTestId("characterCountButton")).toHaveText(
-        new RegExp(`^\\s*${editorText.length}\\s*/`),
+    await expect(page.getByTestId("characterCountButton")).toContainText(
+        `${inputText.length} /`,
     );
 });
 

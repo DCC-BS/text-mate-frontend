@@ -37,3 +37,5 @@ env.d.ts
 plan/
 CONTEXT.md
 *.old
+playwright-report/
+results.json

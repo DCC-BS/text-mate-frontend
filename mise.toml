@@ -20,7 +20,12 @@ description = "install npm packages"
 run = [
     "bun install",
     "bunx nuxi prepare",
+    "mise run playwright:install-browser",
 ]
+
+[tasks."playwright:install-browser"]
+description = "install the Playwright browser matching the pinned @playwright/test version"
+run = "bunx playwright install chromium --with-deps"
 
 [tasks.env-check]
 description = "🔑 Load secrets into the environment via varlock"
@@ -76,13 +81,20 @@ run = "bunx biome format --write"
 description = "check and fix linting issues"
 run = "bunx biome check --fix"
 
+[tasks."ci-check"]
+description = "run type checking, linting"
+run = "bunx biome ci ."
+
 # ── Testing ───────────────────────────────────────────────────────────────────
 
-[tasks.test]
+[tasks."test:unit"]
+env = { APP_MODE= "ci" }
 description = "run unit tests"
+alias = "test"
 run = "bunx vitest"
 
 [tasks."test:watch"]
+env = { APP_MODE= "ci" }
 description = "run unit tests in watch mode"
 run = "bunx vitest --watch"
 
@@ -90,17 +102,32 @@ run = "bunx vitest --watch"
 description = "run unit tests with coverage report"
 run = "bunx vitest run --coverage"
 
+[tasks."e2e:build"]
+env = { APP_MODE = "ci", AUTH_MODE = "none", DUMMY = true }
+description = "build the production bundle for E2E tests (reuses prebuilt .output in CI)"
+run = 'if [ "${CI:-}" = "true" ] && [ -d .output ]; then echo "e2e:build: reusing prebuilt .output"; else bunx nuxt build; fi'
+
+[tasks."e2e:serve"]
+description = "serve the E2E production build on port 4300 (dummy data, overlays disabled)"
+env = { APP_MODE = "ci", AUTH_MODE = "none", DUMMY = true, PORT = "4300", NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG = true, NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER = true, NUXT_PUBLIC_COMMON_UI_DISABLE_ONBOARDING = true }
+run = "node .output/server/index.mjs"
+
 [tasks."test:e2e"]
-description = "run Playwright E2E tests"
+env = { APP_MODE = "ci" }
+description = "run Playwright E2E tests (builds first, serves on port 4300)"
+depends = ["e2e:build"]
 run = "bunx playwright test"
 
 [tasks."test:e2e:ui"]
+env = { APP_MODE = "ci" }
 description = "run Playwright E2E tests with the interactive UI"
+depends = ["e2e:build"]
 run = "bunx playwright test --ui"
 
 [tasks."e2e:codegen"]
-description = "generate Playwright tests via codegen"
-run = "bunx playwright codegen http://localhost:3000"
+env = { APP_MODE = "ci" }
+description = "generate Playwright tests via codegen (requires a running e2e:serve)"
+run = "bunx playwright codegen http://localhost:4300"
 
 # ── Docker ────────────────────────────────────────────────────────────────────
 

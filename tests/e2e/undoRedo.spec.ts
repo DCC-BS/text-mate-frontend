@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { setupWorkspace } from "./utils";
 
-test.beforeEach(async ({ page, context }) => {
-    await setupWorkspace(page, context);
+test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".tiptap")).toBeVisible();
 });
 
 test("Undo and Redo buttons should be disabled when no action was taken", async ({
