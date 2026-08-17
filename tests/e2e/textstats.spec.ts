@@ -1,31 +1,33 @@
 import { expect, test } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-import { clearBrowserState } from "./utils";
+import { acceptDiff, setupWorkspace } from "./utils";
 
 test.beforeEach(async ({ page, context }) => {
-    await clearBrowserState(page, context);
-    await page.goto("/");
-    try {
-        await page.evaluate(() => {
-            localStorage.clear();
-            sessionStorage.clear();
-        });
-    } catch (error) {
-    }
-    await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
-    await page.locator("#confirmation-checkbox").click();
-    await page.locator('[data-testid="tour-skip"]').click();
+    await setupWorkspace(page, context, { tab: "rewrite" });
 });
 
 test("Character count is displayed correctly", async ({ page }) => {
     const inputText = "Hello, world!";
     await page.fill(".tiptap", inputText);
 
-    const charCount = await page
-        .getByTestId("characterCountButton")
-        .textContent();
+    await expect(page.getByTestId("characterCountButton")).toHaveText(
+        new RegExp(`^\\s*${inputText.length}\\s*/`),
+    );
+});
 
-    expect(charCount).toContain(`${inputText.length} /`);
+test("Character count follows a committed quick action", async ({ page }) => {
+    await page.fill(".tiptap", "This is a test.");
+
+    await page
+        .getByRole("button", { name: local.editor.bullet_points, exact: true })
+        .click();
+    await acceptDiff(page);
+
+    const editorText = await page.locator(".tiptap").innerText();
+
+    await expect(page.getByTestId("characterCountButton")).toHaveText(
+        new RegExp(`^\\s*${editorText.length}\\s*/`),
+    );
 });
 
 test("Text statistics are updated on text change", async ({ page }) => {

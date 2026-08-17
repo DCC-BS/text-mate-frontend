@@ -1,21 +1,9 @@
 import { expect, test } from "@playwright/test";
 import local from "../../i18n/locales/de.json" with { type: "json" };
-import { switchTo, clearBrowserState } from "./utils";
+import { acceptDiff, setupWorkspace } from "./utils";
 
 test.beforeEach(async ({ page, context }) => {
-    await clearBrowserState(page, context);
-    await page.goto("/");
-    try {
-        await page.evaluate(() => {
-            localStorage.clear();
-            sessionStorage.clear();
-        });
-    } catch (error) {
-    }
-    await page.waitForSelector(".tiptap", { state: "visible", timeout: 15000 });
-    await page.locator("#confirmation-checkbox").click();
-    await page.locator('[data-testid="tour-skip"]').click();
-    await switchTo(page, "rewrite");
+    await setupWorkspace(page, context, { tab: "rewrite" });
 });
 
 [
@@ -121,13 +109,15 @@ test.beforeEach(async ({ page, context }) => {
                 .click();
         }
 
-        await page.waitForTimeout(1500);
+        // The result lands in a Diff Review; only accepting it writes back.
+        await acceptDiff(page);
 
-        const text = await page.locator(".tiptap").innerText();
-
-        expect(text).toContain(`Action: ${action}`);
-        expect(text).toContain(`Input: ${inputText}`);
-        expect(text).toContain(`Options: ${config}`);
+        const editor = page.locator(".tiptap");
+        await expect(editor).toContainText(`Action: ${action}`);
+        await expect(editor).toContainText(`Input: ${inputText}`);
+        // `bullet_points` carries no option, so the dummy backend echoes an
+        // empty value — normalised text matching would drop the trailing space.
+        await expect(editor).toContainText(`Options: ${config}`.trimEnd());
     });
 });
 
@@ -164,11 +154,10 @@ test("Custom action button should be present", async ({ page }) => {
     await page.getByTestId("customActionTextBox").fill("Make it fun!");
     await page.getByTestId("customActionSubmit").click();
 
-    await page.waitForTimeout(3000);
+    await acceptDiff(page);
 
-    const text = await page.locator(".tiptap").innerText();
-
-    expect(text).toContain("Action: custom");
-    expect(text).toContain("Input: This is a test.");
-    expect(text).toContain("Options: Make it fun!");
+    const editor = page.locator(".tiptap");
+    await expect(editor).toContainText("Action: custom");
+    await expect(editor).toContainText("Input: This is a test.");
+    await expect(editor).toContainText("Options: Make it fun!");
 });
