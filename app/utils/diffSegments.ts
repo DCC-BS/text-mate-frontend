@@ -54,7 +54,7 @@ export function buildDiffSegments(
         raw.push({
             kind: "change",
             hunk: {
-                key: `${removedText}::${addedText}`,
+                key: `${from}::${removedText}::${addedText}`,
                 from,
                 to: from + addedText.length,
                 removedText,
@@ -208,7 +208,7 @@ function groupSegments(raw: DiffSegment[]): DiffSegment[] {
         grouped.push({
             kind: "change",
             hunk: {
-                key: `${removedText}::${addedText}`,
+                key: `${from}::${removedText}::${addedText}`,
                 from,
                 to: from + addedText.length,
                 removedText,

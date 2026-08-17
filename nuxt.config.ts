@@ -80,6 +80,14 @@ export default defineNuxtConfig({
     ui: {
         colorMode: false, // Disable color mode as it is not used
     },
+    icon: {
+        serverBundle: "local",
+        clientBundle: {
+            scan: {
+                globInclude: ["**/*.{vue,jsx,tsx,ts,js,md,mdc,mdx}"],
+            },
+        },
+    },
     modules: [
         "@nuxt/ui",
         "@nuxtjs/i18n",
@@ -94,9 +102,21 @@ export default defineNuxtConfig({
         strict: true,
     },
     css: ["~/assets/css/main.css"],
+    build: {
+        transpile: ["vaul-vue", "reka-ui"],
+    },
     vite: {
         resolve: {
-            dedupe: ["@vueuse/core"],
+            dedupe: [
+                "vue",
+                "@vue/runtime-core",
+                "@vue/runtime-dom",
+                "@vue/server-renderer",
+                "@vue/reactivity",
+                "@vue/shared",
+                "reka-ui",
+                "@vueuse/core",
+            ],
         },
         plugins: [varlockVitePlugin({ ssrInjectMode: "auto-load" })],
         build: {

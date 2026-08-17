@@ -58,12 +58,17 @@ onCommand<ToggleLockEditorCommand>(
     },
 );
 
-const characters = computed(
-    () => props.editor?.storage.characterCount?.characters() ?? 0,
-);
-const words = computed(
-    () => props.editor?.storage.characterCount?.words() ?? 0,
-);
+// `editor.storage` is not reactive, so `text` — which the editor rewrites on
+// every document change — is what invalidates these. Without it the counts lag
+// a document behind.
+const characters = computed(() => {
+    void props.text;
+    return props.editor?.storage.characterCount?.characters() ?? 0;
+});
+const words = computed(() => {
+    void props.text;
+    return props.editor?.storage.characterCount?.words() ?? 0;
+});
 </script>
 
 <template>

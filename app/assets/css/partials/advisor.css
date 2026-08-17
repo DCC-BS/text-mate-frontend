@@ -79,22 +79,12 @@
     );
 }
 
-/* Where two thread ranges overlap, a synthetic marker decoration injects
-   this class on exactly the intersection segment (ProseMirror merges active
-   decorations' classes per text segment). A thicker dashed underline signals
-   that more than one element lives here; the smallest range wins the click. */
+/* Overlap markers */
 .advisor-mark--overlap {
     border-bottom-style: dashed;
     border-bottom-width: 3px;
 }
 
-/* Violation + user note overlap. On the merged segment the per-thread
-   classes collide (e.g. selecting the violation brings `--active` while the
-   user note brings `--user`, wrongly firing `.advisor-mark--user.advisor-mark
-   --active`). The overlap marker therefore drives the color itself, using
-   compound selectors (0,2,0) to win over that collision. Default keeps the
-   violation's purple as the background and the user note as a green dashed
-   underline; the `-user`/`-violation` variants reflect the selected thread. */
 .advisor-mark--overlap.advisor-mark--overlap-mixed {
     background-color: color-mix(
         in srgb,
@@ -118,6 +108,73 @@
         var(--color-primary-500, #a56cc9) 26%,
         transparent
     );
+}
+
+/* ─── Simplify unconverged-passage marks ──────────────────────────── */
+
+.simplify-mark {
+    border-radius: 2px;
+    padding: 1px 2px;
+    cursor: pointer;
+    transition: background-color 0.14s ease;
+}
+
+.simplify-mark--info {
+    background-color: color-mix(
+        in srgb,
+        var(--color-blue-500, #3b82f6) 14%,
+        transparent
+    );
+    border-bottom: 2px solid
+        color-mix(in srgb, var(--color-blue-500, #3b82f6) 40%, transparent);
+}
+
+.simplify-mark--info:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-blue-500, #3b82f6) 24%,
+        transparent
+    );
+}
+
+.simplify-mark--amber {
+    background-color: color-mix(
+        in srgb,
+        var(--color-amber-500, #f59e0b) 16%,
+        transparent
+    );
+    border-bottom: 2px solid
+        color-mix(in srgb, var(--color-amber-500, #f59e0b) 45%, transparent);
+}
+
+.simplify-mark--amber:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-amber-500, #f59e0b) 26%,
+        transparent
+    );
+}
+
+.simplify-mark--active {
+    font-weight: 600;
+}
+
+.simplify-mark--info.simplify-mark--active {
+    background-color: color-mix(
+        in srgb,
+        var(--color-blue-500, #3b82f6) 28%,
+        transparent
+    );
+    border-bottom-color: var(--color-blue-500, #3b82f6);
+}
+
+.simplify-mark--amber.simplify-mark--active {
+    background-color: color-mix(
+        in srgb,
+        var(--color-amber-500, #f59e0b) 30%,
+        transparent
+    );
+    border-bottom-color: var(--color-amber-500, #f59e0b);
 }
 
 /* ─── Advisor diff tokens ─────────────────────────────────────────── */

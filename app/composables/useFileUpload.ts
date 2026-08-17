@@ -29,7 +29,7 @@ export function useTextFileUpload(options: UseFileUploadOptions) {
                 title: t("upload.error"),
                 description: `${newError}. ${t("upload.errorDescription")}`,
                 color: "error",
-                icon: "i-lucide-alert-circle",
+                icon: "i-lucide-circle-alert",
                 duration: 5000,
                 actions: [
                     {
@@ -57,7 +57,7 @@ export function useTextFileUpload(options: UseFileUploadOptions) {
                     title: t("upload.fileConvertedSuccess"),
                     description: newFileName,
                     color: "success",
-                    icon: "i-lucide-check-circle",
+                    icon: "i-lucide-circle-check",
                     duration: 3000,
                 });
             }

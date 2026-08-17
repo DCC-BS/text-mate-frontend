@@ -50,6 +50,20 @@ describe("buildDiffSegments", () => {
         expect(result[1].addedText).toBe("system");
     });
 
+    it("assigns unique keys to identical word swaps at different positions", () => {
+        const result = hunks(
+            "gemäss Absatz 1 und gemäss Absatz 2",
+            "nach Absatz 1 und nach Absatz 2",
+        );
+
+        expect(result).toHaveLength(2);
+        expect(result[0]?.removedText).toBe("gemäss");
+        expect(result[0]?.addedText).toBe("nach");
+        expect(result[1]?.removedText).toBe("gemäss");
+        expect(result[1]?.addedText).toBe("nach");
+        expect(result[0]?.key).not.toBe(result[1]?.key);
+    });
+
     it("treats a pure insertion as a single hunk with empty removedText", () => {
         const result = hunks("Hello world", "Hello big world");
 

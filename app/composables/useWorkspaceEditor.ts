@@ -15,6 +15,10 @@ import { serializeAdvisorText } from "~/utils/advisorText";
 import { FocusedSentenceMark } from "~/utils/focusedSentenceMark";
 import { FocusedWordMark } from "~/utils/focusedWordMark";
 import { mapTextOffsetsToDocPositions } from "~/utils/mapTextOffsets";
+import {
+    createSimplifyDecorationExtension,
+    simplifyDecorationKey,
+} from "~/utils/simplifyDecorations";
 
 export interface UseWorkspaceEditorOptions {
     /** Two-way text interchange. */
@@ -50,11 +54,6 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
     const { onCommand, executeCommand } = useCommandBus();
     const toast = useToast();
 
-    // The rewrite-text / rewrite-word selection bubble is temporarily
-    // disabled. When false, useTextFocus clears the focus marks and the
-    // `focusedWord`/`focusedSentence` refs stay undefined, so the rewrite
-    // section of the BubbleMenu (gated on those refs) never renders — only the
-    // Add-Note button remains. Flip back to `true` to re-enable.
     const isRewriteActive = ref(false);
 
     const { FocusExtension, focusedSentence, focusedWord, focusedSelection } =
@@ -66,7 +65,6 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
         getEnabled: () => decorationsEnabled.value,
         onSelect: (id) => executeCommand(new ChangeActiveThreadId(id)),
         onDismiss: (ids) => {
-            // Auto-dismiss threads whose range collapsed on an edit.
             for (const id of ids) {
                 const thread = threads.value.find((t) => t.id === id);
                 if (thread) {
@@ -74,6 +72,19 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
                 }
             }
         },
+    });
+
+    const { result: simplifyResult } = useSimplify();
+    const simplifyRangesApi = useSimplifyRanges();
+    const simplifyDecorationExtension = createSimplifyDecorationExtension({
+        getRanges: () => simplifyRangesApi.ranges.value,
+        getActiveId: () => simplifyRangesApi.activeRangeId.value,
+        getEnabled: () =>
+            editable.value && simplifyRangesApi.ranges.value.length > 0,
+        getSeverity: () =>
+            simplifyResult.value?.converged === true ? "info" : "amber",
+        onSelect: (id) => simplifyRangesApi.selectRange(id),
+        onDismiss: (ids) => simplifyRangesApi.dismiss(ids),
     });
 
     const base = useBaseEditor({
@@ -84,6 +95,7 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
             FocusedSentenceMark,
             FocusedWordMark,
             decorationExtension,
+            simplifyDecorationExtension,
         ],
         serialize: (editor) => serializeAdvisorText(editor.state.doc),
         initialEditable: editable.value,
@@ -129,6 +141,39 @@ export function useWorkspaceEditor(options: UseWorkspaceEditorOptions) {
             view.dispatch(view.state.tr.setMeta(advisorDecorationKey, true));
         },
         { deep: true },
+    );
+
+    // Rebuild the unconverged-passage highlights whenever the range set or
+    // the active range changes.
+    watch(
+        [
+            () => simplifyRangesApi.ranges.value.map((r) => r.id).join(","),
+            simplifyRangesApi.activeRangeId,
+        ],
+        () => {
+            const view = base.editor.value?.view;
+            if (!view) {
+                return;
+            }
+            view.dispatch(view.state.tr.setMeta(simplifyDecorationKey, true));
+        },
+    );
+
+    // Scroll the active unconverged passage into view when it changes from
+    // elsewhere (e.g. a nav-bar prev/next click).
+    watch(
+        () => simplifyRangesApi.activeRangeId.value,
+        (id) => {
+            if (!id) {
+                return;
+            }
+            nextTick(() => {
+                const el = base.editor.value?.view.dom.querySelector(
+                    `[data-simplify-range-id="${CSS.escape(id)}"]`,
+                ) as HTMLElement | null;
+                el?.scrollIntoView({ behavior: "smooth", block: "center" });
+            });
+        },
     );
 
     onCommand<ApplyTextCommand>(Cmds.ApplyTextCommand, async (command) => {

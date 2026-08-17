@@ -1,4 +1,4 @@
-import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { type EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { Extension } from "@tiptap/vue-3";
 import type { AdvisorThread } from "~/assets/models/advisor";
@@ -32,7 +32,7 @@ export type AdvisorDecorationOptions = {
  */
 export function createAdvisorDecorationExtension(
     options: AdvisorDecorationOptions,
-) {
+): Extension {
     return Extension.create({
         name: "advisorDecorations",
 
@@ -109,7 +109,7 @@ export function createAdvisorDecorationExtension(
                             }
                             if (best) {
                                 options.onSelect(best.id);
-                                return true;
+                                return false;
                             }
                             return false;
                         },
@@ -119,9 +119,7 @@ export function createAdvisorDecorationExtension(
         },
     });
 
-    function build(state: {
-        doc: Parameters<typeof buildDecorationSpecs>[0];
-    }): DecorationSet {
+    function build(state: EditorState): DecorationSet {
         // Decorations render only when enabled (threads exist + editor visible).
         if (!options.getEnabled()) {
             return DecorationSet.empty;

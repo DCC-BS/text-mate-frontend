@@ -12,7 +12,11 @@ import PdfViewerClient from "~/components/advisor/PdfViewer.client.vue";
 import Rail from "~/components/advisor/Rail.vue";
 import ValidationProgress from "~/components/advisor/ValidationProgress.vue";
 import DiffViewer from "~/components/diff/DiffViewer.vue";
+import ReadabilityScoreBadge from "~/components/ReadabilityScoreBadge.vue";
+import SimplifyProgress from "~/components/simplify/SimplifyProgress.vue";
+import SimplifyRangeNav from "~/components/simplify/SimplifyRangeNav.vue";
 import type { DiffHunk } from "~/types/diff";
+import { isUnscored, type ReadabilityScore } from "~/utils/readability";
 
 const { t } = useI18n();
 const { getDocFile } = useAdvisor();
@@ -27,24 +31,92 @@ const text = defineModel<string>({ required: true });
 const ws = useWorkspace(text);
 const pdfModal = overlay.create(PdfViewerClient);
 
-const diffViewerRef = ref<InstanceType<typeof DiffViewer> | null>(null);
+const diffViewerRef = ref<InstanceType<typeof DiffViewer>>();
 const mobileRailOpen = ref(false);
 const clearOpen = ref(false);
 
 const inDiffReview = computed(() => ws.state.value === "diff-review");
 
-/** True while corrected text is streaming into the diff review. */
 const isStreaming = computed(() => ws.progress.value !== "none");
 
-/** Context-aware label for the diff streaming indicator. */
-const streamingLabel = computed(() =>
-    ws.progress.value === "fixing"
-        ? t("workspace.fixing")
-        : t("workspace.generating"),
+const streamingLabel = computed(() => {
+    if (ws.progress.value === "fixing") {
+        return t("workspace.fixing");
+    }
+    if (ws.progress.value === "simplifying") {
+        return t("simplify.running");
+    }
+    return t("workspace.generating");
+});
+
+const isChecking = computed(() => ws.progress.value === "checking");
+
+const isSimplifying = computed(() => ws.progress.value === "simplifying");
+
+const isSimplifyDiff = computed(() => ws.diffMode.value === "simplify");
+
+const diffTitle = computed(() =>
+    isSimplifyDiff.value ? t("simplify.diffTitle") : t("workspace.diffTitle"),
 );
 
-/** True while an Advisor Check stream is running. */
-const isChecking = computed(() => ws.progress.value === "checking");
+const scoreBefore = computed<ReadabilityScore>(() => ({
+    scored: ws.simplifyProgress.value.scored,
+    language: ws.simplifyProgress.value.language,
+    scoreLabel: ws.simplifyProgress.value.scoreLabel,
+    score: ws.simplifyProgress.value.scoreBefore,
+    band: ws.simplifyProgress.value.bandBefore,
+    cefr: ws.simplifyProgress.value.cefrBefore,
+}));
+
+const scoreAfter = computed<ReadabilityScore>(() => {
+    const result = ws.simplifyResult.value;
+    return {
+        scored: result?.scored ?? false,
+        language: result?.language,
+        scoreLabel: result?.score_label,
+        score: result?.score_after,
+        band: result?.band_after,
+        cefr: result?.cefr_after,
+    };
+});
+
+const showsScoreComparison = computed(
+    () =>
+        isSimplifyDiff.value &&
+        !isSimplifying.value &&
+        !isUnscored(scoreBefore.value) &&
+        !isUnscored(scoreAfter.value),
+);
+
+const simplifyFailureNotice = computed<string | undefined>(() => {
+    if (!isSimplifyDiff.value) {
+        return undefined;
+    }
+    const failures = ws.simplifyResult.value?.rewrite_failures ?? 0;
+    return failures > 0 ? t("simplify.rewriteFailed") : undefined;
+});
+
+const unconvergedCount = computed<number>(() => ws.simplifyRanges.value.length);
+
+const simplifyConverged = computed<boolean>(
+    () => ws.simplifyResult.value?.converged ?? false,
+);
+
+const activeSimplifyRangeKind = computed(
+    () => ws.simplifyRanges.value[ws.activeSimplifyRangeIndex.value]?.kind,
+);
+
+function onSimplifyRangePrev(): void {
+    ws.prevSimplifyRange();
+}
+
+function onSimplifyRangeNext(): void {
+    ws.nextSimplifyRange();
+}
+
+function onSimplifyRangeDismiss(): void {
+    ws.clearSimplifyRanges();
+}
 
 watch(ws.activeThreadId, (value) => {
     if (value && breakpoints.isSmaller("md")) {
@@ -58,20 +130,23 @@ watch(mobileRailOpen, async (isOpen) => {
     }
 });
 
-// Close the mobile rail when a fix is applied so the user sees the editor
-// transition into Diff Review instead of the rail covering it.
 onCommand<ApplyFixCommand>(Cmds.ApplyFixCommand, async () => {
     mobileRailOpen.value = false;
 });
 
-/** Commits the resolved diff text back to the Working Text. No-op while the
-    corrected text is still streaming, so the view cannot close mid-stream. */
 function commitResolved(): void {
     if (isStreaming.value) {
         return;
     }
     const resolved = diffViewerRef.value?.getResolvedText();
-    if (resolved !== undefined) {
+    if (resolved === undefined) {
+        return;
+    }
+    if (isSimplifyDiff.value) {
+        const raw = ws.simplifyResult.value?.unconverged_ranges ?? [];
+        const mapped = diffViewerRef.value?.mapUnconvergedRanges(raw) ?? [];
+        ws.commitSimplifyDiff(resolved, mapped);
+    } else {
         ws.commitDiff(resolved);
     }
 }
@@ -88,10 +163,6 @@ function onRejectHunk(_hunk: DiffHunk): void {
     }
 }
 
-/**
- * Leaves Diff Review when the corrected text held no reviewable hunks
- * (no-op or empty response). See ADR 0003.
- */
 function onDismissDiff(): void {
     ws.exitDiffReview();
 }
@@ -151,29 +222,31 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
         />
 
         <!-- Main area: centered editor/diff + right rail -->
-        <div class="flex-1 min-h-0 flex bg-gray-100">
+        <div class="flex-1 min-h-0 flex bg-muted">
             <div class="flex-1 min-w-0 flex justify-center overflow-hidden">
                 <div
                     :class="[
-                        'w-full h-full p-2 bg-white shadow relative',
+                        'w-full h-full p-2 bg-default shadow relative',
                         inDiffReview ? '' : 'max-w-6xl',
                     ]"
                 >
                     <!-- Diff review replaces the editor -->
                     <div
                         v-if="inDiffReview"
-                        class="h-full"
+                        class="h-full flex flex-col min-h-0"
                         data-tour="diff-review"
                     >
                         <DiffViewer
                             :key="ws.diffKey.value"
                             ref="diffViewerRef"
+                            class="flex-1 min-h-0"
                             :original-text="ws.originalText.value"
                             :corrected-text="ws.correctedText.value"
                             :streaming="isStreaming"
                             :streaming-label="streamingLabel"
                             i18n-prefix="advisor"
-                            :title="t('workspace.diffTitle')"
+                            :title="diffTitle"
+                            :no-change-notice="simplifyFailureNotice"
                             @accept-hunk="onAcceptHunk"
                             @reject-hunk="onRejectHunk"
                             @accept-all="commitResolved"
@@ -181,6 +254,25 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                             @dismiss="onDismissDiff"
                         >
                             <template #actions>
+                                <div
+                                    v-if="showsScoreComparison"
+                                    class="flex items-center gap-2 mr-1"
+                                    data-testid="simplifyScoreComparison"
+                                    :aria-label="t('simplify.scoreComparison')"
+                                >
+                                    <ReadabilityScoreBadge
+                                        :value="scoreBefore"
+                                        compact
+                                    />
+                                    <UIcon
+                                        name="i-lucide-arrow-right"
+                                        class="size-3.5 text-muted"
+                                    />
+                                    <ReadabilityScoreBadge
+                                        :value="scoreAfter"
+                                        compact
+                                    />
+                                </div>
                                 <UTooltip
                                     :text="t('rewrite-diff-viewer.retry')"
                                 >
@@ -199,28 +291,58 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
                         </DiffViewer>
                     </div>
 
-                    <!-- Editor -->
-                    <WorkspaceEditor
-                        v-else
-                        v-model="text"
-                        :limit="100_000"
-                        :editable="ws.editable"
-                        :decorations-enabled="ws.decorationsEnabled"
-                        :threads="ws.threads"
-                        :active-thread-id="ws.activeThreadId"
-                    />
+                    <!-- Editor. Hidden during a Diff Review:
+                         unmounting destroys the Tiptap instance and with it the
+                         undo history, so a committed quick action / fix could no
+                         longer be undone. -->
+                    <div
+                        v-show="!inDiffReview"
+                        class="h-full flex flex-col min-h-0"
+                    >
+                        <SimplifyRangeNav
+                            :count="unconvergedCount"
+                            :converged="simplifyConverged"
+                            :active-index="ws.activeSimplifyRangeIndex.value"
+                            :active-kind="activeSimplifyRangeKind"
+                            @prev="onSimplifyRangePrev"
+                            @next="onSimplifyRangeNext"
+                            @dismiss="onSimplifyRangeDismiss"
+                        />
+                        <WorkspaceEditor
+                            v-model="text"
+                            class="flex-1 min-h-0"
+                            :limit="100_000"
+                            :editable="ws.editable"
+                            :decorations-enabled="ws.decorationsEnabled"
+                            :threads="ws.threads"
+                            :active-thread-id="ws.activeThreadId"
+                        />
+                    </div>
 
-                    <!-- Check progress: pinned below the ribbon, overlays and
-                         blocks the editor until the Advisor check finishes. -->
+                    <!-- Check progress -->
                     <template v-if="isChecking">
                         <div
-                            class="absolute inset-0 z-10 bg-white/50 backdrop-blur-[1px]"
+                            class="absolute inset-0 z-10 bg-default/50 backdrop-blur-[1px]"
                         />
                         <div
-                            class="absolute top-0 inset-x-0 z-20 px-4 py-3 border-b border-default bg-white/95 shadow-sm"
+                            class="absolute top-0 inset-x-0 z-20 px-4 py-3 border-b border-default bg-default/95 shadow-sm"
                         >
                             <ValidationProgress
                                 :progress="ws.checkProgress.value"
+                            />
+                        </div>
+                    </template>
+
+                    <!-- Simplify progress before first text -->
+                    <template v-if="isSimplifying && !inDiffReview">
+                        <div
+                            class="absolute inset-0 z-10 bg-default/50 backdrop-blur-[1px]"
+                        />
+                        <div
+                            class="absolute top-0 inset-x-0 z-20 px-4 pt-3 border-b border-default bg-default/95 shadow-sm"
+                        >
+                            <SimplifyProgress
+                                :progress="ws.simplifyProgress.value"
                             />
                         </div>
                     </template>
@@ -255,7 +377,7 @@ async function onOpenPdf(thread: AdvisorThread): Promise<void> {
 
         <USlideover
             v-model:open="mobileRailOpen"
-            title="Advisor"
+            :title="t('advisor.title')"
             side="right"
             :ui="{ body: 'p-0 sm:p-0' }"
         >

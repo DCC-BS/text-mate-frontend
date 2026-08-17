@@ -2,6 +2,7 @@ import { isApiError } from "@dcc-bs/communication.bs.js";
 import type { Ref } from "vue";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { getTextAnalysis } from "~/utils/textAnalysis";
+import type { ReadabilityBand } from "~~/shared/types/simplify";
 
 /**
  * Vue Composable that manages fetching the CEFR understandability score for a text.
@@ -16,19 +17,20 @@ import { getTextAnalysis } from "~/utils/textAnalysis";
  */
 export function useCefrScore(text: Ref<string>) {
     const { t } = useI18n();
+    const logger = useLogger();
 
     const isLoading = ref(true);
     const cefrLevel = ref<string | undefined>(undefined);
     const zixScore = ref<number | undefined>(undefined);
     const error = ref<string | undefined>(undefined);
+    const language = ref<string | undefined>(undefined);
+    const score = ref<number | undefined>(undefined);
+    const scoreLabel = ref<string | undefined>(undefined);
+    const band = ref<ReadabilityBand | undefined>(undefined);
 
     let abortController: AbortController | undefined;
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-    /**
-     * Executes the CEFR understandability analysis using the client utility.
-     * Manages loading states, aborts active requests, and handles API errors gracefully.
-     */
     async function evaluateText(): Promise<void> {
         if (abortController) {
             abortController.abort();
@@ -45,11 +47,18 @@ export function useCefrScore(text: Ref<string>) {
                 result.zix_score !== null ? result.zix_score : undefined;
             cefrLevel.value =
                 result.cefr_level !== null ? result.cefr_level : undefined;
+            language.value = result.language ?? undefined;
+            score.value = result.score ?? result.zix_score ?? undefined;
+            scoreLabel.value = result.score_label ?? undefined;
+            band.value = result.band ?? undefined;
         } catch (err: unknown) {
             if (err instanceof Error && err.name === "AbortError") {
                 return;
             }
-            console.error("Failed to fetch CEFR understandability score:", err);
+            logger.error(
+                { err },
+                "Failed to fetch CEFR understandability score",
+            );
             if (isApiError(err)) {
                 error.value = t(`errors.${err.errorId}`) || err.message;
             } else if (err instanceof Error) {
@@ -64,26 +73,18 @@ export function useCefrScore(text: Ref<string>) {
         }
     }
 
-    /**
-     * Debounces the evaluation function by 3 seconds (3000ms) when the text is edited,
-     * reducing unnecessary computations on the backend.
-     */
     function evaluateTextDebounced(): void {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
 
-        timeoutId = setTimeout(async (): Promise<void> => {
-            await evaluateText();
-        }, 3000);
+        timeoutId = setTimeout(evaluateText, 3000);
     }
 
-    // Run evaluation immediately when the component is mounted
     onMounted(async (): Promise<void> => {
         await evaluateText();
     });
 
-    // Re-evaluate with a 3-second debounce whenever the source text changes
     watch(
         () => text.value,
         (): void => {
@@ -91,7 +92,6 @@ export function useCefrScore(text: Ref<string>) {
         },
     );
 
-    // Cancel any pending evaluations and abort active fetch requests when unmounted
     onUnmounted((): void => {
         if (timeoutId) {
             clearTimeout(timeoutId);
@@ -105,6 +105,10 @@ export function useCefrScore(text: Ref<string>) {
         isLoading,
         cefrLevel,
         zixScore,
+        language,
+        score,
+        scoreLabel,
+        band,
         error,
     };
 }

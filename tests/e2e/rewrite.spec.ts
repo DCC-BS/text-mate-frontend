@@ -128,7 +128,7 @@ test.beforeEach(async ({ page }) => {
 
 test("After rewrite, changes are shown in the diff review", async ({ page }) => {
     const inputText =
-        "This is a test streaming response that returns one word at a time to demonstrate the functionality of server-sent events in this Nuxt application.";
+        "Gemäss der Verordnung über die Erhebung von Gebühren ist die Antragstellerin verpflichtet, die erforderlichen Unterlagen unverzüglich und vollständig einzureichen, damit die zuständige Fachstelle die Prüfung vornehmen kann.";
 
     await page.locator(".tiptap").fill(inputText);
 

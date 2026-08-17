@@ -335,7 +335,7 @@ export function useOnboading() {
     async function seedEditorText(): Promise<void> {
         await executeCommand(new ClearTextCommand());
         await executeCommand(
-            new ApplyTextCommand(exampleText, { from: 0, to: 0 }),
+            new ApplyTextCommand(exampleText, { from: 0, to: 0 }, false),
         );
     }
 

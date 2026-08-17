@@ -36,9 +36,14 @@ async function dummyFetcher(options: FetcherOptions<BodyType>) {
     const text: string = body.text;
 
     const rules = collectDummyViolations(text);
-    // Split into two progress frames so the progress bar animates.
+    // Include initial 0-progress frame followed by batched progress frames.
     const midpoint = Math.ceil(rules.length / 2);
     const items: ValidationResult[] = [
+        {
+            violations: [],
+            checked: 0,
+            total: rules.length,
+        },
         {
             violations: rules.slice(0, midpoint),
             checked: midpoint,

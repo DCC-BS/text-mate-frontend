@@ -1,4 +1,5 @@
 import { apiFetch, isApiError } from "@dcc-bs/communication.bs.js";
+import { SimplifyTextCommand } from "~/assets/models/commands";
 import type { RibbonTransformProps } from "~/types/ribbon";
 import { TextActionGetOutputSchema } from "~~/shared/text-actions";
 
@@ -48,6 +49,7 @@ export type MobileActionGroup = {
 export function useMobileActions(props: RibbonTransformProps) {
     const { t } = useI18n();
     const { runQuickAction } = useQuickAction();
+    const { executeCommand } = useCommandBus();
     const toast = useToast();
     const { showError } = useUserFeedback();
     const logger = useLogger();
@@ -67,6 +69,14 @@ export function useMobileActions(props: RibbonTransformProps) {
             });
             return;
         }
+
+        // Plain Language is no longer a quick action: it runs the measured,
+        // language-aware simplification loop (`POST /api/simplify`).
+        if (action === "plain_language") {
+            await executeCommand(new SimplifyTextCommand());
+            return;
+        }
+
         await runQuickAction({
             action,
             text: props.text,
@@ -251,6 +261,13 @@ export function useMobileActions(props: RibbonTransformProps) {
                 },
                 {
                     kind: "simple",
+                    id: "condense",
+                    label: t("editor.condense"),
+                    icon: "i-lucide-shrink",
+                    action: "condense",
+                },
+                {
+                    kind: "simple",
                     id: "proofread",
                     label: t("editor.proofread"),
                     icon: "i-lucide-check",
@@ -261,7 +278,7 @@ export function useMobileActions(props: RibbonTransformProps) {
         {
             id: "custom",
             label: t("actions.custom"),
-            icon: "i-lucide-wand-2",
+            icon: "i-lucide-wand-sparkles",
             actions: [
                 {
                     kind: "custom",
