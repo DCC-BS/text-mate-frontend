@@ -54,14 +54,14 @@ const scoreText = computed<string>(() => {
 
 /** Typography class for value based on compact mode */
 const valueClass = computed<string>(() =>
-    props.compact ? "text-sm font-bold" : "text-base font-black",
+    props.compact ? "text-xs font-bold" : "text-xs font-bold",
 );
 
 /** Typography class for label based on compact mode */
 const labelClass = computed<string>(() =>
     props.compact
-        ? "hidden sm:inline text-xs font-bold uppercase tracking-wider"
-        : "text-xs font-bold uppercase tracking-wider",
+        ? "hidden sm:inline text-[10px] font-bold uppercase tracking-wider"
+        : "text-[11px] font-semibold uppercase tracking-wider",
 );
 </script>
 
@@ -70,6 +70,7 @@ const labelClass = computed<string>(() =>
         v-if="!showNothing && showCefr"
         color="neutral"
         variant="subtle"
+        :size="props.compact ? 'xs' : 'sm'"
         class="inline-flex items-center gap-1.5"
     >
         <span :class="[valueClass, 'text-highlighted']">
@@ -84,6 +85,7 @@ const labelClass = computed<string>(() =>
         v-else-if="!showNothing && showScore"
         color="neutral"
         variant="subtle"
+        :size="props.compact ? 'xs' : 'sm'"
         class="inline-flex items-center gap-1.5"
     >
         <span :class="[valueClass, 'text-highlighted']">
