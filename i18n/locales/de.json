@@ -252,7 +252,7 @@
         "academic": "Akademisch",
         "reading-ease": "Lesbarkeit (Flesch Index)",
         "score": "Bewertung",
-        "cefr-level": "Sprachniveau (GER / CEFR)",
+        "cefr-level": "Sprachniveau",
         "cefr-loading": "Sprachniveau wird berechnet...",
         "cefr-description": "Das Sprachniveau nach dem Gemeinsamen Europäischen Referenzrahmen (GER / CEFR) beschreibt die sprachliche Verständlichkeit von A1 (sehr einfach) bis C2 (sehr komplex).",
         "cefr-too-short": "Text zu kurz für Analyse",

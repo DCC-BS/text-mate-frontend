@@ -149,7 +149,7 @@ describe("ReadabilityScoreBadge", () => {
 
         // Assert
         expect(wrapper.text()).toContain("C1");
-        expect(wrapper.html()).toContain("text-sm font-bold");
+        expect(wrapper.html()).toContain("text-xs font-bold");
         expect(wrapper.html()).toContain("hidden sm:inline");
     });
 });

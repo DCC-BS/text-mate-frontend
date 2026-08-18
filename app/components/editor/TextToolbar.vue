@@ -195,7 +195,7 @@ async function downloadWord(): Promise<void> {
             <template #content>
                 <TextStatsView
                     :text="props.text"
-                    class="w-[300px]"
+                    class="w-[360px]"
                     data-tour="text-stats"
                 />
             </template>

@@ -52,13 +52,9 @@ const emptyStateText = computed<string>(() =>
 </script>
 
 <template>
-    <div
-        class="mt-4 pt-3 border-t border-default flex items-center justify-between text-sm"
-    >
+    <div class="flex items-center justify-between gap-2">
         <UTooltip :text="rowDescription">
-            <span
-                class="text-xs font-medium text-muted cursor-help hover:text-default"
-            >
+            <span class="cursor-help whitespace-nowrap">
                 {{ rowLabel }}
             </span>
         </UTooltip>

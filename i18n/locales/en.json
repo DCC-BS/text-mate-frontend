@@ -252,7 +252,7 @@
         "academic": "Academic",
         "reading-ease": "Reading Ease (Flesch Index)",
         "score": "Score",
-        "cefr-level": "Language Level (CEFR)",
+        "cefr-level": "Language Level",
         "cefr-loading": "Calculating language level...",
         "cefr-description": "The CEFR level (Common European Framework of Reference for Languages) describes linguistic understandability from A1 (very simple) to C2 (very complex).",
         "cefr-too-short": "Text too short for analysis",

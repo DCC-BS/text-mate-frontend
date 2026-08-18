@@ -10,7 +10,7 @@ vi.stubGlobal("useI18n", () => {
     return {
         t: (key: string, params?: Record<string, unknown>) => {
             const translations: Record<string, string> = {
-                "flesch-score.cefr-level": "Sprachniveau (CEFR)",
+                "flesch-score.cefr-level": "Sprachniveau",
                 "flesch-score.cefr-description": "Gemeinsamer Europäischer Referenzrahmen für Sprachen",
                 "flesch-score.cefr-too-short": "Text zu kurz",
                 "flesch-score.cefr-level-b2": "Gehoben",
@@ -58,7 +58,7 @@ describe("CefrScoreVisualization", () => {
         });
 
         // Assert
-        expect(wrapper.text()).toContain("Sprachniveau (CEFR)");
+        expect(wrapper.text()).toContain("Sprachniveau");
         expect(wrapper.text()).toContain("B2");
         expect(wrapper.text()).toContain("Gehoben");
     });
