@@ -63,7 +63,10 @@ run = [
 
 [tasks."playwright:install-browser"]
 description = "install the Playwright browser matching the pinned @playwright/test version"
-run = "bunx playwright install chromium --with-deps"
+usage = 'flag "--with-deps" help="Also install OS-level dependencies via the system package manager"'
+run = '''
+bunx playwright install chromium ${usage_with_deps:+--with-deps}
+'''
 
 [tasks.env-check]
 description = "🔑 Load secrets into the environment via varlock"

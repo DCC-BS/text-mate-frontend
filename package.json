@@ -21,7 +21,7 @@
         "e2e:codegen": "mise run e2e:codegen"
     },
     "dependencies": {
-        "@dcc-bs/common-ui.bs.js": "2.1.7",
+        "@dcc-bs/common-ui.bs.js": "2.1.9",
         "@dcc-bs/communication.bs.js": "^0.1.3",
         "@dcc-bs/dependency-injection.bs.js": "^0.0.16",
         "@dcc-bs/event-system.bs.js": "^1.4.3",
