@@ -42,8 +42,8 @@ function formatLanguage(lang?: string): string {
 
 <template>
     <div class="flex flex-col gap-2">
-        <div class="bg-elevated border border-default p-2 rounded-md">
-            <div class="grid grid-cols-2">
+        <div class="bg-default border border-default p-2 rounded-md">
+            <div class="grid grid-cols-[1fr_auto] gap-x-4 items-center">
                 <span>{{ t("text-stats.character-count") }}</span>
                 <span class="text-end font-bold" data-testid="characterCount"
                     >{{ formatNumber(charCount) }}</span
