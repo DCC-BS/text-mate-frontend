@@ -7,7 +7,7 @@ ARG LOGGER_LAYER_URI="github:DCC-BS/nuxt-layers/pino-logger"
 ENV NODE_ENV=production
 
 # Install bun
-RUN npm install -g bun
+RUN npm install -g bun@1.3.14
 
 # Set the working directory
 WORKDIR /app
