@@ -55,11 +55,14 @@ enter = { task = "enter-checks" }
 [tasks.install]
 env = { APP_MODE = "build" }
 description = "install npm packages"
-run = [
-    "bun install",
-    "bunx nuxi prepare",
-    "mise run playwright:install-browser",
-]
+run = '''
+if [ "${DOCKER_BUILD:-}" = "1" ]; then
+    bun install --frozen-lockfile
+else
+    bun install
+    mise run playwright:install-browser
+fi
+'''
 
 [tasks."playwright:install-browser"]
 description = "install the Playwright browser matching the pinned @playwright/test version"
