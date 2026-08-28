@@ -45,10 +45,6 @@ WORKDIR /app
 # Security: Create and switch to a non-root user
 RUN useradd --create-home --uid 1000 node
 
-# Install CA certificates so varlock and node can establish TLS connections
-# (e.g. fetching secrets). debian:13-slim ships with no CA bundle at all.
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
-
 # Environment
 ENV NODE_ENV=production
 ENV APP_MODE=prod
