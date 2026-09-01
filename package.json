@@ -91,7 +91,7 @@
     "overrides": {
         "// framework-singletons": "Deduplicate instances to prevent SSR crashes and editor instanceof failures",
         "vue": "3.5.41",
-        "reka-ui": "2.10.1",
+        "reka-ui": "2.10.3",
         "@vueuse/core": "^14.4.0",
         "prosemirror-model": "1.25.11",
         "prosemirror-view": "1.42.2"
