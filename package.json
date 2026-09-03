@@ -33,7 +33,7 @@
         "@nuxtjs/i18n": "^10.6.0",
         "@nuxtjs/mdc": "0.23.0",
         "@pinia/nuxt": "1.0.1",
-        "@tiptap/core": "3.29.2",
+        "@tiptap/core": "3.30.4",
         "@tiptap/extension-bubble-menu": "3.29.2",
         "@tiptap/extension-character-count": "3.29.2",
         "@tiptap/extension-floating-menu": "3.29.2",
