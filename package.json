@@ -29,7 +29,7 @@
         "@iconify-json/lucide": "^1.2.122",
         "@iconify-json/simple-icons": "^1.2.93",
         "@mohtasham/md-to-docx": "git+https://github.com/DCC-BS/md-to-docx.js#v3.0.0",
-        "@nuxt/ui": "4.10.0",
+        "@nuxt/ui": "4.11.0",
         "@nuxtjs/i18n": "^10.6.0",
         "@nuxtjs/mdc": "0.23.0",
         "@pinia/nuxt": "1.0.1",
