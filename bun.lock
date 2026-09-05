@@ -17,7 +17,7 @@
         "@nuxtjs/i18n": "^10.6.0",
         "@nuxtjs/mdc": "0.23.0",
         "@pinia/nuxt": "1.0.1",
-        "@tiptap/core": "3.29.2",
+        "@tiptap/core": "3.30.4",
         "@tiptap/extension-bubble-menu": "3.29.2",
         "@tiptap/extension-character-count": "3.29.2",
         "@tiptap/extension-floating-menu": "3.29.2",
@@ -72,7 +72,6 @@
     },
   },
   "overrides": {
-    "// framework-singletons": "Deduplicate instances to prevent SSR crashes and editor instanceof failures",
     "@vueuse/core": "^14.4.0",
     "prosemirror-model": "1.25.11",
     "prosemirror-view": "1.42.2",
@@ -674,7 +673,7 @@
 
     "@tanstack/vue-virtual": ["@tanstack/vue-virtual@3.13.35", "", { "dependencies": { "@tanstack/virtual-core": "3.17.7" }, "peerDependencies": { "vue": "^2.7.0 || ^3.0.0" } }, "sha512-lOfSPvgPdlaH6Qy+CyIc3XpycitaSQ9GECndGpTuDiu+uDA1am+90yWXwzDSd/20ZM196ggWJLS+Qb6WjVd/OA=="],
 
-    "@tiptap/core": ["@tiptap/core@3.29.2", "", { "peerDependencies": { "@tiptap/pm": "3.29.2" } }, "sha512-oKUkiPUB7noilVYxI9lNzUD4rX17sHub+PYjMfHMWHG9A3nvIy+FdePIVIIhThKWF7ijhr3eIqHY51Bn+GAFtw=="],
+    "@tiptap/core": ["@tiptap/core@3.30.4", "", { "peerDependencies": { "@tiptap/pm": "3.30.4" } }, "sha512-V9yKuUfV8qC9WBrnVxkFWmYLBomc3d1CwXoFSjED5DRu5q2oyxv07F+jOJSRogJAY+feHjuxvjhixwxeHm2DXQ=="],
 
     "@tiptap/extension-blockquote": ["@tiptap/extension-blockquote@3.29.2", "", { "peerDependencies": { "@tiptap/core": "3.29.2", "@tiptap/pm": "3.29.2" } }, "sha512-ca4OzKDh0yaxg2+Z56bC2QnWsNsFp2YMRfVig1PDXyMVFMNJpLcnhxgq/9btn+xYAlYrj8RymOeCTYREOR6Zjg=="],
 
