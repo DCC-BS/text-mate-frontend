@@ -52,7 +52,7 @@
         "jsdiff": "^1.1.1",
         "motion-v": "^2.3.0",
         "nuxt": "4.5.2",
-        "nuxt-viewport": "2.6.0",
+        "nuxt-viewport": "2.6.1",
         "openid-client": "^6.8.4",
         "pinia": "^4.0.2",
         "pino": "^10.3.1",
