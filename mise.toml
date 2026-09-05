@@ -1,5 +1,5 @@
 [tools]
-bun = "1.3.14"
+bun = "1.4.0"
 pass-cli = "latest"
 node = "24.19.0"
 "npm:varlock" = "1.16.1"
