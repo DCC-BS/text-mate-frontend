@@ -9,7 +9,13 @@
     "prConcurrentLimit": 2,
     "packageRules": [
         {
-            "matchUpdateTypes": ["minor", "patch", "pin", "digest", "lockFileMaintenance"],
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "pin",
+                "digest",
+                "lockFileMaintenance"
+            ],
             "groupName": "all non-major dependencies",
             "groupSlug": "all-non-major"
         },
