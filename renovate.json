@@ -18,5 +18,8 @@
             "groupName": "all major dependencies",
             "groupSlug": "all-major"
         }
-    ]
+    ],
+    "lockFileMaintenance": {
+        "enabled": false
+    }
 }
