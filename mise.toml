@@ -2,7 +2,7 @@
 bun = "1.4.0"
 pass-cli = "latest"
 node = "24.19.0"
-"npm:varlock" = "1.17.0"
+"npm:varlock" = "1.17.1"
 usage = "6.4.0"
 
 [plugins]
