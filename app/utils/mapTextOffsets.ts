@@ -51,10 +51,13 @@ export function mapTextOffsetsToDocPositions(
         [];
     let strCursor = 0;
 
-    doc.forEach((block, offset) => {
+    // List containers do not contribute text; their nested textblocks do.
+    doc.descendants((block, offset) => {
+        if (!block.isTextblock) return true;
         const length = inlineTextLength(block);
         blocks.push({ strStart: strCursor, pmStart: offset + 1, length });
         strCursor += length + BLOCK_SEPARATOR.length;
+        return false;
     });
 
     const resolve = (target: number): number => {

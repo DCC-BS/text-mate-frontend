@@ -426,5 +426,43 @@
         "diffViewSplit": "Geteilte Ansicht",
         "diffOriginal": "Original",
         "diffCorrected": "Korrigiert"
+    },
+    "wordExport": {
+        "title": "Word-Export",
+        "filename": "Dateiname",
+        "fontFamily": "Schriftfamilie",
+        "fontSize": "Schriftgröße (pt)",
+        "language": "Dokumentensprache",
+        "germanSwiss": "Deutsch – Schweiz",
+        "english": "Englisch (Großbritannien)",
+        "lineSpacing": "Zeilenabstand",
+        "margins": "Seitenränder",
+        "normal": "Normal (2,54 cm)",
+        "narrow": "Schmal (1,27 cm)",
+        "wide": "Breit (links/rechts 5,08 cm)",
+        "save": "Als Standard speichern",
+        "cancel": "Abbrechen",
+        "export": "Exportieren",
+        "saved": "Exporteinstellungen gespeichert",
+        "storageFailed": "Einstellungen konnten nicht gespeichert oder geladen werden. Der Export ist weiterhin möglich.",
+        "exportFailed": "Das Word-Dokument konnte nicht erstellt werden. Prüfen Sie die Einstellungen und versuchen Sie es erneut.",
+        "precedence": "Diese Einstellungen gelten für Text ohne eigene Formatierung. Im Editor ausdrücklich gewählte Schriftarten und Größen bleiben erhalten.",
+        "fontHint": "Die gewählte Schrift muss auf dem Computer installiert sein, auf dem das Word-Dokument geöffnet wird."
+    },
+    "formatting": {
+        "title": "Textformatierung",
+        "heading": "Überschrift",
+        "paragraph": "Absatz",
+        "defaultFont": "Standardschrift",
+        "bold": "Fett",
+        "italic": "Kursiv",
+        "underline": "Unterstrichen",
+        "strike": "Durchgestrichen",
+        "bulletList": "Aufzählung",
+        "orderedList": "Nummerierte Liste",
+        "link": "Link bearbeiten",
+        "linkUrl": "Link-Adresse",
+        "linkHint": "https://, http:// oder mailto:. Leer lassen, um den Link zu entfernen.",
+        "apply": "Übernehmen"
     }
 }

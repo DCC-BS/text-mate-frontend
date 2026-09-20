@@ -4,13 +4,14 @@ import { EditorContent } from "@tiptap/vue-3";
 import { Cmds, type ToggleLockEditorCommand } from "~/assets/models/commands";
 import type { EditorSelection } from "~/composables/useBaseEditor";
 import { useTextFileUpload } from "~/composables/useFileUpload";
+import FormattingToolbar from "./FormattingToolbar.vue";
 import EditorTextClear from "./TextClear.vue";
 import EditorTextToolbar from "./TextToolbar.vue";
 
 interface Props {
     /** Tiptap editor instance, created and owned by the variant wrapper. */
     editor?: Editor;
-    /** Plain-text interchange, used for the toolbar (copy/download/wordcount). */
+    /** Plain-text interchange, used for copying and word counts. */
     text: string;
     /** Character-count limit, shown in the toolbar. */
     limit: number;
@@ -98,6 +99,11 @@ const words = computed(() => {
                     :lock-editor="lockEditor"
                 />
 
+                <FormattingToolbar
+                    :editor="editor"
+                    :disabled="readonly || lockEditor"
+                />
+
                 <!-- Editor area + drop target -->
                 <div
                     ref="dropZoneRef"
@@ -148,6 +154,7 @@ const words = computed(() => {
                 <!-- Toolbar + wordcount (bottom) -->
                 <div class="absolute bottom-0 inset-x-0">
                     <EditorTextToolbar
+                        :editor="editor"
                         :text="text"
                         :characters="characters"
                         :words="words"

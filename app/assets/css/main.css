@@ -24,7 +24,8 @@
     padding: 0.25rem;
     caret-color: black;
     outline: 0;
-    font-size: large;
+    /* Match the initial Word defaults; explicit text marks override these. */
+    @apply font-[Arial] text-[12pt] leading-[1.15];
 }
 
 .ProseMirror .selection {

@@ -22,25 +22,29 @@ export type Segment = {
 export function advisorSegments(doc: PmNode): Segment[] {
     const segments: Segment[] = [];
 
-    doc.forEach((paragraph, paraOffset, paraIndex) => {
-        let pos = paraOffset + 1;
-        paragraph.forEach((node) => {
+    // Walk textblocks recursively so nested list content has real PM positions.
+    let previousEnd: number | undefined;
+    doc.descendants(function visit(block, offset) {
+        if (!block.isTextblock) {
+            return true;
+        }
+        if (previousEnd !== undefined) {
+            segments.push({ text: "\n\n", from: previousEnd, to: previousEnd });
+        }
+        block.forEach(function visitInline(node, inlineOffset) {
+            const pos = offset + 1 + inlineOffset;
             if (node.isText) {
-                const text = node.text ?? "";
-                segments.push({ text, from: pos, to: pos + node.nodeSize });
-                pos += node.nodeSize;
+                segments.push({
+                    text: node.text ?? "",
+                    from: pos,
+                    to: pos + node.nodeSize,
+                });
             } else if (node.type.name === "hardBreak") {
                 segments.push({ text: "\n", from: pos, to: pos + 1 });
-                pos += 1;
-            } else {
-                pos += node.nodeSize;
             }
         });
-
-        if (paraIndex < doc.childCount - 1) {
-            const sep = paraOffset + paragraph.nodeSize;
-            segments.push({ text: "\n\n", from: sep, to: sep });
-        }
+        previousEnd = offset + block.nodeSize;
+        return false;
     });
 
     return segments;

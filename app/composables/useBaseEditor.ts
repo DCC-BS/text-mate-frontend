@@ -15,6 +15,7 @@ import {
     type UndoCommand,
     UndoRedoStateChanged,
 } from "~/assets/models/commands";
+import { editorFormattingExtensions } from "~/utils/editorFormatting";
 import { plainTextToEditorHtml } from "~/utils/plainTextToEditorHtml";
 
 /**
@@ -87,6 +88,7 @@ export function useBaseEditor(options: UseBaseEditorOptions) {
             Text,
             HardBreak,
             History,
+            ...editorFormattingExtensions(),
             CharacterCount.configure({ limit: limitValue }),
             ...extraExtensions,
         ],

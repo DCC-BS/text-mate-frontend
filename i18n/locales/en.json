@@ -426,5 +426,43 @@
         "diffViewSplit": "Split view",
         "diffOriginal": "Original",
         "diffCorrected": "Corrected"
+    },
+    "wordExport": {
+        "title": "Word export",
+        "filename": "Filename",
+        "fontFamily": "Font family",
+        "fontSize": "Font size (pt)",
+        "language": "Document language",
+        "germanSwiss": "German – Switzerland",
+        "english": "English (United Kingdom)",
+        "lineSpacing": "Line spacing",
+        "margins": "Page margins",
+        "normal": "Normal (2.54 cm)",
+        "narrow": "Narrow (1.27 cm)",
+        "wide": "Wide (left/right 5.08 cm)",
+        "save": "Save as default",
+        "cancel": "Cancel",
+        "export": "Export",
+        "saved": "Export settings saved",
+        "storageFailed": "Settings could not be saved or loaded. You can still export.",
+        "exportFailed": "The Word document could not be created. Check the settings and try again.",
+        "precedence": "These defaults apply to text without explicit formatting. Fonts and sizes explicitly selected in the editor are preserved.",
+        "fontHint": "The selected font must be installed on the computer opening the Word document."
+    },
+    "formatting": {
+        "title": "Text formatting",
+        "heading": "Heading",
+        "paragraph": "Paragraph",
+        "defaultFont": "Default font",
+        "bold": "Bold",
+        "italic": "Italic",
+        "underline": "Underline",
+        "strike": "Strikethrough",
+        "bulletList": "Bullet list",
+        "orderedList": "Numbered list",
+        "link": "Edit link",
+        "linkUrl": "Link URL",
+        "linkHint": "https://, http:// or mailto:. Leave empty to remove the link.",
+        "apply": "Apply"
     }
 }

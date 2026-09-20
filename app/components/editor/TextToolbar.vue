@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Editor } from "@tiptap/vue-3";
 import { UTooltip } from "#components";
 import {
     Cmds,
@@ -8,10 +9,13 @@ import {
     UndoCommand,
     type UndoRedoStateChanged,
 } from "~/assets/models/commands";
+import { useWordExport } from "~/composables/useWordExport";
 import { formatNumber } from "~/utils/formatNumber";
 import TextStatsView from "../tool-panel/TextStatsView.vue";
+import WordExportDialog from "./WordExportDialog.vue";
 
 const props = defineProps<{
+    editor?: Editor;
     text: string;
     characters: number;
     words: number;
@@ -87,42 +91,25 @@ async function copyToClipboard(): Promise<void> {
     }
 }
 
-async function downloadWord(): Promise<void> {
-    if (!props.text || !import.meta.client) {
-        return;
-    }
+// Keep the existing download entry point and open the configurable export dialog.
+const wordExport = useWordExport();
+const { isOpen, isExporting, settings, filename } = wordExport;
 
-    try {
-        const filename = `textmate-${new Date().toISOString().slice(0, 10)}.docx`;
-        const blob = await markdownToDocx(props.text);
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        toast.add({
-            title: t("toolbar.downloadSuccess"),
-            description: filename,
-            color: "success",
-            icon: "i-lucide-circle-check",
-            duration: 3000,
-        });
-    } catch {
-        toast.add({
-            title: t("toolbar.downloadFailed"),
-            color: "error",
-            icon: "i-lucide-circle-alert",
-            duration: 3000,
-        });
-    }
+async function downloadWord(): Promise<void> {
+    if (props.editor) await wordExport.download(props.editor);
 }
 </script>
 
 <template>
     <div class="flex justify-between">
+        <WordExportDialog
+            v-model:open="isOpen"
+            v-model:settings="settings"
+            v-model:filename="filename"
+            :busy="isExporting"
+            @export="downloadWord"
+            @save="wordExport.saveDefaults"
+        />
         <div data-tour="text-editor-toolpanel">
             <UTooltip :text="t('navigation.undo')" :kbds="['Ctrl', 'Z']">
                 <UButton
@@ -171,8 +158,9 @@ async function downloadWord(): Promise<void> {
                     variant="link"
                     color="neutral"
                     :disabled="!props.text"
+                    :loading="isExporting"
                     data-testid="downloadWordButton"
-                    @click="downloadWord"
+                    @click="wordExport.open"
                 />
             </UTooltip>
         </div>
