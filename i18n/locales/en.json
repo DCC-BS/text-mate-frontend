@@ -238,6 +238,35 @@
             "indirect": "Indirect Speech"
         }
     },
+    "savedPrompts": {
+        "saveAsPrompt": "Save as prompt",
+        "namePlaceholder": "Prompt name",
+        "promptPlaceholder": "Enter instruction...",
+        "save": "Save",
+        "local": "Local",
+        "localTooltip": "Stored only in this browser",
+        "manage": "Manage prompts…",
+        "managerTitle": "Saved prompts",
+        "new": "New prompt",
+        "export": "Export",
+        "import": "Import",
+        "empty": "No prompts saved yet. Save a custom instruction with \"Save as prompt\" or create a new prompt here.",
+        "confirmDelete": "Really delete?",
+        "toast": {
+            "saved": "Prompt saved",
+            "updated": "Prompt updated",
+            "deleted": "Prompt deleted",
+            "exported": "Prompts exported",
+            "exportEmpty": "No prompts to export",
+            "imported": "Import finished",
+            "importedDetail": "{added} added, {skipped} skipped",
+            "importTooLarge": "The file is too large (maximum 1 MB).",
+            "invalidJson": "The file does not contain valid JSON.",
+            "invalidFormat": "The file does not have the expected format.",
+            "error": "The change could not be saved.",
+            "loadError": "Saved prompts could not be loaded."
+        }
+    },
     "flesch-score": {
         "easy": "Easy",
         "standard": "Standard",

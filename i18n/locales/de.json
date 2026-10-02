@@ -238,6 +238,35 @@
             "indirect": "Indirekte Rede"
         }
     },
+    "savedPrompts": {
+        "saveAsPrompt": "Als Prompt speichern",
+        "namePlaceholder": "Name des Prompts",
+        "promptPlaceholder": "Anweisung eingeben...",
+        "save": "Speichern",
+        "local": "Lokal",
+        "localTooltip": "Nur in diesem Browser gespeichert",
+        "manage": "Prompts verwalten…",
+        "managerTitle": "Gespeicherte Prompts",
+        "new": "Neuer Prompt",
+        "export": "Exportieren",
+        "import": "Importieren",
+        "empty": "Noch keine Prompts gespeichert. Speichere eine benutzerdefinierte Anweisung mit «Als Prompt speichern» oder lege hier einen neuen Prompt an.",
+        "confirmDelete": "Wirklich löschen?",
+        "toast": {
+            "saved": "Prompt gespeichert",
+            "updated": "Prompt aktualisiert",
+            "deleted": "Prompt gelöscht",
+            "exported": "Prompts exportiert",
+            "exportEmpty": "Keine Prompts zum Exportieren",
+            "imported": "Import abgeschlossen",
+            "importedDetail": "{added} hinzugefügt, {skipped} übersprungen",
+            "importTooLarge": "Die Datei ist zu gross (maximal 1 MB).",
+            "invalidJson": "Die Datei enthält kein gültiges JSON.",
+            "invalidFormat": "Die Datei hat nicht das erwartete Format.",
+            "error": "Die Änderung konnte nicht gespeichert werden.",
+            "loadError": "Gespeicherte Prompts konnten nicht geladen werden."
+        }
+    },
     "flesch-score": {
         "easy": "Einfach",
         "standard": "Standard",
