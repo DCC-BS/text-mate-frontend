@@ -148,6 +148,24 @@ describe("useSavedPrompts", () => {
         );
     });
 
+    it("imports nothing when the stored prompts cannot be loaded", async () => {
+        const addMany = vi.fn().mockResolvedValue(1);
+        const api = await setup({
+            getAll: vi.fn().mockRejectedValue(new Error("blocked")),
+            addMany,
+        });
+        const file = jsonFile(
+            JSON.stringify({
+                version: 1,
+                prompts: [{ name: "A", prompt: "Prompt A" }],
+            }),
+        );
+
+        await api.importFromFile(file);
+
+        expect(addMany).not.toHaveBeenCalled();
+    });
+
     it("rejects an oversized file without reading it", async () => {
         const api = await setup();
         const file = jsonFile("x".repeat(1024 * 1024 + 1));

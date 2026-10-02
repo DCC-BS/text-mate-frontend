@@ -18,14 +18,22 @@ const canSave = computed(() =>
     isValidSavedPromptInput(name.value, props.prompt),
 );
 
+/** True while a save is running, so a double click cannot store the prompt twice. */
+const saving = ref(false);
+
 /** Saves the instruction under the entered name and collapses on success. */
 async function submit(): Promise<void> {
-    if (!canSave.value) {
+    if (!canSave.value || saving.value) {
         return;
     }
-    const ok = await save({ name: name.value, prompt: props.prompt });
-    if (ok) {
-        cancel();
+    saving.value = true;
+    try {
+        const ok = await save({ name: name.value, prompt: props.prompt });
+        if (ok) {
+            cancel();
+        }
+    } finally {
+        saving.value = false;
     }
 }
 

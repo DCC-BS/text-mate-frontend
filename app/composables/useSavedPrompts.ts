@@ -11,7 +11,7 @@ import {
 // Module-level singleton state: the desktop and mobile ribbons share one list.
 const prompts = ref<SavedPrompt[]>([]);
 // The initial load, kept so IndexedDB is read once per page.
-let loading: Promise<void> | undefined;
+let loading: Promise<boolean> | undefined;
 
 /**
  * Prompts the user saved in this browser ("Benutzerdefinierte Prompts").
@@ -50,20 +50,28 @@ export function useSavedPrompts() {
         prompts.value = await query.getAll();
     }
 
-    /** Reads the list, or logs and reports why it could not. */
-    async function loadOnce(): Promise<void> {
+    /**
+     * Reads the list, or logs and reports why it could not.
+     * @returns true when the list was loaded
+     */
+    async function loadOnce(): Promise<boolean> {
         try {
             await reload();
+            return true;
         } catch (error: unknown) {
             logger.error(error, "Failed to load saved prompts");
             notifyError(t("savedPrompts.toast.loadError"));
             // Allow a later retry.
             loading = undefined;
+            return false;
         }
     }
 
-    /** Loads the list once; later calls reuse the first load. */
-    function load(): Promise<void> {
+    /**
+     * Loads the list once; later calls reuse the first load.
+     * @returns true when the list is loaded
+     */
+    function load(): Promise<boolean> {
         if (loading === undefined) {
             loading = loadOnce();
         }
@@ -157,7 +165,10 @@ export function useSavedPrompts() {
         }
 
         // Compare against the stored list, not a list that has not loaded yet.
-        await load();
+        // Without it, every entry would look new and stored prompts would be duplicated.
+        if (!(await load())) {
+            return;
+        }
         const fresh = findNewPrompts(result.prompts, prompts.value);
 
         try {
