@@ -59,7 +59,6 @@ function cancel(): void {
                 :placeholder="t('savedPrompts.namePlaceholder')"
                 :aria-label="t('savedPrompts.namePlaceholder')"
                 class="flex-1"
-                autofocus
                 data-testid="savePromptName"
                 @keydown.enter.prevent="submit"
             />
