@@ -42,7 +42,7 @@ Out of scope:
 ```ts
 /** A prompt the user saved in this browser. */
 export interface SavedPrompt {
-    id: string; // uuid v4
+    id: string; // uuid v7, as elsewhere in the app
     name: string; // 1..80 chars, trimmed
     prompt: string; // non-empty, trimmed
     createdAt: number; // epoch ms
@@ -96,7 +96,7 @@ db.version(1).stores({
 | `remove(id): Promise<void>` | Deletes. Removing a missing id is a no-op. |
 | `addMany(inputs): Promise<number>` | Bulk insert for import, in one transaction. Returns the count. |
 
-`SavedPromptQuery` has `$injectKey = "savedPromptQuery"` and `$inject = ["logger"]`. It is registered in `serviceRegistrant.ts`. On a Dexie error it logs through the injected logger and rethrows, so the caller can show a toast.
+`SavedPromptQuery` has `$injectKey = "savedPromptQuery"` and `$inject = []`, like the old dictionary query. It is registered in `serviceRegistrant.ts`. It does no logging. Errors propagate, and `useSavedPrompts` logs them and shows a toast. Tests can construct the class directly, without the DI container.
 
 File names use camelCase per the DCC guidelines. The `.query` and `.query.interface` suffixes match the existing query naming.
 
@@ -130,18 +130,20 @@ Only Nuxt UI components and Tailwind classes. Icons are Lucide (`i-lucide-*`).
 
 ### Shared components
 
-`app/components/saved-prompts/SavedPromptManager.vue`:
+Components live in `app/components/saved-prompt/`. With that folder name Nuxt's auto-import names come out as `SavedPromptManager`, `SavedPromptForm` and `SavedPromptSaveInline`.
+
+`app/components/saved-prompt/SavedPromptManager.vue`:
 
 - Header actions: "Neuer Prompt" (`i-lucide-plus`), "Exportieren" (`i-lucide-download`), "Importieren" (`i-lucide-upload`).
 - Import uses a hidden `<input type="file" accept="application/json,.json">`, as `BaseEditor.vue` does.
 - List of prompts. Each row shows the name and the first line of the prompt (truncated), plus buttons to apply (`i-lucide-play`), edit (`i-lucide-pencil`) and delete (`i-lucide-trash-2`).
-- Edit and "Neuer Prompt" open an inline form in the list (`UInput` for the name, `UTextarea` for the prompt, save and cancel buttons). No nested modal.
+- Edit and "Neuer Prompt" open an inline form in the list, `SavedPromptForm.vue` (`UInput` for the name, `UTextarea` for the prompt, save and cancel buttons). No nested modal.
 - Delete asks for confirmation inline ("Wirklich löschen?" with confirm and cancel), again to avoid stacking a modal on a modal.
 - Empty state with a short hint on how to save a prompt.
 - Emits `apply: [prompt: string]` so the host can run the action and close itself.
 - Takes an `actionsAreAvailable` prop. Apply is disabled when no text can be processed.
 
-`app/components/saved-prompts/SavePromptInline.vue`:
+`app/components/saved-prompt/SavedPromptSaveInline.vue`:
 
 - A "Als Prompt speichern" button (`i-lucide-bookmark-plus`). Clicking it reveals a name `UInput` and a save button.
 - Takes the current instruction text as a prop and is disabled while that text is empty.
@@ -156,9 +158,9 @@ Only Nuxt UI components and Tailwind classes. Icons are Lucide (`i-lucide-*`).
   1. Backend actions, unchanged.
   2. Local prompts. Each has the icon `i-lucide-hard-drive`, a `UBadge` "Lokal" (`variant="subtle"`, `color="neutral"`, `size="sm"`), and the tooltip "Nur in diesem Browser gespeichert". Selecting one emits `apply-action` with `"custom"` and the prompt text.
   3. "Prompts verwalten…" (`i-lucide-settings-2`). Opens `SavedPromptManager` in a `UModal`.
-- The trigger button stays disabled when no text is available, as today. The manage entry still works then, because managing prompts does not need text.
+- The trigger button is always enabled, so "Prompts verwalten" works on an empty editor. Backend actions and local prompts are disabled as menu items while no text is available.
 
-`CustomAction.vue` (custom instructions drawer): `SavePromptInline` sits under the textarea, next to "Anwenden". Apply behaviour does not change.
+`CustomAction.vue` (custom instructions drawer): `SavedPromptSaveInline` sits under the textarea, next to "Anwenden". Apply behaviour does not change.
 
 ### Mobile
 
@@ -169,9 +171,9 @@ Only Nuxt UI components and Tailwind classes. Icons are Lucide (`i-lucide-*`).
 
 `MobileTransformTab.vue` handles `kind: "manage"` by opening `SavedPromptManager` in a nested `UDrawer`.
 
-The custom group and the user actions sit inside the "Mehr" drawer. Its trigger button (`data-tour="custom-quick-action-mobile"`) is disabled today when there is no text. That would block "Prompts verwalten" on an empty editor, so the trigger stays enabled. Every action inside the drawer already has its own `:disabled="!actionsAreAvailable"`, so text-dependent actions stay disabled. The manage action ignores that flag.
+The custom group and the user actions sit inside the "Weitere Aktionen" drawer. Its trigger button (`data-tour="custom-quick-action-mobile"`) is disabled today when there is no text. That would block "Prompts verwalten" on an empty editor, so the trigger stays enabled. Every action inside the drawer already has its own `:disabled="!actionsAreAvailable"`, so text-dependent actions stay disabled. The manage action ignores that flag.
 
-`CustomSheet.vue`: `SavePromptInline` sits under the textarea.
+`CustomSheet.vue`: `SavedPromptSaveInline` sits under the textarea.
 
 ### i18n
 
@@ -181,7 +183,7 @@ New `savedPrompts.*` keys in `i18n/locales/de.json` and `en.json`: labels, the "
 
 The tour lives in `app/composables/useOnboarding.ts` (used by `layouts/default.vue`). Add one step to the `transform` phase, right after the "Benutzerdefinierte Umschreibaktionen" step:
 
-- Target: `resolveTourTarget('[data-tour="user-actions"]', '[data-tour="custom-quick-action-mobile"]')`. The desktop "Meine Aktionen" button gets the new `data-tour="user-actions"` attribute. On mobile the saved prompts sit in the "Mehr" drawer, so the step points at its trigger, the same element as the step before.
+- Target: `resolveTourTarget('[data-tour="user-actions"]', '[data-tour="custom-quick-action-mobile"]')`. The desktop "Meine Aktionen" button gets the new `data-tour="user-actions"` attribute. On mobile the saved prompts sit in the "Weitere Aktionen" drawer, so the step points at its trigger, the same element as the step before.
 - `onHighlightStarted` calls `setRibbonTab("transform")`, like its neighbours.
 - New i18n keys `tour.savedPrompts.title` and `tour.savedPrompts.content` in both locales. German draft:
   - Title: "Eigene Prompts speichern"
@@ -228,7 +230,7 @@ E2E (Playwright, `tests/e2e/savedPrompts.spec.ts`), on desktop:
 - Edit and delete it in the manager.
 - Export, clear, import the exported file, and see the prompt again.
 
-The e2e server runs with onboarding disabled, and no e2e test covers the tour. The new tour step gets a manual check on desktop and at phone width: run the tour and confirm the step highlights "Meine Aktionen" or "Mehr" and shows the text.
+The e2e server runs with onboarding disabled, and no e2e test covers the tour. The new tour step gets a manual check on desktop and at phone width: run the tour and confirm the step highlights "Meine Aktionen" or "Weitere Aktionen" and shows the text.
 
 One mobile e2e case: save from the custom sheet and see the prompt in the Custom group. The Playwright config only has a desktop project, so this case sets a phone viewport with `test.use({ viewport: { width: 390, height: 844 } })` in the spec file. The app switches to the mobile ribbon by viewport (`nuxt-viewport`).
 
