@@ -5,7 +5,11 @@ import { readonly, ref } from "vue";
 // `useSavedPrompts` relies on Nuxt auto-imports, which vitest does not provide.
 vi.stubGlobal("ref", ref);
 vi.stubGlobal("readonly", readonly);
-vi.stubGlobal("useI18n", () => ({ t: (key: string) => key }));
+// `t` echoes its parameters so tests can check interpolated values.
+vi.stubGlobal("useI18n", () => ({
+    t: (key: string, params?: Record<string, unknown>) =>
+        params ? `${key} ${JSON.stringify(params)}` : key,
+}));
 vi.stubGlobal("useLogger", () => ({
     error: vi.fn(),
     warn: vi.fn(),
@@ -102,6 +106,20 @@ describe("useSavedPrompts", () => {
         );
     });
 
+    it("retries loading after a failed load", async () => {
+        const getAll = vi
+            .fn()
+            .mockRejectedValueOnce(new Error("blocked"))
+            .mockResolvedValueOnce([
+                { id: "1", name: "A", prompt: "a", createdAt: 1, updatedAt: 1 },
+            ]);
+        const api = await setup({ getAll });
+
+        await api.load();
+
+        expect(api.prompts.value.map((p) => p.name)).toEqual(["A"]);
+    });
+
     it("imports new prompts and skips duplicates", async () => {
         const api = await setup();
         await api.save({ name: "A", prompt: "Prompt A" });
@@ -124,6 +142,8 @@ describe("useSavedPrompts", () => {
             expect.objectContaining({
                 color: "success",
                 title: "savedPrompts.toast.imported",
+                description:
+                    'savedPrompts.toast.importedDetail {"added":1,"skipped":2}',
             }),
         );
     });

@@ -50,15 +50,22 @@ export function useSavedPrompts() {
         prompts.value = await query.getAll();
     }
 
+    /** Reads the list, or logs and reports why it could not. */
+    async function loadOnce(): Promise<void> {
+        try {
+            await reload();
+        } catch (error: unknown) {
+            logger.error(error, "Failed to load saved prompts");
+            notifyError(t("savedPrompts.toast.loadError"));
+            // Allow a later retry.
+            loading = undefined;
+        }
+    }
+
     /** Loads the list once; later calls reuse the first load. */
     function load(): Promise<void> {
         if (loading === undefined) {
-            loading = reload().catch((error: unknown) => {
-                logger.error(error, "Failed to load saved prompts");
-                notifyError(t("savedPrompts.toast.loadError"));
-                // Allow a later retry.
-                loading = undefined;
-            });
+            loading = loadOnce();
         }
         return loading;
     }

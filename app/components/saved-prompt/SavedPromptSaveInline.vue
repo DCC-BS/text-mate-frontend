@@ -3,10 +3,8 @@
  * "Als Prompt speichern" control for the custom instructions drawer/sheet.
  * Expands into a name field and saves the current instruction text.
  */
-import {
-    isValidSavedPromptInput,
-    SAVED_PROMPT_NAME_MAX_LENGTH,
-} from "~/types/savedPrompt";
+import { SAVED_PROMPT_NAME_MAX_LENGTH } from "~/types/savedPrompt";
+import { isValidSavedPromptInput } from "~/utils/savedPromptTransfer";
 
 const props = defineProps<{ prompt: string }>();
 

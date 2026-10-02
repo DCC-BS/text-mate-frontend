@@ -28,11 +28,3 @@ export interface SavedPrompt extends SavedPromptInput {
     /** Epoch milliseconds. */
     updatedAt: number;
 }
-
-/**
- * Checks a name and prompt against the save rules, so forms can disable
- * their save button before calling the store.
- */
-export function isValidSavedPromptInput(name: string, prompt: string): boolean {
-    return SavedPromptInputSchema.safeParse({ name, prompt }).success;
-}

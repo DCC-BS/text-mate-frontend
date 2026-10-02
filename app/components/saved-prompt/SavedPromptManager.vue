@@ -3,7 +3,8 @@
  * Lists the user's saved prompts and lets them apply, create, edit, delete,
  * export and import them. Hosted in a UModal (desktop) or UDrawer (mobile).
  */
-import { isValidSavedPromptInput, type SavedPrompt } from "~/types/savedPrompt";
+import type { SavedPrompt } from "~/types/savedPrompt";
+import { isValidSavedPromptInput } from "~/utils/savedPromptTransfer";
 
 const props = defineProps<{ actionsAreAvailable: boolean }>();
 

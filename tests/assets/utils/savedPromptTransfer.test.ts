@@ -1,11 +1,11 @@
 import {
-    isValidSavedPromptInput,
     SAVED_PROMPT_NAME_MAX_LENGTH,
     type SavedPrompt,
 } from "~/types/savedPrompt";
 import {
     buildExport,
     findNewPrompts,
+    isValidSavedPromptInput,
     parseImport,
 } from "~/utils/savedPromptTransfer";
 
