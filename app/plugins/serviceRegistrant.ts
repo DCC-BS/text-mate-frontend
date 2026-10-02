@@ -1,3 +1,5 @@
+import { SavedPromptQuery } from "~/assets/queries/savedPrompt.query";
+
 export default defineNuxtPlugin((nuxtApp) => {
     const orchestrator = new ServiceOrchestrator();
 
@@ -10,6 +12,8 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         builder.registerInstance("translate", t);
         builder.registerInstance("logger", logger);
+
+        builder.register(SavedPromptQuery);
     });
 
     nuxtApp.provide("serviceOrchestrator", orchestrator);
