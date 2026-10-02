@@ -84,7 +84,6 @@
         "loading": "Wird geladen..."
     },
     "text-editor": {
-        "addWordToDictionary": "Zum Wörterbuch hinzufügen",
         "finding-synonym": "Synonyme finden...",
         "finding-alternative-sentence": "Alternativen finden...",
         "rewrite-word": "Wort umformulieren",
@@ -200,12 +199,6 @@
         "custom": "Benutzerdefiniert",
         "apply": "Anwenden",
         "more": "Weitere Aktionen"
-    },
-    "user-dictionary": {
-        "title": "Wörterbuch",
-        "empty": "Keine Wörter in deinem Wörterbuch",
-        "add": "Wort hinzufügen",
-        "placeholder": "Gib ein Wort ein..."
     },
     "quick-actions": {
         "de-CH": "Auf Deutsch übersetzen",

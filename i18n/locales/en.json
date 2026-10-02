@@ -84,7 +84,6 @@
         "loading": "Loading..."
     },
     "text-editor": {
-        "addWordToDictionary": "Add to Dictionary",
         "finding-synonym": "Finding synonyms...",
         "finding-alternative-sentence": "Finding alternatives...",
         "rewrite-word": "Rewrite Word",
@@ -200,12 +199,6 @@
         "custom": "Custom",
         "apply": "Apply",
         "more": "More actions"
-    },
-    "user-dictionary": {
-        "title": "Dictionary",
-        "empty": "No words in your dictionary",
-        "add": "Add word",
-        "placeholder": "Enter a word..."
     },
     "quick-actions": {
         "de-CH": "Translate to German",
