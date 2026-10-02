@@ -22,7 +22,7 @@ async function saveFromCustomDrawer(
     await page.getByTestId("savePromptName").fill(name);
     await page.getByTestId("savePromptSubmit").click();
     await expect(
-        page.getByText(local.savedPrompts.toast.saved).first(),
+        page.getByText(local.savedPrompts.toast.saved, { exact: true }),
     ).toBeVisible();
     await page.keyboard.press("Escape");
 }
@@ -108,7 +108,9 @@ test("Exported prompts can be imported again", async ({ page }, testInfo) => {
     await expect(
         page.getByTestId("savedPromptRow").filter({ hasText: "Export" }),
     ).toBeVisible();
-    await expect(page.getByText("1 hinzugefügt, 0 übersprungen")).toBeVisible();
+    await expect(
+        page.getByText("1 hinzugefügt, 0 übersprungen", { exact: true }),
+    ).toBeVisible();
 });
 
 test("An invalid import file shows an error", async ({ page }) => {
@@ -121,6 +123,6 @@ test("An invalid import file shows an error", async ({ page }) => {
     });
 
     await expect(
-        page.getByText(local.savedPrompts.toast.invalidJson),
+        page.getByText(local.savedPrompts.toast.invalidJson, { exact: true }),
     ).toBeVisible();
 });

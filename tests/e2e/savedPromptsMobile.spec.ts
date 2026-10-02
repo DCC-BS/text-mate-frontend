@@ -18,7 +18,7 @@ test("Prompt saved on mobile appears and applies", async ({ page }) => {
     await page.getByTestId("savePromptName").fill("Mobil-Prompt");
     await page.getByTestId("savePromptSubmit").click();
     await expect(
-        page.getByText(local.savedPrompts.toast.saved).first(),
+        page.getByText(local.savedPrompts.toast.saved, { exact: true }),
     ).toBeVisible();
 
     // Close the nested custom sheet; the "Weitere Aktionen" drawer stays open.
@@ -43,9 +43,10 @@ test("Text actions in the drawer stay inactive with an empty editor", async ({
     page,
 }) => {
     await page.locator('[data-tour="custom-quick-action-mobile"]').click();
-    const customRow = page.getByTestId("mobileCustomAction");
-    await customRow.scrollIntoViewIfNeeded();
-    await customRow.click({ force: true });
-
-    await expect(page.getByTestId("customSheetTextBox")).toHaveCount(0);
+    // The row cannot receive taps, so its custom sheet cannot open. Asserting
+    // the computed style avoids clicking while the drawer is still animating.
+    await expect(page.getByTestId("mobileCustomAction")).toHaveCSS(
+        "pointer-events",
+        "none",
+    );
 });
