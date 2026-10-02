@@ -19,7 +19,8 @@ In scope:
 - Desktop ribbon and mobile ribbon, with the full feature set on both.
 - Show local prompts next to the backend user actions ("Meine Aktionen") and mark them as local.
 - Add `dexie` and use it for the new store.
-- Remove the dead user dictionary feature (see "Dead code removal").
+- A new onboarding tour step and a changelog entry for version 1.8.0.
+- Remove the dead user dictionary feature and the dead copy of the tour (see "Dead code removal").
 
 Out of scope:
 
@@ -168,11 +169,31 @@ Only Nuxt UI components and Tailwind classes. Icons are Lucide (`i-lucide-*`).
 
 `MobileTransformTab.vue` handles `kind: "manage"` by opening `SavedPromptManager` in a nested `UDrawer`.
 
+The custom group and the user actions sit inside the "Mehr" drawer. Its trigger button (`data-tour="custom-quick-action-mobile"`) is disabled today when there is no text. That would block "Prompts verwalten" on an empty editor, so the trigger stays enabled. Every action inside the drawer already has its own `:disabled="!actionsAreAvailable"`, so text-dependent actions stay disabled. The manage action ignores that flag.
+
 `CustomSheet.vue`: `SavePromptInline` sits under the textarea.
 
 ### i18n
 
 New `savedPrompts.*` keys in `i18n/locales/de.json` and `en.json`: labels, the "Lokal" badge, tooltip, form labels, delete confirmation, empty state, and toast messages for save, update, delete, export and import (success and each error case). The "Meine Aktionen" label (`editor.userActions`) stays.
+
+## Onboarding tour
+
+The tour lives in `app/composables/useOnboarding.ts` (used by `layouts/default.vue`). Add one step to the `transform` phase, right after the "Benutzerdefinierte Umschreibaktionen" step:
+
+- Target: `resolveTourTarget('[data-tour="user-actions"]', '[data-tour="custom-quick-action-mobile"]')`. The desktop "Meine Aktionen" button gets the new `data-tour="user-actions"` attribute. On mobile the saved prompts sit in the "Mehr" drawer, so the step points at its trigger, the same element as the step before.
+- `onHighlightStarted` calls `setRibbonTab("transform")`, like its neighbours.
+- New i18n keys `tour.savedPrompts.title` and `tour.savedPrompts.content` in both locales. German draft:
+  - Title: "Eigene Prompts speichern"
+  - Content: "Speichere Deine benutzerdefinierten Anweisungen unter einem Namen und wende sie später mit einem Klick an. Gespeicherte Prompts findest Du unter «Meine Aktionen» mit dem Vermerk «Lokal». Sie liegen nur in diesem Browser. Über «Prompts verwalten» kannst Du sie bearbeiten, löschen sowie als Datei exportieren und importieren, um sie mit anderen zu teilen."
+
+The tour seeds example text before this phase, so the "Meine Aktionen" button is enabled when the step shows.
+
+## Changelog and version
+
+- New file `server/assets/changelogs/v1.8.0.md` with the same front matter and style as `v1.7.0.md` (German, `##` sections with an emoji, short bullet lists, closing line). `published_at` is the release date and gets set when the PR merges.
+- One section on saved prompts: save under a name, find them under "Meine Aktionen" marked "Lokal", edit and delete, export and import as JSON for sharing, available on desktop and mobile, stored only in the browser.
+- `package.json` version goes from `1.7.0` to `1.8.0`, in the same PR, as #176 did for 1.7.0.
 
 ## Dead code removal
 
@@ -183,6 +204,8 @@ Nothing renders the user dictionary feature. Remove:
 - `app/assets/queries/user_dictionary.query.interface.ts`
 - The `UserDictionaryQuery` import and `builder.register(UserDictionaryQuery)` in `app/plugins/serviceRegistrant.ts`
 - i18n keys `user-dictionary.*` and `text-editor.addWordToDictionary` in both locales
+
+`app/components/OnboardingView.vue` is an older copy of the tour that nothing renders. The live tour is `useOnboarding.ts`. Remove the component, so the new step only has to go in one place.
 
 ## Dependencies
 
@@ -204,6 +227,8 @@ E2E (Playwright, `tests/e2e/savedPrompts.spec.ts`), on desktop:
 - Save a prompt from the custom drawer, then apply it from "Meine Aktionen" and see `Action: custom` in the diff review (dummy backend).
 - Edit and delete it in the manager.
 - Export, clear, import the exported file, and see the prompt again.
+
+The e2e server runs with onboarding disabled, and no e2e test covers the tour. The new tour step gets a manual check on desktop and at phone width: run the tour and confirm the step highlights "Meine Aktionen" or "Mehr" and shows the text.
 
 One mobile e2e case: save from the custom sheet and see the prompt in the Custom group. The Playwright config only has a desktop project, so this case sets a phone viewport with `test.use({ viewport: { width: 390, height: 844 } })` in the spec file. The app switches to the mobile ribbon by viewport (`nuxt-viewport`).
 
