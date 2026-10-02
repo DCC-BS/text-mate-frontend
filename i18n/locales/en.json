@@ -421,6 +421,10 @@
             "linkText": "Prompting Guide",
             "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
         },
+        "savedPrompts": {
+            "title": "Save your own prompts",
+            "content": "Save your custom instructions under a name and apply them later with one click. Saved prompts appear under \"My Actions\" marked \"Local\". They are stored only in this browser. Under \"Manage prompts\" you can edit and delete them, and export and import them as a file to share with others."
+        },
         "threads": {
             "title": "Violations & Notes",
             "content": "When you run a Check, violations against your reference documents appear here — with reason, proposal, and source. Decide per violation whether to fix it or skip it. With \"Apply Fix\" the advisor produces the corrected text. You can also add your own notes to any passage of text.",

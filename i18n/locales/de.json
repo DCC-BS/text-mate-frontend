@@ -421,6 +421,10 @@
             "linkText": "Prompting-Merkblatt",
             "linkUrl": "https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/kuenstliche-intelligenz/prompting-merkblatt"
         },
+        "savedPrompts": {
+            "title": "Eigene Prompts speichern",
+            "content": "Speichere Deine benutzerdefinierten Anweisungen unter einem Namen und wende sie später mit einem Klick an. Gespeicherte Prompts findest Du unter «Meine Aktionen» mit dem Vermerk «Lokal». Sie liegen nur in diesem Browser. Über «Prompts verwalten» kannst Du sie bearbeiten, löschen sowie als Datei exportieren und importieren, um sie mit anderen zu teilen."
+        },
         "threads": {
             "title": "Verstösse und Notizen",
             "content": "Wenn du eine Überprüfung ausführst, erscheinen hier die Verstösse gegen deine Referenzdokumente — mit Begründung, Vorschlag und Quellenangabe. Entscheide pro Verstoss, ob du ihn beheben (Erledigen) oder überspringen willst. Mit \"Korrektur anwenden\" erzeugt der Advisor den korrigierten Text. Du kannst auch eigene Notizen zu beliebigen Textstellen hinzufügen.",
