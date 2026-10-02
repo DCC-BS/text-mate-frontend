@@ -44,6 +44,7 @@ function submitAction() {
                     :rows="6"
                     data-testid="customActionTextBox"
                 > </UTextarea>
+                <SavedPromptSaveInline :prompt="customText" />
                 <UButton
                     size="sm"
                     @click="submitAction"
