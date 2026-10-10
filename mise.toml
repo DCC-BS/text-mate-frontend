@@ -2,8 +2,8 @@
 bun = "1.4.2"
 pass-cli = "latest"
 node = "24.21.0"
-"npm:varlock" = "1.19.0"
-usage = "6.9.1"
+"npm:varlock" = "1.21.0"
+usage = "6.11.1"
 
 [plugins]
 pass-cli = "https://github.com/DCC-BS/mise-proton-pass-cli"

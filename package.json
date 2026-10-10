@@ -29,7 +29,7 @@
         "@iconify-json/lucide": "^1.2.122",
         "@iconify-json/simple-icons": "^1.2.93",
         "@mohtasham/md-to-docx": "git+https://github.com/DCC-BS/md-to-docx.js#v3.0.0",
-        "@nuxt/ui": "4.11.1",
+        "@nuxt/ui": "4.11.2",
         "@nuxtjs/i18n": "^10.6.0",
         "@nuxtjs/mdc": "0.23.1",
         "@pinia/nuxt": "1.0.2",
@@ -92,9 +92,9 @@
     "overrides": {
         "// framework-singletons": "Deduplicate instances to prevent SSR crashes and editor instanceof failures",
         "vue": "3.5.43",
-        "reka-ui": "2.10.4",
+        "reka-ui": "2.10.5",
         "@vueuse/core": "^14.4.0",
-        "prosemirror-model": "1.25.11",
-        "prosemirror-view": "1.42.4"
+        "prosemirror-model": "1.25.12",
+        "prosemirror-view": "1.42.6"
     }
 }
