@@ -6,8 +6,6 @@ const PdfEmbed = defineAsyncComponent(() =>
     import("vue-pdf-embed").then((module) => module.default),
 );
 
-import type { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
-
 interface AdvisorPdfViewerProps {
     file: Blob;
     fileName: string;
@@ -53,7 +51,9 @@ function goToPage(pageNumber: number): void {
 /**
  * Handle when PDF document is loaded
  */
-function handleDocumentLoaded(pdfDocument: PDFDocumentProxy): void {
+// Typed structurally: pdfjs-dist is not a direct dependency, and the copy
+// vue-pdf-embed resolves can differ from the hoisted one.
+function handleDocumentLoaded(pdfDocument: { numPages: number }): void {
     // Get the number of pages from the PDF document
     totalPages.value = pdfDocument.numPages;
 
