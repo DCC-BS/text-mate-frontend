@@ -52,7 +52,7 @@
         "giget": "^3.3.1",
         "jsdiff": "^1.1.1",
         "motion-v": "^2.3.0",
-        "nuxt": "4.6.1",
+        "nuxt": "4.6.2",
         "nuxt-viewport": "2.6.1",
         "openid-client": "^6.8.4",
         "pinia": "^4.0.2",
@@ -68,7 +68,7 @@
         "varlock": "^1.16.1",
         "vite-plugin-checker": "^0.14.5",
         "vue": "^3.5.41",
-        "vue-pdf-embed": "^2.1.5",
+        "vue-pdf-embed": "^2.1.7",
         "vue-router": "^5.2.0",
         "zod": "^4.4.3"
     },
