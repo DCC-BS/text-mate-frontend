@@ -346,12 +346,12 @@ watch(
                         >
                             {{ t("advisor.pdfViewer.prevPage") }}
                         </button>
-                        <span class="mx-2 text-sm"
-                            >{{ t("advisor.pdfViewer.pageIndicator", {
+                        <span class="mx-2 text-sm">{{
+                            t("advisor.pdfViewer.pageIndicator", {
                                 current: currentPage,
                                 total: totalPages,
-                            }) }}</span
-                        >
+                            })
+                        }}</span>
                         <button
                             type="button"
                             class="py-1 px-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"

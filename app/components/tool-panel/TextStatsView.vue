@@ -45,32 +45,36 @@ function formatLanguage(lang?: string): string {
         <div class="bg-default border border-default p-2 rounded-md">
             <div class="grid grid-cols-[1fr_auto] gap-x-4 items-center">
                 <span>{{ t("text-stats.character-count") }}</span>
-                <span class="text-end font-bold" data-testid="characterCount"
-                    >{{ formatNumber(charCount) }}</span
-                >
+                <span class="text-end font-bold" data-testid="characterCount">{{
+                    formatNumber(charCount)
+                }}</span>
 
                 <span>{{ t("text-stats.word-count") }}</span>
-                <span class="text-end font-bold" data-testid="wordCount"
-                    >{{ formatNumber(wordCount) }}</span
-                >
+                <span class="text-end font-bold" data-testid="wordCount">{{
+                    formatNumber(wordCount)
+                }}</span>
 
                 <span>{{ t("text-stats.syllable-count") }}</span>
-                <span class="text-end font-bold" data-testid="syllableCount"
-                    >{{ formatNumber(syllableCount) }}</span
-                >
+                <span class="text-end font-bold" data-testid="syllableCount">{{
+                    formatNumber(syllableCount)
+                }}</span>
 
                 <span>{{ t("text-stats.average-sentence-length") }}</span>
                 <span
                     class="text-end font-bold"
                     data-testid="averageSentenceLength"
-                    >{{ averageSentenceLength }}</span
+                    >{{
+                        averageSentenceLength
+                    }}</span
                 >
 
                 <span>{{ t("text-stats.average-syllables-per-word") }}</span>
                 <span
                     class="text-end font-bold"
                     data-testid="averageSyllablesPerWord"
-                    >{{ averageSyllablesPerWord }}</span
+                    >{{
+                        averageSyllablesPerWord
+                    }}</span
                 >
 
                 <template v-if="language">
@@ -78,7 +82,9 @@ function formatLanguage(lang?: string): string {
                     <span
                         class="text-end font-bold"
                         data-testid="detectedLanguage"
-                        >{{ formatLanguage(language) }}</span
+                        >{{
+                            formatLanguage(language)
+                        }}</span
                     >
                 </template>
             </div>
