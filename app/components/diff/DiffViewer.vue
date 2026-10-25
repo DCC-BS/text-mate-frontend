@@ -279,27 +279,33 @@ defineExpose({
                     class="m-0 text-base leading-loose whitespace-pre-wrap break-words text-default"
                 >
                     <template v-for="(segment, i) in segments" :key="i">
-                        <span v-if="segment.kind === 'text'"
-                            >{{ segment.value }}</span
-                        >
+                        <span v-if="segment.kind === 'text'">{{
+                            segment.value
+                        }}</span>
 
                         <span
                             v-else-if="segment.hunk.status === 'accepted'"
                             class="bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300 rounded-sm px-[3px]"
-                            >{{ segment.hunk.addedText }}</span
+                            >{{
+                                segment.hunk.addedText
+                            }}</span
                         >
 
                         <span
                             v-else-if="segment.hunk.status === 'rejected'"
                             class="line-through text-gray-400 dark:text-gray-600"
-                            >{{ segment.hunk.removedText }}</span
+                            >{{
+                                segment.hunk.removedText
+                            }}</span
                         >
 
                         <span v-else class="inline align-baseline">
                             <span
                                 v-if="segment.hunk.removedText"
                                 class="line-through text-gray-400 bg-red-50 dark:bg-red-950/40 dark:text-gray-500 rounded-sm px-[2px]"
-                                >{{ segment.hunk.removedText }}</span
+                                >{{
+                                    segment.hunk.removedText
+                                }}</span
                             >
                             <span
                                 v-if="
@@ -312,7 +318,9 @@ defineExpose({
                             <span
                                 v-if="segment.hunk.addedText"
                                 class="bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300 rounded-sm px-[3px]"
-                                >{{ segment.hunk.addedText }}</span
+                                >{{
+                                    segment.hunk.addedText
+                                }}</span
                             >
                             <span
                                 class="inline-flex gap-px ml-[5px] align-middle"
@@ -370,9 +378,9 @@ defineExpose({
                         class="px-3 py-1 whitespace-pre-wrap break-words text-default"
                     >
                         <template v-for="(segment, i) in segments" :key="i">
-                            <template v-if="segment.kind === 'text'"
-                                >{{ segment.value }}</template
-                            >
+                            <template v-if="segment.kind === 'text'">{{
+                                segment.value
+                            }}</template>
                             <template v-else>
                                 <span
                                     v-if="segment.hunk.removedText"
@@ -383,7 +391,9 @@ defineExpose({
                                               ? 'line-through text-gray-400 dark:text-gray-600'
                                               : 'bg-gray-100 dark:bg-gray-800 text-default rounded-sm px-[3px]'
                                     "
-                                    >{{ segment.hunk.removedText }}</span
+                                    >{{
+                                        segment.hunk.removedText
+                                    }}</span
                                 >
                                 <UButton
                                     v-if="segment.hunk.status === 'pending'"
@@ -423,9 +433,9 @@ defineExpose({
                         class="px-3 py-1 whitespace-pre-wrap break-words text-default border-l border-default"
                     >
                         <template v-for="(segment, i) in segments" :key="i">
-                            <template v-if="segment.kind === 'text'"
-                                >{{ segment.value }}</template
-                            >
+                            <template v-if="segment.kind === 'text'">{{
+                                segment.value
+                            }}</template>
                             <template v-else>
                                 <span
                                     v-if="segment.hunk.addedText"
@@ -434,7 +444,9 @@ defineExpose({
                                             ? 'line-through text-gray-400 dark:text-gray-600'
                                             : 'bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-300 rounded-sm px-[3px]'
                                     "
-                                    >{{ segment.hunk.addedText }}</span
+                                    >{{
+                                        segment.hunk.addedText
+                                    }}</span
                                 >
                                 <UButton
                                     v-if="segment.hunk.status === 'pending'"

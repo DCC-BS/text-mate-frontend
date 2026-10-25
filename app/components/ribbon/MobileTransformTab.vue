@@ -86,7 +86,9 @@ function onDrawerCustom(config: string): void {
                     <UIcon :name="action.icon" class="size-6" />
                     <span
                         class="text-xs font-medium truncate w-full text-center"
-                        >{{ action.label }}</span
+                        >{{
+                            action.label
+                        }}</span
                     >
                 </UButton>
             </RibbonOptionSheet>
@@ -100,9 +102,9 @@ function onDrawerCustom(config: string): void {
                 @click="runSimple(action)"
             >
                 <UIcon :name="action.icon" class="size-6" />
-                <span class="text-xs font-medium truncate w-full text-center"
-                    >{{ action.label }}</span
-                >
+                <span class="text-xs font-medium truncate w-full text-center">{{
+                    action.label
+                }}</span>
             </UButton>
         </template>
 
@@ -157,9 +159,9 @@ function onDrawerCustom(config: string): void {
                                         :name="action.icon"
                                         class="size-5 shrink-0"
                                     />
-                                    <span class="flex-1 text-sm"
-                                        >{{ action.label }}</span
-                                    >
+                                    <span class="flex-1 text-sm">{{
+                                        action.label
+                                    }}</span>
                                     <UIcon
                                         name="i-lucide-chevron-right"
                                         class="size-4 text-muted"
@@ -185,9 +187,9 @@ function onDrawerCustom(config: string): void {
                                         :name="action.icon"
                                         class="size-5 shrink-0"
                                     />
-                                    <span class="flex-1 text-sm"
-                                        >{{ action.label }}</span
-                                    >
+                                    <span class="flex-1 text-sm">{{
+                                        action.label
+                                    }}</span>
                                     <UIcon
                                         name="i-lucide-chevron-right"
                                         class="size-4 text-muted"
@@ -210,9 +212,9 @@ function onDrawerCustom(config: string): void {
                                         :name="action.icon"
                                         class="size-5 shrink-0"
                                     />
-                                    <span class="flex-1 text-sm"
-                                        >{{ action.label }}</span
-                                    >
+                                    <span class="flex-1 text-sm">{{
+                                        action.label
+                                    }}</span>
                                     <UIcon
                                         name="i-lucide-chevron-right"
                                         class="size-4 text-muted"
@@ -238,9 +240,9 @@ function onDrawerCustom(config: string): void {
                                     :name="action.icon"
                                     class="size-5 shrink-0"
                                 />
-                                <span class="flex-1 text-sm"
-                                    >{{ action.label }}</span
-                                >
+                                <span class="flex-1 text-sm">{{
+                                    action.label
+                                }}</span>
                             </button>
                         </template>
                     </div>

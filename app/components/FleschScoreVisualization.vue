@@ -69,7 +69,7 @@ const segmentWidth = computed(() => {
 <template>
     <!-- Compact header with score and level inline -->
     <div class="flesch-header">
-        <span class="flesch-title">{{ t('flesch-score.reading-ease') }}</span>
+        <span class="flesch-title">{{ t("flesch-score.reading-ease") }}</span>
         <div class="flesch-info">
             <span class="flesch-score">{{ Math.round(score) }}</span>
             <span class="flesch-level" :style="{ color: currentLevel.color }">

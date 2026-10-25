@@ -209,9 +209,11 @@ function noop(): void {}
                     >
                         {{ note.author === "advisor" ? "A" : "Y" }}
                     </span>
-                    {{ note.author === "advisor"
+                    {{
+                        note.author === "advisor"
                             ? t("advisor.advisor")
-                            : t("advisor.you") }}
+                            : t("advisor.you")
+                    }}
                     <span class="ml-auto flex gap-0.5 transition-opacity">
                         <UButton
                             icon="i-lucide-pencil"
