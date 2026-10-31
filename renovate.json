@@ -32,9 +32,9 @@
             "groupSlug": "held-major"
         },
         {
-            "description": "Held by the DCC dependency routine (2026-10-31): common-ui >= 2.2.1 imports vue-pdf-embed CSS in PdfViewer.vue, which breaks the Nitro server build (Could not resolve './PdfViewer-styles-1.mjs-!~{018}~.js'). Remove once common-ui is fixed.",
+            "description": "Held by the DCC dependency routine (2026-10-31): common-ui 2.2.1 and 2.2.2 import vue-pdf-embed CSS in PdfViewer.vue, which breaks the Nitro server build (Could not resolve './PdfViewer-styles-1.mjs-!~{018}~.js'). Fixed in 2.2.3 (common-ui.bs.js#207); remove this rule once 2.2.3 is in.",
             "matchPackageNames": ["@dcc-bs/common-ui.bs.js"],
-            "allowedVersions": "<2.2.1"
+            "allowedVersions": "!/^2\\.2\\.[12]$/"
         }
     ],
     "lockFileMaintenance": {
