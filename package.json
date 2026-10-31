@@ -1,7 +1,7 @@
 {
     "name": "nuxt-app",
     "private": true,
-    "version": "1.8.1",
+    "version": "1.8.2",
     "scripts": {
         "build": "nuxt build",
         "dev": "nuxt dev",
@@ -21,10 +21,10 @@
         "e2e:codegen": "mise run e2e:codegen"
     },
     "dependencies": {
-        "@dcc-bs/common-ui.bs.js": "2.2.0",
+        "@dcc-bs/common-ui.bs.js": "2.2.3",
         "@dcc-bs/communication.bs.js": "^0.1.4",
-        "@dcc-bs/dependency-injection.bs.js": "^0.0.16",
-        "@dcc-bs/event-system.bs.js": "^1.4.3",
+        "@dcc-bs/dependency-injection.bs.js": "^0.0.18",
+        "@dcc-bs/event-system.bs.js": "^1.4.5",
         "@iconify-json/flag": "^1.2.12",
         "@iconify-json/lucide": "^1.2.122",
         "@iconify-json/simple-icons": "^1.2.93",
@@ -52,7 +52,7 @@
         "giget": "^3.3.1",
         "jsdiff": "^1.1.1",
         "motion-v": "^2.3.0",
-        "nuxt": "4.6.2",
+        "nuxt": "4.6.3",
         "nuxt-viewport": "2.6.1",
         "openid-client": "^6.8.4",
         "pinia": "^4.0.2",
