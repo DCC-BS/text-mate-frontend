@@ -174,9 +174,11 @@ const checkboxUi = {
                                 />
                                 <span>
                                     {{ doc.files.length }}
-                                    {{ doc.files.length === 1
+                                    {{
+                                        doc.files.length === 1
                                             ? t("advisor.file")
-                                            : t("advisor.files") }}
+                                            : t("advisor.files")
+                                    }}
                                 </span>
                             </span>
                         </span>

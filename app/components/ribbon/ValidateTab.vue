@@ -51,7 +51,11 @@ async function onValidate() {
                     class="flex flex-col justify-center items-center p-2 gap-2"
                 >
                     <div>
-                        {{ t('advisor.selectDocsDescription', { maxDocs: props.maxDocs }) }}
+                        {{
+                            t("advisor.selectDocsDescription", {
+                                maxDocs: props.maxDocs,
+                            })
+                        }}
                     </div>
                     <AdvisorDocSelect
                         v-model="selectedDocsModel"

@@ -213,6 +213,24 @@ export function useOnboading() {
                     setRibbonTab("transform");
                 },
             },
+            // Saved prompts — "Meine Aktionen" on desktop; on mobile they live
+            // in the "Weitere Aktionen" drawer, so point at its trigger.
+            {
+                element: () =>
+                    resolveTourTarget(
+                        '[data-tour="user-actions"]',
+                        '[data-tour="custom-quick-action-mobile"]',
+                    ),
+                popover: {
+                    title: () => t("tour.savedPrompts.title"),
+                    description: () => t("tour.savedPrompts.content"),
+                    side: "bottom",
+                    align: "center",
+                },
+                onHighlightStarted: () => {
+                    setRibbonTab("transform");
+                },
+            },
         ])
         .switchPhase("diff")
         .addSteps([

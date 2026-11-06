@@ -48,18 +48,20 @@ async function onValidate(): Promise<void> {
                 data-tour="ribbon-check-mobile"
             >
                 <UIcon name="i-lucide-search-check" class="size-6" />
-                <span class="text-xs font-medium truncate w-full text-center"
-                    >{{ t("ribbon.check") }}</span
-                >
+                <span class="text-xs font-medium truncate w-full text-center">{{
+                    t("ribbon.check")
+                }}</span>
             </UButton>
             <template #content>
                 <div
                     class="flex flex-col justify-center items-center p-3 pb-6 gap-3"
                 >
                     <p class="text-sm text-muted text-center">
-                        {{ t("advisor.selectDocsDescription", {
+                        {{
+                            t("advisor.selectDocsDescription", {
                                 maxDocs: props.maxDocs,
-                            }) }}
+                            })
+                        }}
                     </p>
                     <AdvisorDocSelect
                         v-model="selectedDocsModel"
@@ -89,9 +91,9 @@ async function onValidate(): Promise<void> {
             @click="executeCommand(new ApplyFixCommand())"
         >
             <UIcon name="i-lucide-wrench" class="size-6" />
-            <span class="text-xs font-medium truncate w-full text-center"
-                >{{ t("ribbon.fix") }}</span
-            >
+            <span class="text-xs font-medium truncate w-full text-center">{{
+                t("ribbon.fix")
+            }}</span>
         </UButton>
 
         <!-- Clear -->

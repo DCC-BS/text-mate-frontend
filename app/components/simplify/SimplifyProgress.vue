@@ -40,7 +40,11 @@ const currentScore = computed<ReadabilityScore>(() => ({
             <div class="flex items-center gap-2 min-w-0">
                 <UIcon name="i-lucide-loader" class="animate-spin size-3.5" />
                 <span class="font-medium text-highlighted">
-                    {{ t("simplify.attempt", { attempt: props.progress.attempt }) }}
+                    {{
+                        t("simplify.attempt", {
+                            attempt: props.progress.attempt,
+                        })
+                    }}
                 </span>
                 <span class="text-muted truncate">
                     {{ stageLabel }}
@@ -52,10 +56,12 @@ const currentScore = computed<ReadabilityScore>(() => ({
         <template v-if="props.progress.unitsTotal > 0">
             <UProgress :model-value="unitsInTarget" :max="unitsTotal" />
             <div class="text-xs text-muted text-right">
-                {{ t("simplify.unitsInTarget", {
+                {{
+                    t("simplify.unitsInTarget", {
                         inTarget: unitsInTarget,
                         total: props.progress.unitsTotal,
-                    }) }}
+                    })
+                }}
             </div>
         </template>
     </div>

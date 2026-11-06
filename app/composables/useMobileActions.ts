@@ -32,6 +32,12 @@ export type MobileAction =
           id: string;
           label: string;
           icon: string;
+      }
+    | {
+          kind: "manage";
+          id: string;
+          label: string;
+          icon: string;
       };
 
 /** A labelled group of actions, mirroring the desktop ribbon sections. */
@@ -53,6 +59,7 @@ export function useMobileActions(props: RibbonTransformProps) {
     const toast = useToast();
     const { showError } = useUserFeedback();
     const logger = useLogger();
+    const { prompts: savedPrompts, load: loadSavedPrompts } = useSavedPrompts();
 
     const actionsAreAvailable = computed(
         () => props.editable && !props.busy && props.text.trim().length > 0,
@@ -88,6 +95,8 @@ export function useMobileActions(props: RibbonTransformProps) {
     const userActions = ref<{ id: string; name: string }[]>([]);
 
     onMounted(async () => {
+        loadSavedPrompts();
+
         const response = await apiFetch("/api/user-actions", {
             method: "get",
             schema: TextActionGetOutputSchema,
@@ -293,6 +302,21 @@ export function useMobileActions(props: RibbonTransformProps) {
                     icon: "i-lucide-user-cog",
                     action: u.id,
                 })),
+                // Prompts saved in this browser run as the "custom" action.
+                ...savedPrompts.value.map((prompt) => ({
+                    kind: "simple" as const,
+                    id: `saved-prompt-${prompt.id}`,
+                    label: prompt.name,
+                    icon: "i-lucide-hard-drive",
+                    action: "custom",
+                    config: prompt.prompt,
+                })),
+                {
+                    kind: "manage" as const,
+                    id: "manage-saved-prompts",
+                    label: t("savedPrompts.manage"),
+                    icon: "i-lucide-settings-2",
+                },
             ],
         },
     ]);

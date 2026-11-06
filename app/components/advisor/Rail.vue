@@ -41,7 +41,7 @@ const emit = defineEmits<{
                             class="text-sm text-primary"
                         />
                         <span>
-                            {{ t('advisor.applyHint') }}
+                            {{ t("advisor.applyHint") }}
                         </span>
                         <UButton
                             icon="i-lucide-search-check"
@@ -49,7 +49,7 @@ const emit = defineEmits<{
                             variant="soft"
                             @click="executeCommand(new ApplyFixCommand())"
                         >
-                            {{ t('ribbon.fix') }}
+                            {{ t("ribbon.fix") }}
                         </UButton>
                     </div>
                 </div>

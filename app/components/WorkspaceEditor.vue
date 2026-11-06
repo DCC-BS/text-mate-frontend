@@ -294,7 +294,11 @@ const bubbleMenuAppendTo = () => document.body;
                         "
                         @click="addNoteOrReply"
                     >
-                        {{ replyTargetId ? t("advisor.reply") : t("advisor.addNote") }}
+                        {{
+                            replyTargetId
+                                ? t("advisor.reply")
+                                : t("advisor.addNote")
+                        }}
                     </UButton>
                 </div>
             </bubble-menu>

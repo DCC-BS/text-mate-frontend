@@ -33,7 +33,9 @@ function submit(): void {
                     :label="t('quick-actions.custom.label')"
                     :placeholder="t('quick-actions.custom.placeholder')"
                     :rows="5"
+                    data-testid="customSheetTextBox"
                 />
+                <SavedPromptSaveInline :prompt="text" />
                 <UButton
                     size="lg"
                     block

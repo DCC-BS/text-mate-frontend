@@ -12,6 +12,14 @@ const { t } = useI18n();
 const { actionsAreAvailable, apply, groups } = useMobileActions(props);
 
 const moreOpen = ref(false);
+const managerOpen = ref(false);
+
+/** Applies a prompt picked in the manager and closes both drawers. */
+function onManagerApply(prompt: string): void {
+    managerOpen.value = false;
+    moreOpen.value = false;
+    apply("custom", prompt);
+}
 
 // The two actions promoted to the inline row.
 const inlineIds = ["summarize", "proofread"] as const;
@@ -78,7 +86,9 @@ function onDrawerCustom(config: string): void {
                     <UIcon :name="action.icon" class="size-6" />
                     <span
                         class="text-xs font-medium truncate w-full text-center"
-                        >{{ action.label }}</span
+                        >{{
+                            action.label
+                        }}</span
                     >
                 </UButton>
             </RibbonOptionSheet>
@@ -92,9 +102,9 @@ function onDrawerCustom(config: string): void {
                 @click="runSimple(action)"
             >
                 <UIcon :name="action.icon" class="size-6" />
-                <span class="text-xs font-medium truncate w-full text-center"
-                    >{{ action.label }}</span
-                >
+                <span class="text-xs font-medium truncate w-full text-center">{{
+                    action.label
+                }}</span>
             </UButton>
         </template>
 
@@ -104,7 +114,6 @@ function onDrawerCustom(config: string): void {
                 variant="outline"
                 color="neutral"
                 class="flex-col h-auto py-2.5 gap-1 px-4 shrink-0 rounded-xl"
-                :disabled="!actionsAreAvailable"
                 data-tour="custom-quick-action-mobile"
             >
                 <UIcon name="i-lucide-layout-grid" class="size-6" />
@@ -141,14 +150,18 @@ function onDrawerCustom(config: string): void {
                             >
                                 <div
                                     class="flex items-center gap-3 px-3 py-3.5 active:bg-elevated/50 transition cursor-pointer"
+                                    :class="{
+                                        'opacity-50 pointer-events-none':
+                                            !actionsAreAvailable,
+                                    }"
                                 >
                                     <UIcon
                                         :name="action.icon"
                                         class="size-5 shrink-0"
                                     />
-                                    <span class="flex-1 text-sm"
-                                        >{{ action.label }}</span
-                                    >
+                                    <span class="flex-1 text-sm">{{
+                                        action.label
+                                    }}</span>
                                     <UIcon
                                         name="i-lucide-chevron-right"
                                         class="size-4 text-muted"
@@ -164,20 +177,57 @@ function onDrawerCustom(config: string): void {
                             >
                                 <div
                                     class="flex items-center gap-3 px-3 py-3.5 active:bg-elevated/50 transition cursor-pointer"
+                                    :class="{
+                                        'opacity-50 pointer-events-none':
+                                            !actionsAreAvailable,
+                                    }"
+                                    data-testid="mobileCustomAction"
                                 >
                                     <UIcon
                                         :name="action.icon"
                                         class="size-5 shrink-0"
                                     />
-                                    <span class="flex-1 text-sm"
-                                        >{{ action.label }}</span
-                                    >
+                                    <span class="flex-1 text-sm">{{
+                                        action.label
+                                    }}</span>
                                     <UIcon
                                         name="i-lucide-chevron-right"
                                         class="size-4 text-muted"
                                     />
                                 </div>
                             </RibbonCustomSheet>
+
+                            <UDrawer
+                                v-else-if="action.kind === 'manage'"
+                                v-model:open="managerOpen"
+                                nested
+                                :title="t('savedPrompts.managerTitle')"
+                            >
+                                <button
+                                    type="button"
+                                    class="flex items-center gap-3 w-full px-3 py-3.5 text-left active:bg-elevated/50 transition"
+                                    data-testid="savedPromptManageMobile"
+                                >
+                                    <UIcon
+                                        :name="action.icon"
+                                        class="size-5 shrink-0"
+                                    />
+                                    <span class="flex-1 text-sm">{{
+                                        action.label
+                                    }}</span>
+                                    <UIcon
+                                        name="i-lucide-chevron-right"
+                                        class="size-4 text-muted"
+                                    />
+                                </button>
+
+                                <template #body>
+                                    <SavedPromptManager
+                                        :actions-are-available="actionsAreAvailable"
+                                        @apply="onManagerApply"
+                                    />
+                                </template>
+                            </UDrawer>
 
                             <button
                                 v-else
@@ -190,9 +240,9 @@ function onDrawerCustom(config: string): void {
                                     :name="action.icon"
                                     class="size-5 shrink-0"
                                 />
-                                <span class="flex-1 text-sm"
-                                    >{{ action.label }}</span
-                                >
+                                <span class="flex-1 text-sm">{{
+                                    action.label
+                                }}</span>
                             </button>
                         </template>
                     </div>
