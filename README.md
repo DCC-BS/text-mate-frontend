@@ -85,37 +85,37 @@ AUTH_MODE=none    # none or azure
 
 Environment variables are validated using Varlock schemas (`.env.schema`, `.env.runtime.schema`, `.env.buildtime.schema`, `.env.azure.schema`):
 
-| Variable | Description | Default | Type |
-|----------|-------------|---------|------|
-| **Core Configuration** | | | |
-| `APP_MODE` | Application runtime mode (`dev`, `ci`, `build`, `prod`) | `dev` | enum |
-| `AUTH_MODE` | Authentication mode (`none`, `azure`) | `none` | enum |
-| `USE_FEEDBACK` | Enable feedback widget | `true` (non-CI) | boolean |
-| `DUMMY` | Enable mock API mode (no backend required) | `false` | boolean |
-| **Backend & Services** | | | |
-| `API_PORT` | Backend API port | `8000` | port |
-| `NUXT_API_URL` | Backend API URL | `http://localhost:8000` (dev) | URL |
-| `NUXT_FEEDBACK_GITHUB_TOKEN` | GitHub token for feedback reporting | Proton Pass (dev) | string (sensitive) |
-| `NUXT_PUBLIC_LOGGER_LOG_LEVEL` | Client log level | `debug` (dev), `info` (prod) | enum |
-| `LOG_LEVEL` | Server log level | `debug` (dev), `info` (prod) | enum |
-| **UI & Onboarding Flags** | | | |
-| `DISABLE_ONBOARDING` | Disable onboarding tour (e.g. in tests) | `false` | boolean |
-| `NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG` | Disable changelog modal | `false` | boolean |
-| `NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER` | Disable disclaimer banner | `false` | boolean |
-| `NUXT_PUBLIC_COMMON_UI_DISABLE_ONBOARDING` | Disable onboarding popup | `false` | boolean |
-| `NUXT_PUBLIC_COMMON_UI_DISABLE_SYSTEM_STATUS` | Disable backend health indicator | `false` | boolean |
-| `NUXT_PUBLIC_APP_CONFIG_APP_LIST_URL_TEMPLATE` | App switcher template URL | `http://{APP_NAME}.localhost.ch` | string |
+| Variable                                       | Description                                             | Default                          | Type               |
+| ---------------------------------------------- | ------------------------------------------------------- | -------------------------------- | ------------------ |
+| **Core Configuration**                         |                                                         |                                  |                    |
+| `APP_MODE`                                     | Application runtime mode (`dev`, `ci`, `build`, `prod`) | `dev`                            | enum               |
+| `AUTH_MODE`                                    | Authentication mode (`none`, `azure`)                   | `none`                           | enum               |
+| `USE_FEEDBACK`                                 | Enable feedback widget                                  | `true` (non-CI)                  | boolean            |
+| `DUMMY`                                        | Enable mock API mode (no backend required)              | `false`                          | boolean            |
+| **Backend & Services**                         |                                                         |                                  |                    |
+| `API_PORT`                                     | Backend API port                                        | `8000`                           | port               |
+| `NUXT_API_URL`                                 | Backend API URL                                         | `http://localhost:8000` (dev)    | URL                |
+| `NUXT_FEEDBACK_GITHUB_TOKEN`                   | GitHub token for feedback reporting                     | Proton Pass (dev)                | string (sensitive) |
+| `NUXT_PUBLIC_LOGGER_LOG_LEVEL`                 | Client log level                                        | `debug` (dev), `info` (prod)     | enum               |
+| `LOG_LEVEL`                                    | Server log level                                        | `debug` (dev), `info` (prod)     | enum               |
+| **UI & Onboarding Flags**                      |                                                         |                                  |                    |
+| `DISABLE_ONBOARDING`                           | Disable onboarding tour (e.g. in tests)                 | `false`                          | boolean            |
+| `NUXT_PUBLIC_COMMON_UI_DISABLE_CHANGELOG`      | Disable changelog modal                                 | `false`                          | boolean            |
+| `NUXT_PUBLIC_COMMON_UI_DISABLE_DISCLAIMER`     | Disable disclaimer banner                               | `false`                          | boolean            |
+| `NUXT_PUBLIC_COMMON_UI_DISABLE_ONBOARDING`     | Disable onboarding popup                                | `false`                          | boolean            |
+| `NUXT_PUBLIC_COMMON_UI_DISABLE_SYSTEM_STATUS`  | Disable backend health indicator                        | `false`                          | boolean            |
+| `NUXT_PUBLIC_APP_CONFIG_APP_LIST_URL_TEMPLATE` | App switcher template URL                               | `http://{APP_NAME}.localhost.ch` | string             |
 
 #### Azure AD Configuration (When `AUTH_MODE=azure`)
 
-| Variable | Description | Default | Type |
-|----------|-------------|---------|------|
-| `NUXT_AZURE_AUTH_SECRET` | Session encryption secret (`openssl rand -base64 32`) | - | string (sensitive, required) |
-| `NUXT_AZURE_AUTH_CLIENT_ID` | Azure AD client ID | Proton Pass (dev) | UUID |
-| `NUXT_AZURE_AUTH_TENANT_ID` | Azure AD tenant ID | Proton Pass (dev) | UUID |
-| `NUXT_AZURE_AUTH_CLIENT_SECRET` | Azure AD client secret | Proton Pass (dev) | string (sensitive) |
-| `NUXT_AZURE_AUTH_API_CLIENT_ID` | Azure AD API client ID | Proton Pass (dev) | UUID |
-| `NUXT_AZURE_AUTH_ORIGIN` | Auth callback origin URL | `http://localhost:3000/api/auth` | URL |
+| Variable                        | Description                                           | Default                          | Type                         |
+| ------------------------------- | ----------------------------------------------------- | -------------------------------- | ---------------------------- |
+| `NUXT_AZURE_AUTH_SECRET`        | Session encryption secret (`openssl rand -base64 32`) | -                                | string (sensitive, required) |
+| `NUXT_AZURE_AUTH_CLIENT_ID`     | Azure AD client ID                                    | Proton Pass (dev)                | UUID                         |
+| `NUXT_AZURE_AUTH_TENANT_ID`     | Azure AD tenant ID                                    | Proton Pass (dev)                | UUID                         |
+| `NUXT_AZURE_AUTH_CLIENT_SECRET` | Azure AD client secret                                | Proton Pass (dev)                | string (sensitive)           |
+| `NUXT_AZURE_AUTH_API_CLIENT_ID` | Azure AD API client ID                                | Proton Pass (dev)                | UUID                         |
+| `NUXT_AZURE_AUTH_ORIGIN`        | Auth callback origin URL                              | `http://localhost:3000/api/auth` | URL                          |
 
 ### Varlock & Secrets Management
 
@@ -320,4 +320,3 @@ Special thanks to the following open-source projects and initiatives that inspir
 
 Datenwissenschaften und KI <br>
 Developed with ❤️ by DCC - Data Competence Center
-

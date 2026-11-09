@@ -223,7 +223,9 @@ function onDrawerCustom(config: string): void {
 
                                 <template #body>
                                     <SavedPromptManager
-                                        :actions-are-available="actionsAreAvailable"
+                                        :actions-are-available="
+                                            actionsAreAvailable
+                                        "
                                         @apply="onManagerApply"
                                     />
                                 </template>

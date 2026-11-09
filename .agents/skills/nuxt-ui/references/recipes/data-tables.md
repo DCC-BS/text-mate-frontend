@@ -121,25 +121,32 @@ const rowSelection = ref<Record<string, boolean>>({})
 Add a checkbox column using the `h` function. Use tri-state `modelValue` (`true`, `false`, or `'indeterminate'`) for the "select all" header:
 
 ```ts
-import { h } from 'vue'
+import { h } from "vue";
 
-const UCheckbox = resolveComponent('UCheckbox')
+const UCheckbox = resolveComponent("UCheckbox");
 
-const columns: TableColumn[] = [{
-  id: 'select',
-  header: ({ table }) => h(UCheckbox, {
-    'modelValue': table.getIsSomePageRowsSelected() ? 'indeterminate' : table.getIsAllPageRowsSelected(),
-    'onUpdate:modelValue': (value: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!value),
-    'aria-label': 'Select all'
-  }),
-  cell: ({ row }) => h(UCheckbox, {
-    'modelValue': row.getIsSelected(),
-    'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-    'aria-label': 'Select row'
-  })
-},
-// ... other columns
-]
+const columns: TableColumn[] = [
+    {
+        id: "select",
+        header: ({ table }) =>
+            h(UCheckbox, {
+                modelValue: table.getIsSomePageRowsSelected()
+                    ? "indeterminate"
+                    : table.getIsAllPageRowsSelected(),
+                "onUpdate:modelValue": (value: boolean | "indeterminate") =>
+                    table.toggleAllPageRowsSelected(!!value),
+                "aria-label": "Select all",
+            }),
+        cell: ({ row }) =>
+            h(UCheckbox, {
+                modelValue: row.getIsSelected(),
+                "onUpdate:modelValue": (value: boolean | "indeterminate") =>
+                    row.toggleSelected(!!value),
+                "aria-label": "Select row",
+            }),
+    },
+    // ... other columns
+];
 ```
 
 ## With pagination

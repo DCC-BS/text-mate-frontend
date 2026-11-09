@@ -87,4 +87,3 @@ const items = [{
   </UTabs>
 </template>
 ```
-
