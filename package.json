@@ -95,6 +95,7 @@
         "reka-ui": "2.11.0",
         "@vueuse/core": "^15.0.0",
         "prosemirror-model": "1.25.12",
-        "prosemirror-view": "1.42.6"
+        "prosemirror-view": "1.42.6",
+        "node-forge": "^1.4.2"
     }
 }
