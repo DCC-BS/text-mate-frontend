@@ -63,8 +63,9 @@ async function onValidate() {
                     />
                     <UButton
                         @click="onValidate"
-                        :disabled="!actionsAreAvailable || selectedDocs.length === 0
-                "
+                        :disabled="
+                            !actionsAreAvailable || selectedDocs.length === 0
+                        "
                     >
                         {{ t("advisor.applyDocs") }}
                     </UButton>

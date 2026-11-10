@@ -34,7 +34,9 @@ const apps = useAppList("TextMate");
                 <div class="hidden md:flex items-end gap-1">
                     <UButton
                         :variant="ribbonTab === 'transform' ? 'soft' : 'link'"
-                        :color="ribbonTab === 'transform' ? 'primary' : 'neutral'"
+                        :color="
+                            ribbonTab === 'transform' ? 'primary' : 'neutral'
+                        "
                         size="sm"
                         icon="i-lucide-wand-sparkles"
                         data-tour="ribbon-transform"
@@ -44,7 +46,9 @@ const apps = useAppList("TextMate");
                     </UButton>
                     <UButton
                         :variant="ribbonTab === 'validate' ? 'soft' : 'link'"
-                        :color="ribbonTab === 'validate' ? 'primary' : 'neutral'"
+                        :color="
+                            ribbonTab === 'validate' ? 'primary' : 'neutral'
+                        "
                         size="sm"
                         icon="i-lucide-file-search"
                         data-tour="ribbon-validate"

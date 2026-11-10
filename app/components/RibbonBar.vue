@@ -16,7 +16,9 @@ const { ribbonTab: activeTab } = useRibbonTab();
         <!-- Mobile ribbon -->
         <div
             class="px-2 pb-2 pt-1.5 min-w-0 md:hidden"
-            :data-tour="activeTab === 'transform' ? 'quick-actions-mobile' : undefined"
+            :data-tour="
+                activeTab === 'transform' ? 'quick-actions-mobile' : undefined
+            "
         >
             <RibbonMobileTransformTab
                 v-if="activeTab === 'transform'"
@@ -50,7 +52,9 @@ const { ribbonTab: activeTab } = useRibbonTab();
                     <RibbonTransformTab
                         v-bind="props"
                         @clear="emit('clear')"
-                        @update:selected-docs="emit('update:selectedDocs', $event)"
+                        @update:selected-docs="
+                            emit('update:selectedDocs', $event)
+                        "
                     />
                 </div>
             </div>

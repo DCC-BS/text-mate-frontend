@@ -1,34 +1,34 @@
 networks:
-  textmate-network:
-    driver: bridge
+    textmate-network:
+        driver: bridge
 
 services:
-  nginx:
-    extends:
-      file: ./services.compose.yml
-      service: nginx
-    depends_on:
-      - textmate-frontend
-    networks:
-      - textmate-network
+    nginx:
+        extends:
+            file: ./services.compose.yml
+            service: nginx
+        depends_on:
+            - textmate-frontend
+        networks:
+            - textmate-network
 
-  llm:
-    extends:
-      file: ./services.compose.yml
-      service: llm
-    networks:
-      - textmate-network
+    llm:
+        extends:
+            file: ./services.compose.yml
+            service: llm
+        networks:
+            - textmate-network
 
-  textmate-backend:
-    extends:
-      file: ./services.compose.yml
-      service: textmate-backend
-    networks:
-      - textmate-network
+    textmate-backend:
+        extends:
+            file: ./services.compose.yml
+            service: textmate-backend
+        networks:
+            - textmate-network
 
-  textmate-frontend:
-    extends:
-      file: ./services.compose.yml
-      service: textmate-frontend
-    networks:
-      - textmate-network
+    textmate-frontend:
+        extends:
+            file: ./services.compose.yml
+            service: textmate-frontend
+        networks:
+            - textmate-network

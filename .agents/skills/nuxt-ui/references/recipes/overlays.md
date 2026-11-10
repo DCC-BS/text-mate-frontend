@@ -54,18 +54,18 @@ const emit = defineEmits<{
 
 ```ts
 // Usage anywhere
-const overlay = useOverlay()
-const confirm = overlay.create(ConfirmModal)
+const overlay = useOverlay();
+const confirm = overlay.create(ConfirmModal);
 
 async function deleteItem(item) {
-  const instance = confirm.open({
-    title: 'Delete item',
-    description: `Are you sure you want to delete "${item.name}"?`
-  })
+    const instance = confirm.open({
+        title: "Delete item",
+        description: `Are you sure you want to delete "${item.name}"?`,
+    });
 
-  if (await instance.result) {
-    // user confirmed
-  }
+    if (await instance.result) {
+        // user confirmed
+    }
 }
 ```
 
@@ -170,4 +170,3 @@ const isOpen = ref(false)
   </UDrawer>
 </template>
 ```
-

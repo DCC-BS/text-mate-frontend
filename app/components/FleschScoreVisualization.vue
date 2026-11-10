@@ -84,9 +84,9 @@ const segmentWidth = computed(() => {
             <div
                 class="progress-fill"
                 :style="{
-                width: scorePosition,
-                backgroundColor: currentLevel.color
-            }"
+                    width: scorePosition,
+                    backgroundColor: currentLevel.color,
+                }"
             ></div>
         </div>
     </div>
