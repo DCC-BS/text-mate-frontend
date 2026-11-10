@@ -1,12 +1,12 @@
 services:
-  llm:
-    extends:
-      file: ./services.compose.yml
-      service: llm
+    llm:
+        extends:
+            file: ./services.compose.yml
+            service: llm
 
-  textmate-backend:
-    extends:
-      file: ./services.compose.yml
-      service: textmate-backend
-    ports:
-      - "8000:8000"
+    textmate-backend:
+        extends:
+            file: ./services.compose.yml
+            service: textmate-backend
+        ports:
+            - "8000:8000"

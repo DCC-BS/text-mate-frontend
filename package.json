@@ -73,7 +73,7 @@
         "zod": "^4.4.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.5.15",
+        "@biomejs/biome": "2.6.3",
         "@playwright/test": "^1.62.1",
         "@types/node": "^26.0.0",
         "@vitejs/plugin-vue": "^6.0.8",
@@ -95,7 +95,7 @@
         "reka-ui": "2.11.0",
         "@vueuse/core": "^15.0.0",
         "prosemirror-model": "1.25.12",
-        "prosemirror-view": "1.42.6",
+        "prosemirror-view": "1.42.8",
         "node-forge": "^1.4.2"
     }
 }

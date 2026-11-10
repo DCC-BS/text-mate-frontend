@@ -63,7 +63,10 @@ Example export (`textmate-prompts.json`):
 {
     "version": 1,
     "prompts": [
-        { "name": "Medienmitteilung", "prompt": "Schreibe den Text als kurze Medienmitteilung ..." }
+        {
+            "name": "Medienmitteilung",
+            "prompt": "Schreibe den Text als kurze Medienmitteilung ..."
+        }
     ]
 }
 ```
@@ -88,13 +91,13 @@ db.version(1).stores({
 
 `app/assets/queries/savedPrompt.query.interface.ts` defines `ISavedPromptQuery`. `app/assets/queries/savedPrompt.query.ts` implements it as `SavedPromptQuery`:
 
-| Method | Behaviour |
-|---|---|
-| `getAll(): Promise<SavedPrompt[]>` | All prompts, sorted by name (German collation, `localeCompare(…, "de")`). |
-| `add(input): Promise<SavedPrompt>` | Validates, assigns id and timestamps, stores. |
+| Method                                    | Behaviour                                                                         |
+| ----------------------------------------- | --------------------------------------------------------------------------------- |
+| `getAll(): Promise<SavedPrompt[]>`        | All prompts, sorted by name (German collation, `localeCompare(…, "de")`).         |
+| `add(input): Promise<SavedPrompt>`        | Validates, assigns id and timestamps, stores.                                     |
 | `update(id, input): Promise<SavedPrompt>` | Validates, updates `name`, `prompt` and `updatedAt`. Throws if the id is missing. |
-| `remove(id): Promise<void>` | Deletes. Removing a missing id is a no-op. |
-| `addMany(inputs): Promise<number>` | Bulk insert for import, in one transaction. Returns the count. |
+| `remove(id): Promise<void>`               | Deletes. Removing a missing id is a no-op.                                        |
+| `addMany(inputs): Promise<number>`        | Bulk insert for import, in one transaction. Returns the count.                    |
 
 `SavedPromptQuery` has `$injectKey = "savedPromptQuery"` and `$inject = []`, like the old dictionary query. It is registered in `serviceRegistrant.ts`. It does no logging. Errors propagate, and `useSavedPrompts` logs them and shows a toast. Tests can construct the class directly, without the DI container.
 

@@ -1,4 +1,5 @@
 ---
+
 name: nuxt-ui
 description: Build UIs with @nuxt/ui v4 — 125+ accessible Vue components with Tailwind CSS theming. Use when creating interfaces, customizing themes to match a brand, building forms, or composing layouts like dashboards, docs sites, and chat interfaces.
 ---
@@ -14,7 +15,11 @@ For component API details (props, slots, events, full documentation, examples), 
 **Cursor** — `.cursor/mcp.json`:
 
 ```json
-{ "mcpServers": { "nuxt-ui": { "type": "http", "url": "https://ui.nuxt.com/mcp" } } }
+{
+    "mcpServers": {
+        "nuxt-ui": { "type": "http", "url": "https://ui.nuxt.com/mcp" }
+    }
+}
 ```
 
 **Claude Code**:
@@ -71,21 +76,21 @@ Based on the task, load the relevant reference files **before writing any code**
 
 ### Routing table
 
-| Task | Load these references |
-|---|---|
-| Build a landing page | design-system, conventions, landing |
-| Build a dashboard / admin UI | conventions, component-selection, dashboard |
-| Add a settings page | conventions, forms |
-| Create a login / signup form | conventions, forms, auth |
-| Display data in a table | conventions, component-selection, data-tables |
-| Customize theme / brand colors | design-system |
-| Add a chat interface | conventions, chat |
-| Add a modal, slideover, or drawer | conventions, component-selection, overlays |
-| Build site navigation | conventions, component-selection, navigation |
-| Build a documentation site | conventions, docs |
-| Render markdown | component-selection, components, docs |
-| Add a rich text editor | conventions, editor |
-| General UI work | conventions, component-selection |
+| Task                              | Load these references                         |
+| --------------------------------- | --------------------------------------------- |
+| Build a landing page              | design-system, conventions, landing           |
+| Build a dashboard / admin UI      | conventions, component-selection, dashboard   |
+| Add a settings page               | conventions, forms                            |
+| Create a login / signup form      | conventions, forms, auth                      |
+| Display data in a table           | conventions, component-selection, data-tables |
+| Customize theme / brand colors    | design-system                                 |
+| Add a chat interface              | conventions, chat                             |
+| Add a modal, slideover, or drawer | conventions, component-selection, overlays    |
+| Build site navigation             | conventions, component-selection, navigation  |
+| Build a documentation site        | conventions, docs                             |
+| Render markdown                   | component-selection, components, docs         |
+| Add a rich text editor            | conventions, editor                           |
+| General UI work                   | conventions, component-selection              |
 
 ## Installation
 
@@ -98,9 +103,9 @@ pnpm add @nuxt/ui tailwindcss
 ```ts
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui'],
-  css: ['~/assets/css/main.css']
-})
+    modules: ["@nuxt/ui"],
+    css: ["~/assets/css/main.css"],
+});
 ```
 
 ```css
@@ -126,35 +131,32 @@ pnpm add @nuxt/ui tailwindcss
 
 ```ts
 // vite.config.ts
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import ui from '@nuxt/ui/vite'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import ui from "@nuxt/ui/vite";
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    ui()
-  ]
-})
+    plugins: [vue(), ui()],
+});
 ```
 
 ```ts
 // src/main.ts
-import './assets/css/main.css'
-import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import ui from '@nuxt/ui/vue-plugin'
-import App from './App.vue'
+import "./assets/css/main.css";
+import { createApp } from "vue";
+import { createRouter, createWebHistory } from "vue-router";
+import ui from "@nuxt/ui/vue-plugin";
+import App from "./App.vue";
 
-const app = createApp(App)
+const app = createApp(App);
 const router = createRouter({
-  routes: [],
-  history: createWebHistory()
-})
+    routes: [],
+    history: createWebHistory(),
+});
 
-app.use(router)
-app.use(ui)
-app.mount('#app')
+app.use(router);
+app.use(ui);
+app.mount("#app");
 ```
 
 ```css

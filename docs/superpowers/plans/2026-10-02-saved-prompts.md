@@ -500,7 +500,9 @@ describe("SavedPromptQuery", () => {
     });
 
     it("rejects an invalid prompt", async () => {
-        await expect(query.add({ name: "  ", prompt: "Kurz" })).rejects.toThrow();
+        await expect(
+            query.add({ name: "  ", prompt: "Kurz" }),
+        ).rejects.toThrow();
         expect(await db.savedPrompts.count()).toBe(0);
     });
 
@@ -739,7 +741,7 @@ import { SavedPromptQuery } from "~/assets/queries/savedPrompt.query";
 ```
 
 ```ts
-        builder.register(SavedPromptQuery);
+builder.register(SavedPromptQuery);
 ```
 
 - [ ] **Step 9: Verify the build (SSR must not touch IndexedDB)**
@@ -947,7 +949,9 @@ describe("useSavedPrompts", () => {
 
         expect(createObjectURL).not.toHaveBeenCalled();
         expect(toastAdd).toHaveBeenCalledWith(
-            expect.objectContaining({ title: "savedPrompts.toast.exportEmpty" }),
+            expect.objectContaining({
+                title: "savedPrompts.toast.exportEmpty",
+            }),
         );
     });
 
@@ -2077,14 +2081,13 @@ Add a fourth variant to the `MobileAction` union, after the `kind: "custom"` var
 Inside `useMobileActions`, after `const logger = useLogger();`, add:
 
 ```ts
-    const { prompts: savedPrompts, load: loadSavedPrompts } =
-        useSavedPrompts();
+const { prompts: savedPrompts, load: loadSavedPrompts } = useSavedPrompts();
 ```
 
 In the existing `onMounted(async () => {`, make the first statement:
 
 ```ts
-        loadSavedPrompts();
+loadSavedPrompts();
 ```
 
 In the `"custom"` group, after the spread of `userActions.value.map(...)`, append:
@@ -2281,12 +2284,14 @@ Create `server/assets/changelogs/v1.8.0.md` (same front matter and voice as `v1.
 
 ```md
 ---
+
 title: "Version 1.8.0 - Eigene Prompts speichern"
 version: "1.8.0"
 published_at: "2026-10-02"
 ---
 
 ## 🔖 Eigene Prompts speichern und wiederverwenden
+
 Deine benutzerdefinierten Anweisungen gehen nicht mehr verloren:
 - **Unter einem Namen speichern**: Im Feld «Benutzerdefinierte Anweisungen» speicherst du eine Anweisung mit «Als Prompt speichern» unter einem eigenen Namen.
 - **Mit einem Klick anwenden**: Gespeicherte Prompts findest du unter **«Meine Aktionen»**. Der Vermerk «Lokal» zeigt, dass sie nur in deinem Browser liegen.
@@ -2297,6 +2302,7 @@ Deine benutzerdefinierten Anweisungen gehen nicht mehr verloren:
 Gespeicherte Prompts liegen nur in deinem Browser und nicht auf dem Server. Es gibt keine Synchronisation zwischen Geräten, nutze den Export deshalb auch als Sicherung.
 
 ## 🧭 Einführungstour
+
 - Die Tour zeigt neu, wo du deine gespeicherten Prompts findest.
 
 ---

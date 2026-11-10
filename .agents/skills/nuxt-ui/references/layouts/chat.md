@@ -30,11 +30,8 @@ pnpm add ai @ai-sdk/gateway @ai-sdk/vue @comark/vue
 
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/ui',
-    '@comark/nuxt'
-  ]
-})
+    modules: ["@nuxt/ui", "@comark/nuxt"],
+});
 ```
 
 **Vue (Vite):** No module registration needed, import directly from `@comark/vue`.
@@ -47,11 +44,11 @@ When using the `highlight` plugin, add the following CSS to your stylesheet:
 
 ```css [main.css]
 html.dark .shiki span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
-  font-style: var(--shiki-dark-font-style) !important;
-  font-weight: var(--shiki-dark-font-weight) !important;
-  text-decoration: var(--shiki-dark-text-decoration) !important;
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
 }
 ```
 
@@ -60,35 +57,35 @@ html.dark .shiki span {
 Using [Vercel AI Gateway](https://vercel.com/ai-gateway) (recommended):
 
 ```ts [server/api/chat.post.ts]
-import { streamText, convertToModelMessages } from 'ai'
-import { gateway } from '@ai-sdk/gateway'
+import { streamText, convertToModelMessages } from "ai";
+import { gateway } from "@ai-sdk/gateway";
 
 export default defineEventHandler(async (event) => {
-  const { messages } = await readBody(event)
+    const { messages } = await readBody(event);
 
-  return streamText({
-    model: gateway('anthropic/claude-sonnet-4.6'),
-    system: 'You are a helpful assistant.',
-    messages: await convertToModelMessages(messages)
-  }).toUIMessageStreamResponse()
-})
+    return streamText({
+        model: gateway("anthropic/claude-sonnet-4.6"),
+        system: "You are a helpful assistant.",
+        messages: await convertToModelMessages(messages),
+    }).toUIMessageStreamResponse();
+});
 ```
 
 Or with a direct provider (e.g., `pnpm add @ai-sdk/openai`):
 
 ```ts [server/api/chat.post.ts]
-import { streamText, convertToModelMessages } from 'ai'
-import { openai } from '@ai-sdk/openai'
+import { streamText, convertToModelMessages } from "ai";
+import { openai } from "@ai-sdk/openai";
 
 export default defineEventHandler(async (event) => {
-  const { messages } = await readBody(event)
+    const { messages } = await readBody(event);
 
-  return streamText({
-    model: openai('gpt-5-nano'),
-    system: 'You are a helpful assistant.',
-    messages: await convertToModelMessages(messages)
-  }).toUIMessageStreamResponse()
-})
+    return streamText({
+        model: openai("gpt-5-nano"),
+        system: "You are a helpful assistant.",
+        messages: await convertToModelMessages(messages),
+    }).toUIMessageStreamResponse();
+});
 ```
 
 ## Component tree

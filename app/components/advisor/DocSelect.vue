@@ -109,9 +109,7 @@ const checkboxUi = {
                     :ui="checkboxUi"
                     :disabled="limitReached && !selectedIds.includes(doc.id)"
                     class="w-full h-full pe-9"
-                    @update:model-value="
-                        toggleDoc(doc.id, $event as boolean)
-                    "
+                    @update:model-value="toggleDoc(doc.id, $event as boolean)"
                 >
                     <template #label>
                         <span class="flex items-center gap-2 w-full">
