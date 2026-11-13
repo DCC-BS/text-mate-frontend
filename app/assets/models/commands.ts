@@ -22,6 +22,8 @@ export const Cmds = {
     RedoCommand: "RedoCommand",
     UndoRedoStateChanged: "UndoRedoStateChanged",
     ToggleLockEditorCommand: "ToggleLockEditorCommand",
+    BeginTextActionCommand: "BeginTextActionCommand",
+    CancelTextActionCommand: "CancelTextActionCommand",
     ExecuteTextActionCommand: "ExecuteTextActionCommand",
     SimplifyTextCommand: "SimplifyTextCommand",
     RetryQuickActionCommand: "RetryQuickActionCommand",
@@ -102,6 +104,24 @@ export class UndoRedoStateChanged implements ICommand {
         public canUndo: boolean,
         public canRedo: boolean,
     ) {}
+}
+
+/**
+ * Signals that a quick action request was sent and is waiting for the backend
+ * to start streaming (e.g. while queued in vLLM). The workspace enters the
+ * Diff Review in its "generating" state right away so the UI shows that the
+ * action was accepted and locks the ribbon against duplicate submissions.
+ */
+export class BeginTextActionCommand implements ICommand {
+    readonly $type = Cmds.BeginTextActionCommand;
+}
+
+/**
+ * Leaves the pending state entered by {@link BeginTextActionCommand} when the
+ * request failed before any stream arrived.
+ */
+export class CancelTextActionCommand implements ICommand {
+    readonly $type = Cmds.CancelTextActionCommand;
 }
 
 export class ExecuteTextActionCommand implements ICommand {

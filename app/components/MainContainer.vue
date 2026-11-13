@@ -29,5 +29,7 @@ onMounted(async () => {
         </div>
     </div>
 
-    <div class="fixed bottom-5 left-0 right-0"><ProgressIndication /></div>
+    <div class="fixed bottom-16 left-0 right-0 z-30 px-4">
+        <ProgressIndication />
+    </div>
 </template>

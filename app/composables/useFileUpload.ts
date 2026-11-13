@@ -1,9 +1,11 @@
 export interface UseFileUploadOptions {
     onFileConverted: (htmlContent: string) => void;
+    /** Getter for the editor's character limit; larger documents are rejected. */
+    maxCharacters?: () => number | undefined;
 }
 
 export function useTextFileUpload(options: UseFileUploadOptions) {
-    const { onFileConverted } = options;
+    const { onFileConverted, maxCharacters } = options;
 
     const {
         dropZoneRef,
@@ -13,7 +15,7 @@ export function useTextFileUpload(options: UseFileUploadOptions) {
         fileName,
         handleFileSelect,
         clearError,
-    } = useFileConvert(onFileConverted);
+    } = useFileConvert(onFileConverted, maxCharacters);
 
     const { t } = useI18n();
     const toast = useToast();
@@ -27,7 +29,7 @@ export function useTextFileUpload(options: UseFileUploadOptions) {
         if (newError) {
             toast.add({
                 title: t("upload.error"),
-                description: `${newError}. ${t("upload.errorDescription")}`,
+                description: `${newError.replace(/\.$/, "")}. ${t("upload.errorDescription")}`,
                 color: "error",
                 icon: "i-lucide-circle-alert",
                 duration: 5000,

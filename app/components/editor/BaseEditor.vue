@@ -47,6 +47,7 @@ const {
     onFileConverted: (htmlContent: string) => {
         props.editor?.commands.setContent(htmlContent);
     },
+    maxCharacters: () => props.limit,
 });
 
 // Quick-action streaming locks the editor surface via this command.

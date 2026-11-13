@@ -10,9 +10,15 @@ const ErrorPayloadSchema = z.object({
 /**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted HTML content
+ * @param maxCharacters Optional getter for the editor's character limit. A
+ *   converted document whose text exceeds it is rejected with an error
+ *   instead of being handed to the editor (which would drop it silently).
  * @returns Object containing drop zone refs and state
  */
-export function useFileConvert(onComplete: (htmlContent: string) => void) {
+export function useFileConvert(
+    onComplete: (htmlContent: string) => void,
+    maxCharacters?: () => number | undefined,
+) {
     const logger = useLogger();
     const { t, te } = useI18n();
 
@@ -70,6 +76,22 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
             result.html = result.html.replace(/\\n/g, "\n"); // Replace escaped newlines with actual newlines
             result.html = result.html.replace(/\\t/g, "\t"); // Replace escaped tabs with actual tabs
             result.html = result.html.replace(/\\r/g, "\r"); // Replace escaped carriage returns with actual carriage returns
+
+            const limit = maxCharacters?.();
+            if (limit !== undefined) {
+                const length = countTextCharacters(result.html);
+                if (length > limit) {
+                    logger.warn(
+                        { length, limit },
+                        "Converted document exceeds character limit",
+                    );
+                    error.value = t("errors.document_too_long", {
+                        length: length.toLocaleString(),
+                        limit: limit.toLocaleString(),
+                    });
+                    return;
+                }
+            }
 
             onComplete(result.html);
         } catch (err: unknown) {
@@ -145,4 +167,18 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
         handleFileSelect,
         clearError,
     };
+}
+
+/**
+ * Counts the visible text characters of converted content, matching what the
+ * editor's character counter sees after parsing the HTML.
+ * @param htmlContent Converted HTML (or plain text) content
+ * @returns Number of text characters
+ */
+function countTextCharacters(htmlContent: string): number {
+    if (typeof DOMParser === "undefined") {
+        return htmlContent.length;
+    }
+    const doc = new DOMParser().parseFromString(htmlContent, "text/html");
+    return doc.body.textContent?.length ?? 0;
 }

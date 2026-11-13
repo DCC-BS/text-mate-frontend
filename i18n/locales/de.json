@@ -9,7 +9,8 @@
         "text_analysis_error": "Fehler bei der Textanalyse. Bitte versuchen Sie es später noch einmal.",
         "invalid_mime_type": "Ungültiges oder nicht unterstütztes Dateiformat.",
         "document_conversion_error": "Fehler bei der Dokumentenkonvertierung. Bitte überprüfen Sie die Datei und versuchen Sie es erneut.",
-        "document_conversion_timeout": "Die Dokumentenkonvertierung hat das Zeitlimit überschritten. Bitte versuchen Sie es mit einer kleineren Datei erneut."
+        "document_conversion_timeout": "Die Dokumentenkonvertierung hat das Zeitlimit überschritten. Bitte versuchen Sie es mit einer kleineren Datei erneut.",
+        "document_too_long": "Das Dokument ist zu lang ({length} Zeichen). TextMate unterstützt maximal {limit} Zeichen."
     },
     "loading": "Wird geladen...",
     "auth": {

@@ -176,3 +176,95 @@ test("Custom action button should be present", async ({ page }) => {
     await expect(diffReview).toContainText("Input: This is a test.");
     await expect(diffReview).toContainText("Options: Make it fun!");
 });
+
+test("Quick action shows progress and locks the ribbon while the request is queued", async ({
+    page,
+}) => {
+    // Hold the request back to simulate a busy LLM queue: no response headers
+    // arrive until we release it.
+    let release: () => void = () => {};
+    const released = new Promise<void>((resolve) => {
+        release = resolve;
+    });
+    await page.route("**/api/quick-action", async (route) => {
+        await released;
+        await route.continue();
+    });
+
+    await page.locator(".tiptap").fill("This is a test.");
+
+    const button = page.getByRole("button", {
+        name: local.editor.bullet_points,
+        exact: true,
+    });
+    await button.click();
+
+    // The diff review with its generating indicator is shown immediately,
+    // and the action cannot be triggered a second time.
+    const diffReview = page.locator('[data-tour="diff-review"]');
+    await expect(diffReview).toBeVisible();
+    await expect(diffReview).toContainText(local.workspace.generating);
+    await expect(button).toBeDisabled();
+
+    // The global progress indicator names the running operation.
+    const progressLabel = page.getByText(local.status.quickAction, {
+        exact: true,
+    });
+    await expect(progressLabel).toBeVisible();
+    await page.screenshot({
+        path: "test-results/quick-action-queued.png",
+    });
+
+    release();
+
+    await expect(diffReview).toContainText("Action: bullet_points");
+    await expect(diffReview).not.toContainText(local.workspace.generating);
+    await expect(progressLabel).toBeHidden();
+});
+
+test("Quick action failure before streaming returns to the editor", async ({
+    page,
+}) => {
+    await page.route("**/api/quick-action", (route) =>
+        route.fulfill({
+            status: 500,
+            contentType: "application/json",
+            body: JSON.stringify({ errorId: "unexpected_error" }),
+        }),
+    );
+
+    await page.locator(".tiptap").fill("This is a test.");
+    await page
+        .getByRole("button", { name: local.editor.bullet_points, exact: true })
+        .click();
+
+    await expect(page.locator(".tiptap")).toBeVisible();
+    await expect(page.locator(".tiptap")).toContainText("This is a test.");
+    await expect(page.locator('[data-tour="diff-review"]')).toBeHidden();
+});
+
+test("Uploading a document that exceeds the character limit shows an error", async ({
+    page,
+}) => {
+    const longText = "a".repeat(100_001);
+    await page.route("**/api/convert", (route) =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ html: `<p>${longText}</p>` }),
+        }),
+    );
+
+    await page.locator(".tiptap").fill("Original text");
+    await page.locator('input[type="file"]').first().setInputFiles({
+        name: "long.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("irrelevant"),
+    });
+
+    await expect(
+        page.getByText(local.upload.error, { exact: true }).first(),
+    ).toBeVisible();
+    await expect(page.getByText(/100[.,’']?001/).first()).toBeVisible();
+    await expect(page.locator(".tiptap")).toContainText("Original text");
+});
