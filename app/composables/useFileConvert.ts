@@ -3,6 +3,16 @@ import { FetchError } from "ofetch";
 import { z } from "zod";
 import type { ConversionResult } from "~/assets/models/conversion-result";
 
+/**
+ * Character limit of the editor that receives converted content.
+ */
+export interface CharacterLimit {
+    /** Maximum number of characters the editor accepts. */
+    max: () => number | undefined;
+    /** Counts characters of HTML content using the editor's own rules. */
+    count: (htmlContent: string) => number;
+}
+
 const ErrorPayloadSchema = z.object({
     errorId: z.string().optional(),
 });
@@ -10,9 +20,15 @@ const ErrorPayloadSchema = z.object({
 /**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted HTML content
+ * @param characterLimit Optional character limit of the target editor. A
+ *   converted document exceeding it is rejected with an error instead of being
+ *   handed to the editor (whose limit would otherwise drop it silently).
  * @returns Object containing drop zone refs and state
  */
-export function useFileConvert(onComplete: (htmlContent: string) => void) {
+export function useFileConvert(
+    onComplete: (htmlContent: string) => void,
+    characterLimit?: CharacterLimit,
+) {
     const logger = useLogger();
     const { t, te } = useI18n();
 
@@ -70,6 +86,22 @@ export function useFileConvert(onComplete: (htmlContent: string) => void) {
             result.html = result.html.replace(/\\n/g, "\n"); // Replace escaped newlines with actual newlines
             result.html = result.html.replace(/\\t/g, "\t"); // Replace escaped tabs with actual tabs
             result.html = result.html.replace(/\\r/g, "\r"); // Replace escaped carriage returns with actual carriage returns
+
+            const limit = characterLimit?.max();
+            if (characterLimit && limit !== undefined) {
+                const length = characterLimit.count(result.html);
+                if (length > limit) {
+                    logger.warn(
+                        { length, limit },
+                        "Converted document exceeds character limit",
+                    );
+                    error.value = t("errors.document_too_long", {
+                        length: length.toLocaleString(),
+                        limit: limit.toLocaleString(),
+                    });
+                    return;
+                }
+            }
 
             onComplete(result.html);
         } catch (err: unknown) {

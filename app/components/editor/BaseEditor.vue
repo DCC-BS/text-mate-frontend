@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { createDocument } from "@tiptap/core";
 import type { Editor } from "@tiptap/vue-3";
 import { EditorContent } from "@tiptap/vue-3";
 import { Cmds, type ToggleLockEditorCommand } from "~/assets/models/commands";
@@ -47,7 +48,27 @@ const {
     onFileConverted: (htmlContent: string) => {
         props.editor?.commands.setContent(htmlContent);
     },
+    characterLimit: {
+        max: () => props.limit,
+        count: countEditorCharacters,
+    },
 });
+
+/**
+ * Counts the characters of HTML content exactly as the editor's
+ * CharacterCount limit will (parsed with the editor schema, so hard breaks
+ * and whitespace normalisation are taken into account).
+ * @param htmlContent Converted HTML content
+ * @returns Number of characters the editor would count
+ */
+function countEditorCharacters(htmlContent: string): number {
+    const editor = props.editor;
+    if (!editor) {
+        return htmlContent.length;
+    }
+    const doc = createDocument(htmlContent, editor.schema);
+    return editor.storage.characterCount.characters({ node: doc });
+}
 
 // Quick-action streaming locks the editor surface via this command.
 const { onCommand } = useCommandBus();

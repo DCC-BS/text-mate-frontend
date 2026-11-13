@@ -2,6 +2,8 @@ import type { FixThread } from "#shared/types/advisor";
 import {
     type AbandonDiffCommand,
     type ApplyFixCommand,
+    type BeginTextActionCommand,
+    type CancelTextActionCommand,
     type CheckCommand,
     ClearThreadsCommand,
     Cmds,
@@ -76,20 +78,59 @@ export function useWorkspace(text: Ref<string>) {
 
     const isBusy = computed(() => progress.value !== "none");
 
+    /**
+     * True between {@link BeginTextActionCommand} and the matching stream (or
+     * cancel), i.e. while a quick action waits for the backend to respond.
+     */
+    let textActionPending = false;
+
+    /**
+     * Enters the Diff Review in its "generating" state for a transform action.
+     */
+    function enterTextActionGenerating(): void {
+        originalText.value = text.value;
+        correctedText.value = "";
+        diffMode.value = "transform";
+        state.value = "diff-review";
+        diffKey.value++;
+        progress.value = "generating";
+
+        addProgress("quick-action", {
+            icon: "i-lucide-text-search",
+            title: t("status.quickAction"),
+        });
+    }
+
+    onCommand<BeginTextActionCommand>(Cmds.BeginTextActionCommand, async () => {
+        textActionPending = true;
+        enterTextActionGenerating();
+    });
+
+    onCommand<CancelTextActionCommand>(
+        Cmds.CancelTextActionCommand,
+        async () => {
+            if (!textActionPending) {
+                return;
+            }
+            textActionPending = false;
+            removeProgress("quick-action");
+            progress.value = "none";
+            originalText.value = "";
+            correctedText.value = "";
+            state.value = "editable";
+        },
+    );
+
     onCommand<ExecuteTextActionCommand>(
         Cmds.ExecuteTextActionCommand,
         async (command) => {
-            originalText.value = text.value;
-            correctedText.value = "";
-            diffMode.value = "transform";
-            state.value = "diff-review";
-            diffKey.value++;
-            progress.value = "generating";
-
-            addProgress("quick-action", {
-                icon: "i-lucide-text-search",
-                title: t("status.quickAction"),
-            });
+            // Already in the generating state when the request announced
+            // itself via BeginTextActionCommand; otherwise (e.g. onboarding
+            // seed) enter it now.
+            if (!textActionPending) {
+                enterTextActionGenerating();
+            }
+            textActionPending = false;
 
             try {
                 const reader = command.stream.getReader();

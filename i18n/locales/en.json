@@ -9,7 +9,8 @@
         "text_analysis_error": "Error analyzing text. Please try again later.",
         "invalid_mime_type": "Invalid or unsupported file format.",
         "document_conversion_error": "Error converting document. Please check the file and try again.",
-        "document_conversion_timeout": "Document conversion timed out. Please try again with a smaller file."
+        "document_conversion_timeout": "Document conversion timed out. Please try again with a smaller file.",
+        "document_too_long": "The document is too long ({length} characters). TextMate supports at most {limit} characters."
     },
     "loading": "Loading...",
     "auth": {
