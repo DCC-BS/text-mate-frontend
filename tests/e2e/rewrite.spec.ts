@@ -246,7 +246,9 @@ test("Quick action failure before streaming returns to the editor", async ({
 test("Uploading a document that exceeds the character limit shows an error", async ({
     page,
 }) => {
-    const longText = "a".repeat(100_001);
+    // 100,000 text characters plus a hard break: the editor counts the break
+    // too (100,001), so a plain textContent check would miss it.
+    const longText = `${"a".repeat(99_999)}<br>b`;
     await page.route("**/api/convert", (route) =>
         route.fulfill({
             status: 200,

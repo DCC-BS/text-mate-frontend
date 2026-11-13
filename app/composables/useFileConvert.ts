@@ -3,6 +3,16 @@ import { FetchError } from "ofetch";
 import { z } from "zod";
 import type { ConversionResult } from "~/assets/models/conversion-result";
 
+/**
+ * Character limit of the editor that receives converted content.
+ */
+export interface CharacterLimit {
+    /** Maximum number of characters the editor accepts. */
+    max: () => number | undefined;
+    /** Counts characters of HTML content using the editor's own rules. */
+    count: (htmlContent: string) => number;
+}
+
 const ErrorPayloadSchema = z.object({
     errorId: z.string().optional(),
 });
@@ -10,14 +20,14 @@ const ErrorPayloadSchema = z.object({
 /**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted HTML content
- * @param maxCharacters Optional getter for the editor's character limit. A
- *   converted document whose text exceeds it is rejected with an error
- *   instead of being handed to the editor (which would drop it silently).
+ * @param characterLimit Optional character limit of the target editor. A
+ *   converted document exceeding it is rejected with an error instead of being
+ *   handed to the editor (whose limit would otherwise drop it silently).
  * @returns Object containing drop zone refs and state
  */
 export function useFileConvert(
     onComplete: (htmlContent: string) => void,
-    maxCharacters?: () => number | undefined,
+    characterLimit?: CharacterLimit,
 ) {
     const logger = useLogger();
     const { t, te } = useI18n();
@@ -77,9 +87,9 @@ export function useFileConvert(
             result.html = result.html.replace(/\\t/g, "\t"); // Replace escaped tabs with actual tabs
             result.html = result.html.replace(/\\r/g, "\r"); // Replace escaped carriage returns with actual carriage returns
 
-            const limit = maxCharacters?.();
-            if (limit !== undefined) {
-                const length = countTextCharacters(result.html);
+            const limit = characterLimit?.max();
+            if (characterLimit && limit !== undefined) {
+                const length = characterLimit.count(result.html);
                 if (length > limit) {
                     logger.warn(
                         { length, limit },
@@ -167,18 +177,4 @@ export function useFileConvert(
         handleFileSelect,
         clearError,
     };
-}
-
-/**
- * Counts the visible text characters of converted content, matching what the
- * editor's character counter sees after parsing the HTML.
- * @param htmlContent Converted HTML (or plain text) content
- * @returns Number of text characters
- */
-function countTextCharacters(htmlContent: string): number {
-    if (typeof DOMParser === "undefined") {
-        return htmlContent.length;
-    }
-    const doc = new DOMParser().parseFromString(htmlContent, "text/html");
-    return doc.body.textContent?.length ?? 0;
 }

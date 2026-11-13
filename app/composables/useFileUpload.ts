@@ -1,11 +1,13 @@
+import type { CharacterLimit } from "~/composables/useFileConvert";
+
 export interface UseFileUploadOptions {
     onFileConverted: (htmlContent: string) => void;
-    /** Getter for the editor's character limit; larger documents are rejected. */
-    maxCharacters?: () => number | undefined;
+    /** Editor character limit; larger documents are rejected with an error. */
+    characterLimit?: CharacterLimit;
 }
 
 export function useTextFileUpload(options: UseFileUploadOptions) {
-    const { onFileConverted, maxCharacters } = options;
+    const { onFileConverted, characterLimit } = options;
 
     const {
         dropZoneRef,
@@ -15,7 +17,7 @@ export function useTextFileUpload(options: UseFileUploadOptions) {
         fileName,
         handleFileSelect,
         clearError,
-    } = useFileConvert(onFileConverted, maxCharacters);
+    } = useFileConvert(onFileConverted, characterLimit);
 
     const { t } = useI18n();
     const toast = useToast();
