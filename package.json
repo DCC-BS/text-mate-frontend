@@ -33,14 +33,14 @@
         "@nuxtjs/i18n": "^10.6.0",
         "@nuxtjs/mdc": "0.23.2",
         "@pinia/nuxt": "1.0.3",
-        "@tiptap/core": "3.32.0",
-        "@tiptap/extension-bubble-menu": "3.32.0",
-        "@tiptap/extension-character-count": "3.32.0",
-        "@tiptap/extension-floating-menu": "3.32.0",
-        "@tiptap/extension-highlight": "3.32.0",
-        "@tiptap/extension-history": "3.32.0",
-        "@tiptap/extension-paragraph": "3.32.0",
-        "@tiptap/extension-placeholder": "3.32.0",
+        "@tiptap/core": "3.32.2",
+        "@tiptap/extension-bubble-menu": "3.32.2",
+        "@tiptap/extension-character-count": "3.32.2",
+        "@tiptap/extension-floating-menu": "3.32.2",
+        "@tiptap/extension-highlight": "3.32.2",
+        "@tiptap/extension-history": "3.32.2",
+        "@tiptap/extension-paragraph": "3.32.2",
+        "@tiptap/extension-placeholder": "3.32.2",
         "@tiptap/pm": "^3.29.2",
         "@tiptap/starter-kit": "^3.29.2",
         "@tiptap/vue-3": "^3.29.2",
@@ -73,7 +73,7 @@
         "zod": "^4.4.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.6.3",
+        "@biomejs/biome": "2.6.4",
         "@playwright/test": "^1.62.1",
         "@types/node": "^26.0.0",
         "@vitejs/plugin-vue": "^6.0.8",
@@ -95,7 +95,7 @@
         "reka-ui": "2.11.0",
         "@vueuse/core": "^15.0.0",
         "prosemirror-model": "1.25.12",
-        "prosemirror-view": "1.42.8",
+        "prosemirror-view": "1.42.9",
         "node-forge": "^1.4.2"
     }
 }
