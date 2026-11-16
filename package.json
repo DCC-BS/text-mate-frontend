@@ -55,7 +55,7 @@
         "giget": "^3.3.1",
         "jsdiff": "^1.1.1",
         "motion-v": "^2.3.0",
-        "nuxt": "4.6.3",
+        "nuxt": "4.6.4",
         "nuxt-viewport": "2.6.1",
         "openid-client": "^6.8.4",
         "pinia": "^4.0.2",
@@ -99,6 +99,7 @@
         "@vueuse/core": "^15.0.0",
         "prosemirror-model": "1.25.12",
         "prosemirror-view": "1.42.9",
-        "node-forge": "^1.4.2"
+        "node-forge": "^1.4.3",
+        "@nuxt/schema": "^4.6.4"
     }
 }
