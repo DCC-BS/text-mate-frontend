@@ -96,7 +96,8 @@ Environment variables are validated using Varlock schemas (`.env.schema`, `.env.
 | `API_PORT`                                     | Backend API port                                        | `8000`                           | port               |
 | `NUXT_API_URL`                                 | Backend API URL                                         | `http://localhost:8000` (dev)    | URL                |
 | `NUXT_FEEDBACK_GITHUB_TOKEN`                   | GitHub token for feedback reporting                     | Proton Pass (dev)                | string (sensitive) |
-| `NUXT_PUBLIC_LOGGER_LOG_LEVEL`                 | Client log level                                        | `debug` (dev), `info` (prod)     | enum               |
+| `NUXT_PUBLIC_LOGGER_LOGLEVEL`                  | Log level                                               | `debug` (dev), `info` (prod)     | enum               |
+| `NUXT_PUBLIC_LOGGER_APP`                       | Service name in log lines (`app` field)                 | `text-mate-frontend`             | string             |
 | `LOG_LEVEL`                                    | Server log level                                        | `debug` (dev), `info` (prod)     | enum               |
 | **UI & Onboarding Flags**                      |                                                         |                                  |                    |
 | `DISABLE_ONBOARDING`                           | Disable onboarding tour (e.g. in tests)                 | `false`                          | boolean            |
