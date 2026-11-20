@@ -191,7 +191,12 @@ export default defineNuxtConfig({
             useDummyData: process.env.DUMMY,
             disableOnboarding: process.env.DISABLE_ONBOARDING,
             logger: {
-                loglevel: process.env.LOG_LEVEL || "debug",
+                // Override at runtime with NUXT_PUBLIC_LOGGER_LOGLEVEL. Production
+                // images default to info, so an unset runtime var is not debug.
+                loglevel:
+                    process.env.NODE_ENV === "production"
+                        ? "info"
+                        : process.env.LOG_LEVEL || "debug",
             },
             commonUi: {
                 disclaimer: {
