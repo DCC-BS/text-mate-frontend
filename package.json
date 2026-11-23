@@ -1,7 +1,7 @@
 {
     "name": "nuxt-app",
     "private": true,
-    "version": "1.8.5",
+    "version": "1.8.6",
     "scripts": {
         "build": "nuxt build",
         "dev": "nuxt dev",
@@ -23,7 +23,7 @@
     "dependencies": {
         "@dcc-bs/common-ui.bs.js": "2.2.5",
         "@dcc-bs/communication.bs.js": "^0.1.5",
-        "@dcc-bs/dependency-injection.bs.js": "^0.0.19",
+        "@dcc-bs/dependency-injection.bs.js": "^0.0.20",
         "@dcc-bs/event-system.bs.js": "^1.4.6",
         "@iconify-json/flag": "^1.2.12",
         "@iconify-json/lucide": "^1.2.122",

@@ -7,7 +7,7 @@
       "dependencies": {
         "@dcc-bs/common-ui.bs.js": "2.2.5",
         "@dcc-bs/communication.bs.js": "^0.1.5",
-        "@dcc-bs/dependency-injection.bs.js": "^0.0.19",
+        "@dcc-bs/dependency-injection.bs.js": "^0.0.20",
         "@dcc-bs/event-system.bs.js": "^1.4.6",
         "@iconify-json/flag": "^1.2.12",
         "@iconify-json/lucide": "^1.2.122",
@@ -181,7 +181,7 @@
 
     "@dcc-bs/communication.bs.js": ["@dcc-bs/communication.bs.js@0.1.5", "", { "dependencies": { "vite": "^8.0.0", "vue": "^3.5.25", "zod": "^4.1.9" }, "peerDependencies": { "typescript": "^5" } }, "sha512-csnrqM+EBySxC2oPtY595fH5Q8AMYhi9HfuKMfRtb5MWjeqQKGBRcBwngj7T6kZug3E1SCHEqOM2z+QadQOkZQ=="],
 
-    "@dcc-bs/dependency-injection.bs.js": ["@dcc-bs/dependency-injection.bs.js@0.0.19", "", { "dependencies": { "@nuxt/kit": "4.6.3" } }, "sha512-oIhaVMkK+WrTr4yfqDMIkBpnP6D1wi+36onr5KHQy4RBQCt8/rTl9Kvv3Wj02s+dCE95CBWbhaW6J33VBd/kuw=="],
+    "@dcc-bs/dependency-injection.bs.js": ["@dcc-bs/dependency-injection.bs.js@0.0.20", "", { "dependencies": { "@nuxt/kit": "4.6.4" } }, "sha512-3BKfsMsEWdpu+a7+S1MtzJlh7nl7/SJV8746AFTREBa2ugVrXeJTBgst+JD4vOjHIGmImnU5IuGeuVenZKF1Xw=="],
 
     "@dcc-bs/event-system.bs.js": ["@dcc-bs/event-system.bs.js@1.4.6", "", { "dependencies": { "@nuxt/kit": "^4.4.2" } }, "sha512-IzyzxC8P686L/yfMoXTGUowlPh4/yT643eTNdujBa6sIzBvdmeTPUYR7HD1SerI+fWYWXAkrONywEhfuqUk6RA=="],
 
@@ -2167,8 +2167,6 @@
 
     "@babel/helper-create-class-features-plugin/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
-    "@dcc-bs/dependency-injection.bs.js/@nuxt/kit": ["@nuxt/kit@4.6.3", "", { "dependencies": { "consola": "^3.4.2", "defu": "^6.1.7", "destr": "^2.0.5", "errx": "^0.2.2", "exsolve": "^1.1.3", "ignore": "^7.0.14", "klona": "^2.0.6", "microdiff": "^1.6.0", "nostics": "^1.3.0", "package-manager-detector": "^1.9.0", "pathe": "^2.0.3", "rc9": "^3.1.0", "scule": "^1.3.0", "std-env": "^4.3.0", "tinyexec": "^1.3.1", "tinyglobby": "^0.2.17", "unctx": "^3.0.1", "verkit": "^0.5.0" }, "peerDependencies": { "@nuxt/schema": "^3.0.0 || ^4.0.0 || ^5.0.0-0", "confbox": ">=0.1.0", "dotenv": "*", "giget": ">=3.1.0", "jiti": "^2.0.0", "mlly": "^1.2.0", "oxc-parser": ">=0.56.0", "rolldown": ">=1.0.0" }, "optionalPeers": ["@nuxt/schema", "confbox", "dotenv", "giget", "jiti", "mlly", "oxc-parser", "rolldown"] }, "sha512-djNup72hMvn7C9xp0/KAYeoY9uzbrPguv91SUBjEeSHh49kP/YI4BvxUVHP8sZd3kms5Ht+IZTJ6XAfm9hofKw=="],
-
     "@dcc-bs/event-system.bs.js/@nuxt/kit": ["@nuxt/kit@4.6.3", "", { "dependencies": { "consola": "^3.4.2", "defu": "^6.1.7", "destr": "^2.0.5", "errx": "^0.2.2", "exsolve": "^1.1.3", "ignore": "^7.0.14", "klona": "^2.0.6", "microdiff": "^1.6.0", "nostics": "^1.3.0", "package-manager-detector": "^1.9.0", "pathe": "^2.0.3", "rc9": "^3.1.0", "scule": "^1.3.0", "std-env": "^4.3.0", "tinyexec": "^1.3.1", "tinyglobby": "^0.2.17", "unctx": "^3.0.1", "verkit": "^0.5.0" }, "peerDependencies": { "@nuxt/schema": "^3.0.0 || ^4.0.0 || ^5.0.0-0", "confbox": ">=0.1.0", "dotenv": "*", "giget": ">=3.1.0", "jiti": "^2.0.0", "mlly": "^1.2.0", "oxc-parser": ">=0.56.0", "rolldown": ">=1.0.0" }, "optionalPeers": ["@nuxt/schema", "confbox", "dotenv", "giget", "jiti", "mlly", "oxc-parser", "rolldown"] }, "sha512-djNup72hMvn7C9xp0/KAYeoY9uzbrPguv91SUBjEeSHh49kP/YI4BvxUVHP8sZd3kms5Ht+IZTJ6XAfm9hofKw=="],
 
     "@dxup/nuxt/@nuxt/kit": ["@nuxt/kit@4.6.2", "", { "dependencies": { "consola": "^3.4.2", "defu": "^6.1.7", "destr": "^2.0.5", "errx": "^0.2.2", "exsolve": "^1.1.3", "ignore": "^7.0.12", "klona": "^2.0.6", "microdiff": "^1.6.0", "nostics": "^1.3.0", "package-manager-detector": "^1.9.0", "pathe": "^2.0.3", "rc9": "^3.1.0", "scule": "^1.3.0", "std-env": "^4.3.0", "tinyexec": "^1.3.1", "tinyglobby": "^0.2.17", "unctx": "^3.0.1", "verkit": "^0.5.0" }, "peerDependencies": { "@nuxt/schema": "^3.0.0 || ^4.0.0 || ^5.0.0-0", "confbox": ">=0.1.0", "dotenv": "*", "giget": ">=3.1.0", "jiti": "^2.0.0", "mlly": "^1.2.0", "oxc-parser": ">=0.56.0", "rolldown": ">=1.0.0" }, "optionalPeers": ["@nuxt/schema", "confbox", "dotenv", "giget", "jiti", "mlly", "oxc-parser", "rolldown"] }, "sha512-Vn9DJobc30WdR1vrlRcEAFSFy7NV5CWq3o6gxsfrdGb2FmCh0fuDyvbZC30rm2enyiPaOUPafKctFE/ToBjybw=="],
@@ -2468,8 +2466,6 @@
     "zip-stream/readable-stream": ["readable-stream@4.8.0", "", { "dependencies": { "abort-controller": "^3.0.0", "buffer": "^6.0.3", "events": "^3.3.0", "process": "^0.11.10", "string_decoder": "^1.3.0" } }, "sha512-2jhTTU3Eilp/2DMT71gbcoqC35eQHasMJH0RHkYxwlxIv3+FR6Y5xAFZIwEGLxKkjZYEFlsiMNIdwUqjK2lLHQ=="],
 
     "@babel/helper-compilation-targets/lru-cache/yallist": ["yallist@3.1.1", "", {}, "sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g=="],
-
-    "@dcc-bs/dependency-injection.bs.js/@nuxt/kit/exsolve": ["exsolve@1.1.3", "", {}, "sha512-kuzL9zherLQoqDeQaS55AiiIg1kb4KYXaSusTtgZTPlvKP2gGCI82LNmBNh5RjDVUXIcmgx+/Mx7vPwRzBbhJA=="],
 
     "@dcc-bs/event-system.bs.js/@nuxt/kit/exsolve": ["exsolve@1.1.3", "", {}, "sha512-kuzL9zherLQoqDeQaS55AiiIg1kb4KYXaSusTtgZTPlvKP2gGCI82LNmBNh5RjDVUXIcmgx+/Mx7vPwRzBbhJA=="],
 
