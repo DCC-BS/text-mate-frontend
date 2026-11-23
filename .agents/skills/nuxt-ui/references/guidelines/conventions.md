@@ -74,6 +74,7 @@ Recommended `.vscode/settings.json` for Tailwind IntelliSense autocomplete with 
 ## UApp wrapper
 
 Always wrap your app in `UApp` — it provides:
+
 - Toast container (`useToast`)
 - Tooltip provider
 - Programmatic overlay context (`useOverlay`)
@@ -333,6 +334,7 @@ Each locale has a `dir` property (`'ltr'` or `'rtl'`). `UApp` uses it to set dir
 ## Color mode
 
 Nuxt UI registers `@nuxtjs/color-mode` automatically. Built-in components for switching:
+
 - `UColorModeButton` — single button toggle (light/dark)
 - `UColorModeSwitch` — toggle switch
 - `UColorModeSelect` — dropdown with system/light/dark options

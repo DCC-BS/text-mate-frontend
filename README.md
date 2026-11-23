@@ -298,6 +298,7 @@ docker run -p 3000:3000 text-mate-frontend
 ## Dependency Overrides
 
 We maintain strict, minimal overrides in `package.json` exclusively for **Framework Singletons**:
+
 - `vue` (`3.5.41`), `reka-ui` (`2.10.1`), `@vueuse/core` (`^14.4.0`), `prosemirror-model` (`1.25.11`), `prosemirror-view` (`1.42.2`): Deduplicates runtime instances across transitive dependencies (such as `vaul-vue` and Tiptap plugins) to prevent dual-instance SSR hydration crashes and broken editor `instanceof` selections.
 
 ---

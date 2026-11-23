@@ -146,6 +146,7 @@ tests/
 - `#app` → Nuxt app internals
 
 Example:
+
 ```ts
 import { useCounter } from "~/composables/useCounter";
 import { formatDate } from "~/utils/formatDate";
