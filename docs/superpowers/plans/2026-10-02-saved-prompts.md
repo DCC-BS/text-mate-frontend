@@ -41,6 +41,7 @@
 Nothing renders `UserDictionary.vue` or `OnboardingView.vue`. The live tour is `app/composables/useOnboarding.ts`.
 
 **Files:**
+
 - Delete: `app/components/tool-panel/UserDictionary.vue`
 - Delete: `app/assets/queries/user_dictionary.query.ts`
 - Delete: `app/assets/queries/user_dictionary.query.interface.ts`
@@ -49,12 +50,14 @@ Nothing renders `UserDictionary.vue` or `OnboardingView.vue`. The live tour is `
 - Modify: `i18n/locales/de.json`, `i18n/locales/en.json`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: `serviceRegistrant.ts` with only the `translate` and `logger` instances registered. Task 3 adds `SavedPromptQuery` here.
 
 - [ ] **Step 1: Confirm nothing references the dead code**
 
 Run:
+
 ```bash
 grep -rn "UserDictionary\|user_dictionary\|OnboardingView\|user-dictionary\|addWordToDictionary" app server shared tests
 ```
@@ -92,6 +95,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 - [ ] **Step 4: Remove the unused i18n keys**
 
 In both `i18n/locales/de.json` and `i18n/locales/en.json`:
+
 - delete the whole top-level `"user-dictionary": { ... }` object;
 - delete the `"addWordToDictionary"` entry inside `"text-editor"` (keep the other `text-editor` keys, `WorkspaceEditor.vue` uses them).
 
@@ -100,6 +104,7 @@ Then run `bun run check` to fix trailing commas and formatting.
 - [ ] **Step 5: Verify**
 
 Run:
+
 ```bash
 AUTH_MODE=none APP_MODE=ci bunx nuxt build && bunx biome ci . && APP_MODE=ci bunx vitest run
 ```
@@ -117,11 +122,13 @@ git commit -m "chore: remove dead user dictionary and duplicate onboarding tour"
 ### Task 2: Saved prompt types and transfer helpers
 
 **Files:**
+
 - Create: `app/types/savedPrompt.ts`
 - Create: `app/utils/savedPromptTransfer.ts`
 - Test: `tests/assets/utils/savedPromptTransfer.test.ts`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces:
   - `SAVED_PROMPT_NAME_MAX_LENGTH: 80`
@@ -439,6 +446,7 @@ git commit -m "feat(saved-prompts): add types and export/import helpers"
 ### Task 3: Dexie database and SavedPromptQuery
 
 **Files:**
+
 - Modify: `package.json`, `bun.lock` (add `dexie`, dev `fake-indexeddb`)
 - Create: `app/assets/services/db.ts`
 - Create: `app/assets/queries/savedPrompt.query.interface.ts`
@@ -447,6 +455,7 @@ git commit -m "feat(saved-prompts): add types and export/import helpers"
 - Test: `tests/assets/queries/savedPrompt.query.test.ts`
 
 **Interfaces:**
+
 - Consumes: `SavedPrompt`, `SavedPromptInput`, `SavedPromptInputSchema` from Task 2.
 - Produces:
   - `db: Dexie & { savedPrompts: EntityTable<SavedPrompt, "id"> }` from `~/assets/services/db`
@@ -762,11 +771,13 @@ git commit -m "feat(saved-prompts): add Dexie database and SavedPromptQuery"
 ### Task 4: useSavedPrompts composable and i18n strings
 
 **Files:**
+
 - Create: `app/composables/useSavedPrompts.ts`
 - Modify: `i18n/locales/de.json`, `i18n/locales/en.json`
 - Test: `tests/assets/composables/useSavedPrompts.test.ts`
 
 **Interfaces:**
+
 - Consumes: `SavedPromptQuery` (Task 3), `buildExport`, `parseImport`, `findNewPrompts`, `MAX_IMPORT_BYTES`, `EXPORT_FILE_NAME` (Task 2). Nuxt auto-imports `useI18n`, `useToast`, `useLogger`, `useService`, `ref`, `readonly`.
 - Produces: `useSavedPrompts()` returning
   - `prompts: Readonly<Ref<readonly SavedPrompt[]>>` (module-level singleton)
@@ -1263,6 +1274,7 @@ git commit -m "feat(saved-prompts): add useSavedPrompts composable"
 ### Task 5: Saved prompt components and desktop integration
 
 **Files:**
+
 - Create: `app/components/saved-prompt/SavedPromptForm.vue`
 - Create: `app/components/saved-prompt/SavedPromptSaveInline.vue`
 - Create: `app/components/saved-prompt/SavedPromptManager.vue`
@@ -1271,6 +1283,7 @@ git commit -m "feat(saved-prompts): add useSavedPrompts composable"
 - Test: `tests/e2e/savedPrompts.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `useSavedPrompts()` (Task 4), `isValidSavedPromptInput`, `SAVED_PROMPT_NAME_MAX_LENGTH`, `SavedPrompt` (Task 2), i18n `savedPrompts.*`, `common.cancel|edit|delete`, `actions.apply`, `editor.userActions`.
 - Produces (auto-imported components, used by Task 6):
   - `<SavedPromptSaveInline :prompt="string" />`
@@ -2002,12 +2015,14 @@ git commit -m "feat(saved-prompts): save, apply and manage prompts on desktop"
 ### Task 6: Mobile integration
 
 **Files:**
+
 - Modify: `app/composables/useMobileActions.ts`
 - Modify: `app/components/ribbon/MobileTransformTab.vue`
 - Modify: `app/components/ribbon/CustomSheet.vue`
 - Test: `tests/e2e/savedPromptsMobile.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `useSavedPrompts()` (Task 4), `<SavedPromptManager>`, `<SavedPromptSaveInline>` (Task 5), i18n `savedPrompts.manage`, `savedPrompts.managerTitle`, `actions.more`.
 - Produces: `MobileAction` variant `{ kind: "manage"; id: string; label: string; icon: string }`; test ids `customSheetTextBox`, `mobileCustomAction`, `savedPromptManageMobile`.
 
@@ -2197,10 +2212,12 @@ git commit -m "feat(saved-prompts): save, apply and manage prompts on mobile"
 ### Task 7: Onboarding tour step
 
 **Files:**
+
 - Modify: `app/composables/useOnboarding.ts`
 - Modify: `i18n/locales/de.json`, `i18n/locales/en.json`
 
 **Interfaces:**
+
 - Consumes: `data-tour="user-actions"` (Task 5), `data-tour="custom-quick-action-mobile"` (existing), `resolveTourTarget` and `setRibbonTab` (existing in `useOnboarding.ts`).
 - Produces: i18n keys `tour.savedPrompts.title` and `tour.savedPrompts.content`.
 
@@ -2271,10 +2288,12 @@ git commit -m "feat(saved-prompts): add onboarding tour step"
 ### Task 8: Changelog, version bump and final verification
 
 **Files:**
+
 - Create: `server/assets/changelogs/v1.8.0.md`
 - Modify: `package.json` (`"version": "1.7.0"` → `"1.8.0"`)
 
 **Interfaces:**
+
 - Consumes: everything above.
 - Produces: release notes for 1.8.0.
 
@@ -2293,6 +2312,7 @@ published_at: "2026-10-02"
 ## 🔖 Eigene Prompts speichern und wiederverwenden
 
 Deine benutzerdefinierten Anweisungen gehen nicht mehr verloren:
+
 - **Unter einem Namen speichern**: Im Feld «Benutzerdefinierte Anweisungen» speicherst du eine Anweisung mit «Als Prompt speichern» unter einem eigenen Namen.
 - **Mit einem Klick anwenden**: Gespeicherte Prompts findest du unter **«Meine Aktionen»**. Der Vermerk «Lokal» zeigt, dass sie nur in deinem Browser liegen.
 - **Bearbeiten und löschen**: Unter «Prompts verwalten» passt du Namen und Anweisungen an oder entfernst Prompts, die du nicht mehr brauchst.
@@ -2317,6 +2337,7 @@ In `package.json` change `"version": "1.7.0"` to `"version": "1.8.0"`.
 - [ ] **Step 3: Run the full CI equivalent**
 
 Run:
+
 ```bash
 AUTH_MODE=none APP_MODE=ci CI=true bunx nuxt build && bunx biome ci . && APP_MODE=ci bunx vitest run && mise run test:e2e
 ```

@@ -29,6 +29,7 @@ claude mcp add --transport http nuxt-ui https://ui.nuxt.com/mcp
 ```
 
 Key MCP tools:
+
 - `search_components` — find components by name, description, or category (no params = list all)
 - `search_composables` — find composables by name or description (no params = list all)
 - `search_icons` — search Iconify icons (defaults to `lucide`), returns `i-{prefix}-{name}` names
@@ -53,12 +54,14 @@ Based on the task, load the relevant reference files **before writing any code**
 ### Reference files
 
 **Guidelines** — design decisions and conventions:
+
 - [design-system](references/guidelines/design-system.md) — semantic colors, theming, brand customization, variants, the `ui` prop
 - [component-selection](references/guidelines/component-selection.md) — decision matrices: when to use Modal vs Slideover, Select vs SelectMenu, Toast vs Alert, etc.
 - [conventions](references/guidelines/conventions.md) — coding patterns, slot naming, items arrays, composables, keyboard shortcuts
 - [forms](references/guidelines/forms.md) — form validation, field layout, error handling, Standard Schema
 
 **Layouts** — full page structure patterns:
+
 - [landing](references/layouts/landing.md) — landing pages, blog, changelog, pricing
 - [dashboard](references/layouts/dashboard.md) — admin UI with sidebar and panels
 - [docs](references/layouts/docs.md) — documentation sites with navigation and TOC
@@ -66,12 +69,14 @@ Based on the task, load the relevant reference files **before writing any code**
 - [editor](references/layouts/editor.md) — rich text editor with toolbars
 
 **Recipes** — complete patterns for common tasks:
+
 - [data-tables](references/recipes/data-tables.md) — tables with filters, pagination, sorting, selection
 - [auth](references/recipes/auth.md) — login, signup, forgot password forms
 - [overlays](references/recipes/overlays.md) — modals, slideovers, drawers, command palette
 - [navigation](references/recipes/navigation.md) — headers, sidebars, breadcrumbs, tabs
 
 **Quick reference:**
+
 - [components](references/components.md) — categorized component index for finding the right component name
 
 ### Routing table

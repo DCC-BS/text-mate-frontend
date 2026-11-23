@@ -51,6 +51,7 @@ ui({
 Only colors that exist in your theme work — either Tailwind's defaults or custom colors defined with `@theme`.
 
 Available color palettes:
+
 - **Standard Tailwind**: red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose
 - **Neutral palettes** (for `neutral` key — pick one that matches the aesthetic):
   - `slate` — cool blue-gray, professional (default)
@@ -168,6 +169,7 @@ Override theme **slots** on a single instance — wins over global config and va
 ```
 
 Rules for `ui` overrides:
+
 - **Prefer `defaultVariants`** over slot class overrides when possible (e.g., changing default button variant/size).
 - **Don't duplicate default classes** — check the generated theme file first to see what's already there.
 - Border radius defaults come from `--ui-radius`, but you can override with `rounded-*` classes in `ui` or `class` when you need a specific radius on a component.
@@ -183,6 +185,7 @@ Override the **root** (or `base`) slot only — simpler than `ui` for single-slo
 ### Finding slot names
 
 Read the generated theme file for any component:
+
 - **Nuxt**: `.nuxt/ui/<component>.ts`
 - **Vue**: `node_modules/.nuxt-ui/ui/<component>.ts`
 
