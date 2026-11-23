@@ -21,6 +21,11 @@
     },
     "postCreateCommand": ".devcontainer/scripts/setup.sh",
     "forwardPorts": [3000],
+    // On SELinux-enforcing hosts (Fedora/RHEL), the content folder bind mount keeps the
+    // user_home_t label while the workspace container runs as container_t, so even root
+    // gets EACCES on open/exec (DevPod clones it via a privileged agent container that
+    // bypasses SELinux). Opt the workspace container out of SELinux confinement.
+    "runArgs": ["--security-opt", "label=disable"],
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
     ]

@@ -89,6 +89,7 @@ git ls-remote           # should list refs without prompting
 
 ## Troubleshooting
 
+- **SELinux-enforcing hosts (Fedora/RHEL): `Chown projects … permission denied` + `setup.sh: Permission denied (exit 126)`** — the content folder bind mount keeps the host's `user_home_t` label, but the workspace container runs as `container_t`, which SELinux denies regardless of uid. The DevPod agent container that clones the repo is privileged (SELinux-exempt), so the clone itself succeeds — only the workspace container hits the wall. `devcontainer.json` opts out via `"runArgs": ["--security-opt", "label=disable"]`; keep it when touching that file. Without the flag, the machine-side equivalent is `sudo semanage fcontext -a -t container_file_t '/home/<you>/.devpod(/.*)?' && sudo restorecon -Rv ~/.devpod`.
 - **`ssh-add -l` says "Could not open a connection"** — the agent socket isn't being forwarded (DevPod-specific wrinkle). Stop DevPod, re-run `ssh-add ~/.ssh/id_ed25519` on the host, and restart. If it still fails, fall back to bind-mounting `~/.ssh`.
 - **`Permission denied (publickey)`** — the host agent has no key loaded. Run `ssh-add -l` on the host to confirm.
 - **Wrong GitHub identity** — this setup forwards only the default key (`id_ed25519`). Repos on the `github.com-bs` work account are not accessible from the container. Clone them on the host instead, or extend `setup.sh` to mirror the conditional `Host github.com-bs` block from `~/.ssh/config`.
