@@ -34,6 +34,9 @@
     // pass-cli) plus bun install and the Playwright browser via the mise
     // postinstall hook, and the OS libraries from [bootstrap.packages].
     "postCreateCommand": "bash .devcontainer/scripts/setup.sh",
+    // Re-syncs host omp state on every start (DevPod's dotfiles step runs after
+    // postCreate and re-links dot_omp/config.yml over the host copy).
+    "postStartCommand": "bash .devcontainer/scripts/sync-omp.sh",
     "customizations": {
         "vscode": {
             "extensions": [
