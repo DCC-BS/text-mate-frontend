@@ -4,6 +4,24 @@ One `devcontainer.json` drives the container; [DevPod](https://devpod.sh) builds
 runs it with the local Docker/Podman provider, and both VS Code and Zed attach to the
 same workspace over DevPod's SSH access.
 
+## Host prerequisites (one-time)
+
+- DevPod CLI with the `docker` provider configured (rootless Podman via the
+  Podman socket works — `devpod provider use docker`)
+- **SSH agent**, so private-repo clones inside the container authenticate
+  (dotfiles, `git push`/`pull`). Fedora ships a socket-activated user agent:
+
+  ```sh
+  systemctl --user enable --now ssh-agent.socket
+  printf 'SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/ssh-agent.socket\n' > ~/.config/environment.d/ssh-agent.conf
+  sed -i '1i AddKeysToAgent yes' ~/.ssh/config   # above the first Host block
+  ```
+
+  Open a **new terminal** afterwards so `SSH_AUTH_SOCK` is set; the key loads on
+  first use.
+
+- VS Code and/or Zed installed locally
+
 ## Creating the workspace — use the git URL
 
 ```sh
@@ -46,6 +64,20 @@ image — versions live only in `../mise.toml`.
 mise r pass-login    # Proton Pass; required by varlock-wrapped tasks (dev, env, build)
 mise run dev         # dev server on :3000 (auth via Proton Pass secrets)
 mise run dummy       # dev server with mock data, no secrets needed
+```
+
+## Dotfiles
+
+The workspace installs your dotfiles (context option `DOTFILES_URL`). The
+in-container dotfiles clone needs the host SSH agent — if `devpod up` aborts with
+`Process exited with status 128` right after `Cloning dotfiles ...`, no agent
+reached the container (usually a terminal that predates the agent setup above).
+Clone once manually and re-run:
+
+```sh
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
+devpod ssh <workspace> --command 'git clone git@github.com:swordbreaker/dotfiles-bs-dev.git ~/dotfiles'
+devpod up <workspace> --ide zed
 ```
 
 ## VS Code
