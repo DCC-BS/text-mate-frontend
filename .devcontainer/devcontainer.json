@@ -4,17 +4,16 @@
         "dockerfile": "Dockerfile",
         "context": "."
     },
-    // Rootless Docker/Podman remaps uids through the subuid range: only container
-    // uid 0 maps to the host user, every other uid lands on an unmapped host id.
-    // Files written by the image's default `vscode` user (uid 1000) would show up
-    // owned by e.g. 100999 and break host-side git. Run as root instead — under a
-    // rootless runtime that is exactly the host user's privilege level.
+    // Run as root: DevPod's workspace agent and `mise bootstrap packages apply`
+    // (apt) need it. Create workspaces from the git URL (see README.md) so the
+    // checkout lives in a DevPod-managed volume — with a local-folder workspace on
+    // rootless Podman, container writes map to your subuid and pollute the host tree.
     "remoteUser": "root",
     "containerUser": "root",
     "updateRemoteUserUID": false,
-    // SELinux-enforcing hosts (Fedora/RHEL): the workspace bind mount keeps its
-    // host label (user_home_t) while the container process runs as container_t,
-    // which is denied regardless of uid. Opt the container out of confinement.
+    // SELinux-enforcing hosts (Fedora/RHEL): the bind-mounted ~/.gitconfig keeps its
+    // host label (user_home_t), which container_t is denied regardless of uid. Opt
+    // the container out of SELinux confinement.
     "runArgs": ["--security-opt", "label=disable"],
     // Git identity from the host. Authentication never copies a private key:
     // VS Code (Dev Containers) and DevPod both forward the host ssh-agent via
