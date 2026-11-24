@@ -1,0 +1,45 @@
+{
+    "name": "text-mate-frontend",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
+    // Rootless Docker/Podman remaps uids through the subuid range: only container
+    // uid 0 maps to the host user, every other uid lands on an unmapped host id.
+    // Files written by the image's default `vscode` user (uid 1000) would show up
+    // owned by e.g. 100999 and break host-side git. Run as root instead — under a
+    // rootless runtime that is exactly the host user's privilege level.
+    "remoteUser": "root",
+    "containerUser": "root",
+    "updateRemoteUserUID": false,
+    // SELinux-enforcing hosts (Fedora/RHEL): the workspace bind mount keeps its
+    // host label (user_home_t) while the container process runs as container_t,
+    // which is denied regardless of uid. Opt the container out of confinement.
+    "runArgs": ["--security-opt", "label=disable"],
+    // Git identity from the host. Authentication never copies a private key:
+    // VS Code (Dev Containers) and DevPod both forward the host ssh-agent via
+    // SSH_AUTH_SOCK into the container.
+    "mounts": ["source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind"],
+    "remoteEnv": {
+        "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
+        // pass-cli reads the Proton Pass key material from the filesystem
+        "PROTON_PASS_KEY_PROVIDER": "fs"
+    },
+    "forwardPorts": [3000],
+    // Installs the full toolchain: `mise install` (bun, node, varlock, usage,
+    // pass-cli) plus bun install and the Playwright browser via the mise
+    // postinstall hook, and the OS libraries from [bootstrap.packages].
+    "postCreateCommand": "bash .devcontainer/scripts/setup.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot",
+                "github.copilot-chat",
+                "nuxtr.nuxt-vscode-extentions",
+                "yoavbls.pretty-ts-errors",
+                "bradlc.vscode-tailwindcss",
+                "biomejs.biome"
+            ]
+        }
+    }
+}
