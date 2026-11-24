@@ -25,3 +25,15 @@ mise bootstrap packages apply --update --yes
 mkdir -p ~/.ssh && chmod 700 ~/.ssh
 ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 chmod 600 ~/.ssh/known_hosts
+
+# 5. Seed the container's omp (oh-my-pi) agent state from the host: settings,
+#    model catalog and provider credentials. The host dir is mounted read-only
+#    at /mnt/host-omp-agent (see devcontainer.json); logs, sessions and natives
+#    stay container-local. Plain copies (not sqlite backup) so this works
+#    against the read-only mount; sqlite replays the -wal on first open.
+if [ -d /mnt/host-omp-agent ]; then
+    mkdir -p ~/.omp/agent
+    for f in config.yml models.db models.db-wal models.db-shm agent.db agent.db-wal agent.db-shm; do
+        [ -f "/mnt/host-omp-agent/$f" ] && cp "/mnt/host-omp-agent/$f" ~/.omp/agent/
+    done
+fi

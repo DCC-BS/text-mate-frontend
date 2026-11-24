@@ -18,7 +18,12 @@
     // Git identity from the host. Authentication never copies a private key:
     // VS Code (Dev Containers) and DevPod both forward the host ssh-agent via
     // SSH_AUTH_SOCK into the container.
-    "mounts": ["source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind"],
+    "mounts": [
+        "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
+        // Host omp (oh-my-pi) agent state, read-only: setup.sh copies settings,
+        // model catalog and provider credentials out of it at create time.
+        "source=${localEnv:HOME}/.omp/agent,target=/mnt/host-omp-agent,type=bind,readonly"
+    ],
     "remoteEnv": {
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
         // pass-cli reads the Proton Pass key material from the filesystem

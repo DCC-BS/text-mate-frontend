@@ -53,6 +53,9 @@ sudo chown -R $(id -un):$(id -gn) <repo>             # reclaim the host files
 3. `mise bootstrap packages apply` — OS libraries needed to launch Chromium
    (`[bootstrap.packages]` in `mise.toml`)
 4. GitHub host key — non-interactive first `git fetch`/`push`
+5. omp (oh-my-pi) state — copies the host's `~/.omp/agent` settings, model
+   catalog and provider credentials into the container (read-only mount at
+   `/mnt/host-omp-agent`); logs, sessions and natives stay container-local
 
 Git identity comes from a bind-mounted `~/.gitconfig`; authentication uses the host's
 ssh-agent (forwarded in, private key never copied). Tools are **not** baked into the
