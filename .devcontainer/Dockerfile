@@ -22,5 +22,9 @@ RUN usermod -s /usr/bin/zsh root
 COPY zshrc /root/.zshrc
 
 # Non-interactive shells (`devpod ssh <ws> -- cmd`) never read .zshrc, so put
-# mise on their PATH too and give them a usable HOME.
-RUN printf 'export HOME="${HOME:-/root}"\nexport PATH="/usr/local/bin:/root/.local/share/mise/shims:$PATH"\n' > /etc/zsh/zshenv
+# mise on their PATH too and give them a usable HOME. The omp sync hook runs on
+# every shell start: DevPod's dotfiles linking re-applies dot_omp/config.yml
+# after each `up`, and the host copy in /mnt/host-omp-agent must win.
+COPY sync-omp.sh /usr/local/bin/sync-omp
+RUN printf 'export HOME="${HOME:-/root}"\nexport PATH="/usr/local/bin:/root/.local/share/mise/shims:$PATH"\n' > /etc/zsh/zshenv \
+    && printf 'test -d /mnt/host-omp-agent && /usr/local/bin/sync-omp >/dev/null 2>&1 || true\n' >> /etc/zsh/zshenv
