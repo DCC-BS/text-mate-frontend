@@ -69,7 +69,7 @@ and the agent-sync hook — but **not** this repo's tools: versions live only in
 ## Adopting this devcontainer in another DCC-BS repo
 
 The devcontainer spec has no include/extends, so each repo carries its own
-`.devcontainer/` — but only what genuinely differs per repo, two files:
+`.devcontainer/` — but it is a single file:
 
 1. Copy `template/devcontainer.json` from
    [`DCC-BS/dcc-docker-images/devcontainer`](https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer)
@@ -78,16 +78,12 @@ The devcontainer spec has no include/extends, so each repo carries its own
    `PROTON_PASS_KEY_PROVIDER` env only if the repo uses pass-cli). Everything
    else — image, mounts, `initializeCommand`, `runArgs`, lifecycle commands —
    stays as-is.
-2. Copy `.devcontainer/scripts/host-sync.sh` — the per-user opt-in list of
-   personal agent state (omp by default; add blocks for other agents). It is a
-   no-op when nothing is staged, so teammates are unaffected. This one runs on
-   the host, so it cannot come from the image.
 
-Nothing else: no Dockerfile, no setup script. Creating the workspace pulls the
-shared image; `postCreateCommand` runs the baked `setup-workspace`, which
-installs the repo's tools from its `mise.toml`. A repo needing extra bootstrap
-steps gives `postCreateCommand` its own script that calls
-`bash /usr/local/bin/setup-workspace` first.
+Nothing else: no Dockerfile, no setup script, no host script. Creating the
+workspace pulls the shared image; `postCreateCommand` runs the baked
+`setup-workspace`, which installs the repo's tools from its `mise.toml`. A repo
+needing extra bootstrap steps gives `postCreateCommand` its own script that
+calls `bash /usr/local/bin/setup-workspace` first.
 
 ## First shell inside
 
@@ -111,21 +107,26 @@ devpod ssh <workspace> --command 'git clone git@github.com:swordbreaker/dotfiles
 devpod up <workspace> --ide zed
 ```
 
-## Coding agents (opt-in)
+## Coding agents (opt-in, per user)
 
 The container is agent-neutral: nothing personal is shared unless you opt in.
-`initializeCommand` runs on the **host** before the container starts and stages
-agent state into `~/.cache/devcontainer-agent-state`, which is mounted read-only
-at `/mnt/agent-state`. The sync script baked into the image
-(`/usr/local/bin/sync-agent`) copies it into the
-container home on create, on every start, and on every shell start (DevPod's
-dotfiles linking would otherwise re-apply `dot_omp/config.yml` over it).
+`initializeCommand` runs on the **host** before the container starts: it
+creates `~/.cache/devcontainer-agent-state` and runs
+`~/.config/devcontainer/host-sync.sh` **if you have one** — that file is your
+opt-in list, it lives in your home (track it in your dotfiles), not in this
+repo. Whatever it stages is mounted read-only at `/mnt/agent-state`, and the
+sync script baked into the image (`/usr/local/bin/sync-agent`) copies it into
+the container home on create, on every start, and on every shell start
+(DevPod's dotfiles linking would otherwise re-apply `dot_omp/config.yml` over
+it).
 
-Out of the box only **omp (oh-my-pi)** stages anything (`~/.omp/agent` →
-settings, model catalog, provider keys). Everyone else — including Claude Code
-users — gets an empty staging dir and a working container. To stage your own
-agent, add a block to `.devcontainer/scripts/host-sync.sh` (copy config files
-only; keep sessions/history out) and recreate the container.
+Without `~/.config/devcontainer/host-sync.sh` the staging dir stays empty and
+the container works unchanged — teammates (Claude Code users included) need
+nothing. To opt in, copy the example from
+[dcc-docker-images `devcontainer/README.md`](https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer)
+into `~/.config/devcontainer/host-sync.sh` (omp: settings, model catalog,
+provider keys). For another agent, add a block copying its config files into
+`$STAGING/<agent>/` — never sessions/history.
 
 The staged copy re-applies on every shell start, so host edits reach the
 container after opening a new terminal — no restart needed.
