@@ -1,7 +1,11 @@
 # Dev container (DevPod)
 
-One `devcontainer.json` drives the container; [DevPod](https://devpod.sh) builds and
-runs it with the local Docker/Podman provider, and both VS Code and Zed attach to the
+The container is built from the **shared DCC-BS dev container image**
+[`ghcr.io/dcc-bs/dcc-docker-images/devcontainer`](https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer)
+(mise, zsh, agent-sync hook baked in). `devcontainer.json` only adds what is
+repo-specific; the `devcontainer.json` template and adoption steps for other
+repos live in that directory. [DevPod](https://devpod.sh) runs the container
+with the local Docker/Podman provider, and both VS Code and Zed attach to the
 same workspace over DevPod's SSH access.
 
 ## Host prerequisites (one-time)
@@ -57,8 +61,30 @@ sudo chown -R $(id -un):$(id -gn) <repo>             # reclaim the host files
    [Coding agents](#coding-agents-opt-in) below)
 
 Git identity comes from a bind-mounted `~/.gitconfig`; authentication uses the host's
-ssh-agent (forwarded in, private key never copied). Tools are **not** baked into the
-image — versions live only in `../mise.toml`.
+ssh-agent (forwarded in, private key never copied). The shared image bakes mise, zsh
+and the agent-sync hook — but **not** this repo's tools: versions live only in
+`../mise.toml` and install on create.
+
+## Adopting this devcontainer in another DCC-BS repo
+
+The devcontainer spec has no include/extends, so each repo carries its own
+`.devcontainer/` — but only three files, and only a few fields differ:
+
+1. Copy `template/devcontainer.json` from
+   [`DCC-BS/dcc-docker-images/devcontainer`](https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer)
+   to `<repo>/.devcontainer/devcontainer.json`. Fill the fields marked
+   `REPO-SPECIFIC`: `name`, `forwardPorts`, VS Code extensions (plus the
+   `PROTON_PASS_KEY_PROVIDER` env only if the repo uses pass-cli). Everything
+   else — image, mounts, `initializeCommand`, `runArgs`, lifecycle commands —
+   stays as-is.
+2. Copy `.devcontainer/scripts/setup.sh` from an adopting repo and adjust the
+   repo-specific steps (mise bootstrap packages, host keys). It is invoked by
+   `postCreateCommand` and drives the repo's own `mise.toml`.
+3. Copy `.devcontainer/scripts/host-sync.sh` — the per-user opt-in list of
+   personal agent state (omp by default; add blocks for other agents). It is a
+   no-op when nothing is staged, so teammates are unaffected.
+4. No image or Dockerfile in the app repo — creating the workspace pulls the
+   shared image; `mise install` pulls the repo's tools.
 
 ## First shell inside
 
@@ -87,7 +113,8 @@ devpod up <workspace> --ide zed
 The container is agent-neutral: nothing personal is shared unless you opt in.
 `initializeCommand` runs on the **host** before the container starts and stages
 agent state into `~/.cache/devcontainer-agent-state`, which is mounted read-only
-at `/mnt/agent-state`. `.devcontainer/scripts/sync-agent.sh` copies it into the
+at `/mnt/agent-state`. The sync script baked into the image
+(`/usr/local/bin/sync-agent`) copies it into the
 container home on create, on every start, and on every shell start (DevPod's
 dotfiles linking would otherwise re-apply `dot_omp/config.yml` over it).
 
@@ -102,8 +129,8 @@ container after opening a new terminal — no restart needed.
 
 ## VS Code
 
-`devpod up git@github.com:DCC-BS/text-mate-frontend.git --ide vscode` — first run builds
-the image and runs the setup script (several minutes). Port 3000 is forwarded
+`devpod up git@github.com:DCC-BS/text-mate-frontend.git --ide vscode` — first run pulls
+the shared image and runs the setup script (several minutes). Port 3000 is forwarded
 automatically.
 
 ## Zed

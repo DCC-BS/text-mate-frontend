@@ -1,9 +1,9 @@
 {
     "name": "text-mate-frontend",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": "."
-    },
+    // Shared DCC-BS dev container image (mise, zsh, agent-sync hook baked in).
+    // Source + devcontainer.json template for other repos:
+    // https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer
+    "image": "ghcr.io/dcc-bs/dcc-docker-images/devcontainer:24.04",
     // Run as root: DevPod's workspace agent and `mise bootstrap packages apply`
     // (apt) need it. Create workspaces from the git URL (see README.md) so the
     // checkout lives in a DevPod-managed volume — with a local-folder workspace on
@@ -35,7 +35,9 @@
     "postCreateCommand": "bash .devcontainer/scripts/setup.sh",
     // Re-syncs staged agent state on every start (DevPod's dotfiles step runs
     // after postCreate and re-links dot_omp/config.yml over the staged copy).
-    "postStartCommand": "bash .devcontainer/scripts/sync-agent.sh",
+    // The script is baked into the shared image; /etc/zsh/zshenv re-runs it
+    // on every shell start.
+    "postStartCommand": "bash /usr/local/bin/sync-agent",
     "customizations": {
         "vscode": {
             "extensions": [
