@@ -25,6 +25,16 @@ same workspace over DevPod's SSH access.
   first use.
 
 - VS Code and/or Zed installed locally
+- **Docker/compose in the container** (for `docker compose` sidecar tasks):
+  the shared image ships the docker CLI + compose plugin and the devcontainer
+  mounts the host **podman socket** — enable it once:
+
+  ```sh
+  systemctl --user enable --now podman.socket
+  ```
+
+  Containers created through the socket are siblings on your host — `docker ps`
+  inside the container shows your host containers.
 
 ## Creating the workspace — use the git URL
 
