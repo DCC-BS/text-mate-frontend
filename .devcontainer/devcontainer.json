@@ -29,10 +29,12 @@
         "PROTON_PASS_KEY_PROVIDER": "fs"
     },
     "forwardPorts": [3000],
-    // Installs the full toolchain: `mise install` (bun, node, varlock, usage,
-    // pass-cli) plus bun install and the Playwright browser via the mise
-    // postinstall hook, and the OS libraries from [bootstrap.packages].
-    "postCreateCommand": "bash .devcontainer/scripts/setup.sh",
+    // Create-time bootstrap from the shared image: mise trust + install +
+    // `mise bootstrap packages apply` (bun, node, varlock, usage, pass-cli,
+    // Playwright Chromium via the postinstall hook, OS libraries) + GitHub
+    // host key + agent sync — driven by this repo's mise.toml in the
+    // workspace root.
+    "postCreateCommand": "bash /usr/local/bin/setup-workspace",
     // Re-syncs staged agent state on every start (DevPod's dotfiles step runs
     // after postCreate and re-links dot_omp/config.yml over the staged copy).
     // The script is baked into the shared image; /etc/zsh/zshenv re-runs it

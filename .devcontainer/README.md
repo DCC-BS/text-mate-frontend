@@ -48,7 +48,8 @@ sudo chown -R $(id -un):$(id -gn) <repo>             # reclaim the host files
 
 ## What happens on create
 
-`postCreateCommand` runs `.devcontainer/scripts/setup.sh` once:
+The shared image's `postCreateCommand` (`bash /usr/local/bin/setup-workspace`)
+runs once, driven entirely by this repo's `mise.toml`:
 
 1. `mise trust` — trust the project's `mise.toml`
 2. `mise install` — install every tool pinned there (bun, node, varlock, usage,
@@ -68,7 +69,7 @@ and the agent-sync hook — but **not** this repo's tools: versions live only in
 ## Adopting this devcontainer in another DCC-BS repo
 
 The devcontainer spec has no include/extends, so each repo carries its own
-`.devcontainer/` — but only three files, and only a few fields differ:
+`.devcontainer/` — but only what genuinely differs per repo, two files:
 
 1. Copy `template/devcontainer.json` from
    [`DCC-BS/dcc-docker-images/devcontainer`](https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer)
@@ -77,14 +78,16 @@ The devcontainer spec has no include/extends, so each repo carries its own
    `PROTON_PASS_KEY_PROVIDER` env only if the repo uses pass-cli). Everything
    else — image, mounts, `initializeCommand`, `runArgs`, lifecycle commands —
    stays as-is.
-2. Copy `.devcontainer/scripts/setup.sh` from an adopting repo and adjust the
-   repo-specific steps (mise bootstrap packages, host keys). It is invoked by
-   `postCreateCommand` and drives the repo's own `mise.toml`.
-3. Copy `.devcontainer/scripts/host-sync.sh` — the per-user opt-in list of
+2. Copy `.devcontainer/scripts/host-sync.sh` — the per-user opt-in list of
    personal agent state (omp by default; add blocks for other agents). It is a
-   no-op when nothing is staged, so teammates are unaffected.
-4. No image or Dockerfile in the app repo — creating the workspace pulls the
-   shared image; `mise install` pulls the repo's tools.
+   no-op when nothing is staged, so teammates are unaffected. This one runs on
+   the host, so it cannot come from the image.
+
+Nothing else: no Dockerfile, no setup script. Creating the workspace pulls the
+shared image; `postCreateCommand` runs the baked `setup-workspace`, which
+installs the repo's tools from its `mise.toml`. A repo needing extra bootstrap
+steps gives `postCreateCommand` its own script that calls
+`bash /usr/local/bin/setup-workspace` first.
 
 ## First shell inside
 
