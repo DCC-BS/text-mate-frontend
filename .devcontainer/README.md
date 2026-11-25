@@ -167,5 +167,7 @@ devpod ssh <workspace>          # plain shell inside the container
 - **Why `--security-opt label=disable`?** On SELinux-enforcing hosts (Fedora/RHEL) the
   bind-mounted `~/.gitconfig` keeps its host label (`user_home_t`), which `container_t`
   is denied regardless of uid.
-- `devcontainer.json` changes are not hot-reloaded: `devpod stop <workspace> &&
-  devpod up <workspace>` (Zed native: stop/kill the container, then reopen).
+- `devcontainer.json` changes are not hot-reloaded: changes to the container
+  definition (image, mounts, runArgs, lifecycle commands) need a recreate —
+  `devpod up <workspace> --recreate` (a plain stop/up only restarts the old
+  container). Zed native: stop/kill the container, then reopen.
