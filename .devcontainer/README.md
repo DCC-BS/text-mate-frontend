@@ -37,7 +37,7 @@ touched.
 
 **Do not create the workspace from the local folder** (`devpod up .`) with a Podman
 provider: DevPod bind-mounts your working tree and its create-time sync writes through
-the mount as container-root, which under rootless Podman maps to your *subuid* — not to
+the mount as container-root, which under rootless Podman maps to your _subuid_ — not to
 your user. Every file it touches becomes unwritable for you on the host. If that already
 happened:
 
