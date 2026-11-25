@@ -59,7 +59,7 @@ runs once, driven entirely by this repo's `mise.toml`:
    (`[bootstrap.packages]` in `mise.toml`)
 4. GitHub host key — non-interactive first `git fetch`/`push`
 5. personal coding-agent state — only what you opted into (see
-   [Coding agents](#coding-agents-opt-in) below)
+   [Coding agents](#coding-agents-opt-in-per-user) below)
 
 Git identity comes from a bind-mounted `~/.gitconfig`; authentication uses the host's
 ssh-agent (forwarded in, private key never copied). The shared image bakes mise, zsh
