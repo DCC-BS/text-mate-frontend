@@ -124,9 +124,10 @@ Without `~/.config/devcontainer/host-sync.sh` the staging dir stays empty and
 the container works unchanged — teammates (Claude Code users included) need
 nothing. To opt in, copy the example from
 [dcc-docker-images `devcontainer/README.md`](https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer)
-into `~/.config/devcontainer/host-sync.sh` (omp: settings, model catalog,
-provider keys). For another agent, add a block copying its config files into
-`$STAGING/<agent>/` — never sessions/history.
+into `~/.config/devcontainer/host-sync.sh`. The image's `sync-agent` handles
+four staging dirs — `omp`, `claude`, `opencode`, `pi` (config/auth files only,
+never sessions/history). Staging any other agent has no effect until
+`sync-agent` in the image learns its mapping.
 
 The staged copy re-applies on every shell start, so host edits reach the
 container after opening a new terminal — no restart needed.
