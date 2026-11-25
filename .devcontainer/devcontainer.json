@@ -20,7 +20,7 @@
     // repo — create ~/.config/devcontainer/host-sync.sh to opt in (omp users:
     // copy the example from dcc-docker-images devcontainer/README.md).
     // Without it: the staging dir is just empty and nothing personal is shared.
-    "initializeCommand": "mkdir -p \"$HOME/.cache/devcontainer-agent-state\" && if [ -f \"$HOME/.config/devcontainer/host-sync.sh\" ]; then bash \"$HOME/.config/devcontainer/host-sync.sh\"; fi",
+    "initializeCommand": "mkdir -p \"$HOME/.cache/devcontainer-agent-state\" && if [ -f \"$HOME/.config/devcontainer/host-sync.sh\" ]; then bash \"$HOME/.config/devcontainer/host-sync.sh\"; else find \"$HOME/.cache/devcontainer-agent-state\" -mindepth 1 -delete; fi",
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
         "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly"
