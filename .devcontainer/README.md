@@ -53,9 +53,8 @@ sudo chown -R $(id -un):$(id -gn) <repo>             # reclaim the host files
 3. `mise bootstrap packages apply` — OS libraries needed to launch Chromium
    (`[bootstrap.packages]` in `mise.toml`)
 4. GitHub host key — non-interactive first `git fetch`/`push`
-5. omp (oh-my-pi) state — copies the host's `~/.omp/agent` settings, model
-   catalog and provider credentials into the container (read-only mount at
-   `/mnt/host-omp-agent`); logs, sessions and natives stay container-local
+5. personal coding-agent state — only what you opted into (see
+   [Coding agents](#coding-agents-opt-in) below)
 
 Git identity comes from a bind-mounted `~/.gitconfig`; authentication uses the host's
 ssh-agent (forwarded in, private key never copied). Tools are **not** baked into the
@@ -82,6 +81,24 @@ export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
 devpod ssh <workspace> --command 'git clone git@github.com:swordbreaker/dotfiles-bs-dev.git ~/dotfiles'
 devpod up <workspace> --ide zed
 ```
+
+## Coding agents (opt-in)
+
+The container is agent-neutral: nothing personal is shared unless you opt in.
+`initializeCommand` runs on the **host** before the container starts and stages
+agent state into `~/.cache/devcontainer-agent-state`, which is mounted read-only
+at `/mnt/agent-state`. `.devcontainer/scripts/sync-agent.sh` copies it into the
+container home on create, on every start, and on every shell start (DevPod's
+dotfiles linking would otherwise re-apply `dot_omp/config.yml` over it).
+
+Out of the box only **omp (oh-my-pi)** stages anything (`~/.omp/agent` →
+settings, model catalog, provider keys). Everyone else — including Claude Code
+users — gets an empty staging dir and a working container. To stage your own
+agent, add a block to `.devcontainer/scripts/host-sync.sh` (copy config files
+only; keep sessions/history out) and recreate the container.
+
+The staged copy re-applies on every shell start, so host edits reach the
+container after opening a new terminal — no restart needed.
 
 ## VS Code
 

@@ -26,7 +26,7 @@ mkdir -p ~/.ssh && chmod 700 ~/.ssh
 ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 chmod 600 ~/.ssh/known_hosts
 
-# 5. omp (oh-my-pi) agent state — see scripts/sync-omp.sh. postStartCommand
+# 5. Personal coding-agent state — see scripts/sync-agent.sh. postStartCommand
 #    re-runs it on every start (DevPod's dotfiles step re-links dot_omp after
-#    postCreate, so the host copy must be re-applied).
-bash "$(dirname "${BASH_SOURCE[0]}")/sync-omp.sh"
+#    postCreate, so the staged copy must be re-applied).
+bash "$(dirname "${BASH_SOURCE[0]}")/sync-agent.sh"

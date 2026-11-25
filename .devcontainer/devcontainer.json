@@ -15,14 +15,13 @@
     // host label (user_home_t), which container_t is denied regardless of uid. Opt
     // the container out of SELinux confinement.
     "runArgs": ["--security-opt", "label=disable"],
-    // Git identity from the host. Authentication never copies a private key:
-    // VS Code (Dev Containers) and DevPod both forward the host ssh-agent via
-    // SSH_AUTH_SOCK into the container.
+    // Stages personal coding-agent state on the host (opt-in, see
+    // scripts/host-sync.sh) and mounts it read-only. Teammates without staged
+    // state get an empty dir and nothing is shared.
+    "initializeCommand": "bash .devcontainer/scripts/host-sync.sh",
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
-        // Host omp (oh-my-pi) agent state, read-only: setup.sh copies settings,
-        // model catalog and provider credentials out of it at create time.
-        "source=${localEnv:HOME}/.omp/agent,target=/mnt/host-omp-agent,type=bind,readonly"
+        "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly"
     ],
     "remoteEnv": {
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
@@ -34,9 +33,9 @@
     // pass-cli) plus bun install and the Playwright browser via the mise
     // postinstall hook, and the OS libraries from [bootstrap.packages].
     "postCreateCommand": "bash .devcontainer/scripts/setup.sh",
-    // Re-syncs host omp state on every start (DevPod's dotfiles step runs after
-    // postCreate and re-links dot_omp/config.yml over the host copy).
-    "postStartCommand": "bash .devcontainer/scripts/sync-omp.sh",
+    // Re-syncs staged agent state on every start (DevPod's dotfiles step runs
+    // after postCreate and re-links dot_omp/config.yml over the staged copy).
+    "postStartCommand": "bash .devcontainer/scripts/sync-agent.sh",
     "customizations": {
         "vscode": {
             "extensions": [
