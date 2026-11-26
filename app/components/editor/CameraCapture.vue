@@ -41,11 +41,20 @@ const isFullscreen = useMediaQuery("(max-width: 639px)");
 const { t } = useI18n();
 
 /**
+ * Bumped whenever the camera must stop. A getUserMedia() request that
+ * resolves for a stale session (dialog closed, unmounted or reopened while
+ * the permission prompt was up) stops its own tracks instead of leaking a
+ * live camera with no visible dialog.
+ */
+let cameraSession = 0;
+
+/**
  * Requests the rear camera (falling back to any camera) and starts the
  * live preview.
  */
 async function startCamera(): Promise<void> {
     stopCamera();
+    const session = ++cameraSession;
     cameraError.value = false;
     isStarting.value = true;
     try {
@@ -57,22 +66,34 @@ async function startCamera(): Promise<void> {
             },
             audio: false,
         });
+        if (session !== cameraSession) {
+            for (const track of mediaStream.getTracks()) {
+                track.stop();
+            }
+            return;
+        }
         stream.value = mediaStream;
         await nextTick();
         const video = videoRef.value;
-        if (video) {
+        if (video && session === cameraSession) {
             video.srcObject = mediaStream;
             await video.play();
         }
     } catch {
+        if (session !== cameraSession) {
+            return;
+        }
         cameraError.value = true;
     } finally {
-        isStarting.value = false;
+        if (session === cameraSession) {
+            isStarting.value = false;
+        }
     }
 }
 
 /** Stops all tracks and detaches the live preview. */
 function stopCamera(): void {
+    cameraSession++;
     for (const track of stream.value?.getTracks() ?? []) {
         track.stop();
     }

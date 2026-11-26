@@ -189,7 +189,7 @@ const words = computed(() => {
                 <!-- Editor area + drop target -->
                 <div
                     ref="dropZoneRef"
-                    class="w-full flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative mb-[35px]"
+                    class="w-full flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative"
                 >
                     <!-- Drop zone overlay -->
                     <div
@@ -233,8 +233,9 @@ const words = computed(() => {
                     />
                 </div>
 
-                <!-- Toolbar + wordcount (bottom) -->
-                <div class="absolute bottom-0 inset-x-0">
+                <!-- Toolbar + wordcount (in flow, so its wrapped height on
+                     narrow screens is reserved and never covers editor text) -->
+                <div class="shrink-0">
                     <EditorTextToolbar
                         :text="text"
                         :characters="characters"
