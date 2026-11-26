@@ -140,6 +140,7 @@
         "clear": "Clear",
         "file": "file",
         "files": "files",
+        "rules": "{n} rule |{n} rules",
         "toFix": "to fix",
         "skip": "Skip",
         "reply": "Reply",

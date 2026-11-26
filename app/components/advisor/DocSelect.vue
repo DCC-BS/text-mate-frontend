@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { AdvisorDocumentFile } from "~~/shared/types/advisor";
+
 const { t } = useI18n();
 const { docs } = useAdvisor();
 
@@ -53,9 +55,21 @@ function clearSelection(): void {
     selectedIds.value = [];
 }
 
-/** Human-readable file name: strips the extension and spaces out underscores. */
+/**
+ * Cleans a raw PDF filename for display: strips the extension and spaces
+ * out underscore/hyphen separators. Only used as fallback when the backend
+ * sends no file title.
+ */
 function displayFileName(file: string): string {
-    return file.replace(/\.[a-z]+$/i, "").replaceAll("_", " ");
+    return file
+        .replace(/\.[a-z]+$/i, "")
+        .replaceAll("_", " ")
+        .replaceAll("-", " ");
+}
+
+/** Display label for a file: backend title when present, cleaned filename otherwise. */
+function fileLabel(file: AdvisorDocumentFile): string {
+    return file.title.trim() || displayFileName(file.name);
 }
 
 /** Static UI override: keeps the card border width constant so selection
@@ -131,10 +145,20 @@ const checkboxUi = {
                                 />
                             </span>
                             <span
-                                class="font-medium text-default text-sm leading-tight"
+                                class="font-medium text-default text-sm leading-tight truncate"
                             >
                                 {{ doc.title }}
                             </span>
+                            <!-- Number of bundled rules this collection contributes. -->
+                            <UBadge
+                                v-if="doc.rule_count > 0"
+                                color="neutral"
+                                variant="subtle"
+                                size="sm"
+                                class="shrink-0 tabular-nums"
+                            >
+                                {{ t("advisor.rules", doc.rule_count) }}
+                            </UBadge>
                         </span>
                     </template>
                     <template #description>
@@ -189,29 +213,49 @@ const checkboxUi = {
                                  check mark while the document is selected. -->
                             <span
                                 v-for="file in doc.files"
-                                :key="file"
-                                class="flex items-center gap-2"
-                                :class="
-                                    selectedIds.includes(doc.id)
-                                        ? 'text-default'
-                                        : 'text-muted'
-                                "
+                                :key="file.name"
+                                class="block space-y-1"
                             >
-                                <UIcon
-                                    :name="
-                                        selectedIds.includes(doc.id)
-                                            ? 'i-lucide-circle-check-big'
-                                            : 'i-lucide-file'
-                                    "
-                                    class="size-3.5 shrink-0"
+                                <span
+                                    class="flex items-center gap-2"
                                     :class="
                                         selectedIds.includes(doc.id)
-                                            ? 'text-success'
-                                            : 'text-muted/60'
+                                            ? 'text-default'
+                                            : 'text-muted'
                                     "
-                                />
-                                <span class="truncate">
-                                    {{ displayFileName(file) }}
+                                >
+                                    <UIcon
+                                        :name="
+                                            selectedIds.includes(doc.id)
+                                                ? 'i-lucide-circle-check-big'
+                                                : 'i-lucide-file'
+                                        "
+                                        class="size-3.5 shrink-0"
+                                        :class="
+                                            selectedIds.includes(doc.id)
+                                                ? 'text-success'
+                                                : 'text-muted/60'
+                                        "
+                                    />
+                                    <span class="truncate">
+                                        {{ fileLabel(file) }}
+                                    </span>
+                                    <!-- Download size; hidden when the backend
+                                         reports 0 (file missing on server). -->
+                                    <span
+                                        v-if="file.size > 0"
+                                        class="shrink-0 tabular-nums text-muted/70"
+                                    >
+                                        {{ formatFileSize(file.size) }}
+                                    </span>
+                                </span>
+                                <!-- Per-file description from the API; hidden
+                                     when the backend sends none. -->
+                                <span
+                                    v-if="file.description.trim()"
+                                    class="block ps-[22px] text-muted/80 leading-snug"
+                                >
+                                    {{ file.description }}
                                 </span>
                             </span>
                         </span>

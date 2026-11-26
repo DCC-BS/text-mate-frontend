@@ -140,6 +140,7 @@
         "clear": "Zurücksetzen",
         "file": "Datei",
         "files": "Dateien",
+        "rules": "{n} Regel |{n} Regeln",
         "toFix": "zu korrigieren",
         "skip": "Überspringen",
         "reply": "Antworten",
