@@ -31,3 +31,40 @@ test("Opening a rule's source document renders the PDF", async ({ page }) => {
     ).toBeVisible();
     await expect(page.locator(".pdf-container canvas").first()).toBeVisible();
 });
+
+test("Opening a reference document from the doc list renders the PDF", async ({
+    page,
+}) => {
+    await page.fill(".tiptap", "Ein Beispieltext.");
+
+    await switchTo(page, "advisor");
+    // The doc-select drawer opens from the check button.
+    await page.locator('[data-tour="ribbon-check"]').click();
+    // Expand the first card (Bundeskanzlei) to reveal its files.
+    await page
+        .getByRole("button", { name: local.advisor.toggleDetails })
+        .first()
+        .click();
+    await page
+        .getByRole(
+            "button",
+            {
+                name: local.advisor.openDoc.replace(
+                    "{name}",
+                    "Schreibweisungen",
+                ),
+            },
+        )
+        .first()
+        .click();
+
+    // The page count is only known once pdf.js has parsed the document.
+    await expect(
+        page.getByText(
+            local.advisor.pdfViewer.pageIndicator
+                .replace("{current}", "1")
+                .replace("{total}", "1"),
+        ),
+    ).toBeVisible();
+    await expect(page.locator(".pdf-container canvas").first()).toBeVisible();
+});

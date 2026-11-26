@@ -136,6 +136,8 @@
         "limitDescription": "You can select up to 5 documents.",
         "docCount": "{n} of {max} documents selected",
         "toggleDetails": "Toggle document details",
+        "openDoc": "View document: {name}",
+        "docOpenFailed": "Failed to load document",
         "selectAll": "Select all",
         "clear": "Clear",
         "file": "file",

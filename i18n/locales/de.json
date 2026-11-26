@@ -136,6 +136,8 @@
         "limitDescription": "Sie können maximal 5 Dokumente auswählen.",
         "docCount": "{n} von {max} Dokumenten ausgewählt",
         "toggleDetails": "Dokumentendetails ein-/ausblenden",
+        "openDoc": "Dokument «{name}» anzeigen",
+        "docOpenFailed": "Dokument konnte nicht geladen werden",
         "selectAll": "Alle auswählen",
         "clear": "Zurücksetzen",
         "file": "Datei",

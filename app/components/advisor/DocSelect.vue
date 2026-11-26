@@ -1,8 +1,19 @@
 <script lang="ts" setup>
 import type { AdvisorDocumentFile } from "~~/shared/types/advisor";
+import PdfViewerClient from "~/components/advisor/PdfViewer.client.vue";
 
 const { t } = useI18n();
-const { docs } = useAdvisor();
+const { docs, getDocFile } = useAdvisor();
+
+const overlay = useOverlay();
+const logger = useLogger();
+const toast = useToast();
+
+// Fullscreen PDF preview; the same overlay the violation threads use.
+const pdfModal = overlay.create(PdfViewerClient);
+
+/** File currently being fetched for preview; guards parallel opens. */
+const openingFileName = ref<string>();
 
 interface DocSelectProps {
     /** Maximum number of selectable documents. */
@@ -70,6 +81,39 @@ function displayFileName(file: string): string {
 /** Display label for a file: backend title when present, cleaned filename otherwise. */
 function fileLabel(file: AdvisorDocumentFile): string {
     return file.title.trim() || displayFileName(file.name);
+}
+
+/**
+ * Opens a reference document in the fullscreen PDF preview. Fetches the
+ * file blob through the advisor API and shows it on page 1; the user can
+ * inspect bundled guidelines without running a check first.
+ */
+async function openFile(file: AdvisorDocumentFile): Promise<void> {
+    if (openingFileName.value !== undefined) {
+        return;
+    }
+    openingFileName.value = file.name;
+    try {
+        const blob = await getDocFile(file.name);
+        pdfModal.open({
+            file: blob,
+            page: 1,
+            fileName: file.name,
+            onClose: () => pdfModal.close(),
+        });
+    } catch (error: unknown) {
+        logger.error(
+            { error: String(error) },
+            "Failed to open reference document.",
+        );
+        toast.add({
+            title: t("advisor.docOpenFailed"),
+            color: "error",
+            icon: "i-lucide-file-x",
+        });
+    } finally {
+        openingFileName.value = undefined;
+    }
 }
 
 /** Static UI override: keeps the card border width constant so selection
@@ -237,9 +281,46 @@ const checkboxUi = {
                                                 : 'text-muted/60'
                                         "
                                     />
-                                    <span class="truncate">
-                                        {{ fileLabel(file) }}
-                                    </span>
+                                    <button
+                                        type="button"
+                                        class="flex min-w-0 items-center gap-1 underline-offset-2 hover:underline disabled:cursor-wait disabled:opacity-50"
+                                        :class="
+                                            selectedIds.includes(doc.id)
+                                                ? 'text-default'
+                                                : 'text-muted'
+                                        "
+                                        :aria-label="
+                                            t('advisor.openDoc', {
+                                                name: fileLabel(file),
+                                            })
+                                        "
+                                        :title="
+                                            t('advisor.openDoc', {
+                                                name: fileLabel(file),
+                                            })
+                                        "
+                                        :disabled="
+                                            openingFileName !== undefined
+                                        "
+                                        @click.stop.prevent="openFile(file)"
+                                    >
+                                        <span class="truncate">
+                                            {{ fileLabel(file) }}
+                                        </span>
+                                        <UIcon
+                                            :name="
+                                                openingFileName === file.name
+                                                    ? 'i-lucide-loader-circle'
+                                                    : 'i-lucide-eye'
+                                            "
+                                            class="size-3 shrink-0"
+                                            :class="{
+                                                'animate-spin':
+                                                    openingFileName ===
+                                                    file.name,
+                                            }"
+                                        />
+                                    </button>
                                     <!-- Download size; hidden when the backend
                                          reports 0 (file missing on server). -->
                                     <span
