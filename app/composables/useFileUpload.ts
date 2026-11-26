@@ -15,6 +15,7 @@ export function useTextFileUpload(options: UseFileUploadOptions) {
         isConverting,
         error: conversionError,
         fileName,
+        processFile,
         handleFileSelect,
         clearError,
     } = useFileConvert(onFileConverted, characterLimit);
@@ -110,6 +111,8 @@ export function useTextFileUpload(options: UseFileUploadOptions) {
         // Methods
         triggerFileUpload,
         onFileSelect,
+        /** Converts a single file (image capture / paste) into editor text. */
+        processFile,
         clearError,
     };
 }

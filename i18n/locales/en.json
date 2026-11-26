@@ -341,12 +341,21 @@
         "convertingFile": "Converting file...",
         "uploading": "Uploading file...",
         "uploadFile": "Upload File",
+        "capturePhoto": "Capture photo",
         "dropFileToConvert": "For upload, drop the file here",
-        "supportedFormats": "Supported formats: DOC, DOCX, HTML, MD, PDF, PPTX, RTF, TXT",
+        "supportedFormats": "Supported formats: DOC, DOCX, HTML, MD, PDF, PNG, JPEG, PPTX, RTF, TXT, WEBP",
         "error": "Error",
         "errorDescription": "Error uploading file. Please try again or contact us.",
         "dismiss": "Dismiss",
-        "fileConvertedSuccess": "File converted successfully"
+        "fileConvertedSuccess": "File converted successfully",
+        "close": "Close",
+        "cameraTitle": "Capture photo",
+        "cameraCapture": "Capture",
+        "cameraRetake": "Retake",
+        "cameraAccept": "Use photo",
+        "cameraRetry": "Try again",
+        "cameraPreviewAlt": "Captured photo",
+        "cameraError": "The camera could not be accessed. Please check permissions and try again."
     },
     "rewrite-diff-viewer": {
         "changes": "Changes",

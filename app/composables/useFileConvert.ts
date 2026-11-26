@@ -18,6 +18,31 @@ const ErrorPayloadSchema = z.object({
 });
 
 /**
+ * Image MIME types the backend converter (docling) accepts.
+ */
+const IMAGE_MIME_TYPES = [
+    "image/png",
+    "image/jpeg",
+    "image/webp",
+    "image/gif",
+    "image/bmp",
+] as const;
+
+/**
+ * Checks whether a file is an image the converter can OCR.
+ * Falls back to the extension because some platforms (e.g. pasted or
+ * captured files) may deliver files without a MIME type.
+ * @param file File to check
+ * @returns True when the file looks like a supported image
+ */
+export function isImageFile(file: File): boolean {
+    if ((IMAGE_MIME_TYPES as readonly string[]).includes(file.type)) {
+        return true;
+    }
+    return /\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name);
+}
+
+/**
  * Composable for handling file conversion and drop zone functionality
  * @param onComplete Callback function that receives the converted HTML content
  * @param characterLimit Optional character limit of the target editor. A

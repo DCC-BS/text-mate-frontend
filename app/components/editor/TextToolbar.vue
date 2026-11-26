@@ -20,15 +20,29 @@ const props = defineProps<{
     readonly?: boolean;
 }>();
 
-const emit = defineEmits<(e: "upload-file") => void>();
+const emit = defineEmits<(e: "upload-file" | "capture-photo") => void>();
 
 const { executeCommand, onCommand } = useCommandBus();
 const { t } = useI18n();
 const toast = useToast();
+
+/** Camera capture needs the MediaDevices API; hidden when unavailable. */
+const isCaptureSupported = computed(
+    () => import.meta.client && Boolean(navigator.mediaDevices?.getUserMedia),
+);
 const undoRedoState = reactive({
     canUndo: false,
     canRedo: false,
 });
+
+/**
+ * Touch-friendly sizing shared by all icon toolbar buttons: 44px hit target
+ * and larger icon below the `md` breakpoint (the same threshold the mobile
+ * ribbon uses), desktop unchanged. `justify-center` keeps the glyph centered
+ * inside the enlarged box.
+ */
+const touchButtonUi = { leadingIcon: "size-6 md:size-5" };
+const touchButtonClass = "size-11 justify-center md:size-8";
 
 // State to control the popover
 const isStatsPopoverOpen = ref(false);
@@ -122,13 +136,15 @@ async function downloadWord(): Promise<void> {
 </script>
 
 <template>
-    <div class="flex justify-between">
-        <div data-tour="text-editor-toolpanel">
+    <div class="flex justify-between flex-wrap gap-y-1">
+        <div class="flex items-center" data-tour="text-editor-toolpanel">
             <UTooltip :text="t('navigation.undo')" :kbds="['Ctrl', 'Z']">
                 <UButton
                     icon="i-lucide-undo"
                     variant="link"
                     color="neutral"
+                    :ui="touchButtonUi"
+                    :class="touchButtonClass"
                     :disabled="readonly || !undoRedoState.canUndo"
                     data-testid="undo-button"
                     @click="handleUndo"
@@ -139,6 +155,8 @@ async function downloadWord(): Promise<void> {
                     icon="i-lucide-redo"
                     variant="link"
                     color="neutral"
+                    :ui="touchButtonUi"
+                    :class="touchButtonClass"
                     :disabled="readonly || !undoRedoState.canRedo"
                     data-testid="redo-button"
                     @click="handleRedo"
@@ -149,8 +167,25 @@ async function downloadWord(): Promise<void> {
                     icon="i-lucide-upload"
                     variant="link"
                     color="neutral"
+                    :ui="touchButtonUi"
+                    :class="touchButtonClass"
                     :disabled="readonly"
                     @click="emit('upload-file')"
+                />
+            </UTooltip>
+            <UTooltip
+                v-if="isCaptureSupported"
+                :text="t('upload.capturePhoto')"
+            >
+                <UButton
+                    icon="i-lucide-camera"
+                    variant="link"
+                    color="neutral"
+                    :ui="touchButtonUi"
+                    :class="touchButtonClass"
+                    :disabled="readonly"
+                    data-testid="capturePhotoButton"
+                    @click="emit('capture-photo')"
                 />
             </UTooltip>
             <UTooltip :text="t('toolbar.copyToClipboard')">
@@ -160,6 +195,8 @@ async function downloadWord(): Promise<void> {
                     "
                     variant="link"
                     :color="copySuccess ? 'success' : 'neutral'"
+                    :ui="touchButtonUi"
+                    :class="touchButtonClass"
                     :disabled="!props.text"
                     data-testid="copyToClipboardButton"
                     @click="copyToClipboard"
@@ -170,6 +207,8 @@ async function downloadWord(): Promise<void> {
                     icon="i-lucide-download"
                     variant="link"
                     color="neutral"
+                    :ui="touchButtonUi"
+                    :class="touchButtonClass"
                     :disabled="!props.text"
                     data-testid="downloadWordButton"
                     @click="downloadWord"
@@ -182,7 +221,7 @@ async function downloadWord(): Promise<void> {
             :dismissible="isDismissable"
         >
             <UButton
-                class="text-gray-500"
+                class="text-gray-500 h-11 justify-center md:h-8"
                 variant="link"
                 color="neutral"
                 data-tour="word-count"
