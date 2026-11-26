@@ -73,17 +73,20 @@ async function startCamera(): Promise<void> {
 
 /** Stops all tracks and detaches the live preview. */
 function stopCamera(): void {
-    stream.value?.getTracks().forEach((track) => track.stop());
+    for (const track of stream.value?.getTracks() ?? []) {
+        track.stop();
+    }
     stream.value = undefined;
-    if (videoRef.value) {
-        videoRef.value.srcObject = null;
+    const video = videoRef.value;
+    if (video) {
+        video.srcObject = null;
     }
 }
 
 /** Grabs the current video frame as a JPEG blob and shows the preview. */
 function capturePhoto(): void {
     const video = videoRef.value;
-    if (!video || !video.videoWidth || !video.videoHeight) {
+    if (!video?.videoWidth || !video.videoHeight) {
         return;
     }
     const canvas = document.createElement("canvas");
