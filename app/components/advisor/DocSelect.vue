@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { AdvisorDocumentFile } from "~~/shared/types/advisor";
 import PdfViewerClient from "~/components/advisor/PdfViewer.client.vue";
+import type { AdvisorDocumentFile } from "~~/shared/types/advisor";
 
 const { t } = useI18n();
 const { docs, getDocFile } = useAdvisor();
