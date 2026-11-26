@@ -41,7 +41,7 @@
     // after postCreate and re-links dot_omp/config.yml over the staged copy).
     // The script is baked into the shared image; /etc/zsh/zshenv re-runs it
     // on every shell start.
-    "postStartCommand": "bash /usr/local/bin/sync-agent",
+    "postStartCommand": "bash /usr/local/bin/sync-agent && docker network create textmate-dev 2>/dev/null || true; docker network connect --alias text-mate-frontend textmate-dev \"$(hostname)\" 2>/dev/null || true",
     "customizations": {
         "vscode": {
             "extensions": [
