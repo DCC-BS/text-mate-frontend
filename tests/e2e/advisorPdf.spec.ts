@@ -8,16 +8,53 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Opening a rule's source document renders the PDF", async ({ page }) => {
-    // Matches the dummy "Passivkonstruktionen vermeiden" rule (beispiel-dokument.pdf, page 1).
+    // Matches the dummy "Passivkonstruktionen vermeiden" rule (schreibweisungen.pdf, page 1).
     await page.fill(".tiptap", "Der Antrag wurde vom Amt geprüft und es ist entschieden worden.");
 
     await switchTo(page, "advisor");
     await page.locator('[data-tour="ribbon-check"]').click();
-    await page.getByText("Beispiel-Dokument").first().click();
+    await page.getByText("Bundeskanzlei").first().click();
     await page.getByRole("button", { name: local.advisor.applyDocs }).click();
 
     await page
-        .getByRole("button", { name: "beispiel-dokument.pdf" })
+        .getByRole("button", { name: "schreibweisungen.pdf" })
+        .first()
+        .click();
+
+    // The page count is only known once pdf.js has parsed the document.
+    await expect(
+        page.getByText(
+            local.advisor.pdfViewer.pageIndicator
+                .replace("{current}", "1")
+                .replace("{total}", "1"),
+        ),
+    ).toBeVisible();
+    await expect(page.locator(".pdf-container canvas").first()).toBeVisible();
+});
+
+test("Opening a reference document from the doc list renders the PDF", async ({
+    page,
+}) => {
+    await page.fill(".tiptap", "Ein Beispieltext.");
+
+    await switchTo(page, "advisor");
+    // The doc-select drawer opens from the check button.
+    await page.locator('[data-tour="ribbon-check"]').click();
+    // Expand the first card (Bundeskanzlei) to reveal its files.
+    await page
+        .getByRole("button", { name: local.advisor.toggleDetails })
+        .first()
+        .click();
+    await page
+        .getByRole(
+            "button",
+            {
+                name: local.advisor.openDoc.replace(
+                    "{name}",
+                    "Schreibweisungen",
+                ),
+            },
+        )
         .first()
         .click();
 

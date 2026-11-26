@@ -1,13 +1,29 @@
 import { z } from "zod";
 
+/** Metadata for one PDF bundled in a document collection. */
+export const AdvisorDocumentFileSchema = z.object({
+    /** PDF filename; identifies the file for GET /advisor/doc/{name}. */
+    name: z.string(),
+    /** Human-readable display name; may be empty → fall back to `name`. */
+    title: z.string(),
+    /** Short description; may be empty. */
+    description: z.string(),
+    /** Size in bytes; 0 means the file is missing on the server. */
+    size: z.number(),
+});
+
 export const AdvisorDocumentDescriptionSchema = z.object({
     title: z.string(),
     description: z.string(),
     author: z.string(),
     edition: z.string(),
     id: z.string(),
-    files: z.array(z.string()),
+    files: z.array(AdvisorDocumentFileSchema),
+    /** Number of bundled rules this collection contributes. */
+    rule_count: z.number(),
 });
+
+export type AdvisorDocumentFile = z.infer<typeof AdvisorDocumentFileSchema>;
 
 export type AdvisorDocumentDescription = z.infer<
     typeof AdvisorDocumentDescriptionSchema

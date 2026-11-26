@@ -60,7 +60,7 @@ export function useAdvisor() {
     }
 
     async function getDocFile(name: string): Promise<Blob> {
-        if (!docs.value.some((d) => d.files.includes(name))) {
+        if (!docs.value.some((d) => d.files.some((f) => f.name === name))) {
             throw new Error("Document not found");
         }
 

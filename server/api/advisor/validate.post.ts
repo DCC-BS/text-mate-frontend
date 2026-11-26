@@ -86,8 +86,8 @@ const DUMMY_RULES: RuleDef[] = [
         reason: "Passivkonstruktionen schwächen die Aussage und verschleiern den Handelnden.",
         proposal:
             "Formulieren Sie den Satz aktiv mit dem Handelnden als Subjekt.",
-        collection: "beispiel-collection",
-        file_name: "beispiel-dokument.pdf",
+        collection: "bundeskanzlei",
+        file_name: "schreibweisungen.pdf",
         page_number: 1,
         pattern:
             /\b\w*(?:wurde|wird|worden|werden)\b[\s\S]{0,80}?\b\w*(?:worden|werden)\b/i,
@@ -98,8 +98,8 @@ const DUMMY_RULES: RuleDef[] = [
             "Ersetzen Sie substantivierte Konstruktionen („es wird/wird …“) durch klare Aussagen.",
         reason: "Der Nominalstil macht Sätze schwerfällig und unübersichtlich.",
         proposal: "Formulieren Sie mit einem klaren Verb und Subjekt.",
-        collection: "beispiel-collection",
-        file_name: "beispiel-dokument.pdf",
+        collection: "bundeskanzlei",
+        file_name: "schreibweisungen.pdf",
         page_number: 2,
         pattern:
             /\b(?:es wird|es sind|es gilt|es kommt zu)\b[\s\S]{0,60}?\b(?:möglich|notwendig|erforderlich|angebracht|empfohlen|vorgenommen|durchgeführt)\b/i,
@@ -111,7 +111,7 @@ const DUMMY_RULES: RuleDef[] = [
         reason: "Füllphrasen blähen den Text auf, ohne Inhalt hinzuzufügen.",
         proposal: "Kürzen Sie die Phrase ohne Bedeutungsverlust.",
         collection: "anderes-collection",
-        file_name: "beispiel-anhang.pdf",
+        file_name: "anderes-dokument.pdf",
         page_number: 3,
         pattern:
             /\b(?:in angemessener Weise|im Rahmen von|im Zuge von|in diesem Zusammenhang|mit dem Ziel, um)\b/i,
@@ -191,7 +191,7 @@ function sentenceLengthViolations(text: string): AdvisorRuleViolation[] {
             const start = m.index + leading;
             out.push({
                 collection: "anderes-collection",
-                file_name: "beispiel-anhang.pdf",
+                file_name: "anderes-dokument.pdf",
                 rule_name: "Satzlänge prüfen",
                 page_number: 4,
                 reason: `Dieser Satz hat ${wordCount} Wörter. Empfohlen werden höchstens 20 Wörter pro Satz.`,
@@ -212,7 +212,7 @@ function compoundJargonViolations(text: string): AdvisorRuleViolation[] {
     while (m !== null) {
         out.push({
             collection: "anderes-collection",
-            file_name: "beispiel-anhang.pdf",
+            file_name: "anderes-dokument.pdf",
             rule_name: "Fachjargon vermeiden",
             page_number: 5,
             reason: `„${m[0]}“ ist ein sehr langes Kompositum (${m[0].length} Zeichen).`,

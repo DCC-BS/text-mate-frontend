@@ -1,11 +1,4 @@
-type AdvisorDocumentDescription = {
-    title: string;
-    description: string;
-    author: string;
-    edition: string;
-    id: string;
-    files: string[];
-};
+import type { AdvisorDocumentDescription } from "~~/shared/types/advisor";
 
 export default apiHandler
     .withMethod("GET")
@@ -14,25 +7,51 @@ export default apiHandler
 
 // DUMMY
 
-function getDummyData() {
+// Mirrors the enriched backend contract: per-file metadata (title,
+// description, size) and the document-level rule_count.
+function getDummyData(): AdvisorDocumentDescription[] {
     return [
         {
-            author: "Max Mustermann",
+            id: "bundeskanzlei",
+            title: "Bundeskanzlei",
+            author: "Bundeskanzlei",
             description:
-                "Ein Beispiel-Dokument zur Demonstration der Advisor-Funktionalität.",
-            edition: "1. Auflage",
-            id: "beispiel-collection",
-            files: ["beispiel-dokument.pdf", "beispiel-anhang.pdf"],
-            title: "Beispiel-Dokument",
+                "Verbindliche Grundlagen der Bundeskanzlei für die deutsche Sprache in der Bundesverwaltung.",
+            edition: "Ausgabe 2024",
+            rule_count: 51,
+            files: [
+                {
+                    name: "schreibweisungen.pdf",
+                    title: "Schreibweisungen",
+                    description:
+                        "Verbindliche Schreibweisungen der Bundeskanzlei für die deutsche Sprache in der Bundesverwaltung",
+                    size: 3768435,
+                },
+                {
+                    name: "rechtschreibleitfaden-2017.pdf",
+                    title: "Rechtschreibleitfaden 2017",
+                    description:
+                        "Leitfaden zur deutschen Rechtschreibung der Bundeskanzlei, Ausgabe 2017",
+                    size: 842170,
+                },
+            ],
         },
         {
             author: "Erika Mustermann",
+            title: "Anderes Dokument",
             description:
                 "Ein weiteres Beispiel-Dokument mit nützlichen Informationen.",
             edition: "2. Auflage",
             id: "anderes-collection",
-            files: ["anderes-dokument.pdf"],
-            title: "Anderes Dokument",
+            rule_count: 12,
+            files: [
+                {
+                    name: "anderes-dokument.pdf",
+                    title: "",
+                    description: "",
+                    size: 1048576,
+                },
+            ],
         },
-    ] as AdvisorDocumentDescription[];
+    ];
 }
