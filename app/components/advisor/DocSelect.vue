@@ -53,6 +53,11 @@ function clearSelection(): void {
     selectedIds.value = [];
 }
 
+/** Human-readable file name: strips the extension and spaces out underscores. */
+function displayFileName(file: string): string {
+    return file.replace(/\.[a-z]+$/i, "").replaceAll("_", " ");
+}
+
 /** Static UI override: keeps the card border width constant so selection
  *  never shifts the layout — only the colour (via `color="primary"`) and a
  *  subtle tint react to the checked state. */
@@ -177,6 +182,36 @@ const checkboxUi = {
                                             ? t("advisor.file")
                                             : t("advisor.files")
                                     }}
+                                </span>
+                            </span>
+                            <!-- Per-group selection: selecting the document
+                                 checks every file in it, so each file shows a
+                                 check mark while the document is selected. -->
+                            <span
+                                v-for="file in doc.files"
+                                :key="file"
+                                class="flex items-center gap-2"
+                                :class="
+                                    selectedIds.includes(doc.id)
+                                        ? 'text-default'
+                                        : 'text-muted'
+                                "
+                            >
+                                <UIcon
+                                    :name="
+                                        selectedIds.includes(doc.id)
+                                            ? 'i-lucide-circle-check-big'
+                                            : 'i-lucide-file'
+                                    "
+                                    class="size-3.5 shrink-0"
+                                    :class="
+                                        selectedIds.includes(doc.id)
+                                            ? 'text-success'
+                                            : 'text-muted/60'
+                                    "
+                                />
+                                <span class="truncate">
+                                    {{ displayFileName(file) }}
                                 </span>
                             </span>
                         </span>
