@@ -1,12 +1,28 @@
 <script lang="ts" setup>
 import { createDocument } from "@tiptap/core";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/vue-3";
 import { EditorContent } from "@tiptap/vue-3";
 import { Cmds, type ToggleLockEditorCommand } from "~/assets/models/commands";
 import type { EditorSelection } from "~/composables/useBaseEditor";
+import { isImageFile } from "~/composables/useFileConvert";
 import { useTextFileUpload } from "~/composables/useFileUpload";
+import CameraCapture from "./CameraCapture.vue";
 import EditorTextClear from "./TextClear.vue";
 import EditorTextToolbar from "./TextToolbar.vue";
+
+/**
+ * File types accepted by the upload picker. Document formats plus the image
+ * formats the backend converter (docling) can OCR.
+ */
+const ACCEPTED_FILE_TYPES =
+    ".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx,.png,.jpg,.jpeg,.webp,.gif,.bmp";
+
+/** Key of the image-paste ProseMirror plugin. */
+const imagePastePluginKey = new PluginKey("textmateImagePaste");
+
+/** Whether the image-paste plugin is registered on the current editor. */
+let isImagePasteRegistered = false;
 
 interface Props {
     /** Tiptap editor instance, created and owned by the variant wrapper. */
@@ -44,6 +60,7 @@ const {
     isConverting,
     triggerFileUpload,
     onFileSelect,
+    processFile,
 } = useTextFileUpload({
     onFileConverted: (htmlContent: string) => {
         props.editor?.commands.setContent(htmlContent);
@@ -52,6 +69,56 @@ const {
         max: () => props.limit,
         count: countEditorCharacters,
     },
+});
+
+// Camera capture dialog: a captured (and accepted) photo enters the same
+// conversion pipeline as an uploaded file.
+const isCameraOpen = ref(false);
+
+function onPhotoCaptured(file: File): void {
+    processFile(file);
+}
+
+// Pasting an image file (e.g. a screenshot) must not insert it as media but
+// convert it to text like any other upload.
+function registerImagePasteHandler(editor: Editor | undefined): void {
+    if (!editor || isImagePasteRegistered) {
+        return;
+    }
+    editor.registerPlugin(
+        new Plugin({
+            key: imagePastePluginKey,
+            props: {
+                handlePaste: (_view, event) => {
+                    const image = Array.from(
+                        event.clipboardData?.files ?? [],
+                    ).find(isImageFile);
+                    if (!image) {
+                        return false;
+                    }
+                    event.preventDefault();
+                    processFile(image);
+                    return true;
+                },
+            },
+        }),
+    );
+    isImagePasteRegistered = true;
+}
+
+watch(
+    () => props.editor,
+    (editor) => {
+        registerImagePasteHandler(editor);
+    },
+    { immediate: true },
+);
+
+onBeforeUnmount(() => {
+    if (isImagePasteRegistered) {
+        props.editor?.unregisterPlugin(imagePastePluginKey);
+        isImagePasteRegistered = false;
+    }
 });
 
 /**
@@ -175,6 +242,7 @@ const words = computed(() => {
                         :limit="limit"
                         :readonly="readonly"
                         @upload-file="triggerFileUpload"
+                        @capture-photo="isCameraOpen = true"
                     />
                 </div>
 
@@ -183,8 +251,14 @@ const words = computed(() => {
                     ref="fileInputRef"
                     class="hidden"
                     @change="onFileSelect"
-                    accept=".txt,.doc,.docx,.pdf,.md,.html,.rtf,.pptx"
+                    :accept="ACCEPTED_FILE_TYPES"
                 >
+
+                <!-- Camera capture dialog (photo → OCR via /api/convert) -->
+                <CameraCapture
+                    v-model:open="isCameraOpen"
+                    @captured="onPhotoCaptured"
+                />
             </div>
 
             <template #fallback>
