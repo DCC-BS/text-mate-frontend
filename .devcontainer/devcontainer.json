@@ -23,7 +23,11 @@
     "initializeCommand": "mkdir -p \"$HOME/.cache/devcontainer-agent-state\" && if [ -f \"$HOME/.config/devcontainer/host-sync.sh\" ]; then bash \"$HOME/.config/devcontainer/host-sync.sh\"; else find \"$HOME/.cache/devcontainer-agent-state\" -mindepth 1 -delete; fi",
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
-        "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly"
+        "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly",
+        // Rootless docker socket of the host daemon: lets this workspace join the
+        // shared textmate-dev network (postStartCommand) so it can reach the
+        // backend workspace by alias. Rootful hosts: /var/run/docker.sock
+        "source=${localEnv:XDG_RUNTIME_DIR}/docker.sock,target=/var/run/docker.sock,type=bind"
     ],
     "remoteEnv": {
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
@@ -41,7 +45,7 @@
     // after postCreate and re-links dot_omp/config.yml over the staged copy).
     // The script is baked into the shared image; /etc/zsh/zshenv re-runs it
     // on every shell start.
-    "postStartCommand": "bash /usr/local/bin/sync-agent",
+    "postStartCommand": "bash /usr/local/bin/sync-agent; docker network create --label com.docker.compose.network=default textmate-dev 2>/dev/null || true; docker network connect --alias text-mate-frontend textmate-dev \"$(hostname)\" 2>/dev/null || true",
     "customizations": {
         "vscode": {
             "extensions": [
