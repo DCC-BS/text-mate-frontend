@@ -8,16 +8,16 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Opening a rule's source document renders the PDF", async ({ page }) => {
-    // Matches the dummy "Passivkonstruktionen vermeiden" rule (beispiel-dokument.pdf, page 1).
+    // Matches the dummy "Passivkonstruktionen vermeiden" rule (schreibweisungen.pdf, page 1).
     await page.fill(".tiptap", "Der Antrag wurde vom Amt geprüft und es ist entschieden worden.");
 
     await switchTo(page, "advisor");
     await page.locator('[data-tour="ribbon-check"]').click();
-    await page.getByText("Beispiel-Dokument").first().click();
+    await page.getByText("Bundeskanzlei").first().click();
     await page.getByRole("button", { name: local.advisor.applyDocs }).click();
 
     await page
-        .getByRole("button", { name: "beispiel-dokument.pdf" })
+        .getByRole("button", { name: "schreibweisungen.pdf" })
         .first()
         .click();
 
