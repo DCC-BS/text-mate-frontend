@@ -106,6 +106,11 @@ export default defineNuxtConfig({
         transpile: ["vaul-vue", "reka-ui"],
     },
     vite: {
+        server: {
+            // Allow any host (e.g. Tailscale hostnames) when developing; only
+            // affects the dev server, never production
+            allowedHosts: true,
+        },
         resolve: {
             dedupe: [
                 "vue",
